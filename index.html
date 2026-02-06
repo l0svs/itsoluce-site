@@ -42,6 +42,7 @@
       <a class="btnNav primary" href="#contact">Demander un devis</a>
     </div>
 
+    <!-- Mobile menu panel -->
     <div class="mobilePanel" data-mobilepanel>
       <a href="#profil">À propos</a>
       <a href="#services">Services</a>
@@ -56,80 +57,179 @@
 
 <main>
 
-<section class="hero hero--carousel" data-hero-carousel>
-  <div class="heroBg" aria-hidden="true">
-    <div class="heroBg__slide is-active" data-slide style="background-image:url('./img/hero-1.jpg');"></div>
-    <div class="heroBg__overlay"></div>
-  </div>
-
-  <div class="container hero__inner">
-    <div class="heroGlass">
-      <h1 class="hero__title">Service de réparation informatique</h1>
-      <p class="hero__subtitle">
-        Dépannage, optimisation et maintenance — sur rendez-vous en Belgique.
-      </p>
+  <!-- HERO -->
+  <section class="hero hero--carousel" data-hero-carousel>
+    <div class="heroBg" aria-hidden="true">
+      <div class="heroBg__slide is-active" data-slide style="background-image:url('./img/hero-1.jpg');"></div>
+      <div class="heroBg__overlay"></div>
     </div>
-  </div>
-</section>
 
-<section id="profil" class="section">
-  <div class="container">
-    <div class="aboutBlock">
-      <h2 class="sectionTitle">À propos</h2>
-
-      <p class="aboutText">
-        Technicien en informatique spécialisé dans la réparation et la maintenance de matériel informatique.
-      </p>
-
-      <p class="aboutText">
-        J’interviens sur le diagnostic, le dépannage et la remise en état d’ordinateurs, smartphones et périphériques,
-        avec une attention particulière portée à la qualité et à la rapidité.
-      </p>
-
-      <p class="aboutText">
-        Expertise en remplacement de composants, pannes matérielles/logicielles et optimisation des performances.
-      </p>
-
-      <p class="aboutText">
-        Solutions fiables pour particuliers et professionnels.
-      </p>
+    <div class="container hero__inner">
+      <div class="heroGlass">
+        <h1 class="hero__title">Service de réparation informatique</h1>
+        <p class="hero__subtitle">
+          Dépannage, optimisation et maintenance — sur rendez-vous en Belgique.
+        </p>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="services" class="section section--services">
-  <div class="container">
-    <h2 class="sectionTitle">Services</h2>
+  <!-- PROFIL -->
+  <section id="profil" class="section">
+    <div class="container">
+      <div class="aboutBlock">
+        <h2 class="sectionTitle">À propos</h2>
 
-    <div class="cards">
-      <article class="card"><h3>Diagnostic & devis</h3></article>
-      <article class="card"><h3>Smartphones & tablettes</h3></article>
-      <article class="card"><h3>PC / Mac</h3></article>
-      <article class="card"><h3>Consoles</h3></article>
+        <p class="aboutText">
+          Technicien en informatique spécialisé dans la réparation et la maintenance de matériel informatique.
+        </p>
+
+        <p class="aboutText">
+          J’interviens sur le diagnostic, le dépannage et la remise en état d’ordinateurs, smartphones et
+          périphériques diverses, avec une attention particulière portée à la qualité et à la rapidité des interventions.
+        </p>
+
+        <p class="aboutText">
+          Mon expérience m’a permis de développer une expertise en remplacement de composants, résolution
+          de pannes matérielles et logicielles, ainsi qu’en optimisation des performances des équipements.
+        </p>
+
+        <p class="aboutText">
+          Polyvalent et orienté service, je mets mes compétences au profit de clients particuliers comme
+          professionnels afin de garantir des solutions fiables et durables.
+        </p>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="contact" class="section section--contact">
-  <div class="container">
-    <h2 class="sectionTitle">Contact</h2>
+  <!-- SERVICES -->
+  <section id="services" class="section section--services">
+    <div class="container">
+      <div class="sectionHead">
+        <h2 class="sectionTitle">Services</h2>
+        <p class="sectionSubtitle">Un service professionnel, du diagnostic à la réparation.</p>
+      </div>
 
-    <a href="tel:+32474056659">+32 474 05 66 59</a><br>
-    <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>
-  </div>
-</section>
+      <div class="cards">
+        <article class="card">
+          <h3 class="cardTitle">Diagnostic & devis</h3>
+          <p class="cardText">Analyse complète de l’appareil et du problème.</p>
+        </article>
+
+        <article class="card">
+          <h3 class="cardTitle">Smartphones & tablettes</h3>
+          <p class="cardText">Écrans, batteries, connecteurs, pannes diverses.</p>
+        </article>
+
+        <article class="card">
+          <h3 class="cardTitle">PC / Mac</h3>
+          <p class="cardText">Dépannage, optimisation, réparation, upgrades.</p>
+        </article>
+
+        <article class="card">
+          <h3 class="cardTitle">Consoles</h3>
+          <p class="cardText">Surchauffe, alimentation, ports, logiciel.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section section--contact">
+    <div class="container">
+      <div class="sectionHead">
+        <h2 class="sectionTitle">Contact</h2>
+        <p class="sectionSubtitle">
+          Disponible par téléphone, WhatsApp ou e-mail — réponse rapide assurée.
+        </p>
+      </div>
+
+      <div class="contactGrid contactGrid--single">
+        <div class="contactCard">
+          <div class="contactList">
+            <div class="contactItem">
+              <span class="contactLabel">Téléphone / WhatsApp</span>
+              <a class="contactValue" href="tel:+32474056659">+32 474 05 66 59</a>
+            </div>
+
+            <div class="contactItem">
+              <span class="contactLabel">Email</span>
+              <a class="contactValue" href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>
+            </div>
+
+            <div class="contactItem">
+              <span class="contactLabel">Disponibilité</span>
+              <span class="contactValue">8h – 20h</span>
+            </div>
+
+            <div class="contactItem">
+              <span class="contactLabel">Zone</span>
+              <span class="contactValue">Toute la Belgique</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
 </main>
 
+<!-- ✅ FOOTER (liens légaux) -->
 <footer class="footer">
-  <div class="container footer__inner">
-    © <span id="year"></span> IT Soluce
+  <div class="container footer__inner footer__inner--legal">
+
+    <div class="footer__legalLinks">
+      <button class="footerLink" type="button" data-legal-open="mentions">Mentions légales</button>
+      <button class="footerLink" type="button" data-legal-open="privacy">Confidentialité</button>
+      <button class="footerLink" type="button" data-legal-open="cookies">Cookies</button>
+      <button class="footerLink" type="button" data-legal-open="terms">Conditions</button>
+    </div>
+
+    <div class="footer__right">
+      <a class="footer__email" href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>
+      <div class="footer__copy">© <span id="year"></span> IT Soluce</div>
+    </div>
+
   </div>
 </footer>
 
+<!-- ✅ LEGAL MODAL -->
+<div class="legalModal" data-legal-modal aria-hidden="true">
+  <div class="legalModal__backdrop" data-legal-close></div>
+
+  <div class="legalModal__panel" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+    <div class="legalModal__top">
+      <div class="legalModal__titleWrap">
+        <div class="legalModal__kicker">Informations légales</div>
+        <h3 class="legalModal__title" id="legalTitle">—</h3>
+      </div>
+      <button class="legalModal__close" type="button" aria-label="Fermer" data-legal-close>✕</button>
+    </div>
+
+    <!-- ⚠️ Laisse vide : le JS remplit ici -->
+    <div class="legalModal__content" data-legal-content></div>
+
+  </div>
+</div>
+
+<!-- ✅ WHATSAPP FLOATING BUTTON -->
+<a
+  class="waFloat"
+  href="https://wa.me/32474056659"
+  target="_blank"
+  rel="noopener"
+  aria-label="Contacter IT Soluce sur WhatsApp"
+  title="WhatsApp"
+>
+  <svg viewBox="0 0 32 32" aria-hidden="true" class="waFloat__icon">
+    <path fill="currentColor" d="M19.11 17.36c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.13-.42-2.16-1.34-.8-.71-1.34-1.6-1.5-1.87-.16-.27-.02-.41.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.99-.22-.53-.44-.46-.6-.47h-.51c-.18 0-.47.07-.71.34-.24.27-.93.91-.93 2.22s.96 2.58 1.09 2.76c.13.18 1.89 2.88 4.58 4.04.64.28 1.14.44 1.53.56.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.8-1.27.22-.62.22-1.16.15-1.27-.07-.11-.24-.18-.51-.32z"/>
+    <path fill="currentColor" d="M26.67 15.97c0 5.89-4.79 10.67-10.67 10.67-1.88 0-3.72-.5-5.33-1.45L5.33 26.67l1.52-5.12c-.99-1.68-1.52-3.6-1.52-5.58C5.33 10.09 10.11 5.33 16 5.33c5.88 0 10.67 4.76 10.67 10.64zm-10.67-8.96c-4.94 0-8.96 4.02-8.96 8.96 0 1.86.57 3.66 1.65 5.19l.12.17-.9 3.02 3.1-.88.16.1c1.48.96 3.2 1.47 4.83 1.47 4.94 0 8.96-4.02 8.96-8.96 0-4.94-4.02-8.96-8.96-8.96z"/>
+  </svg>
+</a>
+
 <script src="./assets/js/main.js"></script>
 <script>
-document.getElementById("year").textContent = new Date().getFullYear();
+  document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
 </body>
