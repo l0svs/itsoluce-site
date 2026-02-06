@@ -607,3 +607,8 @@ a{color:inherit;text-decoration:none}
 @media (max-width: 920px){
   .aboutGrid{ grid-template-columns: 1fr; }
 }
+
+/* HERO CTA spacing */
+.heroCta{
+  margin-top: 28px; /* ← change cette valeur */
+}
