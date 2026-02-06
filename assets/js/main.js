@@ -93,31 +93,50 @@ if (burger && mobilePanel) {
       title: "Mentions légales",
       html: `
         <h4>1) Éditeur du site</h4>
-        <p><strong>IT Soluce</strong> (activité de réparation informatique).</p>
         <p>
-          Contact : <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a><br/>
-          Zone : Belgique (interventions à domicile et/ou dans le véhicule de l’intervenant, sur rendez-vous).
+          <strong>IT Soluce</strong> — activité de réparation et maintenance informatique.<br/>
+          Responsable : <strong>Stevens Linton</strong><br/>
+          Localisation : <strong>Tubize, Belgique</strong><br/>
+          Téléphone : <a href="tel:+32474056659">+32 474 05 66 59</a><br/>
+          E-mail : <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>
         </p>
+
         <p>
-          <strong>À compléter dès que disponible :</strong><br/>
+          <strong>Informations administratives :</strong><br/>
           • Numéro d’entreprise (BCE) : <em>[à compléter]</em><br/>
-          • TVA : <em>[à compléter si assujetti]</em><br/>
-          • Adresse de l’établissement / siège : <em>[à compléter]</em>
+          • Numéro de TVA : <em>[à compléter si assujetti]</em><br/>
+          • Adresse (siège / établissement) : <em>[à compléter]</em>
         </p>
 
         <h4>2) Hébergement</h4>
-        <p>Hébergeur : <em>[à compléter]</em></p>
+        <p>
+          Hébergeur : <strong>OVHcloud</strong> (OVH SAS)<br/>
+          2 rue Kellermann, 59100 Roubaix, France<br/>
+          Site : <a href="https://www.ovhcloud.com" target="_blank" rel="noopener">www.ovhcloud.com</a>
+        </p>
 
         <h4>3) Propriété intellectuelle</h4>
         <p>
-          Les contenus (textes, visuels, logo, design) sont protégés. Toute reproduction ou réutilisation sans autorisation est interdite.
+          L’ensemble des contenus présents sur ce site (textes, visuels, logo, éléments graphiques, structure et design)
+          est protégé par les droits de propriété intellectuelle. Toute reproduction, représentation, modification,
+          publication ou adaptation, totale ou partielle, est interdite sans autorisation préalable.
         </p>
 
-        <h4>4) Contact</h4>
-        <p>Pour toute question : <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>
+        <h4>4) Responsabilité</h4>
+        <p>
+          IT Soluce s’efforce d’assurer l’exactitude et la mise à jour des informations diffusées sur le site.
+          Toutefois, aucune garantie n’est donnée quant à l’exactitude, la précision ou l’exhaustivité des contenus.
+          IT Soluce ne peut être tenu responsable d’un dommage direct ou indirect lié à l’accès ou à l’utilisation du site.
+        </p>
+
+        <h4>5) Contact</h4>
+        <p>
+          Pour toute question, vous pouvez contacter IT Soluce à l’adresse :
+          <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>.
+        </p>
 
         <div class="legalNote">
-          Note : ces mentions doivent être complétées avec ton numéro BCE/TVA et l’adresse dès que ton activité est enregistrée.
+          Conseil : complétez le numéro BCE/TVA et l’adresse dès que votre statut administratif est finalisé.
         </div>
       `
     },
@@ -199,7 +218,7 @@ if (burger && mobilePanel) {
         </p>
 
         <div class="legalNote">
-          Si tu ajoutes Google Analytics / Meta Pixel / etc, dis-moi : je te mets une vraie bannière “consent” RGPD propre.
+          Si vous ajoutez plus tard un outil de mesure d’audience, une bannière de consentement RGPD sera nécessaire.
         </div>
       `
     },
@@ -274,7 +293,7 @@ if (burger && mobilePanel) {
         <p>Le droit belge est applicable. En cas de litige, une solution amiable est privilégiée avant action.</p>
 
         <div class="legalNote">
-          Astuce : dès que tu as ton statut officiel (BCE/TVA), on ajuste 2 lignes + on est carré.
+          Recommandation : dès que vos informations BCE/TVA sont disponibles, elles peuvent être intégrées ici.
         </div>
       `
     }
