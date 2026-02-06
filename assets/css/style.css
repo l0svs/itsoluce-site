@@ -612,3 +612,51 @@ a{color:inherit;text-decoration:none}
 .heroCta{
   margin-top: 28px; /* ← change cette valeur */
 }
+
+/* Email floating button (au-dessus de WhatsApp) */
+.mailFloat{
+  position: fixed;
+  right: 18px;
+  bottom: 86px; /* <-- au-dessus du WhatsApp */
+  z-index: 130;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color: #0b0f14;
+  background: rgba(243,244,246,.92);
+  border: 1px solid rgba(255,255,255,.35);
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.45),
+    0 0 0 6px rgba(255,255,255,.06);
+
+  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+}
+
+.mailFloat:hover{
+  transform: translateY(-2px);
+  filter: saturate(1.05);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,.55),
+    0 0 0 7px rgba(255,255,255,.08);
+}
+
+.mailFloat__icon{
+  width: 26px;
+  height: 26px;
+}
+
+/* Mobile: adapte taille + placement */
+@media (max-width: 640px){
+  .mailFloat{
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    right: 14px;
+    bottom: 80px;
+  }
+  .mailFloat__icon{ width: 24px; height: 24px; }
+}
