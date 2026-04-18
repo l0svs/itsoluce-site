@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce — Navbar</title>
+<title>IT Soluce — Réparation informatique & électronique</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
@@ -183,19 +187,51 @@ button { cursor: pointer; font: inherit; }
 .hero {
   padding: calc(48px + 100px) 0 100px;
   text-align: center;
-  background: #ffffff;
+  background: #111;
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+}
+
+/* Carrousel */
+.hero__carousel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero__slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+.hero__slide.active { opacity: 1; }
+
+/* Overlay sombre */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 1;
 }
 
 .hero__inner {
+  position: relative;
+  z-index: 2;
   max-width: 680px;
   margin: 0 auto;
   padding: 0 22px;
+  width: 100%;
 }
 
 .hero__title {
   font-size: clamp(36px, 5vw, 52px);
   font-weight: 600;
-  color: #1d1d1f;
+  color: #ffffff;
   letter-spacing: -0.5px;
   line-height: 1.08;
   margin-bottom: 16px;
@@ -204,7 +240,7 @@ button { cursor: pointer; font: inherit; }
 .hero__sub {
   font-size: 19px;
   font-weight: 400;
-  color: #6e6e73;
+  color: rgba(255,255,255,.75);
   line-height: 1.6;
   max-width: 480px;
   margin: 0 auto;
@@ -218,12 +254,39 @@ button { cursor: pointer; font: inherit; }
   margin-top: 32px;
 }
 .hero__icon {
-  color: #1d1d1f;
-  opacity: 0.65;
+  color: #ffffff;
+  opacity: 0.6;
   transition: opacity .15s;
 }
 .hero__icon:hover { opacity: 1; }
 .hero__icon svg { width: 30px; height: 30px; display: block; }
+
+/* Indicateurs */
+.hero__dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 7px;
+}
+.hero__dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.4);
+  cursor: pointer;
+  transition: background .3s, transform .3s;
+}
+.hero__dot.active {
+  background: #ffffff;
+  transform: scale(1.3);
+}
+
+@media (max-width: 480px) {
+  .hero__icon svg { width: 24px; height: 24px; }
+  .hero__icons { gap: 20px; }
+}
 
 @media (max-width: 480px) {
   .hero__icon svg { width: 24px; height: 24px; }
@@ -939,9 +1002,19 @@ a.irow:hover {
 
 <!-- HERO -->
 <section class="hero">
+
+  <!-- Carrousel -->
+  <div class="hero__carousel" id="carousel">
+    <div class="hero__slide active" style="background-image:url('/img/hero-1.jpg.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('/img/hero-2.jpg.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('/img/hero-3.jpg.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('/img/hero-4.jpg.jpg')"></div>
+  </div>
+  <div class="hero__overlay"></div>
+
   <div class="hero__inner">
     <h1 class="hero__title">Réparation informatique</h1>
-    <p class="hero__sub">PC, smartphone, console, tablette.</p>
+    <p class="hero__sub">PC, smartphone, console, tablette</p>
     <div class="hero__icons">
       <div class="hero__icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -965,6 +1038,10 @@ a.irow:hover {
       </div>
     </div>
   </div>
+
+  <!-- Indicateurs -->
+  <div class="hero__dots" id="dots"></div>
+
 </section>
 
 <!-- SERVICES -->
@@ -1132,6 +1209,8 @@ a.irow:hover {
       <!-- Formulaire -->
       <div class="c-form">
         <form id="cForm" onsubmit="submitForm(event)">
+          <input type="hidden" name="_subject" value="Nouvelle demande — IT Soluce">
+          <input type="hidden" name="_language" value="fr">
           <div class="frow">
             <div class="fg">
               <label class="fl">Prénom *</label>
@@ -1235,7 +1314,7 @@ a.irow:hover {
       <div class="footer__socials">
 
         <!-- Instagram -->
-        <a class="footer__soc" href="https://instagram.com/itsoluce" target="_blank" aria-label="Instagram">
+        <a class="footer__soc" href="https://www.instagram.com/itsoluce?igsh=ODFldDlwMDU2a2Fz&utm_source=qr" target="_blank" aria-label="Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="2" y="2" width="20" height="20" rx="5"/>
             <circle cx="12" cy="12" r="4"/>
@@ -1244,7 +1323,7 @@ a.irow:hover {
         </a>
 
         <!-- LinkedIn -->
-        <a class="footer__soc" href="https://linkedin.com/in/itsoluce" target="_blank" aria-label="LinkedIn">
+        <a class="footer__soc" href="https://www.linkedin.com/company/itsoluce/" target="_blank" aria-label="LinkedIn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
             <rect x="2" y="9" width="4" height="12"/>
@@ -1253,7 +1332,7 @@ a.irow:hover {
         </a>
 
         <!-- TikTok -->
-        <a class="footer__soc" href="https://tiktok.com/@itsoluce" target="_blank" aria-label="TikTok">
+        <a class="footer__soc" href="https://www.tiktok.com/@itsoluce?_r=1&_t=ZG-95dPE3dkJoP" target="_blank" aria-label="TikTok">
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
           </svg>
@@ -1276,17 +1355,109 @@ a.irow:hover {
 
 
 <script>
+/* Carrousel hero */
+(function() {
+  const slides = document.querySelectorAll('.hero__slide');
+  const dotsContainer = document.getElementById('dots');
+  let current = 0;
+  let autoplay;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'hero__dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => { goTo(i); resetAutoplay(); });
+    dotsContainer.appendChild(dot);
+  });
+
+  const dots = document.querySelectorAll('.hero__dot');
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function resetAutoplay() {
+    clearInterval(autoplay);
+    autoplay = setInterval(() => goTo(current + 1), 4000);
+  }
+
+  autoplay = setInterval(() => goTo(current + 1), 4000);
+
+  /* Swipe tactile */
+  const carousel = document.getElementById('carousel');
+  let startX = 0;
+  let isDragging = false;
+
+  carousel.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+  }, { passive: true });
+
+  carousel.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      goTo(diff > 0 ? current + 1 : current - 1);
+      resetAutoplay();
+    }
+    isDragging = false;
+  }, { passive: true });
+
+  /* Swipe souris (desktop) */
+  carousel.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    isDragging = true;
+  });
+  carousel.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    const diff = startX - e.clientX;
+    if (Math.abs(diff) > 50) {
+      goTo(diff > 0 ? current + 1 : current - 1);
+      resetAutoplay();
+    }
+    isDragging = false;
+  });
+  carousel.addEventListener('mouseleave', () => isDragging = false);
+
+})();
+
 document.getElementById('yr').textContent = new Date().getFullYear();
 
 function submitForm(e){
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.textContent = 'Envoi…';
-  setTimeout(() => {
-    document.getElementById('cForm').reset();
-    document.getElementById('fOk').style.display = 'block';
-    btn.style.display = 'none';
-  }, 800);
+  const form = document.getElementById('cForm');
+  const ok = document.getElementById('fOk');
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi…';
+
+  const data = new FormData(form);
+
+  fetch('https://formspree.io/f/mlgabvor', {
+    method: 'POST',
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(res => {
+    if (res.ok) {
+      form.reset();
+      ok.style.display = 'block';
+      btn.style.display = 'none';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer';
+      alert('Une erreur est survenue, veuillez réessayer.');
+    }
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.textContent = 'Envoyer';
+    alert('Une erreur est survenue, veuillez réessayer.');
+  });
 }
 
 const burger = document.getElementById('burger');
@@ -1315,19 +1486,19 @@ const mB = document.getElementById('mB');
 const legal = {
   mentions: {
     t: 'Mentions légales',
-    b: '<h4>Éditeur</h4><p><strong>IT Soluce</strong> — Stevens Linton<br>Wallonie, Belgique<br><a href="tel:+32474056659">+32 474 05 66 59</a> — <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p><h4>Numéro BCE</h4><p><em>[à compléter après inscription]</em></p><h4>Hébergement</h4><p>GitHub Pages — GitHub Inc.</p><h4>Propriété intellectuelle</h4><p>Tous les contenus sont protégés. Reproduction interdite sans autorisation.</p>'
+    b: '<h4>Éditeur du site</h4><p><strong>IT Soluce</strong><br>Activité de réparation informatique et électronique<br>Responsable : <strong>Stevens Linton</strong><br>Adresse : <strong>Tubize, Belgique</strong><br>Téléphone : <a href=&quot;tel:+32474056659&quot;>+32 474 05 66 59</a><br>Email : <a href=&quot;mailto:contact@itsoluce.be&quot;>contact@itsoluce.be</a></p><h4>Informations administratives</h4><p>Numéro BCE : <em>[à compléter après inscription]</em><br>Régime TVA : Franchise de la taxe — TVA non applicable, art. 56bis<br>Statut : Indépendant complémentaire</p><h4>Hébergement</h4><p>GitHub Pages — GitHub Inc.<br>88 Colin P Kelly Jr St, San Francisco, CA 94107, USA</p><h4>Propriété intellectuelle</h4><p>Tous les contenus (textes, visuels, logo, design) sont protégés. Toute reproduction sans autorisation préalable est interdite.</p><h4>Responsabilité</h4><p>IT Soluce ne peut être tenu responsable d un dommage lié à l utilisation du site.</p><div class=&quot;modal__note&quot;>Pensez à compléter le numéro BCE dès que votre statut administratif est finalisé.</div>'
   },
   privacy: {
-    t: 'Confidentialité — RGPD',
-    b: '<h4>Données collectées</h4><p>Nom, email, téléphone (optionnel) et description de panne via le formulaire de contact.</p><h4>Finalité</h4><p>Répondre aux demandes, établir un devis et exécuter les réparations.</p><h4>Conservation</h4><p>Devis non aboutis : 12 mois max.</p><h4>Vos droits</h4><p>Accès, rectification, effacement : <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>'
+    t: 'Politique de confidentialité — RGPD',
+    b: '<h4>Responsable du traitement</h4><p><strong>IT Soluce</strong> — Stevens Linton<br>Tubize, Belgique — <a href=&quot;mailto:contact@itsoluce.be&quot;>contact@itsoluce.be</a></p><h4>Données collectées</h4><ul><li>Nom et prénom</li><li>Adresse email</li><li>Numéro de téléphone (optionnel)</li><li>Type d appareil et description de la panne</li></ul><h4>Finalité</h4><ul><li>Répondre à votre demande et établir un devis</li><li>Exécuter la réparation et assurer le suivi</li><li>Gérer la facturation si applicable</li></ul><h4>Conservation</h4><ul><li>Demandes sans suite : maximum 12 mois</li><li>Dossiers clients : durée légale applicable</li></ul><h4>Vos droits</h4><p>Accès, rectification, effacement, opposition : <a href=&quot;mailto:contact@itsoluce.be&quot;>contact@itsoluce.be</a></p><h4>Partage des données</h4><p>Vos données ne sont jamais vendues ni partagées sauf nécessité stricte d exécution du service.</p>'
   },
   cookies: {
     t: 'Politique cookies',
-    b: '<p>Ce site fonctionne <strong>sans cookies non essentiels</strong>. Aucun outil de tracking actif.</p><p style="margin-top:10px">Les cookies peuvent être gérés via les paramètres de votre navigateur.</p>'
+    b: '<h4>Utilisation des cookies</h4><p>Ce site fonctionne <strong>sans cookies non essentiels</strong>. Aucun outil de tracking, d analyse ou de publicité n est actif.</p><h4>Cookies techniques</h4><p>Le site peut utiliser des cookies strictement nécessaires à son fonctionnement. Ces cookies ne collectent aucune donnée personnelle.</p><h4>Gestion</h4><p>Vous pouvez gérer ou supprimer les cookies via les paramètres de votre navigateur.</p><div class=&quot;modal__note&quot;>Si un outil d analyse est ajouté, une bannière de consentement RGPD sera mise en place.</div>'
   },
   terms: {
-    t: 'Conditions générales',
-    b: '<h4>Devis & accord</h4><p>Un devis est fourni avant toute intervention payante.</p><h4>Diagnostic</h4><p>Gratuit sauf indication contraire mentionnée au préalable.</p><h4>Données</h4><p>Le client est responsable de ses sauvegardes. Les identifiants ne sont pas conservés après intervention.</p><h4>Paiement</h4><p>Cash, Bancontact, virement ou NFC selon accord au devis.</p><p style="margin-top:12px;padding:10px 14px;background:#ffffff;border-radius:8px;font-size:13px">Franchise TVA art. 56bis — TVA non applicable.</p>'
+    t: 'Conditions générales de service',
+    b: '<h4>Objet</h4><p>Prestations de diagnostic, réparation, optimisation et assistance informatique réalisées par <strong>IT Soluce</strong> (Stevens Linton), en Wallonie, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Un devis est communiqué avant toute intervention payante.</li><li>L intervention démarre uniquement après accord du client.</li><li>Le diagnostic est gratuit sauf indication contraire.</li></ul><h4>Sauvegarde et données</h4><ul><li>Le client reste responsable de ses sauvegardes.</li><li>Les identifiants fournis ne sont jamais conservés après intervention.</li></ul><h4>Pièces et garanties</h4><ul><li>Les pièces peuvent être neuves ou reconditionnées selon accord.</li><li>Les pannes indépendantes de la réparation effectuée ne sont pas couvertes.</li></ul><h4>Paiement</h4><p>Cash, Bancontact, virement bancaire ou NFC — selon accord au devis.</p><h4>Droit applicable</h4><p>Le droit belge est applicable. En cas de litige, une solution amiable est privilégiée.</p><div class=&quot;modal__note&quot;>Franchise TVA art. 56bis — TVA non applicable sur les factures IT Soluce.</div>'
   }
 };
 const openM = k => {
