@@ -4,9 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>IT Soluce — Réparation informatique & électronique</title>
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16_1.png">
+<link rel="apple-touch-icon" href="/favicon_io/apple-touch-icon_1.png">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1483,22 +1484,22 @@ drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawe
 const modal = document.getElementById('legalModal');
 const mH = document.getElementById('mH');
 const mB = document.getElementById('mB');
-const legal = {
+var legal = {
   mentions: {
-    t: 'Mentions légales',
-    b: '<h4>Éditeur du site</h4><p><strong>IT Soluce</strong><br>Activité de réparation informatique et électronique<br>Responsable : <strong>Stevens Linton</strong><br>Adresse : <strong>Tubize, Belgique</strong><br>Téléphone : <a href=&quot;tel:+32474056659&quot;>+32 474 05 66 59</a><br>Email : <a href=&quot;mailto:contact@itsoluce.be&quot;>contact@itsoluce.be</a></p><h4>Informations administratives</h4><p>Numéro BCE : <em>[à compléter après inscription]</em><br>Régime TVA : Franchise de la taxe — TVA non applicable, art. 56bis<br>Statut : Indépendant complémentaire</p><h4>Hébergement</h4><p>GitHub Pages — GitHub Inc.<br>88 Colin P Kelly Jr St, San Francisco, CA 94107, USA</p><h4>Propriété intellectuelle</h4><p>Tous les contenus (textes, visuels, logo, design) sont protégés. Toute reproduction sans autorisation préalable est interdite.</p><h4>Responsabilité</h4><p>IT Soluce ne peut être tenu responsable d un dommage lié à l utilisation du site.</p><div class=&quot;modal__note&quot;>Pensez à compléter le numéro BCE dès que votre statut administratif est finalisé.</div>'
+    t: "Mentions legales",
+    b: "<h4>Editeur du site</h4><p><strong>IT Soluce</strong><br>Reparation informatique et electronique<br>Responsable : <strong>Stevens Linton</strong><br>Adresse : <strong>Tubize, Belgique</strong><br>Tel : +32 474 05 66 59<br>Email : contact@itsoluce.be</p><h4>Informations administratives</h4><p>Numero BCE : a completer apres inscription<br>Regime TVA : Franchise de la taxe, art. 56bis<br>Statut : Independant complementaire</p><h4>Hebergement</h4><p>GitHub Pages - GitHub Inc., San Francisco, USA</p><h4>Propriete intellectuelle</h4><p>Tous les contenus sont proteges. Reproduction interdite sans autorisation.</p>"
   },
   privacy: {
-    t: 'Politique de confidentialité — RGPD',
-    b: '<h4>Responsable du traitement</h4><p><strong>IT Soluce</strong> — Stevens Linton<br>Tubize, Belgique — <a href=&quot;mailto:contact@itsoluce.be&quot;>contact@itsoluce.be</a></p><h4>Données collectées</h4><ul><li>Nom et prénom</li><li>Adresse email</li><li>Numéro de téléphone (optionnel)</li><li>Type d appareil et description de la panne</li></ul><h4>Finalité</h4><ul><li>Répondre à votre demande et établir un devis</li><li>Exécuter la réparation et assurer le suivi</li><li>Gérer la facturation si applicable</li></ul><h4>Conservation</h4><ul><li>Demandes sans suite : maximum 12 mois</li><li>Dossiers clients : durée légale applicable</li></ul><h4>Vos droits</h4><p>Accès, rectification, effacement, opposition : <a href=&quot;mailto:contact@itsoluce.be&quot;>contact@itsoluce.be</a></p><h4>Partage des données</h4><p>Vos données ne sont jamais vendues ni partagées sauf nécessité stricte d exécution du service.</p>'
+    t: "Confidentialite - RGPD",
+    b: "<h4>Responsable du traitement</h4><p><strong>IT Soluce</strong> - Stevens Linton, Tubize, Belgique<br>contact@itsoluce.be</p><h4>Donnees collectees</h4><ul><li>Nom et prenom</li><li>Adresse email</li><li>Telephone (optionnel)</li><li>Type d appareil et description de la panne</li></ul><h4>Finalite</h4><ul><li>Repondre a votre demande et etablir un devis</li><li>Executer la reparation et assurer le suivi</li></ul><h4>Conservation</h4><ul><li>Demandes sans suite : 12 mois max</li><li>Dossiers clients : duree legale</li></ul><h4>Vos droits</h4><p>Acces, rectification, effacement : contact@itsoluce.be</p>"
   },
   cookies: {
-    t: 'Politique cookies',
-    b: '<h4>Utilisation des cookies</h4><p>Ce site fonctionne <strong>sans cookies non essentiels</strong>. Aucun outil de tracking, d analyse ou de publicité n est actif.</p><h4>Cookies techniques</h4><p>Le site peut utiliser des cookies strictement nécessaires à son fonctionnement. Ces cookies ne collectent aucune donnée personnelle.</p><h4>Gestion</h4><p>Vous pouvez gérer ou supprimer les cookies via les paramètres de votre navigateur.</p><div class=&quot;modal__note&quot;>Si un outil d analyse est ajouté, une bannière de consentement RGPD sera mise en place.</div>'
+    t: "Politique cookies",
+    b: "<h4>Utilisation des cookies</h4><p>Ce site fonctionne <strong>sans cookies non essentiels</strong>. Aucun outil de tracking actif.</p><h4>Cookies techniques</h4><p>Le site peut utiliser des cookies strictement necessaires a son fonctionnement.</p><h4>Gestion</h4><p>Vous pouvez gerer les cookies via les parametres de votre navigateur.</p>"
   },
   terms: {
-    t: 'Conditions générales de service',
-    b: '<h4>Objet</h4><p>Prestations de diagnostic, réparation, optimisation et assistance informatique réalisées par <strong>IT Soluce</strong> (Stevens Linton), en Wallonie, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Un devis est communiqué avant toute intervention payante.</li><li>L intervention démarre uniquement après accord du client.</li><li>Le diagnostic est gratuit sauf indication contraire.</li></ul><h4>Sauvegarde et données</h4><ul><li>Le client reste responsable de ses sauvegardes.</li><li>Les identifiants fournis ne sont jamais conservés après intervention.</li></ul><h4>Pièces et garanties</h4><ul><li>Les pièces peuvent être neuves ou reconditionnées selon accord.</li><li>Les pannes indépendantes de la réparation effectuée ne sont pas couvertes.</li></ul><h4>Paiement</h4><p>Cash, Bancontact, virement bancaire ou NFC — selon accord au devis.</p><h4>Droit applicable</h4><p>Le droit belge est applicable. En cas de litige, une solution amiable est privilégiée.</p><div class=&quot;modal__note&quot;>Franchise TVA art. 56bis — TVA non applicable sur les factures IT Soluce.</div>'
+    t: "Conditions generales de service",
+    b: "<h4>Objet</h4><p>Prestations de diagnostic, reparation et assistance informatique par <strong>IT Soluce</strong> (Stevens Linton), en Wallonie, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Un devis est communique avant toute intervention payante.</li><li>L intervention demarre apres accord du client.</li><li>Le diagnostic est gratuit sauf indication contraire.</li></ul><h4>Sauvegarde</h4><ul><li>Le client reste responsable de ses sauvegardes.</li><li>Les identifiants ne sont jamais conserves apres intervention.</li></ul><h4>Pieces et garanties</h4><ul><li>Les pieces peuvent etre neuves ou reconditionnees selon accord.</li></ul><h4>Paiement</h4><p>Cash, Bancontact, virement ou NFC selon accord au devis.</p><h4>Droit applicable</h4><p>Droit belge applicable. Solution amiable privilegiee en cas de litige.</p><p>Franchise TVA art. 56bis - TVA non applicable.</p>"
   }
 };
 const openM = k => {
