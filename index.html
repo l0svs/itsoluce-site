@@ -1215,24 +1215,24 @@ a.irow:hover {
           <div class="frow">
             <div class="fg">
               <label class="fl">Prénom *</label>
-              <input class="fi" type="text" placeholder="Votre prénom" required>
+              <input class="fi" type="text" name="prenom" placeholder="Votre prénom" required>
             </div>
             <div class="fg">
               <label class="fl">Nom *</label>
-              <input class="fi" type="text" placeholder="Votre nom" required>
+              <input class="fi" type="text" name="nom" placeholder="Votre nom" required>
             </div>
           </div>
           <div class="fg">
             <label class="fl">Email *</label>
-            <input class="fi" type="email" placeholder="votre@email.com" required>
+            <input class="fi" type="email" name="email" placeholder="votre@email.com" required>
           </div>
           <div class="fg">
             <label class="fl">Téléphone</label>
-            <input class="fi" type="tel" placeholder="+32 XXX XX XX XX">
+            <input class="fi" type="tel" name="telephone" placeholder="+32 XXX XX XX XX">
           </div>
           <div class="fg">
             <label class="fl">Type d'appareil *</label>
-            <select class="fi fi-sel" required>
+            <select class="fi fi-sel" name="appareil" required>
               <option value="" disabled selected>Sélectionnez...</option>
               <option>PC / Laptop</option>
               <option>Smartphone</option>
@@ -1243,7 +1243,7 @@ a.irow:hover {
           </div>
           <div class="fg">
             <label class="fl">Description de la panne *</label>
-            <textarea class="fi fi-ta" placeholder="Marque, modèle, problème constaté..." rows="4" required></textarea>
+            <textarea class="fi fi-ta" name="description" placeholder="Marque, modèle, problème constaté..." rows="4" required></textarea>
           </div>
           <button class="btn-send" type="submit" id="submitBtn">Envoyer</button>
           <div class="f-ok" id="fOk">✅ Message envoyé — je vous recontacte sous 24h.</div>
