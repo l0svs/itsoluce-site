@@ -1057,6 +1057,143 @@ a.irow:hover {
   .faq__item.open .faq__a { padding: 0 18px 18px; }
 }
 
+.reviews {
+  background: #ffffff;
+  border-top: 1px solid #d2d2d7;
+  padding: 80px 0;
+}
+
+.reviews__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 22px;
+  overflow: hidden;
+}
+
+.reviews__header {
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.reviews__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6e6e73;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.reviews__title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #0052CC;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.reviews__viewport {
+  position: relative;
+  overflow: hidden;
+  margin: 0 -10px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.reviews__track {
+  display: flex;
+  gap: 20px;
+  padding: 4px 10px;
+  width: max-content;
+  animation: reviewsScroll 45s linear infinite;
+}
+
+.reviews__viewport:hover .reviews__track {
+  animation-play-state: paused;
+}
+
+@keyframes reviewsScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.review {
+  background: #f5f5f7;
+  border: 1px solid #e5e5ea;
+  border-radius: 16px;
+  padding: 26px 24px;
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.review:hover {
+  transform: translateY(-2px);
+  border-color: #0052CC;
+}
+
+.review__stars {
+  color: #f5a623;
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+
+.review__quote {
+  font-size: 14px;
+  color: #1d1d1f;
+  line-height: 1.7;
+  margin: 0 0 20px;
+  font-style: italic;
+  flex: 1;
+}
+
+.review__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #e5e5ea;
+  padding-top: 16px;
+}
+
+.review__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #0052CC;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.review__meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.review__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+}
+
+.review__loc {
+  font-size: 12px;
+  color: #6e6e73;
+}
+
+@media (max-width: 880px) {
+  .reviews__title { font-size: 26px; }
+  .review { flex: 0 0 280px; padding: 22px 20px; }
+  .reviews__track { gap: 14px; animation-duration: 35s; }
+}
+
 .footer {
   background: #ffffff;
   border-top: 1px solid #d2d2d7;
@@ -1571,6 +1708,168 @@ a.irow:hover {
         </div>
       </div>
 
+    </div>
+
+  </div>
+</section>
+
+<!-- AVIS CLIENTS -->
+<section class="reviews" id="reviews">
+  <div class="reviews__inner">
+
+    <div class="reviews__header">
+      <p class="reviews__label">Ils nous ont fait confiance</p>
+      <h2 class="reviews__title">Avis clients</h2>
+    </div>
+
+    <div class="reviews__viewport">
+      <div class="reviews__track">
+
+        <div class="review">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Écran d'iPhone changé en moins d'une heure, à domicile. Service nickel et prix très correct. Je recommande sans hésiter !"</p>
+          <div class="review__author">
+            <div class="review__avatar">MC</div>
+            <div class="review__meta">
+              <span class="review__name">Marie C.</span>
+              <span class="review__loc">Tubize</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Mon PC ramait depuis des mois, après son passage tout est redevenu fluide. Pro, à l'écoute, et bon rapport qualité/prix."</p>
+          <div class="review__author">
+            <div class="review__avatar">TD</div>
+            <div class="review__meta">
+              <span class="review__name">Thomas D.</span>
+              <span class="review__loc">Braine-le-Comte</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Batterie remplacée sur mon Samsung. Devis clair, intervention rapide, et garantie expliquée. Top !"</p>
+          <div class="review__author">
+            <div class="review__avatar">SL</div>
+            <div class="review__meta">
+              <span class="review__name">Sophie L.</span>
+              <span class="review__loc">Hal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Récupération de données sur un disque dur HS, je pensais avoir tout perdu. Résultat impeccable, je suis bluffé. Merci !"</p>
+          <div class="review__author">
+            <div class="review__avatar">JM</div>
+            <div class="review__meta">
+              <span class="review__name">Julien M.</span>
+              <span class="review__loc">Nivelles</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Tablette de mon fils tombée et écran fissuré. Réparée en 24h, comme neuve. Service rapide et tarif honnête."</p>
+          <div class="review__author">
+            <div class="review__avatar">AB</div>
+            <div class="review__meta">
+              <span class="review__name">Amélie B.</span>
+              <span class="review__loc">Tubize</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Intervention à domicile pour mon PC pro. Diagnostic précis, problème résolu en 30 min. Vraiment professionnel."</p>
+          <div class="review__author">
+            <div class="review__avatar">KV</div>
+            <div class="review__meta">
+              <span class="review__name">Kevin V.</span>
+              <span class="review__loc">Waterloo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review" aria-hidden="true">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Écran d'iPhone changé en moins d'une heure, à domicile. Service nickel et prix très correct. Je recommande sans hésiter !"</p>
+          <div class="review__author">
+            <div class="review__avatar">MC</div>
+            <div class="review__meta">
+              <span class="review__name">Marie C.</span>
+              <span class="review__loc">Tubize</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review" aria-hidden="true">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Mon PC ramait depuis des mois, après son passage tout est redevenu fluide. Pro, à l'écoute, et bon rapport qualité/prix."</p>
+          <div class="review__author">
+            <div class="review__avatar">TD</div>
+            <div class="review__meta">
+              <span class="review__name">Thomas D.</span>
+              <span class="review__loc">Braine-le-Comte</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review" aria-hidden="true">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Batterie remplacée sur mon Samsung. Devis clair, intervention rapide, et garantie expliquée. Top !"</p>
+          <div class="review__author">
+            <div class="review__avatar">SL</div>
+            <div class="review__meta">
+              <span class="review__name">Sophie L.</span>
+              <span class="review__loc">Hal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review" aria-hidden="true">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Récupération de données sur un disque dur HS, je pensais avoir tout perdu. Résultat impeccable, je suis bluffé. Merci !"</p>
+          <div class="review__author">
+            <div class="review__avatar">JM</div>
+            <div class="review__meta">
+              <span class="review__name">Julien M.</span>
+              <span class="review__loc">Nivelles</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review" aria-hidden="true">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Tablette de mon fils tombée et écran fissuré. Réparée en 24h, comme neuve. Service rapide et tarif honnête."</p>
+          <div class="review__author">
+            <div class="review__avatar">AB</div>
+            <div class="review__meta">
+              <span class="review__name">Amélie B.</span>
+              <span class="review__loc">Tubize</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review" aria-hidden="true">
+          <div class="review__stars">★ ★ ★ ★ ★</div>
+          <p class="review__quote">"Intervention à domicile pour mon PC pro. Diagnostic précis, problème résolu en 30 min. Vraiment professionnel."</p>
+          <div class="review__author">
+            <div class="review__avatar">KV</div>
+            <div class="review__meta">
+              <span class="review__name">Kevin V.</span>
+              <span class="review__loc">Waterloo</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
