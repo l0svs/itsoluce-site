@@ -398,6 +398,90 @@ button { cursor: pointer; font: inherit; }
 .svc__link svg { width: 13px; height: 13px; }
 
 /* ── TARIFS ── */
+.about {
+  background: #f5f5f7;
+  border-top: 1px solid #d2d2d7;
+  padding: 80px 0;
+}
+
+.about__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 22px;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.about__photo {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #e5e5ea;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+}
+
+.about__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about__content {
+  max-width: 560px;
+}
+
+.about__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6e6e73;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.about__title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #0052CC;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.about__text {
+  font-size: 16px;
+  color: #1d1d1f;
+  line-height: 1.7;
+}
+
+.about__text p {
+  margin: 0 0 14px;
+}
+
+.about__text strong {
+  color: #0052CC;
+  font-weight: 600;
+}
+
+@media (max-width: 880px) {
+  .about__inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: left;
+  }
+  .about__photo {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  .about__title {
+    font-size: 26px;
+  }
+}
+
 .tarifs {
   background: #ffffff;
   border-top: 1px solid #d2d2d7;
@@ -968,7 +1052,7 @@ a.irow:hover {
     <!-- Liens gauche -->
     <nav class="nav__left">
       <a href="#services">Services</a>
-      <a href="#tarifs">Tarifs</a>
+      <a href="#about">À propos</a>
     </nav>
 
     <!-- Logo centré -->
@@ -976,8 +1060,8 @@ a.irow:hover {
 
     <!-- Liens droite -->
     <nav class="nav__right">
+      <a href="#tarifs">Tarifs</a>
       <a href="#contact">Contact</a>
-      <a href="#footer">À propos</a>
     </nav>
 
     <!-- Burger mobile -->
@@ -995,9 +1079,9 @@ a.irow:hover {
   <button class="drawer__close" id="drawerClose">✕</button>
   <div class="drawer__links">
     <a href="#services">Services</a>
+    <a href="#about">À propos</a>
     <a href="#tarifs">Tarifs</a>
     <a href="#contact">Contact</a>
-    <a href="#footer">À propos</a>
   </div>
 </div>
 
@@ -1119,6 +1203,29 @@ a.irow:hover {
       </div>
 
     </div>
+  </div>
+</section>
+
+<!-- QUI SUIS-JE -->
+<section class="about" id="about">
+  <div class="about__inner">
+
+    <div class="about__photo">
+      <img src="img/about-photo.png" alt="Linton — IT Soluce">
+    </div>
+
+    <div class="about__content">
+      <p class="about__label">À propos</p>
+      <h2 class="about__title">Qui suis-je ?</h2>
+      <div class="about__text">
+        <p>Passionné par la technologie depuis toujours, j'ai fait de la réparation informatique mon métier avant d'en faire une vocation indépendante.</p>
+        <p>Mon parcours s'est forgé au sein d'enseignes spécialisées comme <strong>Mister Genius</strong> et <strong>iServices</strong>, où j'ai développé une expertise concrète sur les smartphones, ordinateurs et tablettes — toutes marques confondues.</p>
+        <p>Aujourd'hui, en parallèle de mon activité de <strong>Technicien IT</strong>, j'ai lancé <strong>IT Soluce</strong> pour proposer un service de proximité : intervention rapide, prix transparent, et surtout un accompagnement humain.</p>
+        <p>Mon objectif est simple : <strong>redonner vie à vos appareils sans vous compliquer la vie</strong>. Pas de jargon, pas de devis flou, pas de frais cachés.</p>
+        <p>Que vous soyez un particulier avec un écran fissuré ou un professionnel face à un PC qui rame, je m'engage à vous offrir un service honnête, rapide et de qualité.</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
