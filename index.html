@@ -140,8 +140,11 @@
 
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16_1.png">
-<link rel="apple-touch-icon" href="/favicon_io/apple-touch-icon_1.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon_io/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon_io/android-chrome-512x512.png">
+<link rel="manifest" href="/favicon_io/site.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -311,11 +314,23 @@ button { cursor: pointer; font: inherit; }
 
 /* Responsive */
 @media (max-width: 640px) {
+  .nav { height: 58px; }
   .nav__left,
   .nav__right { display: none; }
   .nav__burger { display: flex; }
   .nav__inner { grid-template-columns: auto 1fr auto; }
   .nav__logo { justify-self: start; }
+  .nav__logo img { height: 42px !important; width: auto !important; }
+}
+
+@media (max-width: 480px) {
+  .nav { height: 54px; }
+  .nav__logo img { height: 38px !important; }
+}
+
+@media (max-width: 380px) {
+  .nav { height: 50px; }
+  .nav__logo img { height: 34px !important; }
 }
 
 /* ── HERO ── */
