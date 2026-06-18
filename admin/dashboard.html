@@ -1,316 +1,1025 @@
 <!doctype html>
-<html lang="fr" data-theme="blue">
+<html lang="fr" data-mode="dark">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP</title>
+<title>IT Soluce — ERP</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --accent:#0052CC;--accent-dark:#003d99;--accent-light:#1a2a4a;
-  --bg:#0f1117;--bg2:#16181f;--bg3:#1e2029;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --text:#f0f0f2;--text2:#9ca3af;--text3:#6b7280;
-  --success:#22c55e;--warning:#f59e0b;--danger:#ef4444;
-  --sidebar-w:240px;--topbar-h:56px;--radius:10px;--radius-lg:14px;
-}
-[data-theme="blue"]{--accent:#0052CC;--accent-dark:#003d99;--accent-light:#1a2a4a;}
-[data-theme="green"]{--accent:#059669;--accent-dark:#047857;--accent-light:#052e1c;}
-[data-theme="purple"]{--accent:#7c3aed;--accent-dark:#6d28d9;--accent-light:#2d1a4a;}
-[data-theme="red"]{--accent:#dc2626;--accent-dark:#b91c1c;--accent-light:#3a1a1a;}
-[data-theme="light"]{--bg:#f5f5f7;--bg2:#ffffff;--bg3:#f0f0f2;--border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);--text:#1d1d1f;--text2:#6e6e73;--text3:#aeaeb2;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
-.topbar{height:var(--topbar-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;z-index:50;}
-.topbar__logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
-.topbar__mark{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:-1.5px;}
-.topbar__name{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:3px;}
-.topbar__sep{width:1px;height:20px;background:var(--border2);flex-shrink:0;}
-.topbar__badge{font-size:10px;font-weight:700;color:var(--accent);background:var(--accent-light);padding:3px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
-.topbar__breadcrumb{flex:1;font-size:12px;color:var(--text3);}
-.topbar__breadcrumb span{color:var(--text);font-weight:500;}
-.topbar__actions{display:flex;align-items:center;gap:10px;margin-left:auto;}
-.theme-switcher{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 7px;}
-.theme-dot{width:13px;height:13px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.15s ease;flex-shrink:0;}
-.theme-dot:hover{transform:scale(1.2);}
-.theme-dot.active{border-color:var(--text);}
-.theme-dot[data-t="blue"]{background:#0052CC;}
-.theme-dot[data-t="green"]{background:#059669;}
-.theme-dot[data-t="purple"]{background:#7c3aed;}
-.theme-dot[data-t="red"]{background:#dc2626;}
-.theme-dot[data-t="light"]{background:#e5e5ea;border:2px solid #aeaeb2;}
-.topbar__user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);}
-.topbar__avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;}
-.btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all 0.15s ease;}
-.btn-sm:hover{color:var(--danger);border-color:var(--danger);background:rgba(239,68,68,0.08);}
-.layout{display:flex;flex:1;overflow:hidden;}
-.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
-.sidebar__section{padding:16px 12px 4px;}
-.sidebar__label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;padding:0 8px;margin-bottom:4px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;transition:all 0.15s ease;text-decoration:none;position:relative;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
-.nav-item:hover{background:var(--bg3);color:var(--text);}
-.nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:500;}
-.nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:0.8;}
-.nav-item.active svg{opacity:1;}
-.nav-badge{margin-left:auto;font-size:10px;font-weight:600;padding:2px 6px;border-radius:99px;background:var(--bg3);color:var(--text3);flex-shrink:0;}
-.nav-badge--alert{background:var(--danger)!important;color:#fff!important;}
-.sidebar__divider{height:1px;background:var(--border);margin:8px 12px;}
-.sidebar__bottom{margin-top:auto;padding:12px;border-top:1px solid var(--border);}
-.sidebar__version{font-size:10px;color:var(--text3);text-align:center;}
-.content{flex:1;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;}
-.page{padding:28px 32px;flex:1;}
-.page__header{margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
-.page__title{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-0.4px;}
-.page__sub{font-size:13px;color:var(--text3);margin-top:3px;}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;transition:border-color 0.2s ease;}
-.stat:hover{border-color:var(--border2);}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:0;transition:opacity 0.2s ease;}
-.stat:hover::before{opacity:1;}
-.stat--alert::before{background:var(--danger);opacity:1;}
-.stat__label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;}
-.stat__value{font-size:30px;font-weight:600;color:var(--text);letter-spacing:-1.5px;line-height:1;}
-.stat--alert .stat__value{color:var(--danger);}
-.stat__trend{font-size:12px;color:var(--text3);}
-.stat__icon{position:absolute;bottom:16px;right:16px;opacity:0.06;}
-.stat__icon svg{width:38px;height:38px;stroke:var(--text);fill:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;}
-.section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px;}
-.modules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
-.module{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;cursor:pointer;transition:all 0.2s ease;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:14px;}
-.module:hover{border-color:var(--accent);transform:translateY(-1px);}
-.module--locked{opacity:0.45;cursor:default;}
-.module--locked:hover{border-color:var(--border);transform:none;}
-.module__header{display:flex;align-items:flex-start;justify-content:space-between;}
-.module__icon{width:38px;height:38px;border-radius:9px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;}
-.module__icon svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
-.module__status{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;}
-.module__status--ok{background:rgba(34,197,94,0.15);color:var(--success);}
-.module__status--soon{background:var(--bg3);color:var(--text3);}
-.module__name{font-size:14px;font-weight:600;color:var(--text);}
-.module__desc{font-size:12px;color:var(--text3);line-height:1.6;}
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
-.card__head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.card__head-title{font-size:13px;font-weight:600;color:var(--text);}
-.card__head-action{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:none;}
-.list-row{display:flex;align-items:center;padding:10px 20px;gap:12px;border-bottom:1px solid var(--border);transition:background 0.1s ease;}
-.list-row:last-child{border-bottom:none;}
-.list-row:hover{background:var(--bg3);}
-.list-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.list-dot--ok{background:var(--success);}
-.list-dot--warn{background:var(--warning);}
-.list-dot--alert{background:var(--danger);}
-.list-main{font-size:13px;color:var(--text);flex:1;}
-.list-sub{font-size:11px;color:var(--text3);margin-top:1px;}
-.list-right{font-size:12px;color:var(--text3);text-align:right;flex-shrink:0;}
-.empty-state{padding:32px 20px;text-align:center;color:var(--text3);font-size:13px;}
-.loading-full{display:flex;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--text3);font-size:13px;}
-.spin{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}.modules-grid{grid-template-columns:repeat(2,1fr);}.bottom-grid{grid-template-columns:1fr;}}
-@media(max-width:700px){.sidebar{display:none;}.stats-row{grid-template-columns:1fr 1fr;}.modules-grid{grid-template-columns:1fr;}.page{padding:20px 16px;}}
+
+:root {
+  --accent: #3b82f6;
+  --accent-dim: rgba(59,130,246,0.12);
+  --bg:    #0c0d0f;
+  --bg2:   #111214;
+  --bg3:   #18191c;
+  --bg4:   #1f2023;
+  --line:  rgba(255,255,255,0.06);
+  --line2: rgba(255,255,255,0.1);
+  --t1:    #e8e8e8;
+  --t2:    #8a8f98;
+  --t3:    #4b5059;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger:  #f87171;
+  --sidebar: 220px;
+  --topbar:  48px;
+}
+
+[data-mode="light"] {
+  --bg:  #f8f8f8;
+  --bg2: #ffffff;
+  --bg3: #f2f2f4;
+  --bg4: #eaeaec;
+  --line:  rgba(0,0,0,0.06);
+  --line2: rgba(0,0,0,0.1);
+  --t1: #111114;
+  --t2: #52525b;
+  --t3: #a1a1aa;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  height: var(--topbar);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.logo-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--line2);
+}
+
+.logo-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--t3);
+  letter-spacing: 2px;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--line2);
+  flex-shrink: 0;
+}
+
+.topbar-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.topbar-crumb {
+  font-size: 12px;
+  color: var(--t3);
+  flex: 1;
+}
+
+.topbar-crumb span { color: var(--t2); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Thème */
+.theme-strip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg3);
+  border: 1px solid var(--line2);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+.tdot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform 0.12s;
+  flex-shrink: 0;
+}
+.tdot:hover { transform: scale(1.25); }
+.tdot.on { border-color: var(--t1); }
+.tdot[data-c="blue"]   { background: #3b82f6; }
+.tdot[data-c="green"]  { background: #34d399; }
+.tdot[data-c="violet"] { background: #a78bfa; }
+.tdot[data-c="amber"]  { background: #fbbf24; }
+
+/* Mode */
+.mode-strip {
+  display: flex;
+  align-items: center;
+  background: var(--bg3);
+  border: 1px solid var(--line2);
+  border-radius: 6px;
+  padding: 3px;
+  gap: 1px;
+}
+
+.mbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--t3);
+  transition: all 0.12s;
+}
+.mbtn:hover { color: var(--t1); background: var(--bg4); }
+.mbtn.on { background: var(--accent-dim); color: var(--accent); }
+.mbtn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 8px 4px 4px;
+  border: 1px solid var(--line2);
+  border-radius: 99px;
+  background: var(--bg3);
+  font-size: 12px;
+  color: var(--t2);
+}
+
+.user-av {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.btn-out {
+  padding: 5px 10px;
+  border: 1px solid var(--line2);
+  border-radius: 5px;
+  background: none;
+  color: var(--t3);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.btn-out:hover { color: var(--danger); border-color: var(--danger); }
+
+/* ─── LAYOUT ─── */
+.layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar);
+  background: var(--bg2);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.nav-group {
+  padding: 16px 10px 4px;
+}
+
+.nav-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 0 6px;
+  margin-bottom: 3px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--t2);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.1s;
+  margin-bottom: 1px;
+}
+
+.nav-link:hover { background: var(--bg3); color: var(--t1); }
+.nav-link.active { background: var(--accent-dim); color: var(--accent); }
+
+.nav-link svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+.nav-link.active svg { opacity: 1; }
+
+.nav-count {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  background: var(--bg4);
+  color: var(--t3);
+  padding: 0 4px;
+}
+.nav-count.warn { background: rgba(251,191,36,0.15); color: var(--warning); }
+.nav-count.danger { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+.nav-hr { height: 1px; background: var(--line); margin: 8px 10px; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  color: var(--t3);
+}
+
+/* ─── CONTENU ─── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.page {
+  padding: 24px 28px;
+  max-width: 1400px;
+}
+
+/* ─── HEADER PAGE ─── */
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--t1);
+  letter-spacing: -0.3px;
+}
+
+.page-date {
+  font-size: 12px;
+  color: var(--t3);
+  margin-top: 2px;
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--t2);
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  border-radius: 99px;
+  padding: 4px 10px;
+}
+
+.pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 2px rgba(52,211,153,0.2);
+  animation: p 2.5s ease-in-out infinite;
+}
+@keyframes p { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+/* ─── GRID SYSTÈME ─── */
+.g {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.g-4 { grid-template-columns: repeat(4,1fr); }
+.g-3 { grid-template-columns: repeat(3,1fr); }
+.g-2 { grid-template-columns: 1fr 1fr; }
+.g-52 { grid-template-columns: 5fr 2fr; }
+.g-32 { grid-template-columns: 3fr 2fr; }
+.g-23 { grid-template-columns: 2fr 3fr; }
+
+/* ─── KPI CARD ─── */
+.kpi {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  position: relative;
+}
+
+.kpi__label {
+  font-size: 11px;
+  color: var(--t3);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+
+.kpi__num {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--t1);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.kpi__meta {
+  font-size: 11px;
+  color: var(--t3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kpi__tag {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+.tag-ok  { background: rgba(52,211,153,0.12); color: var(--success); }
+.tag-w   { background: rgba(251,191,36,0.12); color: var(--warning); }
+.tag-d   { background: rgba(248,113,113,0.12); color: var(--danger); }
+.tag-b   { background: var(--accent-dim); color: var(--accent); }
+.tag-neu { background: var(--bg4); color: var(--t2); }
+
+/* ─── SECTION LABEL ─── */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  margin-top: 6px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.section-action {
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.section-action:hover { opacity: 1; }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t1);
+}
+
+.card-link {
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  opacity: 0.8;
+}
+.card-link:hover { opacity: 1; }
+
+/* ─── LIST ROW ─── */
+.row {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  gap: 10px;
+  transition: background 0.08s;
+}
+.row:last-child { border-bottom: none; }
+.row:hover { background: var(--bg3); }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-ok { background: var(--success); }
+.dot-w  { background: var(--warning); }
+.dot-d  { background: var(--danger); }
+.dot-b  { background: var(--accent); }
+.dot-g  { background: var(--t3); }
+
+.row-main { flex: 1; min-width: 0; }
+.row-name { font-size: 12px; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-sub  { font-size: 11px; color: var(--t3); margin-top: 1px; }
+.row-right { font-size: 11px; color: var(--t3); text-align: right; flex-shrink: 0; }
+.row-right strong { display: block; font-size: 12px; color: var(--t1); font-weight: 500; }
+
+/* ─── MINI BARS ─── */
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 12px 14px 10px;
+  height: 64px;
+}
+.bar {
+  flex: 1;
+  background: var(--line2);
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+  transition: background 0.15s;
+}
+.bar:hover { background: var(--accent); }
+.bar.cur { background: var(--accent); opacity: 0.5; }
+.bar-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 14px 10px;
+  font-size: 10px;
+  color: var(--t3);
+}
+
+/* ─── MINI CALENDRIER ─── */
+.cal {
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  gap: 1px;
+  padding: 10px 12px;
+}
+
+.cd {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--t3);
+  border-radius: 3px;
+}
+.cd-h { font-weight: 600; color: var(--t3); font-size: 9px; }
+.cd-t { background: var(--accent); color: #fff; font-weight: 600; }
+.cd-e { background: var(--accent-dim); color: var(--accent); }
+
+/* ─── TÂCHE ─── */
+.task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.08s;
+}
+.task:last-child { border-bottom: none; }
+.task:hover { background: var(--bg3); }
+
+.task-box {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  border: 1.5px solid var(--t3);
+  flex-shrink: 0;
+}
+.task-box.done { background: var(--success); border-color: var(--success); }
+
+.task-text { font-size: 12px; color: var(--t1); flex: 1; }
+.task-text.done { color: var(--t3); text-decoration: line-through; }
+
+.task-tag {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* ─── RÉSEAUX ─── */
+.social {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.08s;
+}
+.social:last-child { border-bottom: none; }
+.social:hover { background: var(--bg3); }
+
+.social-ico {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--bg4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.social-name { font-size: 12px; color: var(--t1); flex: 1; }
+.social-handle { font-size: 10px; color: var(--t3); }
+.social-stat { font-size: 10px; color: var(--t3); text-align: right; }
+
+/* ─── LOADING ─── */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--t3);
+}
+.spin {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--line2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media(max-width:1000px) {
+  .g-4{grid-template-columns:1fr 1fr;}
+  .g-3{grid-template-columns:1fr 1fr;}
+  .g-52,.g-32,.g-23{grid-template-columns:1fr;}
+}
+@media(max-width:640px) {
+  .sidebar{display:none;}
+  .g-4,.g-3,.g-2{grid-template-columns:1fr 1fr;}
+  .page{padding:16px;}
+}
 </style>
 </head>
 <body>
+
+<!-- TOPBAR -->
 <header class="topbar">
-  <a href="/admin/dashboard.html" class="topbar__logo">
-    <span class="topbar__mark">IT</span>
-    <span class="topbar__name">SOLUCE</span>
+  <a href="/admin/dashboard.html" class="logo">
+    <span class="logo-mark">IT</span>
+    <span class="logo-sep"></span>
+    <span class="logo-sub">SOLUCE</span>
   </a>
-  <div class="topbar__sep"></div>
-  <span class="topbar__badge">ERP</span>
-  <div class="topbar__breadcrumb"><span>Dashboard</span></div>
-  <div class="topbar__actions">
-    <div class="theme-switcher" title="Changer le thème">
-      <div class="theme-dot active" data-t="blue" onclick="setTheme('blue')"></div>
-      <div class="theme-dot" data-t="green" onclick="setTheme('green')"></div>
-      <div class="theme-dot" data-t="purple" onclick="setTheme('purple')"></div>
-      <div class="theme-dot" data-t="red" onclick="setTheme('red')"></div>
-      <div class="theme-dot" data-t="light" onclick="setTheme('light')"></div>
+  <div class="topbar-divider"></div>
+  <span class="topbar-badge">ERP</span>
+  <span class="topbar-crumb"><span>Dashboard</span></span>
+
+  <div class="topbar-right">
+    <div class="theme-strip">
+      <div class="tdot on" data-c="blue"   onclick="setAccent('#3b82f6','rgba(59,130,246,0.12)')"></div>
+      <div class="tdot"    data-c="green"  onclick="setAccent('#34d399','rgba(52,211,153,0.12)')"></div>
+      <div class="tdot"    data-c="violet" onclick="setAccent('#a78bfa','rgba(167,139,250,0.12)')"></div>
+      <div class="tdot"    data-c="amber"  onclick="setAccent('#fbbf24','rgba(251,191,36,0.12)')"></div>
     </div>
-    <div class="topbar__sep"></div>
-    <div class="topbar__user">
-      <div class="topbar__avatar" id="userAvatar">—</div>
-      <span id="userEmail">—</span>
+    <div class="mode-strip">
+      <button class="mbtn" data-m="light" onclick="setMode('light')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button class="mbtn on" data-m="auto" onclick="setMode('auto')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="mbtn" data-m="dark" onclick="setMode('dark')">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
-    <button class="btn-sm" onclick="handleLogout()">Déconnexion</button>
+    <div class="topbar-divider"></div>
+    <div class="user-pill">
+      <div class="user-av" id="uAv">—</div>
+      <span id="uEmail" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>
+    </div>
+    <button class="btn-out" onclick="doLogout()">Quitter</button>
   </div>
 </header>
 
+<!-- LAYOUT -->
 <div class="layout">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar__section">
-      <div class="sidebar__label">Navigation</div>
-      <button class="nav-item active">
+    <div class="nav-group">
+      <div class="nav-group-label">Vue d'ensemble</div>
+      <button class="nav-link active">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </button>
     </div>
-    <div class="sidebar__divider"></div>
-    <div class="sidebar__section">
-      <div class="sidebar__label">Opérations</div>
-      <a href="/admin/stock.html" class="nav-item">
+    <div class="nav-hr"></div>
+    <div class="nav-group">
+      <div class="nav-group-label">Opérations</div>
+      <a href="/admin/stock.html" class="nav-link">
         <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         Stock
-        <span class="nav-badge" id="nb-stock">—</span>
+        <span class="nav-count warn" id="nb-alert">—</span>
       </a>
-      <button class="nav-item" onclick="soon()">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <button class="nav-link" onclick="soon()">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         Réparations
-        <span class="nav-badge" id="nb-rep">0</span>
+        <span class="nav-count" id="nb-rep">0</span>
       </button>
-      <button class="nav-item" onclick="soon()">
+      <button class="nav-link" onclick="soon()">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         Clients
-        <span class="nav-badge">0</span>
+        <span class="nav-count" id="nb-cli">0</span>
       </button>
     </div>
-    <div class="sidebar__divider"></div>
-    <div class="sidebar__section">
-      <div class="sidebar__label">Finance</div>
-      <button class="nav-item" onclick="soon()">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        Devis & Factures
+    <div class="nav-hr"></div>
+    <div class="nav-group">
+      <div class="nav-group-label">Finance</div>
+      <button class="nav-link" onclick="soon()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Devis
+        <span class="nav-count">0</span>
       </button>
-      <button class="nav-item" onclick="soon()">
+      <button class="nav-link" onclick="soon()">
+        <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Factures
+        <span class="nav-count">0</span>
+      </button>
+      <button class="nav-link" onclick="soon()">
         <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Statistiques
       </button>
     </div>
-    <div class="sidebar__divider"></div>
-    <div class="sidebar__section">
-      <div class="sidebar__label">Organisation</div>
-      <button class="nav-item" onclick="soon()">
+    <div class="nav-hr"></div>
+    <div class="nav-group">
+      <div class="nav-group-label">Communication</div>
+      <button class="nav-link" onclick="soon()">
+        <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        Marketing
+      </button>
+      <button class="nav-link" onclick="soon()">
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Planning
       </button>
-      <button class="nav-item" onclick="soon()">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+    <div class="nav-hr"></div>
+    <div class="nav-group">
+      <div class="nav-group-label">Gestion</div>
+      <button class="nav-link" onclick="soon()">
+        <svg viewBox="0 0 24 24"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Tâches
+      </button>
+      <button class="nav-link" onclick="soon()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Paramètres
       </button>
     </div>
-    <div class="sidebar__bottom">
-      <div class="sidebar__version">IT Soluce ERP v1.0</div>
-    </div>
+
+    <div class="sidebar-footer">IT Soluce ERP · v1.0</div>
   </aside>
 
+  <!-- CONTENU -->
   <main class="content">
-    <div class="loading-full" id="loadingState"><div class="spin"></div>Chargement...</div>
-    <div class="page" id="pageContent" style="display:none;"></div>
+    <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
+    <div class="page" id="pg" style="display:none;"></div>
   </main>
 </div>
 
 <script>
-function setTheme(t) {
-  document.documentElement.setAttribute('data-theme', t)
-  localStorage.setItem('erp-theme', t)
-  document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === t))
+function setAccent(color, dim) {
+  document.documentElement.style.setProperty('--accent', color)
+  document.documentElement.style.setProperty('--accent-dim', dim)
+  localStorage.setItem('erp-accent', color)
+  localStorage.setItem('erp-dim', dim)
+  document.querySelectorAll('.tdot').forEach(d => {
+    d.classList.toggle('on', getComputedStyle(d).backgroundColor === hexToRgb(color))
+  })
 }
-const savedTheme = localStorage.getItem('erp-theme') || 'blue'
-setTheme(savedTheme)
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16)
+  return `rgb(${r}, ${g}, ${b})`
+}
+
+function applyMode(m) {
+  const eff = m === 'auto' ? (new Date().getHours() >= 7 && new Date().getHours() < 20 ? 'light' : 'dark') : m
+  document.documentElement.setAttribute('data-mode', eff)
+  if (eff === 'light') {
+    document.documentElement.style.setProperty('--bg',   '#f8f8f8')
+    document.documentElement.style.setProperty('--bg2',  '#ffffff')
+    document.documentElement.style.setProperty('--bg3',  '#f2f2f4')
+    document.documentElement.style.setProperty('--bg4',  '#eaeaec')
+    document.documentElement.style.setProperty('--line', 'rgba(0,0,0,0.06)')
+    document.documentElement.style.setProperty('--line2','rgba(0,0,0,0.1)')
+    document.documentElement.style.setProperty('--t1',   '#111114')
+    document.documentElement.style.setProperty('--t2',   '#52525b')
+    document.documentElement.style.setProperty('--t3',   '#a1a1aa')
+  } else {
+    document.documentElement.style.setProperty('--bg',   '#0c0d0f')
+    document.documentElement.style.setProperty('--bg2',  '#111214')
+    document.documentElement.style.setProperty('--bg3',  '#18191c')
+    document.documentElement.style.setProperty('--bg4',  '#1f2023')
+    document.documentElement.style.setProperty('--line', 'rgba(255,255,255,0.06)')
+    document.documentElement.style.setProperty('--line2','rgba(255,255,255,0.1)')
+    document.documentElement.style.setProperty('--t1',   '#e8e8e8')
+    document.documentElement.style.setProperty('--t2',   '#8a8f98')
+    document.documentElement.style.setProperty('--t3',   '#4b5059')
+  }
+}
+
+function setMode(m) {
+  localStorage.setItem('erp-mode', m)
+  document.querySelectorAll('.mbtn').forEach(b => b.classList.toggle('on', b.dataset.m === m))
+  applyMode(m)
+}
+
+// Init au chargement
+const sa = localStorage.getItem('erp-accent')
+const sd = localStorage.getItem('erp-dim')
+if (sa) { document.documentElement.style.setProperty('--accent', sa); document.documentElement.style.setProperty('--accent-dim', sd) }
+
+const sm = localStorage.getItem('erp-mode') || 'auto'
+document.querySelectorAll('.mbtn').forEach(b => b.classList.toggle('on', b.dataset.m === sm))
+applyMode(sm)
+setInterval(() => { if ((localStorage.getItem('erp-mode')||'auto') === 'auto') applyMode('auto') }, 60000)
+
+window.soon = () => {}
 </script>
+
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-const SUPABASE_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const SB_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co'
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const sb = createClient(SB_URL, SB_KEY)
 
-const { data: { session } } = await supabase.auth.getSession()
+const { data: { session } } = await sb.auth.getSession()
 if (!session) { window.location.href = '/admin/login.html' }
 
 const email = session.user.email
-document.getElementById('userEmail').textContent = email
-document.getElementById('userAvatar').textContent = email[0].toUpperCase()
+document.getElementById('uEmail').textContent = email
+document.getElementById('uAv').textContent = email[0].toUpperCase()
 
-let stockData = []
+let stock = []
 try {
-  const { data, error } = await supabase.from('stock').select('*')
-  if (error) { console.error('Erreur Supabase:', error) }
-  else { stockData = data || [] }
-} catch(e) { console.error('Erreur réseau:', e) }
+  const { data } = await sb.from('stock').select('*')
+  stock = data || []
+} catch(e) { console.error(e) }
 
-const totalRefs = stockData.length
-const alertes = stockData.filter(p => Number(p.quantite) <= Number(p.seuil_alerte)).length
-const valeurStock = stockData.reduce((a, p) => a + (Number(p.quantite) * Number(p.prix_achat)), 0)
-const recent = [...stockData].sort((a,b) => new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)).slice(0,5)
+const total  = stock.length
+const alrts  = stock.filter(p => Number(p.quantite) <= Number(p.seuil_alerte))
+const valeur = stock.reduce((a,p) => a+(Number(p.quantite)*Number(p.prix_achat)),0)
+const recent = [...stock].sort((a,b)=>new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at)).slice(0,5)
 
-document.getElementById('nb-stock').textContent = totalRefs
-if (alertes > 0) { document.getElementById('nb-stock').className = 'nav-badge nav-badge--alert'; document.getElementById('nb-stock').textContent = alertes }
+const nb = document.getElementById('nb-alert')
+nb.textContent = alrts.length || '—'
+if (!alrts.length) { nb.className = 'nav-count' }
 
-const heure = new Date().getHours()
-const salut = heure < 12 ? 'Bonjour' : heure < 18 ? 'Bon après-midi' : 'Bonsoir'
+const h = new Date().getHours()
+const sal = h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir'
 
-document.getElementById('pageContent').innerHTML = `
-<div class="page__header">
+document.getElementById('pg').innerHTML = `
+
+<div class="page-head">
   <div>
-    <div class="page__title">${salut} 👋</div>
-    <div class="page__sub">${new Date().toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+    <div class="page-title">${sal}</div>
+    <div class="page-date">${new Date().toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+  </div>
+  <div class="status-chip"><div class="pulse"></div>IT Soluce · Indépendant complémentaire</div>
+</div>
+
+<!-- KPIs Finance -->
+<div class="section-head"><span class="section-label">Finances</span></div>
+<div class="g g-4">
+  <div class="kpi">
+    <div class="kpi__label">CA ce mois</div>
+    <div class="kpi__num">0 €</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-neu">objectif 200€</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi__label">Bénéfice net</div>
+    <div class="kpi__num">−85 €</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-neu">charges fixes</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi__label">Devis en attente</div>
+    <div class="kpi__num">0</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-neu">0 € à valider</span></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi__label">Factures impayées</div>
+    <div class="kpi__num">0</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-ok">Tout à jour</span></div>
   </div>
 </div>
-<div class="stats-row">
-  <div class="stat">
-    <div class="stat__label">Références stock</div>
-    <div class="stat__value">${totalRefs}</div>
-    <div class="stat__trend">pièces référencées</div>
-    <div class="stat__icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+
+<!-- KPIs Opérations -->
+<div class="section-head"><span class="section-label">Opérations</span></div>
+<div class="g g-4">
+  <div class="kpi">
+    <div class="kpi__label">Réparations actives</div>
+    <div class="kpi__num">0</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-neu">en cours</span></div>
   </div>
-  <div class="stat ${alertes > 0 ? 'stat--alert' : ''}">
-    <div class="stat__label">Alertes stock</div>
-    <div class="stat__value">${alertes}</div>
-    <div class="stat__trend">${alertes > 0 ? 'pièces à réapprovisionner' : 'Tout est OK'}</div>
-    <div class="stat__icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+  <div class="kpi">
+    <div class="kpi__label">Terminées ce mois</div>
+    <div class="kpi__num">0</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-neu">objectif 5/mois</span></div>
   </div>
-  <div class="stat">
-    <div class="stat__label">Valeur du stock</div>
-    <div class="stat__value">${valeurStock.toFixed(0)}€</div>
-    <div class="stat__trend">coût d'achat total</div>
-    <div class="stat__icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+  <div class="kpi">
+    <div class="kpi__label">Références stock</div>
+    <div class="kpi__num">${total}</div>
+    <div class="kpi__meta">${alrts.length>0?`<span class="kpi__tag tag-w">${alrts.length} alerte${alrts.length>1?'s':''}</span>`:'<span class="kpi__tag tag-ok">RAS</span>'} <span style="margin-left:4px;">${valeur.toFixed(0)}€ valeur</span></div>
   </div>
-  <div class="stat">
-    <div class="stat__label">Réparations actives</div>
-    <div class="stat__value">0</div>
-    <div class="stat__trend">en cours ce mois</div>
-    <div class="stat__icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+  <div class="kpi">
+    <div class="kpi__label">Clients enregistrés</div>
+    <div class="kpi__num">0</div>
+    <div class="kpi__meta"><span class="kpi__tag tag-neu">base CRM</span></div>
   </div>
 </div>
-<p class="section-title">Modules</p>
-<div class="modules-grid">
-  <a href="/admin/stock.html" class="module">
-    <div class="module__header">
-      <div class="module__icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
-      <span class="module__status module__status--ok">ACTIF</span>
+
+<!-- Ligne principale -->
+<div class="section-head"><span class="section-label">Activité</span></div>
+<div class="g g-52">
+
+  <!-- Réparations + Clients -->
+  <div class="g" style="gap:10px;">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Réparations en cours</span><a href="#" class="card-link" onclick="soon()">Voir →</a></div>
+      <div class="row"><div class="dot dot-g"></div><div class="row-main"><div class="row-name" style="color:var(--t3)">Aucune réparation active</div><div class="row-sub">Ton premier dossier apparaîtra ici</div></div></div>
     </div>
-    <div class="module__name">Stock</div>
-    <div class="module__desc">Pièces détachées, quantités, prix et fournisseurs. ${alertes > 0 ? '<strong style="color:var(--danger)">'+alertes+' alerte(s)</strong>' : 'Tout est OK.'}</div>
-  </a>
-  <div class="module module--locked"><div class="module__header"><div class="module__icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="module__status module__status--soon">BIENTÔT</span></div><div class="module__name">Réparations</div><div class="module__desc">Suivi des dossiers, statuts et garanties.</div></div>
-  <div class="module module--locked"><div class="module__header"><div class="module__icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="module__status module__status--soon">BIENTÔT</span></div><div class="module__name">Clients</div><div class="module__desc">Base CRM et historique des réparations.</div></div>
-  <div class="module module--locked"><div class="module__header"><div class="module__icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="module__status module__status--soon">BIENTÔT</span></div><div class="module__name">Devis & Factures</div><div class="module__desc">Création et suivi avec export PDF.</div></div>
-  <div class="module module--locked"><div class="module__header"><div class="module__icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span class="module__status module__status--soon">BIENTÔT</span></div><div class="module__name">Planning</div><div class="module__desc">Rendez-vous et interventions.</div></div>
-  <div class="module module--locked"><div class="module__header"><div class="module__icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><span class="module__status module__status--soon">BIENTÔT</span></div><div class="module__name">Statistiques</div><div class="module__desc">CA, marges et indicateurs de performance.</div></div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Derniers contacts</span><a href="#" class="card-link" onclick="soon()">CRM →</a></div>
+      <div class="row"><div class="dot dot-b"></div><div class="row-main"><div class="row-name">Fanny Bohée</div><div class="row-sub">Tablette Kurio · Devis envoyé · 31 mai</div></div><div class="row-right"><span class="kpi__tag tag-w">En attente</span></div></div>
+    </div>
+  </div>
+
+  <!-- Mini calendrier -->
+  <div class="card">
+    <div class="card-head"><span class="card-title">Calendrier — Juin 2026</span><a href="#" class="card-link" onclick="soon()">Planning →</a></div>
+    <div class="cal">
+      <div class="cd cd-h">Lu</div><div class="cd cd-h">Ma</div><div class="cd cd-h">Me</div><div class="cd cd-h">Je</div><div class="cd cd-h">Ve</div><div class="cd cd-h">Sa</div><div class="cd cd-h">Di</div>
+      <div class="cd"></div><div class="cd" style="color:var(--t3)">3</div><div class="cd" style="color:var(--t3)">4</div><div class="cd" style="color:var(--t3)">5</div><div class="cd" style="color:var(--t3)">6</div><div class="cd" style="color:var(--t3)">7</div><div class="cd" style="color:var(--t3)">8</div>
+      <div class="cd" style="color:var(--t3)">9</div><div class="cd" style="color:var(--t3)">10</div><div class="cd" style="color:var(--t3)">11</div><div class="cd" style="color:var(--t3)">12</div><div class="cd" style="color:var(--t3)">13</div><div class="cd" style="color:var(--t3)">14</div><div class="cd" style="color:var(--t3)">15</div>
+      <div class="cd" style="color:var(--t3)">16</div><div class="cd" style="color:var(--t3)">17</div><div class="cd cd-t">18</div><div class="cd" style="color:var(--t3)">19</div><div class="cd" style="color:var(--t3)">20</div><div class="cd" style="color:var(--t3)">21</div><div class="cd" style="color:var(--t3)">22</div>
+      <div class="cd cd-e">23</div><div class="cd" style="color:var(--t3)">24</div><div class="cd" style="color:var(--t3)">25</div><div class="cd" style="color:var(--t3)">26</div><div class="cd" style="color:var(--t3)">27</div><div class="cd" style="color:var(--t3)">28</div><div class="cd" style="color:var(--t3)">29</div>
+      <div class="cd" style="color:var(--t3)">30</div>
+    </div>
+  </div>
 </div>
-<p class="section-title">Activité récente</p>
-<div class="bottom-grid">
+
+<!-- Bas de page -->
+<div class="section-head"><span class="section-label">Surveillance</span></div>
+<div class="g g-3">
+
+  <!-- Stock alertes + graphique CA -->
   <div class="card">
-    <div class="card__head"><span class="card__head-title">Dernières pièces</span><a href="/admin/stock.html" class="card__head-action">Voir tout →</a></div>
-    <div>${recent.length === 0 ? '<div class="empty-state">Aucune pièce enregistrée.</div>' : recent.map(p=>`<div class="list-row"><div class="list-dot list-dot--${Number(p.quantite)===0?'alert':Number(p.quantite)<=Number(p.seuil_alerte)?'warn':'ok'}"></div><div style="flex:1"><div class="list-main">${p.nom}</div><div class="list-sub">${p.categorie} · ${p.marque||'—'}</div></div><div class="list-right"><div style="font-weight:500;color:var(--text)">${p.quantite} unité(s)</div><div>${p.prix_achat}€</div></div></div>`).join('')}</div>
+    <div class="card-head"><span class="card-title">CA — 6 derniers mois</span></div>
+    <div class="bars">
+      ${['Jan','Fév','Mar','Avr','Mai','Jun'].map((m,i)=>`<div class="bar${i===5?' cur':''}" style="height:${i===5?'12':'4'}%;" title="${m}"></div>`).join('')}
+    </div>
+    <div class="bar-labels"><span>Jan</span><span>Fév</span><span>Mar</span><span>Avr</span><span>Mai</span><span>Jun</span></div>
+  </div>
+
+  <!-- Alertes stock -->
+  <div class="card">
+    <div class="card-head"><span class="card-title">Alertes stock</span><a href="/admin/stock.html" class="card-link">Stock →</a></div>
+    ${alrts.length === 0
+      ? `<div class="row"><div class="dot dot-ok"></div><div class="row-main"><div class="row-name" style="color:var(--t3)">Aucune alerte</div></div></div>`
+      : alrts.slice(0,4).map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dot-d':'dot-w'}"></div><div class="row-main"><div class="row-name">${p.nom}</div><div class="row-sub">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="row-right"><span class="kpi__tag ${Number(p.quantite)===0?'tag-d':'tag-w'}">${Number(p.quantite)===0?'Rupture':'Faible'}</span></div></div>`).join('')
+    }
+  </div>
+
+  <!-- Tâches prioritaires -->
+  <div class="card">
+    <div class="card-head"><span class="card-title">Tâches prioritaires</span><a href="#" class="card-link" onclick="soon()">+ Ajouter</a></div>
+    <div class="task"><div class="task-box"></div><span class="task-text">Finaliser inscription BCE</span><span class="task-tag tag-d">Urgent</span></div>
+    <div class="task"><div class="task-box"></div><span class="task-text">Commander matériel</span><span class="task-tag tag-d">Urgent</span></div>
+    <div class="task"><div class="task-box"></div><span class="task-text">Créer Google Business Profile</span><span class="task-tag tag-w">Important</span></div>
+    <div class="task"><div class="task-box done"></div><span class="task-text done">Configurer ERP Supabase</span><span class="task-tag tag-ok">✓ Fait</span></div>
+  </div>
+</div>
+
+<!-- Réseaux + Administratif -->
+<div class="section-head" style="margin-top:6px;"><span class="section-label">Administratif & Communication</span></div>
+<div class="g g-2">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Réseaux sociaux</span><a href="#" class="card-link" onclick="soon()">Marketing →</a></div>
+    <div class="social"><div class="social-ico">📸</div><div class="row-main"><div class="social-name">Instagram</div><div class="social-handle">@itsoluce.be</div></div><div class="social-stat">0 abonnés · 0 posts</div></div>
+    <div class="social"><div class="social-ico">🎵</div><div class="row-main"><div class="social-name">TikTok</div><div class="social-handle">@itsoluce</div></div><div class="social-stat">0 abonnés · 0 vidéos</div></div>
+    <div class="social"><div class="social-ico">💼</div><div class="row-main"><div class="social-name">LinkedIn</div><div class="social-handle">IT Soluce</div></div><div class="social-stat">0 abonnés · 0 posts</div></div>
   </div>
   <div class="card">
-    <div class="card__head"><span class="card__head-title">Alertes stock</span></div>
-    <div>${alertes===0?'<div class="empty-state">✓ Aucune alerte en cours.</div>':stockData.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte)).slice(0,5).map(p=>`<div class="list-row"><div class="list-dot list-dot--${Number(p.quantite)===0?'alert':'warn'}"></div><div style="flex:1"><div class="list-main">${p.nom}</div><div class="list-sub">Seuil : ${p.seuil_alerte} · Stock : <strong style="color:var(--danger)">${p.quantite}</strong></div></div><div class="list-right" style="color:var(--danger);font-weight:500;">${Number(p.quantite)===0?'RUPTURE':'À réappro.'}</div></div>`).join('')}</div>
+    <div class="card-head"><span class="card-title">Administratif</span><a href="#" class="card-link" onclick="soon()">Détails →</a></div>
+    <div class="row"><div class="dot dot-w"></div><div class="row-main"><div class="row-name">Numéro BCE</div><div class="row-sub">En attente d'attribution (UCM)</div></div><div class="row-right"><span class="kpi__tag tag-w">En cours</span></div></div>
+    <div class="row"><div class="dot dot-b"></div><div class="row-main"><div class="row-name">Caisse sociale UCM</div><div class="row-sub">Prochaine cotisation Q3 2026</div></div><div class="row-right"><strong>~170 €</strong></div></div>
+    <div class="row"><div class="dot dot-b"></div><div class="row-main"><div class="row-name">Charges fixes totales</div><div class="row-sub">Accountable · UCM · OVH</div></div><div class="row-right"><strong>85 €</strong><span>/mois</span></div></div>
+    <div class="row"><div class="dot dot-ok"></div><div class="row-main"><div class="row-name">Seuil de rentabilité</div><div class="row-sub">Réparations min. par mois</div></div><div class="row-right"><strong style="color:var(--success)">1–2</strong><span> répar.</span></div></div>
   </div>
-</div>`
+</div>
 
-document.getElementById('loadingState').style.display = 'none'
-document.getElementById('pageContent').style.display = 'block'
+`
 
-window.handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/admin/login.html' }
-window.soon = () => alert('Ce module sera disponible prochainement !')
+document.getElementById('ldr').style.display = 'none'
+document.getElementById('pg').style.display = 'block'
+
+window.doLogout = async () => { await sb.auth.signOut(); window.location.href = '/admin/login.html' }
 </script>
 </body>
 </html>
