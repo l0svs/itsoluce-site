@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IT Soluce — Connexion</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f5f7;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .login-container {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .login-logo .logo-mark {
+    font-size: 38px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0a2980 0%, #0052CC 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  .login-logo .logo-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0a2980;
+    letter-spacing: 4px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .login-logo .login-subtitle {
+    font-size: 13px;
+    color: #6e6e73;
+    margin-top: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #e5e5ea;
+    margin: 28px 0;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1d1d1f;
+    margin-bottom: 7px;
+  }
+
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #d2d2d7;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #1d1d1f;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="email"]:focus,
+  input[type="password"]:focus {
+    border-color: #0052CC;
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.12);
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: #0052CC;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    margin-top: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .btn-login:hover {
+    background: #003d99;
+  }
+
+  .btn-login:active {
+    transform: scale(0.99);
+  }
+
+  .btn-login:disabled {
+    background: #6e6e73;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .error-msg {
+    display: none;
+    background: #fff2f2;
+    border: 1px solid #ffcccc;
+    color: #cc0000;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .error-msg.show {
+    display: block;
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+    color: #6e6e73;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: #0052CC;
+  }
+
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 36px 28px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+
+  <div class="login-logo">
+    <div>
+      <span class="logo-mark">IT</span>
+      <span class="logo-text">SOLUCE</span>
+    </div>
+    <p class="login-subtitle">Espace administrateur</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="error-msg" id="errorMsg">
+    Email ou mot de passe incorrect.
+  </div>
+
+  <div class="form-group">
+    <label for="email">Adresse email</label>
+    <input
+      type="email"
+      id="email"
+      placeholder="votre@email.com"
+      autocomplete="email"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="password">Mot de passe</label>
+    <input
+      type="password"
+      id="password"
+      placeholder="••••••••••"
+      autocomplete="current-password"
+      required
+    />
+  </div>
+
+  <button class="btn-login" id="btnLogin" onclick="handleLogin()">
+    Se connecter
+  </button>
+
+  <a href="/" class="back-link">← Retour au site</a>
+
+</div>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+  const SUPABASE_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  // Vérifier si déjà connecté
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    window.location.href = '/admin/dashboard.html'
+  }
+
+  // Permettre la connexion avec la touche Entrée
+  document.getElementById('password').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleLogin()
+  })
+  document.getElementById('email').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleLogin()
+  })
+
+  window.handleLogin = async function() {
+    const email = document.getElementById('email').value.trim()
+    const password = document.getElementById('password').value
+    const btn = document.getElementById('btnLogin')
+    const errorMsg = document.getElementById('errorMsg')
+
+    // Reset erreur
+    errorMsg.classList.remove('show')
+
+    // Validation basique
+    if (!email || !password) {
+      errorMsg.textContent = 'Veuillez remplir tous les champs.'
+      errorMsg.classList.add('show')
+      return
+    }
+
+    // État de chargement
+    btn.disabled = true
+    btn.innerHTML = '<span class="loading-spinner"></span> Connexion...'
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error) {
+      btn.disabled = false
+      btn.innerHTML = 'Se connecter'
+      errorMsg.textContent = 'Email ou mot de passe incorrect.'
+      errorMsg.classList.add('show')
+      return
+    }
+
+    // Connexion réussie — redirection vers le dashboard
+    window.location.href = '/admin/dashboard.html'
+  }
+</script>
+
+</body>
+</html>
