@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="fr" data-mode="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IT Soluce ERP — Fournisseurs</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
+[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+.topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}.logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}.logo-sep{width:1px;height:14px;background:var(--ln2);}.logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
+.tb-div{width:1px;height:18px;background:var(--ln2);flex-shrink:0;}.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
+.tb-crumb{font-size:12px;color:var(--t3);flex:1;display:flex;align-items:center;gap:6px;}.tb-crumb a{color:var(--t3);text-decoration:none;}.tb-crumb a:hover{color:var(--a);}.tb-crumb span{color:var(--t2);}
+.tb-r{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.mstrip{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;padding:3px;gap:1px;}
+.mbtn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;background:none;cursor:pointer;border-radius:4px;color:var(--t3);transition:all .12s;}.mbtn:hover{color:var(--t1);background:var(--bg4);}.mbtn.on{background:var(--ad);color:var(--a);}
+.mbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.upill{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 4px;border:1px solid var(--ln2);border-radius:99px;background:var(--bg3);font-size:12px;color:var(--t2);}
+.uav{width:22px;height:22px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.bout{padding:5px 10px;border:1px solid var(--ln2);border-radius:5px;background:none;color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;}.bout:hover{color:var(--d);border-color:var(--d);}
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:var(--sw);background:var(--bg2);border-right:1px solid var(--ln);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 0;}
+.ng{padding:14px 10px 4px;}.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
+.nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
+.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);}
+.nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
+.nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
+.nhr{height:1px;background:var(--ln);margin:8px 10px;}.sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
+.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
+.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-primary{background:var(--a);color:#fff;}.btn-primary:hover{opacity:.85;}
+.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}.btn-secondary:hover{color:var(--t1);}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
+.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
+.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
+.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
+.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
+.search-wrap{position:relative;flex:1;max-width:300px;}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
+.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}.search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
+.filter-btn{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;white-space:nowrap;}
+.filter-btn:hover{color:var(--t1);}.filter-btn.active{background:var(--a);color:#fff;border-color:var(--a);}
+/* CARDS FOURNISSEURS */
+.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start;}
+.four-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:18px;transition:border-color .15s;}
+.four-card:hover{border-color:var(--a);}
+.four-card.inactive{opacity:.5;}
+.fc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.fc-av{width:40px;height:40px;border-radius:8px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+.fc-info{flex:1;min-width:0;}
+.fc-name{font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fc-cat{font-size:11px;color:var(--t3);margin-top:2px;}
+.fc-actions{display:flex;gap:4px;flex-shrink:0;}
+.act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
+.act-btn:hover{background:var(--bg3);color:var(--t1);}.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.stars{display:flex;gap:2px;margin-bottom:12px;}
+.star{font-size:13px;color:var(--w);}.star.off{color:var(--bg4);}
+.fc-fields{display:flex;flex-direction:column;gap:6px;}
+.fc-field{display:flex;align-items:center;gap:8px;font-size:12px;}
+.fc-fl{color:var(--t3);width:80px;flex-shrink:0;font-size:11px;}
+.fc-fv{color:var(--t1);}
+.fc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--ln);}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;}
+.tag-ok{background:rgba(52,211,153,.12);color:var(--ok);}
+.tag-off{background:var(--bg4);color:var(--t3);}
+.toggle-actif{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);cursor:pointer;}
+.tog{width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;}
+.tog.on{background:var(--ok);border-color:var(--ok);}
+.tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
+.tog.on .tog-thumb{transform:translateX(14px);}
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}.panel-overlay.open{opacity:1;pointer-events:all;}
+.panel{position:fixed;right:0;top:0;bottom:0;width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
+.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}.panel-close:hover{background:var(--bg4);color:var(--t1);}
+.panel-body{flex:1;overflow-y:auto;padding:20px;}.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.fg{margin-bottom:13px;}.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}.fg textarea{resize:vertical;min-height:60px;}.fg select option{background:var(--bg3);}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
+.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
+.star-pick{display:flex;gap:4px;cursor:pointer;}.sp{font-size:20px;color:var(--bg4);transition:color .1s;}.sp.on{color:var(--w);}
+.empty-grid{padding:60px 0;text-align:center;grid-column:1/-1;}
+.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}.empty-sub{font-size:12px;color:var(--t3);}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
+.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
+.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.cards-wrap{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="/admin/dashboard.html" class="logo"><span class="logo-m">IT</span><span class="logo-sep"></span><span class="logo-s">SOLUCE</span></a>
+  <div class="tb-div"></div><span class="tb-badge">ERP</span>
+  <div class="tb-crumb">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/admin/dashboard.html">Dashboard</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span>Fournisseurs</span>
+  </div>
+  <div class="tb-r">
+    <div class="mstrip">
+      <button class="mbtn" data-m="light" onclick="setMode('light')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <button class="mbtn on" data-m="auto" onclick="setMode('auto')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" stroke="none"/></svg></button>
+      <button class="mbtn" data-m="dark" onclick="setMode('dark')"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <div class="tb-div"></div>
+    <div class="upill"><div class="uav" id="uAv">—</div><span id="uEmail" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span></div>
+    <button class="bout" onclick="doLogout()">Quitter</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="ng"><div class="ngl">Vue d'ensemble</div><a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a></div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Opérations</div>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
+      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
+      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/fournisseurs.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Finance</div>
+      <button class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</button>
+      <button class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</button>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng"><div class="ngl">Gestion</div><a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a></div>
+    <div class="sf">IT Soluce ERP · v1.0</div>
+  </aside>
+
+  <div class="content" id="mainContent">
+    <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
+    <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="page-head">
+        <div class="ph-left"><h1>Fournisseurs</h1><p id="ph-sub">— fournisseurs enregistrés</p></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button>
+        </div>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi"><div class="kpi-label">Total</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">fournisseurs</div></div>
+        <div class="kpi"><div class="kpi-label">Actifs</div><div class="kpi-val" id="k-actifs" style="color:var(--ok)">—</div><div class="kpi-sub">disponibles</div></div>
+        <div class="kpi"><div class="kpi-label">Livraison rapide</div><div class="kpi-val" id="k-rapide">—</div><div class="kpi-sub">J+1 ou moins</div></div>
+        <div class="kpi"><div class="kpi-label">Note moyenne</div><div class="kpi-val" id="k-note">—</div><div class="kpi-sub">sur 5</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" type="text" id="searchInput" placeholder="Nom, catégorie..." oninput="renderCards()"/>
+        </div>
+        <button class="filter-btn active" id="f-tous" onclick="setFilter('tous')">Tous</button>
+        <button class="filter-btn" id="f-actifs" onclick="setFilter('actifs')">Actifs</button>
+        <button class="filter-btn" id="f-inactifs" onclick="setFilter('inactifs')">Inactifs</button>
+      </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-head">
+    <span class="panel-title" id="panelTitle">Ajouter un fournisseur</span>
+    <button class="panel-close" onclick="closePanel()">×</button>
+  </div>
+  <div class="panel-body">
+    <input type="hidden" id="f-id"/>
+    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Identification</div>
+    <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="ex : Charleroi Mobile Parts"/></div>
+    <div class="fg"><label>Catégorie</label>
+      <select id="f-cat">
+        <option value="">Choisir...</option>
+        <option>Pièces iPhone</option>
+        <option>Pièces Samsung / Android</option>
+        <option>Multi-appareils</option>
+        <option>Outillage & consommables</option>
+        <option>Composants PC</option>
+        <option>Autre</option>
+      </select>
+    </div>
+    <div class="fg"><label>Note (1 à 5)</label>
+      <div class="star-pick" id="starPick">
+        <span class="sp" onclick="setNote(1)">★</span>
+        <span class="sp" onclick="setNote(2)">★</span>
+        <span class="sp" onclick="setNote(3)">★</span>
+        <span class="sp" onclick="setNote(4)">★</span>
+        <span class="sp" onclick="setNote(5)">★</span>
+      </div>
+      <input type="hidden" id="f-note" value="3"/>
+    </div>
+    <div class="fg-sep">Contact</div>
+    <div class="fg"><label>Nom du contact</label><input type="text" id="f-contact" placeholder="ex : Thomas D."/></div>
+    <div class="fg-row">
+      <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="commandes@..."/></div>
+      <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 XX XX XX XX"/></div>
+    </div>
+    <div class="fg"><label>Site web</label><input type="url" id="f-site" placeholder="https://..."/></div>
+    <div class="fg-sep">Logistique</div>
+    <div class="fg"><label>Délai de livraison</label>
+      <select id="f-delai">
+        <option value="J+1">J+1 (lendemain)</option>
+        <option value="2-3 jours">2-3 jours</option>
+        <option value="3-7 jours">3-7 jours</option>
+        <option value="7-15 jours">7-15 jours</option>
+        <option value="15-30 jours">15-30 jours</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Informations pratiques, conditions..."></textarea></div>
+    <div class="fg" style="display:flex;align-items:center;gap:10px;">
+      <label style="margin:0;">Fournisseur actif</label>
+      <div class="tog on" id="togActif" onclick="toggleActif()"><div class="tog-thumb"></div></div>
+      <input type="hidden" id="f-actif" value="true"/>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveFour()" style="flex:2;" id="saveBtn">Enregistrer</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
+const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
+const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
+if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
+function showToast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='ok'?'ok':'err');setTimeout(()=>t.className='toast',3000);}
+let currentNote=3
+function setNote(n){
+  currentNote=n
+  document.getElementById('f-note').value=n
+  document.querySelectorAll('.sp').forEach((s,i)=>s.classList.toggle('on',i<n))
+}
+function toggleActif(){
+  const tog=document.getElementById('togActif')
+  const inp=document.getElementById('f-actif')
+  const isOn=inp.value==='true'
+  inp.value=String(!isOn)
+  tog.classList.toggle('on',!isOn)
+}
+let activeFilter='tous'
+function setFilter(f){
+  activeFilter=f
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'))
+  document.getElementById('f-'+f).classList.add('active')
+  window.renderCards&&window.renderCards()
+}
+function openPanel(f=null){
+  document.getElementById('panelTitle').textContent=f?'Modifier le fournisseur':'Ajouter un fournisseur'
+  document.getElementById('saveBtn').textContent=f?'Mettre à jour':'Enregistrer'
+  document.getElementById('f-id').value=f?.id||''
+  document.getElementById('f-nom').value=f?.nom||''
+  document.getElementById('f-cat').value=f?.categorie||''
+  document.getElementById('f-contact').value=f?.contact||''
+  document.getElementById('f-email').value=f?.email||''
+  document.getElementById('f-tel').value=f?.telephone||''
+  document.getElementById('f-site').value=f?.site_web||''
+  document.getElementById('f-delai').value=f?.delai_livraison||'J+1'
+  document.getElementById('f-notes').value=f?.notes||''
+  const actif=f?.actif!==false
+  document.getElementById('f-actif').value=String(actif)
+  document.getElementById('togActif').classList.toggle('on',actif)
+  setNote(f?.note||3)
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+  document.getElementById('f-nom').focus()
+}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();})
+</script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const sb=createClient(SB,SK)
+
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+
+try {
+const {data:{session}}=await sb.auth.getSession()
+if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+document.getElementById('uEmail').textContent=session.user.email
+document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
+
+let allFours=[]
+
+async function load(){
+  const {data,error}=await sb.from('fournisseurs').select('*').order('note',{ascending:false}).order('nom')
+  if(error){showError(error.message);return}
+  allFours=data||[]
+  renderAll()
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('pageBody').style.display='flex'
+}
+
+function renderAll(){
+  const total=allFours.length
+  const actifs=allFours.filter(f=>f.actif).length
+  const rapide=allFours.filter(f=>f.actif&&(f.delai_livraison==='J+1'||f.delai_livraison==='2-3 jours')).length
+  const noteMoy=total>0?(allFours.reduce((a,f)=>a+(f.note||0),0)/total).toFixed(1):0
+  document.getElementById('k-total').textContent=total
+  document.getElementById('k-actifs').textContent=actifs
+  document.getElementById('k-rapide').textContent=rapide
+  document.getElementById('k-note').textContent=noteMoy+'★'
+  document.getElementById('ph-sub').textContent=`${total} fournisseur${total>1?'s':''}`
+  document.getElementById('nb-four').textContent=actifs
+  renderCards()
+}
+
+window.renderCards=function(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim()
+  let rows=allFours.filter(f=>{
+    const matchFilter=activeFilter==='tous'||(activeFilter==='actifs'&&f.actif)||(activeFilter==='inactifs'&&!f.actif)
+    const matchSearch=!q||[f.nom,f.categorie,f.contact].some(v=>v&&v.toLowerCase().includes(q))
+    return matchFilter&&matchSearch
+  })
+  const wrap=document.getElementById('cardsWrap')
+  if(rows.length===0){wrap.innerHTML=`<div class="empty-grid"><div class="empty-ico">🏭</div><div class="empty-title">Aucun fournisseur</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">Ajouter le premier</button></div></div>`;return}
+  wrap.innerHTML=rows.map(f=>{
+    const stars=[1,2,3,4,5].map(i=>`<span class="star${i>(f.note||0)?' off':''}"  >★</span>`).join('')
+    return`<div class="four-card ${f.actif?'':'inactive'}">
+      <div class="fc-head">
+        <div class="fc-av">${(f.nom||'?')[0].toUpperCase()}</div>
+        <div class="fc-info">
+          <div class="fc-name">${f.nom}</div>
+          <div class="fc-cat">${f.categorie||'—'}</div>
+        </div>
+        <div class="fc-actions">
+          <button class="act-btn" onclick="editFour(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="act-btn del" onclick="deleteFour(${f.id},'${(f.nom||'').replace(/'/g,"\\'")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        </div>
+      </div>
+      <div class="stars">${stars}</div>
+      <div class="fc-fields">
+        ${f.contact?`<div class="fc-field"><div class="fc-fl">Contact</div><div class="fc-fv">${f.contact}</div></div>`:''}
+        ${f.email?`<div class="fc-field"><div class="fc-fl">Email</div><div class="fc-fv"><a href="mailto:${f.email}" style="color:var(--a);text-decoration:none;">${f.email}</a></div></div>`:''}
+        ${f.telephone?`<div class="fc-field"><div class="fc-fl">Tél.</div><div class="fc-fv">${f.telephone}</div></div>`:''}
+        ${f.site_web?`<div class="fc-field"><div class="fc-fl">Site</div><div class="fc-fv"><a href="${f.site_web}" target="_blank" style="color:var(--a);text-decoration:none;">Visiter →</a></div></div>`:''}
+        ${f.delai_livraison?`<div class="fc-field"><div class="fc-fl">Délai</div><div class="fc-fv">${f.delai_livraison}</div></div>`:''}
+        ${f.notes?`<div class="fc-field"><div class="fc-fl">Notes</div><div class="fc-fv" style="color:var(--t3);">${f.notes}</div></div>`:''}
+      </div>
+      <div class="fc-foot">
+        <span class="tag ${f.actif?'tag-ok':'tag-off'}">${f.actif?'Actif':'Inactif'}</span>
+        <div class="toggle-actif" onclick="toggleActifDB(${f.id},${f.actif})">
+          <div class="tog ${f.actif?'on':''}"><div class="tog-thumb"></div></div>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+window.editFour=function(id){
+  const f=allFours.find(f=>f.id===id)
+  if(f)openPanel(f)
+}
+
+window.toggleActifDB=async function(id,actuel){
+  const {error}=await sb.from('fournisseurs').update({actif:!actuel,updated_at:new Date().toISOString()}).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  const f=allFours.find(f=>f.id===id)
+  if(f)f.actif=!actuel
+  renderAll()
+  showToast(!actuel?'Fournisseur activé ✓':'Fournisseur désactivé','ok')
+}
+
+window.deleteFour=async function(id,nom){
+  if(!confirm(`Supprimer "${nom}" ?`))return
+  const {error}=await sb.from('fournisseurs').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  allFours=allFours.filter(f=>f.id!==id)
+  renderAll()
+  showToast(`"${nom}" supprimé`,'ok')
+}
+
+window.saveFour=async function(){
+  const id=document.getElementById('f-id').value
+  const nom=document.getElementById('f-nom').value.trim()
+  if(!nom){showToast('Le nom est requis','err');return}
+  const payload={
+    nom,
+    categorie:document.getElementById('f-cat').value||null,
+    contact:document.getElementById('f-contact').value.trim()||null,
+    email:document.getElementById('f-email').value.trim()||null,
+    telephone:document.getElementById('f-tel').value.trim()||null,
+    site_web:document.getElementById('f-site').value.trim()||null,
+    delai_livraison:document.getElementById('f-delai').value||null,
+    note:Number(document.getElementById('f-note').value)||3,
+    notes:document.getElementById('f-notes').value.trim()||null,
+    actif:document.getElementById('f-actif').value==='true',
+    updated_at:new Date().toISOString()
+  }
+  document.getElementById('saveBtn').textContent='Enregistrement...'
+  document.getElementById('saveBtn').disabled=true
+  let error
+  if(id){
+    const res=await sb.from('fournisseurs').update(payload).eq('id',id)
+    error=res.error
+    if(!error){const idx=allFours.findIndex(f=>f.id===Number(id));if(idx>=0)allFours[idx]={...allFours[idx],...payload}}
+  } else {
+    const res=await sb.from('fournisseurs').insert(payload).select().single()
+    error=res.error
+    if(!error&&res.data)allFours.unshift(res.data)
+  }
+  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
+  document.getElementById('saveBtn').disabled=false
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  closePanel()
+  renderAll()
+  showToast(id?`"${nom}" mis à jour ✓`:`"${nom}" ajouté ✓`,'ok')
+}
+
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+await load()
+
+} catch(err){
+  console.error(err)
+  showError(err.message||'Erreur inattendue')
+}
+</script>
+</body>
+</html>
