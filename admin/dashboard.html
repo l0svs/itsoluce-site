@@ -199,10 +199,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <span class="tb-crumb"><span>Dashboard</span></span>
   <div class="tb-r">
     <div class="tstrip">
-      <div class="tdot on" data-c="blue"   onclick="setAccent('#3b82f6','rgba(59,130,246,0.12)')"></div>
-      <div class="tdot"    data-c="green"  onclick="setAccent('#34d399','rgba(52,211,153,0.12)')"></div>
-      <div class="tdot"    data-c="violet" onclick="setAccent('#a78bfa','rgba(167,139,250,0.12)')"></div>
-      <div class="tdot"    data-c="amber"  onclick="setAccent('#fbbf24','rgba(251,191,36,0.12)')"></div>
+      <div class="tdot on" data-c="blue"   onclick="setAccent('#3b82f6','rgba(59,130,246,0.12)',this)"></div>
+      <div class="tdot"    data-c="green"  onclick="setAccent('#34d399','rgba(52,211,153,0.12)',this)"></div>
+      <div class="tdot"    data-c="violet" onclick="setAccent('#a78bfa','rgba(167,139,250,0.12)',this)"></div>
+      <div class="tdot"    data-c="amber"  onclick="setAccent('#fbbf24','rgba(251,191,36,0.12)',this)"></div>
     </div>
     <div class="mstrip">
       <button class="mbtn" data-m="light" onclick="setMode('light')">
@@ -268,15 +268,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 </div>
 
 <script>
-function setAccent(c,d){
+function setAccent(c,d,el){
   document.documentElement.style.setProperty('--a',c)
   document.documentElement.style.setProperty('--ad',d)
   localStorage.setItem('erp-a',c)
   localStorage.setItem('erp-d',d)
   document.querySelectorAll('.tdot').forEach(e=>e.classList.remove('on'))
-  event.target.classList.add('on')
+  if(el) el.classList.add('on')
   if(window._charts) window._charts.forEach(ch=>{
-    ch.data.datasets.forEach(ds=>{ds.backgroundColor=ds.backgroundColor instanceof Array?ds.backgroundColor.map(()=>d):d;ds.borderColor=c;})
+    if(ch.data&&ch.data.datasets) ch.data.datasets.forEach(ds=>{
+      if(Array.isArray(ds.backgroundColor)) ds.backgroundColor=ds.backgroundColor.map(()=>d)
+      else ds.backgroundColor=d
+      ds.borderColor=c
+    })
     ch.update()
   })
 }
@@ -317,87 +321,104 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-const {data:{session}}=await sb.auth.getSession()
-if(!session){window.location.href='/admin/login.html'}
+const ldr=document.getElementById('ldr')
+const pg=document.getElementById('pg')
+
+function show(html){
+  ldr.style.display='none'
+  pg.innerHTML=html
+  pg.style.display='block'
+}
+
+function showError(msg){
+  ldr.style.display='none'
+  pg.innerHTML=`<div style="padding:60px;text-align:center;">
+    <div style="font-size:28px;margin-bottom:12px;">⚠️</div>
+    <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:8px;">Erreur de chargement</div>
+    <div style="font-size:12px;color:var(--t3);margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;">${msg}</div>
+    <button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;">Réessayer</button>
+  </div>`
+  pg.style.display='block'
+}
+
+// Auth
+let session
+try {
+  const res=await sb.auth.getSession()
+  session=res.data.session
+} catch(e) { showError('Impossible de vérifier la session. Vérifiez votre connexion.'); throw e }
+if(!session){ window.location.href='/admin/login.html'; throw new Error('No session') }
 
 const email=session.user.email
 document.getElementById('uEmail').textContent=email
 document.getElementById('uAv').textContent=email[0].toUpperCase()
 
-// Charger toutes les données en parallèle
+// Charger toutes les données
 let stock=[],reps=[],fours=[],tasks=[]
-try{
+try {
   const [r1,r2,r3,r4]=await Promise.all([
     sb.from('stock').select('*'),
     sb.from('reparations').select('*'),
     sb.from('fournisseurs').select('*'),
     sb.from('taches').select('*').order('created_at',{ascending:false})
   ])
-  stock=r1.data||[];reps=r2.data||[];fours=r3.data||[];tasks=r4.data||[]
-}catch(e){console.error(e)}
+  stock=r1.data||[]; reps=r2.data||[]; fours=r3.data||[]; tasks=r4.data||[]
+} catch(e) { showError('Impossible de charger les données Supabase : '+e.message); throw e }
 
-// Calculs stock
+// Calculs
 const totalStock=stock.length
 const alrts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte))
 const valeurStock=stock.reduce((a,p)=>a+(Number(p.quantite)*Number(p.prix_achat)),0)
 const recentStock=[...stock].sort((a,b)=>new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at)).slice(0,5)
-
-// Calculs réparations
 const repsActives=reps.filter(r=>r.statut!=='rendu'&&r.statut!=='annule')
 const caTotal=reps.reduce((a,r)=>a+Number(r.prix_final||0),0)
-const caMonth=reps.filter(r=>{const d=new Date(r.created_at);const n=new Date();return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear()}).reduce((a,r)=>a+Number(r.prix_final||0),0)
-
-// Calculs tâches
+const now2=new Date()
+const caMonth=reps.filter(r=>{const d=new Date(r.created_at);return d.getMonth()===now2.getMonth()&&d.getFullYear()===now2.getFullYear()}).reduce((a,r)=>a+Number(r.prix_final||0),0)
 const tasksPending=tasks.filter(t=>!t.faite).length
-const fours_actifs=fours.filter(f=>f.actif)
-
-// Mise à jour sidebar
-const nbAlert=document.getElementById('nb-alert')
-nbAlert.textContent=alrts.length||'—'
-if(!alrts.length)nbAlert.className='nc'
-document.getElementById('nb-rep').textContent=repsActives.length
-document.getElementById('nb-four').textContent=fours_actifs.length
-document.getElementById('nb-wa').textContent='0'
-document.getElementById('nb-task').textContent=tasksPending
-
-// CA par mois pour graphique
-const now=new Date()
-const months=[]
-const caByMonth=[]
-const repsCountByMonth=[]
+const foursActifs=fours.filter(f=>f.actif)
+const months=[],caByMonth=[],repsCountByMonth=[]
 for(let i=5;i>=0;i--){
-  const d=new Date(now.getFullYear(),now.getMonth()-i,1)
+  const d=new Date(now2.getFullYear(),now2.getMonth()-i,1)
   months.push(d.toLocaleDateString('fr-BE',{month:'short'}))
   const m=reps.filter(r=>{const rd=new Date(r.created_at);return rd.getMonth()===d.getMonth()&&rd.getFullYear()===d.getFullYear()})
   caByMonth.push(m.reduce((a,r)=>a+Number(r.prix_final||0),0))
   repsCountByMonth.push(m.length)
 }
+const catCount={}; stock.forEach(p=>{catCount[p.categorie]=(catCount[p.categorie]||0)+1})
+const catLabels=Object.keys(catCount); const catVals=Object.values(catCount)
 
-// Catégories stock pour graphique
-const catCount={}
-stock.forEach(p=>{catCount[p.categorie]=(catCount[p.categorie]||0)+1})
-const catLabels=Object.keys(catCount)
-const catVals=Object.values(catCount)
+// Sidebar badges
+const nbAlert=document.getElementById('nb-alert')
+nbAlert.textContent=alrts.length||'—'
+if(!alrts.length)nbAlert.className='nc'
+document.getElementById('nb-rep').textContent=repsActives.length
+document.getElementById('nb-four').textContent=foursActifs.length
+document.getElementById('nb-task').textContent=tasksPending
 
-// Heures
-const h=new Date().getHours()
-const sal=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir'
-
-// Insights dynamiques
+// Insights
+const h2=new Date().getHours(); const sal=h2<12?'Bonjour':h2<18?'Bon après-midi':'Bonsoir'
 const insights=[]
 if(alrts.length>0) insights.push(`<strong>${alrts.length} pièce${alrts.length>1?'s':''}</strong> sous le seuil d'alerte — pense à réapprovisionner.`)
-if(caMonth===0) insights.push(`Aucun CA enregistré ce mois. Objectif minimal : <strong>200€</strong> (2-3 réparations).`)
-if(tasksPending>0) insights.push(`<strong>${tasksPending} tâche${tasksPending>1?'s':''}</strong> en attente — dont certaines urgentes.`)
-if(caMonth>0&&caMonth<85) insights.push(`CA ce mois inférieur aux charges fixes (<strong>85€</strong>) — activité en déficit.`)
-if(repsActives.length===0&&caTotal===0) insights.push(`Aucune réparation encore enregistrée. Le module Réparations est disponible pour tracker ton premier dossier.`)
+if(caMonth===0) insights.push(`Aucun CA enregistré ce mois. Objectif minimal : <strong>85€</strong> (charges fixes).`)
+if(tasksPending>0) insights.push(`<strong>${tasksPending} tâche${tasksPending>1?'s':''}</strong> en attente dont certaines urgentes.`)
+if(caMonth>0&&caMonth<85) insights.push(`CA inférieur aux charges fixes (<strong>85€</strong>) ce mois — activité en déficit.`)
 
-const accentColor=getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#3b82f6'
-const dimColor=getComputedStyle(document.documentElement).getPropertyValue('--ad').trim()||'rgba(59,130,246,0.12)'
-const gridColor=getComputedStyle(document.documentElement).getPropertyValue('--ln').trim()||'rgba(255,255,255,0.06)'
-const textColor=getComputedStyle(document.documentElement).getPropertyValue('--t3').trim()||'#4b5059'
+// Calendrier dynamique
+function buildCal(){
+  const d=new Date(); const year=d.getFullYear(); const month=d.getMonth(); const today=d.getDate()
+  const first=new Date(year,month,1).getDay(); const days=new Date(year,month+1,0).getDate()
+  const start=(first===0?6:first-1)
+  let h='<div class="cd cdh">Lu</div><div class="cd cdh">Ma</div><div class="cd cdh">Me</div><div class="cd cdh">Je</div><div class="cd cdh">Ve</div><div class="cd cdh">Sa</div><div class="cd cdh">Di</div>'
+  for(let i=0;i<start;i++)h+=`<div class="cd"></div>`
+  for(let i=1;i<=days;i++)h+=`<div class="cd${i===today?' cdt':''}">${i}</div>`
+  return h
+}
 
-document.getElementById('pg').innerHTML=`
+// Stars
+function stars(n){return[1,2,3,4,5].map(i=>`<span class="star${i>n?' off':''}">★</span>`).join('')}
 
+// HTML
+const html=`
 <div class="ph">
   <div>
     <div class="pt">${sal}</div>
@@ -406,266 +427,109 @@ document.getElementById('pg').innerHTML=`
   <div class="schip"><div class="pulse"></div>IT Soluce · Indépendant complémentaire</div>
 </div>
 
-${insights.length>0?`
-<div class="g" style="margin-bottom:12px;">
-  ${insights.slice(0,2).map(i=>`<div class="insight"><div class="insight-ico">💡</div><div class="insight-text">${i}</div></div>`).join('')}
-</div>`:''}
+${insights.length>0?`<div class="g" style="grid-template-columns:repeat(${Math.min(insights.length,2)},1fr);margin-bottom:12px;">${insights.slice(0,2).map(i=>`<div class="insight"><div class="insight-ico">💡</div><div class="insight-text">${i}</div></div>`).join('')}</div>`:''}
 
-<!-- KPIs Finance -->
 <div class="sh"><span class="sl">Finances</span></div>
 <div class="g g4">
-  <div class="kpi">
-    <div class="kl">CA ce mois</div>
-    <div class="kn">${caMonth.toFixed(0)} €</div>
-    <div class="km"><span class="tag ${caMonth>=85?'tok':'tn'}">${caMonth>=85?'Seuil atteint':'objectif 200€'}</span></div>
-  </div>
-  <div class="kpi">
-    <div class="kl">CA total</div>
-    <div class="kn">${caTotal.toFixed(0)} €</div>
-    <div class="km"><span class="tag tn">${reps.length} réparation${reps.length>1?'s':''}</span></div>
-  </div>
-  <div class="kpi">
-    <div class="kl">Bénéfice net (mois)</div>
-    <div class="kn" style="color:${caMonth-85>=0?'var(--ok)':'var(--d)'}">${(caMonth-85).toFixed(0)} €</div>
-    <div class="km"><span class="tag tn">charges : 85€</span></div>
-  </div>
-  <div class="kpi">
-    <div class="kl">Valeur du stock</div>
-    <div class="kn">${valeurStock.toFixed(0)} €</div>
-    <div class="km"><span class="tag tn">${totalStock} références</span>${alrts.length>0?`<span class="tag tw">${alrts.length} alerte${alrts.length>1?'s':''}</span>`:''}</div>
-  </div>
+  <div class="kpi"><div class="kl">CA ce mois</div><div class="kn">${caMonth.toFixed(0)} €</div><div class="km"><span class="tag ${caMonth>=85?'tok':'tn'}">${caMonth>=85?'Seuil atteint':'objectif 85€'}</span></div></div>
+  <div class="kpi"><div class="kl">CA total</div><div class="kn">${caTotal.toFixed(0)} €</div><div class="km"><span class="tag tn">${reps.length} réparation${reps.length>1?'s':''}</span></div></div>
+  <div class="kpi"><div class="kl">Bénéfice net (mois)</div><div class="kn" style="color:${caMonth-85>=0?'var(--ok)':'var(--d)'}">${(caMonth-85).toFixed(0)} €</div><div class="km"><span class="tag tn">charges : 85€</span></div></div>
+  <div class="kpi"><div class="kl">Valeur du stock</div><div class="kn">${valeurStock.toFixed(0)} €</div><div class="km"><span class="tag tn">${totalStock} références</span>${alrts.length>0?` <span class="tag tw">${alrts.length} alerte${alrts.length>1?'s':''}</span>`:''}</div></div>
 </div>
 
-<!-- KPIs Opérations -->
 <div class="sh"><span class="sl">Opérations</span></div>
 <div class="g g4">
-  <div class="kpi">
-    <div class="kl">Réparations actives</div>
-    <div class="kn">${repsActives.length}</div>
-    <div class="km"><span class="tag tn">en cours</span></div>
-  </div>
-  <div class="kpi">
-    <div class="kl">Terminées ce mois</div>
-    <div class="kn">${repsCountByMonth[5]||0}</div>
-    <div class="km"><span class="tag tn">objectif 5/mois</span></div>
-  </div>
-  <div class="kpi">
-    <div class="kl">Tâches en attente</div>
-    <div class="kn">${tasksPending}</div>
-    <div class="km"><span class="tag ${tasksPending>0?'tw':'tok'}">${tasksPending>0?'à traiter':'tout à jour'}</span></div>
-  </div>
-  <div class="kpi">
-    <div class="kl">Fournisseurs actifs</div>
-    <div class="kn">${fours_actifs.length}</div>
-    <div class="km"><span class="tag tn">${fours.length} au total</span></div>
-  </div>
+  <div class="kpi"><div class="kl">Réparations actives</div><div class="kn">${repsActives.length}</div><div class="km"><span class="tag tn">en cours</span></div></div>
+  <div class="kpi"><div class="kl">Terminées ce mois</div><div class="kn">${repsCountByMonth[5]||0}</div><div class="km"><span class="tag tn">objectif 5/mois</span></div></div>
+  <div class="kpi"><div class="kl">Tâches en attente</div><div class="kn">${tasksPending}</div><div class="km"><span class="tag ${tasksPending>0?'tw':'tok'}">${tasksPending>0?'à traiter':'tout à jour'}</span></div></div>
+  <div class="kpi"><div class="kl">Fournisseurs actifs</div><div class="kn">${foursActifs.length}</div><div class="km"><span class="tag tn">${fours.length} au total</span></div></div>
 </div>
 
-<!-- REPORTS & INSIGHTS -->
 <div class="sh"><span class="sl">Reports & Insights</span><span class="sa">6 derniers mois</span></div>
 <div class="g g3">
-  <div class="card" style="grid-column:span 2;">
-    <div class="ch"><span class="ct">Chiffre d'affaires mensuel</span><span style="font-size:11px;color:var(--t3)">Total : ${caTotal.toFixed(0)}€</span></div>
-    <div class="chart-wrap" style="height:180px;"><canvas id="chartCA"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Répartition du stock</span><span style="font-size:11px;color:var(--t3)">${totalStock} pièces</span></div>
-    <div class="chart-wrap" style="height:180px;"><canvas id="chartStock"></canvas></div>
-  </div>
+  <div class="card" style="grid-column:span 2;"><div class="ch"><span class="ct">Chiffre d'affaires mensuel</span><span style="font-size:11px;color:var(--t3)">Total : ${caTotal.toFixed(0)}€</span></div><div class="chart-wrap" style="height:180px;"><canvas id="chartCA"></canvas></div></div>
+  <div class="card"><div class="ch"><span class="ct">Répartition stock</span><span style="font-size:11px;color:var(--t3)">${totalStock} pièces</span></div><div class="chart-wrap" style="height:180px;"><canvas id="chartStock"></canvas></div></div>
 </div>
 <div class="g g2">
-  <div class="card">
-    <div class="ch"><span class="ct">Réparations par mois</span></div>
-    <div class="chart-wrap" style="height:140px;"><canvas id="chartReps"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Stock — niveaux critiques</span></div>
-    <div class="chart-wrap" style="height:140px;"><canvas id="chartAlerts"></canvas></div>
-  </div>
+  <div class="card"><div class="ch"><span class="ct">Réparations / mois</span></div><div class="chart-wrap" style="height:140px;"><canvas id="chartReps"></canvas></div></div>
+  <div class="card"><div class="ch"><span class="ct">Niveaux de stock critiques</span></div><div class="chart-wrap" style="height:140px;"><canvas id="chartAlerts"></canvas></div></div>
 </div>
 
-<!-- OPÉRATIONS + CALENDRIER -->
 <div class="sh"><span class="sl">Activité</span></div>
 <div class="g g52">
   <div class="g" style="gap:10px;">
-    <div class="card">
-      <div class="ch"><span class="ct">Réparations en cours</span><a href="#" class="cl">Voir →</a></div>
-      ${repsActives.length===0
-        ?`<div class="row"><div class="dot dg"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucune réparation active</div></div></div>`
-        :repsActives.slice(0,4).map(r=>`<div class="row"><div class="dot db"></div><div class="rm"><div class="rn">${r.client_nom}</div><div class="rs">${r.appareil||'—'} · ${r.marque||''} ${r.modele||''}</div></div><div class="rr"><span class="tag tn">${r.statut}</span></div></div>`).join('')}
-    </div>
-    <div class="card">
-      <div class="ch"><span class="ct">Derniers contacts</span><a href="#" class="cl">CRM →</a></div>
-      ${reps.length===0
-        ?`<div class="row"><div class="dot dg"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucun client encore</div></div></div>`
-        :reps.slice(-3).reverse().map(r=>`<div class="row"><div class="dot db"></div><div class="rm"><div class="rn">${r.client_nom}</div><div class="rs">${r.appareil||'—'} · ${new Date(r.created_at).toLocaleDateString('fr-BE')}</div></div><div class="rr"><strong>${Number(r.prix_final||0).toFixed(0)}€</strong></div></div>`).join('')}
-    </div>
+    <div class="card"><div class="ch"><span class="ct">Réparations en cours</span><a href="#" class="cl">Voir →</a></div>${repsActives.length===0?`<div class="row"><div class="dot dg"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucune réparation active</div></div></div>`:repsActives.slice(0,4).map(r=>`<div class="row"><div class="dot db"></div><div class="rm"><div class="rn">${r.client_nom}</div><div class="rs">${r.appareil||'—'}</div></div><div class="rr"><span class="tag tn">${r.statut}</span></div></div>`).join('')}</div>
+    <div class="card"><div class="ch"><span class="ct">Derniers contacts</span><a href="#" class="cl">CRM →</a></div>${reps.length===0?`<div class="row"><div class="dot dg"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucun client encore</div></div></div>`:reps.slice(-4).reverse().map(r=>`<div class="row"><div class="dot db"></div><div class="rm"><div class="rn">${r.client_nom}</div><div class="rs">${r.appareil||'—'} · ${new Date(r.created_at).toLocaleDateString('fr-BE')}</div></div><div class="rr"><strong>${Number(r.prix_final||0).toFixed(0)}€</strong></div></div>`).join('')}</div>
   </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Calendrier — ${new Date().toLocaleDateString('fr-BE',{month:'long',year:'numeric'})}</span><a href="#" class="cl">Planning →</a></div>
-    <div class="cal">
-      <div class="cd cdh">Lu</div><div class="cd cdh">Ma</div><div class="cd cdh">Me</div><div class="cd cdh">Je</div><div class="cd cdh">Ve</div><div class="cd cdh">Sa</div><div class="cd cdh">Di</div>
-      ${(()=>{
-        const d=new Date();const year=d.getFullYear();const month=d.getMonth();const today=d.getDate()
-        const first=new Date(year,month,1).getDay();const days=new Date(year,month+1,0).getDate()
-        const start=(first===0?6:first-1)
-        let html=''
-        for(let i=0;i<start;i++)html+=`<div class="cd"></div>`
-        for(let i=1;i<=days;i++)html+=`<div class="cd ${i===today?'cdt':''}">${i}</div>`
-        return html
-      })()}
-    </div>
-  </div>
+  <div class="card"><div class="ch"><span class="ct">Calendrier — ${new Date().toLocaleDateString('fr-BE',{month:'long',year:'numeric'})}</span></div><div class="cal">${buildCal()}</div></div>
 </div>
 
-<!-- WHATSAPP + FOURNISSEURS + TÂCHES -->
 <div class="sh"><span class="sl">Communication & Partenaires</span></div>
 <div class="g g3">
-
-  <!-- WhatsApp Business -->
   <div class="wa-card">
-    <div class="wa-head">
-      <div class="wa-ico">💬</div>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--t1);">WhatsApp Business</div>
-        <div style="font-size:11px;color:var(--t3);">+32 474 05 66 59</div>
-      </div>
-      <span class="tag tok" style="margin-left:auto;">Actif</span>
-    </div>
-    <div class="wa-stat">
-      <div class="wa-s"><div class="wa-sl">Messages reçus</div><div class="wa-sv">1</div></div>
-      <div class="wa-s"><div class="wa-sl">Non lus</div><div class="wa-sv" style="color:var(--w)">1</div></div>
-      <div class="wa-s"><div class="wa-sl">Répondu</div><div class="wa-sv" style="color:var(--ok)">0</div></div>
-    </div>
-    <div class="wa-msg">
-      <div class="wa-bubble">
-        <div class="wa-bname">Fanny Bohée</div>
-        <div class="wa-btext">Bonjour, suite à votre mail concernant la tablette Kurio de mon fils...</div>
-        <div class="wa-btime">31 mai · 12:29</div>
-      </div>
-    </div>
-    <div class="row" style="padding:10px 14px;">
-      <div class="rm" style="color:var(--t3);font-size:12px;">Ouvrir WhatsApp Business</div>
-      <a href="https://wa.me/32474056659" target="_blank" class="tag tb" style="text-decoration:none;">Ouvrir →</a>
-    </div>
+    <div class="wa-head"><div class="wa-ico">💬</div><div><div style="font-size:12px;font-weight:600;color:var(--t1);">WhatsApp Business</div><div style="font-size:11px;color:var(--t3);">+32 474 05 66 59</div></div><span class="tag tok" style="margin-left:auto;">Actif</span></div>
+    <div class="wa-stat"><div class="wa-s"><div class="wa-sl">Reçus</div><div class="wa-sv">1</div></div><div class="wa-s"><div class="wa-sl">Non lus</div><div class="wa-sv" style="color:var(--w)">1</div></div><div class="wa-s"><div class="wa-sl">Répondus</div><div class="wa-sv" style="color:var(--ok)">0</div></div></div>
+    <div class="wa-msg"><div class="wa-bubble"><div class="wa-bname">Fanny Bohée</div><div class="wa-btext">Bonjour, suite à votre mail concernant la tablette Kurio...</div><div class="wa-btime">31 mai · 12:29</div></div></div>
+    <div class="row"><div class="rm" style="color:var(--t3);font-size:12px;">Ouvrir WhatsApp Business</div><a href="https://wa.me/32474056659" target="_blank" class="tag tb" style="text-decoration:none;">Ouvrir →</a></div>
   </div>
-
-  <!-- Fournisseurs -->
-  <div class="card">
-    <div class="ch"><span class="ct">Fournisseurs</span><a href="#" class="cl">Gérer →</a></div>
-    ${fours_actifs.length===0
-      ?`<div class="row"><div class="rm"><div class="rn" style="color:var(--t3)">Aucun fournisseur</div></div></div>`
-      :fours_actifs.map(f=>`
-      <div class="frow">
-        <div class="fav">${f.nom[0]}</div>
-        <div class="fm">
-          <div class="fn">${f.nom}</div>
-          <div class="fs">${f.categorie||'—'} · ${f.delai_livraison||'—'}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="stars">${[1,2,3,4,5].map(i=>`<span class="star${i>f.note?' off':''}">★</span>`).join('')}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:2px;">${f.actif?'<span class="tag tok">Actif</span>':'<span class="tag tn">Inactif</span>'}</div>
-        </div>
-      </div>`).join('')}
-  </div>
-
-  <!-- Tâches -->
-  <div class="card">
-    <div class="ch"><span class="ct">Tâches prioritaires</span><span style="font-size:11px;color:var(--t3);">${tasksPending} en attente</span></div>
-    ${tasks.slice(0,7).map(t=>`
-    <div class="task">
-      <div class="tbox ${t.faite?'done':''}"></div>
-      <span class="ttxt ${t.faite?'done':''}">${t.titre}</span>
-      <span class="tag ${t.priorite==='urgente'?'td':t.priorite==='importante'?'tw':t.faite?'tok':'tn'}">${t.faite?'✓':t.priorite}</span>
-    </div>`).join('')}
-  </div>
+  <div class="card"><div class="ch"><span class="ct">Fournisseurs</span><a href="#" class="cl">Gérer →</a></div>${foursActifs.length===0?`<div class="row"><div class="rm"><div class="rn" style="color:var(--t3)">Aucun fournisseur</div></div></div>`:foursActifs.map(f=>`<div class="frow"><div class="fav">${f.nom[0]}</div><div class="fm"><div class="fn">${f.nom}</div><div class="fs">${f.categorie||'—'} · ${f.delai_livraison||'—'}</div></div><div style="text-align:right;"><div class="stars">${stars(f.note||3)}</div></div></div>`).join('')}</div>
+  <div class="card"><div class="ch"><span class="ct">Tâches prioritaires</span><span style="font-size:11px;color:var(--t3);">${tasksPending} en attente</span></div>${tasks.slice(0,7).map(t=>`<div class="task"><div class="tbox ${t.faite?'done':''}"></div><span class="ttxt ${t.faite?'done':''}">${t.titre}</span><span class="tag ${t.priorite==='urgente'?'td':t.priorite==='importante'?'tw':t.faite?'tok':'tn'}">${t.faite?'✓':t.priorite}</span></div>`).join('')}</div>
 </div>
 
-<!-- ALERTES STOCK + RÉSEAUX SOCIAUX + ADMIN -->
 <div class="sh"><span class="sl">Surveillance & Administratif</span></div>
 <div class="g g3">
-  <div class="card">
-    <div class="ch"><span class="ct">Alertes stock</span><a href="/admin/stock.html" class="cl">Stock →</a></div>
-    ${alrts.length===0
-      ?`<div class="row"><div class="dot dok"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucune alerte</div><div class="rs">Tous les niveaux sont corrects</div></div></div>`
-      :alrts.slice(0,5).map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dd':'dw'}"></div><div class="rm"><div class="rn">${p.nom}</div><div class="rs">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="rr"><span class="tag ${Number(p.quantite)===0?'td':'tw'}">${Number(p.quantite)===0?'Rupture':'Faible'}</span></div></div>`).join('')}
-    ${recentStock.length>0?`
-    <div class="ch" style="border-top:1px solid var(--ln);margin-top:0;"><span class="ct">Dernières pièces</span></div>
-    ${recentStock.map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dd':Number(p.quantite)<=Number(p.seuil_alerte)?'dw':'dok'}"></div><div class="rm"><div class="rn">${p.nom}</div><div class="rs">${p.categorie} · ${p.fournisseur||'—'}</div></div><div class="rr"><strong>${p.quantite}</strong><span> unités</span></div></div>`).join('')}`:''}
+  <div class="card"><div class="ch"><span class="ct">Alertes stock</span><a href="/admin/stock.html" class="cl">Stock →</a></div>${alrts.length===0?`<div class="row"><div class="dot dok"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucune alerte</div></div></div>`:alrts.slice(0,5).map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dd':'dw'}"></div><div class="rm"><div class="rn">${p.nom}</div><div class="rs">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="rr"><span class="tag ${Number(p.quantite)===0?'td':'tw'}">${Number(p.quantite)===0?'Rupture':'Faible'}</span></div></div>`).join('')}
+  ${recentStock.length>0?`<div class="ch" style="border-top:1px solid var(--ln);"><span class="ct">Pièces récentes</span></div>${recentStock.map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dd':Number(p.quantite)<=Number(p.seuil_alerte)?'dw':'dok'}"></div><div class="rm"><div class="rn">${p.nom}</div><div class="rs">${p.categorie} · ${p.fournisseur||'—'}</div></div><div class="rr"><strong>${p.quantite}</strong><span> u.</span></div></div>`).join('')}`:''}
   </div>
-
   <div class="card">
-    <div class="ch"><span class="ct">Réseaux sociaux</span><a href="#" class="cl">Marketing →</a></div>
+    <div class="ch"><span class="ct">Réseaux sociaux</span></div>
     <div class="srow"><div class="sico">📸</div><div class="rm"><div class="rn">Instagram</div><div class="rs">@itsoluce.be</div></div><div class="rr"><strong>0</strong><span> abonnés</span></div></div>
     <div class="srow"><div class="sico">🎵</div><div class="rm"><div class="rn">TikTok</div><div class="rs">@itsoluce</div></div><div class="rr"><strong>0</strong><span> abonnés</span></div></div>
     <div class="srow"><div class="sico">💼</div><div class="rm"><div class="rn">LinkedIn</div><div class="rs">IT Soluce</div></div><div class="rr"><strong>0</strong><span> abonnés</span></div></div>
-    <div class="ch" style="border-top:1px solid var(--ln);"><span class="ct">Administratif</span></div>
-    <div class="row"><div class="dot dw"></div><div class="rm"><div class="rn">Numéro BCE</div><div class="rs">En attente UCM</div></div><div class="rr"><span class="tag tw">En cours</span></div></div>
-    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Caisse sociale</div><div class="rs">Prochaine cotisation Q3 2026</div></div><div class="rr"><strong>~170€</strong></div></div>
-    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Charges fixes</div><div class="rs">Accountable · UCM · OVH</div></div><div class="rr"><strong>85€</strong><span>/mois</span></div></div>
   </div>
-
   <div class="card">
-    <div class="ch"><span class="ct">Seuil de rentabilité</span></div>
-    <div class="chart-wrap" style="height:160px;"><canvas id="chartRenta"></canvas></div>
-    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Charges fixes</div></div><div class="rr"><strong>85 €</strong><span>/mois</span></div></div>
-    <div class="row"><div class="dot ${caMonth>=85?'dok':'dd'}"></div><div class="rm"><div class="rn">CA ce mois</div></div><div class="rr" style="color:${caMonth>=85?'var(--ok)':'var(--d)'}"><strong>${caMonth.toFixed(0)} €</strong></div></div>
-    <div class="row"><div class="dot dok"></div><div class="rm"><div class="rn">Seuil rentabilité</div><div class="rs">~1-2 répar./mois</div></div><div class="rr"><strong style="color:var(--ok)">85 €</strong></div></div>
+    <div class="ch"><span class="ct">Administratif</span></div>
+    <div class="row"><div class="dot dw"></div><div class="rm"><div class="rn">Numéro BCE</div><div class="rs">En attente UCM</div></div><div class="rr"><span class="tag tw">En cours</span></div></div>
+    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Caisse sociale UCM</div><div class="rs">Q3 2026</div></div><div class="rr"><strong>~170€</strong></div></div>
+    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Charges fixes</div><div class="rs">Accountable · UCM · OVH</div></div><div class="rr"><strong>85€</strong><span>/mois</span></div></div>
+    <div class="row"><div class="dot dok"></div><div class="rm"><div class="rn">Seuil rentabilité</div><div class="rs">Répar. min./mois</div></div><div class="rr"><strong style="color:var(--ok)">1–2</strong></div></div>
+    <div class="ch" style="border-top:1px solid var(--ln);"><span class="ct">Rentabilité ce mois</span></div>
+    <div class="chart-wrap" style="height:120px;"><canvas id="chartRenta"></canvas></div>
   </div>
 </div>
 `
 
-document.getElementById('ldr').style.display='none'
-document.getElementById('pg').style.display='block'
+show(html)
 
-// Couleurs pour les charts
+// Charts
 const accent=getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#3b82f6'
 const dim=getComputedStyle(document.documentElement).getPropertyValue('--ad').trim()||'rgba(59,130,246,0.12)'
 const grid=getComputedStyle(document.documentElement).getPropertyValue('--ln').trim()||'rgba(255,255,255,0.06)'
 const tc=getComputedStyle(document.documentElement).getPropertyValue('--t3').trim()||'#4b5059'
 
-const commonOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(0,0,0,0.8)',titleFont:{size:11},bodyFont:{size:11},padding:8}},scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:grid}},y:{ticks:{color:tc,font:{size:10}},grid:{color:grid},beginAtZero:true}}}
+Chart.defaults.font.family="'Inter',sans-serif"
+const baseOpts={responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8,borderColor:'rgba(255,255,255,0.1)',borderWidth:1}},scales:{x:{ticks:{color:tc,font:{size:10},maxTicksLimit:6},grid:{color:grid,drawBorder:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:grid,drawBorder:false},beginAtZero:true}}}
 
-// Chart CA
-const ctxCA=document.getElementById('chartCA')
-if(ctxCA){
-  const c=new Chart(ctxCA,{type:'bar',data:{labels:${JSON.stringify(months)},datasets:[{label:'CA (€)',data:${JSON.stringify(caByMonth)},backgroundColor:dim,borderColor:accent,borderWidth:1.5,borderRadius:4}]},options:{...commonOpts,plugins:{...commonOpts.plugins,tooltip:{...commonOpts.plugins.tooltip,callbacks:{label:c=>`${c.parsed.y}€`}}}}})
-  window._charts.push(c)
+const cCA=new Chart(document.getElementById('chartCA'),{type:'bar',data:{labels:${JSON.stringify(months)},datasets:[{data:${JSON.stringify(caByMonth)},backgroundColor:${JSON.stringify(caByMonth)}.map(v=>v>0?dim:'rgba(255,255,255,0.03)'),borderColor:${JSON.stringify(caByMonth)}.map(v=>v>0?accent:'rgba(255,255,255,0.08)'),borderWidth:1.5,borderRadius:4}]},options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:c=>`${c.parsed.y}€`}}}}})
+window._charts.push(cCA)
+
+const catL=${JSON.stringify(catLabels.length>0?catLabels:['Vide'])}
+const catV=${JSON.stringify(catVals.length>0?catVals:[1])}
+const palette=['#3b82f6','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4','#fb923c']
+const cStock=new Chart(document.getElementById('chartStock'),{type:'doughnut',data:{labels:catL,datasets:[{data:catV,backgroundColor:palette.slice(0,catL.length),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',animation:{duration:600},plugins:{legend:{display:true,position:'bottom',labels:{color:tc,font:{size:10},padding:8,boxWidth:10,boxHeight:10}}}}})
+window._charts.push(cStock)
+
+const cReps=new Chart(document.getElementById('chartReps'),{type:'line',data:{labels:${JSON.stringify(months)},datasets:[{data:${JSON.stringify(repsCountByMonth)},borderColor:accent,backgroundColor:dim,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:accent,pointBorderWidth:0}]},options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:c=>`${c.parsed.y} répar.`}}}}})
+window._charts.push(cReps)
+
+const top5=stock.sort((a,b)=>Number(a.quantite)-Number(b.quantite)).slice(0,5)
+if(top5.length>0){
+  const cAl=new Chart(document.getElementById('chartAlerts'),{type:'bar',data:{labels:top5.map(p=>p.nom.substring(0,16)),datasets:[{data:top5.map(p=>Number(p.quantite)),backgroundColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'rgba(248,113,113,0.3)':dim),borderColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'#f87171':accent),borderWidth:1.5,borderRadius:3}]},options:{...baseOpts,indexAxis:'y',scales:{x:{...baseOpts.scales.x,beginAtZero:true},y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{size:9}}}}}})
+  window._charts.push(cAl)
 }
 
-// Chart Stock doughnut
-const ctxS=document.getElementById('chartStock')
-if(ctxS){
-  const cats=${JSON.stringify(catLabels)}
-  const vals=${JSON.stringify(catVals)}
-  const baseColors=['#3b82f6','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4','#fb923c']
-  if(cats.length===0){cats.push('Vide');vals.push(1)}
-  const c=new Chart(ctxS,{type:'doughnut',data:{labels:cats,datasets:[{data:vals,backgroundColor:baseColors.slice(0,cats.length),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{color:tc,font:{size:10},padding:6,boxWidth:10}}}}})
-  window._charts.push(c)
-}
-
-// Chart Réparations
-const ctxR=document.getElementById('chartReps')
-if(ctxR){
-  const c=new Chart(ctxR,{type:'line',data:{labels:${JSON.stringify(months)},datasets:[{label:'Réparations',data:${JSON.stringify(repsCountByMonth)},borderColor:accent,backgroundColor:dim,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:accent}]},options:{...commonOpts}})
-  window._charts.push(c)
-}
-
-// Chart Alertes stock (jauge horizontale)
-const ctxAl=document.getElementById('chartAlerts')
-if(ctxAl){
-  const top5=stock.sort((a,b)=>Number(a.quantite)-Number(b.quantite)).slice(0,5)
-  const c=new Chart(ctxAl,{type:'bar',data:{labels:top5.map(p=>p.nom.substring(0,18)),datasets:[{label:'Stock',data:top5.map(p=>p.quantite),backgroundColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'rgba(248,113,113,0.3)':dim),borderColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'#f87171':accent),borderWidth:1.5,borderRadius:3}]},options:{...commonOpts,indexAxis:'y',scales:{x:{...commonOpts.scales.x,beginAtZero:true},y:{...commonOpts.scales.y,ticks:{...commonOpts.scales.y.ticks,font:{size:9}}}}}})
-  window._charts.push(c)
-}
-
-// Chart Rentabilité (gauge)
-const ctxRenta=document.getElementById('chartRenta')
-if(ctxRenta){
-  const pct=Math.min((caMonth/85)*100,150)
-  const c=new Chart(ctxRenta,{type:'doughnut',data:{labels:['CA','Restant'],datasets:[{data:[Math.min(caMonth,85),Math.max(0,85-caMonth)],backgroundColor:[caMonth>=85?'rgba(52,211,153,0.4)':'rgba(251,191,36,0.4)',grid],borderWidth:0,circumference:180,rotation:270}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}})
-  window._charts.push(c)
-}
+const cR=new Chart(document.getElementById('chartRenta'),{type:'doughnut',data:{labels:['CA','Restant'],datasets:[{data:[Math.min(caMonth,85),Math.max(0,85-caMonth)],backgroundColor:[caMonth>=85?'rgba(52,211,153,0.4)':'rgba(251,191,36,0.35)',grid],borderWidth:0,circumference:180,rotation:270}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',animation:{duration:600},plugins:{legend:{display:false},tooltip:{enabled:false}}}})
+window._charts.push(cR)
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 </script>
