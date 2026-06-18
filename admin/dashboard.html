@@ -205,6 +205,15 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
   </main>
 </div>
 
+<script>
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t)
+  localStorage.setItem('erp-theme', t)
+  document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === t))
+}
+const savedTheme = localStorage.getItem('erp-theme') || 'blue'
+setTheme(savedTheme)
+</script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SUPABASE_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co'
@@ -218,20 +227,17 @@ const email = session.user.email
 document.getElementById('userEmail').textContent = email
 document.getElementById('userAvatar').textContent = email[0].toUpperCase()
 
-const savedTheme = localStorage.getItem('erp-theme') || 'blue'
-setTheme(savedTheme)
+let stockData = []
+try {
+  const { data, error } = await supabase.from('stock').select('*')
+  if (error) { console.error('Erreur Supabase:', error) }
+  else { stockData = data || [] }
+} catch(e) { console.error('Erreur réseau:', e) }
 
-window.setTheme = function(t) {
-  document.documentElement.setAttribute('data-theme', t)
-  localStorage.setItem('erp-theme', t)
-  document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === t))
-}
-
-const { data: stockData } = await supabase.from('stock').select('*')
-const totalRefs = stockData?.length || 0
-const alertes = stockData?.filter(p => Number(p.quantite) <= Number(p.seuil_alerte)).length || 0
-const valeurStock = stockData?.reduce((a, p) => a + (Number(p.quantite) * Number(p.prix_achat)), 0) || 0
-const recent = stockData ? [...stockData].sort((a,b) => new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)).slice(0,5) : []
+const totalRefs = stockData.length
+const alertes = stockData.filter(p => Number(p.quantite) <= Number(p.seuil_alerte)).length
+const valeurStock = stockData.reduce((a, p) => a + (Number(p.quantite) * Number(p.prix_achat)), 0)
+const recent = [...stockData].sort((a,b) => new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)).slice(0,5)
 
 document.getElementById('nb-stock').textContent = totalRefs
 if (alertes > 0) { document.getElementById('nb-stock').className = 'nav-badge nav-badge--alert'; document.getElementById('nb-stock').textContent = alertes }
