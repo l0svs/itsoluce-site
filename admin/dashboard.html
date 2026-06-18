@@ -508,28 +508,115 @@ const grid=getComputedStyle(document.documentElement).getPropertyValue('--ln').t
 const tc=getComputedStyle(document.documentElement).getPropertyValue('--t3').trim()||'#4b5059'
 
 Chart.defaults.font.family="'Inter',sans-serif"
-const baseOpts={responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8,borderColor:'rgba(255,255,255,0.1)',borderWidth:1}},scales:{x:{ticks:{color:tc,font:{size:10},maxTicksLimit:6},grid:{color:grid,drawBorder:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:grid,drawBorder:false},beginAtZero:true}}}
 
-const cCA=new Chart(document.getElementById('chartCA'),{type:'bar',data:{labels:${JSON.stringify(months)},datasets:[{data:${JSON.stringify(caByMonth)},backgroundColor:${JSON.stringify(caByMonth)}.map(v=>v>0?dim:'rgba(255,255,255,0.03)'),borderColor:${JSON.stringify(caByMonth)}.map(v=>v>0?accent:'rgba(255,255,255,0.08)'),borderWidth:1.5,borderRadius:4}]},options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:c=>`${c.parsed.y}€`}}}}})
-window._charts.push(cCA)
-
-const catL=${JSON.stringify(catLabels.length>0?catLabels:['Vide'])}
-const catV=${JSON.stringify(catVals.length>0?catVals:[1])}
-const palette=['#3b82f6','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4','#fb923c']
-const cStock=new Chart(document.getElementById('chartStock'),{type:'doughnut',data:{labels:catL,datasets:[{data:catV,backgroundColor:palette.slice(0,catL.length),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',animation:{duration:600},plugins:{legend:{display:true,position:'bottom',labels:{color:tc,font:{size:10},padding:8,boxWidth:10,boxHeight:10}}}}})
-window._charts.push(cStock)
-
-const cReps=new Chart(document.getElementById('chartReps'),{type:'line',data:{labels:${JSON.stringify(months)},datasets:[{data:${JSON.stringify(repsCountByMonth)},borderColor:accent,backgroundColor:dim,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:accent,pointBorderWidth:0}]},options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,callbacks:{label:c=>`${c.parsed.y} répar.`}}}}})
-window._charts.push(cReps)
-
-const top5=stock.sort((a,b)=>Number(a.quantite)-Number(b.quantite)).slice(0,5)
-if(top5.length>0){
-  const cAl=new Chart(document.getElementById('chartAlerts'),{type:'bar',data:{labels:top5.map(p=>p.nom.substring(0,16)),datasets:[{data:top5.map(p=>Number(p.quantite)),backgroundColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'rgba(248,113,113,0.3)':dim),borderColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'#f87171':accent),borderWidth:1.5,borderRadius:3}]},options:{...baseOpts,indexAxis:'y',scales:{x:{...baseOpts.scales.x,beginAtZero:true},y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{size:9}}}}}})
-  window._charts.push(cAl)
+function mkOpts(extra){
+  return Object.assign({
+    responsive:true,
+    maintainAspectRatio:false,
+    animation:{duration:600},
+    plugins:{
+      legend:{display:false},
+      tooltip:{backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}
+    },
+    scales:{
+      x:{ticks:{color:tc,font:{size:10},maxTicksLimit:6},grid:{color:grid,drawBorder:false}},
+      y:{ticks:{color:tc,font:{size:10}},grid:{color:grid,drawBorder:false},beginAtZero:true}
+    }
+  }, extra||{})
 }
 
-const cR=new Chart(document.getElementById('chartRenta'),{type:'doughnut',data:{labels:['CA','Restant'],datasets:[{data:[Math.min(caMonth,85),Math.max(0,85-caMonth)],backgroundColor:[caMonth>=85?'rgba(52,211,153,0.4)':'rgba(251,191,36,0.35)',grid],borderWidth:0,circumference:180,rotation:270}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',animation:{duration:600},plugins:{legend:{display:false},tooltip:{enabled:false}}}})
-window._charts.push(cR)
+// Chart CA
+const ctxCA=document.getElementById('chartCA')
+if(ctxCA){
+  const c=new Chart(ctxCA,{
+    type:'bar',
+    data:{
+      labels:months,
+      datasets:[{
+        data:caByMonth,
+        backgroundColor:caByMonth.map(v=>v>0?dim:'rgba(255,255,255,0.03)'),
+        borderColor:caByMonth.map(v=>v>0?accent:'rgba(255,255,255,0.08)'),
+        borderWidth:1.5,
+        borderRadius:4
+      }]
+    },
+    options:mkOpts({plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}€`},backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}}})
+  })
+  window._charts.push(c)
+}
+
+// Chart Stock
+const ctxSt=document.getElementById('chartStock')
+if(ctxSt){
+  const catL=catLabels.length>0?catLabels:['Vide']
+  const catV2=catVals.length>0?catVals:[1]
+  const palette=['#3b82f6','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4','#fb923c']
+  const c=new Chart(ctxSt,{
+    type:'doughnut',
+    data:{labels:catL,datasets:[{data:catV2,backgroundColor:palette.slice(0,catL.length),borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',animation:{duration:600},plugins:{legend:{display:true,position:'bottom',labels:{color:tc,font:{size:10},padding:8,boxWidth:10,boxHeight:10}}}}
+  })
+  window._charts.push(c)
+}
+
+// Chart Réparations
+const ctxRp=document.getElementById('chartReps')
+if(ctxRp){
+  const c=new Chart(ctxRp,{
+    type:'line',
+    data:{labels:months,datasets:[{data:repsCountByMonth,borderColor:accent,backgroundColor:dim,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:accent,pointBorderWidth:0}]},
+    options:mkOpts({plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y} répar.`},backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}}})
+  })
+  window._charts.push(c)
+}
+
+// Chart Alertes
+const ctxAl=document.getElementById('chartAlerts')
+if(ctxAl){
+  const top5=stock.sort((a,b)=>Number(a.quantite)-Number(b.quantite)).slice(0,5)
+  if(top5.length>0){
+    const c=new Chart(ctxAl,{
+      type:'bar',
+      data:{
+        labels:top5.map(p=>p.nom.substring(0,16)),
+        datasets:[{
+          data:top5.map(p=>Number(p.quantite)),
+          backgroundColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'rgba(248,113,113,0.3)':dim),
+          borderColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'#f87171':accent),
+          borderWidth:1.5,borderRadius:3
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,animation:{duration:600},
+        indexAxis:'y',
+        plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}},
+        scales:{
+          x:{ticks:{color:tc,font:{size:10}},grid:{color:grid,drawBorder:false},beginAtZero:true},
+          y:{ticks:{color:tc,font:{size:9}},grid:{color:grid,drawBorder:false}}
+        }
+      }
+    })
+    window._charts.push(c)
+  }
+}
+
+// Chart Rentabilité
+const ctxRn=document.getElementById('chartRenta')
+if(ctxRn){
+  const c=new Chart(ctxRn,{
+    type:'doughnut',
+    data:{
+      labels:['CA','Restant'],
+      datasets:[{
+        data:[Math.min(caMonth,85),Math.max(0,85-caMonth)],
+        backgroundColor:[caMonth>=85?'rgba(52,211,153,0.4)':'rgba(251,191,36,0.35)',grid],
+        borderWidth:0,circumference:180,rotation:270
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',animation:{duration:600},plugins:{legend:{display:false},tooltip:{enabled:false}}}
+  })
+  window._charts.push(c)
+}
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 </script>
