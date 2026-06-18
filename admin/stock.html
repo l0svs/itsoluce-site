@@ -465,9 +465,22 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
+function showError(msg){
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('mainContent').innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;">
+      <div style="font-size:28px;">⚠️</div>
+      <div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
+      <div style="font-size:12px;color:var(--t3);max-width:360px;text-align:center;">${msg}</div>
+      <button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;margin-top:4px;">Réessayer</button>
+    </div>`
+}
+
+try {
+
 // Auth
 const {data:{session}}=await sb.auth.getSession()
-if(!session){window.location.href='/admin/login.html'}
+if(!session){window.location.href='/admin/login.html'; throw new Error('no session')}
 document.getElementById('uEmail').textContent=session.user.email
 document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 
@@ -666,6 +679,11 @@ window.exportCSV=function(){
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 
 await loadStock()
+
+} catch(err) {
+  console.error('Erreur stock:', err)
+  showError(err.message||'Une erreur inattendue est survenue.')
+}
 </script>
 </body>
 </html>
