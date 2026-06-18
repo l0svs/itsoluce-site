@@ -198,12 +198,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <span class="tb-badge">ERP</span>
   <span class="tb-crumb"><span>Dashboard</span></span>
   <div class="tb-r">
-    <div class="tstrip">
-      <div class="tdot on" data-c="blue"   onclick="setAccent('#3b82f6','rgba(59,130,246,0.12)',this)"></div>
-      <div class="tdot"    data-c="green"  onclick="setAccent('#34d399','rgba(52,211,153,0.12)',this)"></div>
-      <div class="tdot"    data-c="violet" onclick="setAccent('#a78bfa','rgba(167,139,250,0.12)',this)"></div>
-      <div class="tdot"    data-c="amber"  onclick="setAccent('#fbbf24','rgba(251,191,36,0.12)',this)"></div>
-    </div>
     <div class="mstrip">
       <button class="mbtn" data-m="light" onclick="setMode('light')">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -424,7 +418,6 @@ const html=`
     <div class="pt">${sal}</div>
     <div class="pd">${new Date().toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
   </div>
-  <div class="schip"><div class="pulse"></div>IT Soluce · Indépendant complémentaire</div>
 </div>
 
 ${insights.length>0?`<div class="g" style="grid-template-columns:repeat(${Math.min(insights.length,2)},1fr);margin-bottom:12px;">${insights.slice(0,2).map(i=>`<div class="insight"><div class="insight-ico">💡</div><div class="insight-text">${i}</div></div>`).join('')}</div>`:''}
