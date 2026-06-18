@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="fr" data-mode="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IT Soluce ERP — Clients</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
+[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+.topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}
+.logo-sep{width:1px;height:14px;background:var(--ln2);}
+.logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
+.tb-div{width:1px;height:18px;background:var(--ln2);flex-shrink:0;}
+.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
+.tb-crumb{font-size:12px;color:var(--t3);flex:1;display:flex;align-items:center;gap:6px;}
+.tb-crumb a{color:var(--t3);text-decoration:none;}.tb-crumb a:hover{color:var(--a);}
+.tb-crumb span{color:var(--t2);}
+.tb-r{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.mstrip{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;padding:3px;gap:1px;}
+.mbtn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;background:none;cursor:pointer;border-radius:4px;color:var(--t3);transition:all .12s;}
+.mbtn:hover{color:var(--t1);background:var(--bg4);}.mbtn.on{background:var(--ad);color:var(--a);}
+.mbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.upill{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 4px;border:1px solid var(--ln2);border-radius:99px;background:var(--bg3);font-size:12px;color:var(--t2);}
+.uav{width:22px;height:22px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.bout{padding:5px 10px;border:1px solid var(--ln2);border-radius:5px;background:none;color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;}
+.bout:hover{color:var(--d);border-color:var(--d);}
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:var(--sw);background:var(--bg2);border-right:1px solid var(--ln);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 0;}
+.ng{padding:14px 10px 4px;}.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
+.nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
+.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);}
+.nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
+.nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
+.nhr{height:1px;background:var(--ln);margin:8px 10px;}
+.sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
+.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
+.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
+.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-primary{background:var(--a);color:#fff;}.btn-primary:hover{opacity:.85;}
+.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}.btn-secondary:hover{color:var(--t1);}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
+.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
+.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
+.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
+.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
+.search-wrap{position:relative;flex:1;max-width:320px;}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
+.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
+.search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
+.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.table{width:100%;border-collapse:collapse;}
+.table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
+.table td{padding:10px 12px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
+.table tr:hover td{background:var(--bg2);}
+.table tr:last-child td{border-bottom:none;}
+.cli-av{width:32px;height:32px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.tag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--t2);}
+.tag-ok{background:rgba(52,211,153,.12);color:var(--ok);}
+.actions{display:flex;align-items:center;gap:3px;opacity:0;}
+.table tr:hover .actions{opacity:1;}
+.act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
+.act-btn:hover{background:var(--bg3);color:var(--t1);}.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.panel-overlay.open{opacity:1;pointer-events:all;}
+.panel{position:fixed;right:0;top:0;bottom:0;width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}
+.panel.open{transform:translateX(0);}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
+.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.panel-close:hover{background:var(--bg4);color:var(--t1);}
+.panel-body{flex:1;overflow-y:auto;padding:20px;}
+.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}
+.fg textarea{resize:vertical;min-height:60px;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
+.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
+/* FICHE CLIENT */
+.detail-panel{position:fixed;left:var(--sw);top:var(--th);bottom:0;width:340px;background:var(--bg2);border-right:1px solid var(--ln);z-index:50;transform:translateX(-110%);transition:transform .25s ease;display:flex;flex-direction:column;overflow:hidden;}
+.detail-panel.open{transform:translateX(0);}
+.dp-head{padding:16px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;}
+.dp-body{flex:1;overflow-y:auto;padding:16px;}
+.dp-av{width:48px;height:48px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;margin:0 auto 12px;}
+.dp-name{font-size:15px;font-weight:600;color:var(--t1);text-align:center;}
+.dp-sub{font-size:12px;color:var(--t3);text-align:center;margin-top:3px;}
+.dp-stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0;}
+.dp-s{background:var(--bg3);border-radius:6px;padding:10px;text-align:center;}
+.dp-sl{font-size:10px;color:var(--t3);margin-bottom:4px;}
+.dp-sv{font-size:18px;font-weight:600;color:var(--t1);}
+.dp-field{padding:8px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:8px;}
+.dp-field:last-child{border-bottom:none;}
+.dp-fl{font-size:11px;color:var(--t3);width:80px;flex-shrink:0;}
+.dp-fv{font-size:12px;color:var(--t1);}
+.dp-hist-item{padding:8px 0;border-bottom:1px solid var(--ln);}
+.dp-hist-item:last-child{border-bottom:none;}
+.empty{padding:60px 24px;text-align:center;}
+.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
+.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}
+.empty-sub{font-size:12px;color:var(--t3);}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
+.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
+.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.detail-panel{width:100%;left:0;}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="/admin/dashboard.html" class="logo"><span class="logo-m">IT</span><span class="logo-sep"></span><span class="logo-s">SOLUCE</span></a>
+  <div class="tb-div"></div><span class="tb-badge">ERP</span>
+  <div class="tb-crumb">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/admin/dashboard.html">Dashboard</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span>Clients</span>
+  </div>
+  <div class="tb-r">
+    <div class="mstrip">
+      <button class="mbtn" data-m="light" onclick="setMode('light')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <button class="mbtn on" data-m="auto" onclick="setMode('auto')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" stroke="none"/></svg></button>
+      <button class="mbtn" data-m="dark" onclick="setMode('dark')"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <div class="tb-div"></div>
+    <div class="upill"><div class="uav" id="uAv">—</div><span id="uEmail" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span></div>
+    <button class="bout" onclick="doLogout()">Quitter</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="ng"><div class="ngl">Vue d'ensemble</div><a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a></div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Opérations</div>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
+      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
+      <a href="/admin/clients.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc" id="nb-cli">—</span></a>
+      <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs</a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Finance</div>
+      <button class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</button>
+      <button class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</button>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng"><div class="ngl">Gestion</div><a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a></div>
+    <div class="sf">IT Soluce ERP · v1.0</div>
+  </aside>
+
+  <div class="content" id="mainContent">
+    <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
+    <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="page-head">
+        <div class="ph-left"><h1>Clients</h1><p id="ph-sub">— clients enregistrés</p></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau client</button>
+        </div>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi"><div class="kpi-label">Total clients</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">enregistrés</div></div>
+        <div class="kpi"><div class="kpi-label">CA généré</div><div class="kpi-val" id="k-ca">—</div><div class="kpi-sub">toutes réparations</div></div>
+        <div class="kpi"><div class="kpi-label">Réparations / client</div><div class="kpi-val" id="k-moy">—</div><div class="kpi-sub">en moyenne</div></div>
+        <div class="kpi"><div class="kpi-label">Nouveau ce mois</div><div class="kpi-val" id="k-new">—</div><div class="kpi-sub">clients</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" type="text" id="searchInput" placeholder="Nom, email, téléphone..." oninput="renderTable()"/>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr>
+            <th style="width:44px;"></th>
+            <th>Client</th>
+            <th>Contact</th>
+            <th>Réparations</th>
+            <th style="text-align:right;">CA total</th>
+            <th>Dernier passage</th>
+            <th style="width:70px;"></th>
+          </tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none;">
+          <div class="empty-ico">👥</div>
+          <div class="empty-title">Aucun client trouvé</div>
+          <div class="empty-sub">Les clients sont créés automatiquement depuis les réparations, ou <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">ajoutez-en un manuellement</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FICHE CLIENT -->
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-head">
+    <span style="font-size:13px;font-weight:600;color:var(--t1);">Fiche client</span>
+    <button class="panel-close" onclick="closeDetail()">×</button>
+  </div>
+  <div class="dp-body" id="detailBody"></div>
+</div>
+
+<!-- PANNEAU AJOUT/MODIF -->
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-head">
+    <span class="panel-title" id="panelTitle">Nouveau client</span>
+    <button class="panel-close" onclick="closePanel()">×</button>
+  </div>
+  <div class="panel-body">
+    <input type="hidden" id="f-id"/>
+    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Identité</div>
+    <div class="fg-row">
+      <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"/></div>
+      <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"/></div>
+    </div>
+    <div class="fg-sep">Contact</div>
+    <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
+    <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
+    <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+    <div class="fg-sep">Informations complémentaires</div>
+    <div class="fg"><label>Type</label>
+      <select id="f-type">
+        <option value="particulier">Particulier</option>
+        <option value="entreprise">Entreprise / TPE</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Observations sur ce client..."></textarea></div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveClient()" style="flex:2;" id="saveBtn">Enregistrer</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
+const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
+const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
+if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
+function showToast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='ok'?'ok':'err');setTimeout(()=>t.className='toast',3000);}
+function openPanel(c=null){
+  document.getElementById('panelTitle').textContent=c?'Modifier le client':'Nouveau client';
+  document.getElementById('saveBtn').textContent=c?'Mettre à jour':'Enregistrer';
+  document.getElementById('f-id').value=c?.id||'';
+  const parts=c?.nom?.split(' ')||[];
+  document.getElementById('f-prenom').value=c?parts[0]||'':'';
+  document.getElementById('f-nom').value=c?parts.slice(1).join(' ')||'':'';
+  document.getElementById('f-email').value=c?.email||'';
+  document.getElementById('f-tel').value=c?.telephone||'';
+  document.getElementById('f-adresse').value=c?.adresse||'';
+  document.getElementById('f-type').value=c?.type||'particulier';
+  document.getElementById('f-notes').value=c?.notes||'';
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('f-prenom').focus();
+}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+function closeDetail(){document.getElementById('detailPanel').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closeDetail();}});
+</script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const sb=createClient(SB,SK)
+
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+
+try {
+const {data:{session}}=await sb.auth.getSession()
+if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+document.getElementById('uEmail').textContent=session.user.email
+document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
+
+let allClients=[]
+let allReps=[]
+
+async function load(){
+  const [r1,r2]=await Promise.all([
+    sb.from('clients').select('*').order('created_at',{ascending:false}),
+    sb.from('reparations').select('client_nom,client_email,prix_final,created_at,statut')
+  ])
+  // Si la table clients n'existe pas encore, on génère les clients depuis les réparations
+  if(r1.error){
+    // Générer depuis réparations
+    const reps=r2.data||[]
+    const map={}
+    reps.forEach(r=>{
+      const key=r.client_email||r.client_nom
+      if(!map[key]){map[key]={nom:r.client_nom,email:r.client_email,telephone:'',adresse:'',type:'particulier',notes:'',created_at:r.created_at,reps:[],ca:0}}
+      map[key].reps.push(r)
+      map[key].ca+=Number(r.prix_final||0)
+    })
+    allClients=Object.values(map).map((c,i)=>({...c,id:i+1}))
+  } else {
+    allClients=r1.data||[]
+    const reps=r2.data||[]
+    allClients.forEach(c=>{
+      const cReps=reps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
+      c.reps_count=cReps.length
+      c.ca=cReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
+      c.last_rep=cReps[0]?.created_at
+    })
+  }
+  allReps=r2.data||[]
+  renderAll()
+  document.getElementById('ldr').style.display='none'
+  const pb=document.getElementById('pageBody')
+  pb.style.display='flex'
+}
+
+function renderAll(){
+  const total=allClients.length
+  const ca=allClients.reduce((a,c)=>a+(c.ca||0),0)
+  const moy=total>0?(allClients.reduce((a,c)=>a+(c.reps_count||c.reps?.length||0),0)/total).toFixed(1):0
+  const now=new Date()
+  const newCli=allClients.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
+  document.getElementById('k-total').textContent=total
+  document.getElementById('k-ca').textContent=ca.toFixed(0)+'€'
+  document.getElementById('k-moy').textContent=moy
+  document.getElementById('k-new').textContent=newCli
+  document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`
+  document.getElementById('nb-cli').textContent=total||'0'
+  renderTable()
+}
+
+window.renderTable=function(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim()
+  const rows=allClients.filter(c=>!q||[c.nom,c.email,c.telephone].some(v=>v&&v.toLowerCase().includes(q)))
+  const tbody=document.getElementById('tableBody')
+  const empty=document.getElementById('emptyState')
+  if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return}
+  empty.style.display='none'
+  tbody.innerHTML=rows.map(c=>{
+    const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
+    const repsCount=c.reps_count||c.reps?.length||0
+    const ca=(c.ca||0).toFixed(0)
+    const last=c.last_rep||c.created_at
+    const date=last?new Date(last).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'-'
+    return`<tr style="cursor:pointer;" onclick="showDetail(${c.id})">
+      <td><div class="cli-av">${initials}</div></td>
+      <td>
+        <div style="font-weight:500;">${c.nom||'—'}</div>
+        <div style="font-size:11px;color:var(--t3);">${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+      </td>
+      <td>
+        <div>${c.email||'—'}</div>
+        <div style="font-size:11px;color:var(--t3);">${c.telephone||''}</div>
+      </td>
+      <td><span class="tag ${repsCount>0?'tag-ok':''}">${repsCount} répar.</span></td>
+      <td style="text-align:right;font-weight:500;">${ca}€</td>
+      <td style="color:var(--t3);">${date}</td>
+      <td>
+        <div class="actions">
+          <button class="act-btn" onclick="event.stopPropagation();editClient(${c.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="act-btn del" onclick="event.stopPropagation();deleteClient(${c.id},'${(c.nom||'').replace(/'/g,"\\'")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        </div>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+window.showDetail=function(id){
+  const c=allClients.find(c=>c.id===id)
+  if(!c)return
+  const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
+  const reps=allReps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
+  document.getElementById('detailBody').innerHTML=`
+    <div class="dp-av">${initials}</div>
+    <div class="dp-name">${c.nom||'—'}</div>
+    <div class="dp-sub">${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+    <div class="dp-stat">
+      <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${reps.length}</div></div>
+      <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(0)}€</div></div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="dp-field"><div class="dp-fl">Email</div><div class="dp-fv">${c.email||'—'}</div></div>
+      <div class="dp-field"><div class="dp-fl">Téléphone</div><div class="dp-fv">${c.telephone||'—'}</div></div>
+      <div class="dp-field"><div class="dp-fl">Adresse</div><div class="dp-fv">${c.adresse||'—'}</div></div>
+      ${c.notes?`<div class="dp-field"><div class="dp-fl">Notes</div><div class="dp-fv">${c.notes}</div></div>`:''}
+    </div>
+    ${reps.length>0?`
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Historique réparations</div>
+      ${reps.map(r=>`<div class="dp-hist-item">
+        <div style="font-size:12px;color:var(--t1);">${r.statut||'—'}</div>
+        <div style="font-size:11px;color:var(--t3);">${new Date(r.created_at).toLocaleDateString('fr-BE')} · ${Number(r.prix_final||0).toFixed(0)}€</div>
+      </div>`).join('')}
+    </div>`:''}
+    <div style="margin-top:16px;display:flex;gap:8px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="editClient(${c.id})">Modifier</button>
+      ${c.email?`<a href="mailto:${c.email}" class="btn btn-primary" style="flex:1;text-decoration:none;justify-content:center;">Envoyer email</a>`:''}
+    </div>`
+  document.getElementById('detailPanel').classList.add('open')
+}
+
+window.editClient=function(id){
+  closeDetail()
+  const c=allClients.find(c=>c.id===id)
+  if(c)openPanel(c)
+}
+
+window.saveClient=async function(){
+  const id=document.getElementById('f-id').value
+  const prenom=document.getElementById('f-prenom').value.trim()
+  const nom=document.getElementById('f-nom').value.trim()
+  if(!prenom&&!nom){showToast('Le nom est requis','err');return}
+  const fullName=[prenom,nom].filter(Boolean).join(' ')
+  const payload={
+    nom:fullName,
+    email:document.getElementById('f-email').value.trim()||null,
+    telephone:document.getElementById('f-tel').value.trim()||null,
+    adresse:document.getElementById('f-adresse').value.trim()||null,
+    type:document.getElementById('f-type').value,
+    notes:document.getElementById('f-notes').value.trim()||null,
+    updated_at:new Date().toISOString()
+  }
+  document.getElementById('saveBtn').textContent='Enregistrement...'
+  document.getElementById('saveBtn').disabled=true
+  let error
+  if(id){
+    const res=await sb.from('clients').update(payload).eq('id',id)
+    error=res.error
+    if(!error){const idx=allClients.findIndex(c=>c.id===Number(id));if(idx>=0)allClients[idx]={...allClients[idx],...payload}}
+  } else {
+    const res=await sb.from('clients').insert(payload).select().single()
+    error=res.error
+    if(!error&&res.data){res.data.reps_count=0;res.data.ca=0;allClients.unshift(res.data)}
+  }
+  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
+  document.getElementById('saveBtn').disabled=false
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  closePanel()
+  renderAll()
+  showToast(id?`"${fullName}" mis à jour ✓`:`"${fullName}" ajouté ✓`,'ok')
+}
+
+window.deleteClient=async function(id,nom){
+  if(!confirm(`Supprimer "${nom}" de la base clients ?`))return
+  const {error}=await sb.from('clients').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  allClients=allClients.filter(c=>c.id!==id)
+  renderAll()
+  showToast(`"${nom}" supprimé`,'ok')
+}
+
+window.exportCSV=function(){
+  if(!allClients.length){showToast('Aucune donnée','err');return}
+  const cols=['id','nom','email','telephone','adresse','type','notes','created_at']
+  const csv=[cols.join(','),...allClients.map(c=>cols.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const a=document.createElement('a')
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download=`itsoluce_clients_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  showToast('Export téléchargé ✓','ok')
+}
+
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+await load()
+
+} catch(err){
+  console.error(err)
+  showError(err.message||'Erreur inattendue')
+}
+</script>
+</body>
+</html>
