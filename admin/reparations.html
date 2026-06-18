@@ -386,6 +386,7 @@ const STATUTS={
   rendu:{label:'Rendu',cls:'s-rendu'},
   annule:{label:'Annulé',cls:'s-annule'}
 }
+window.STATUTS=STATUTS
 
 let currentStatusId=null
 
@@ -509,7 +510,7 @@ function renderTable(){
   if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
   tbody.innerHTML=rows.map(r=>{
-    const st=window.STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
+    const st=STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
     const date=new Date(r.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
     return`<tr data-id="${r.id}">
       <td>
@@ -559,7 +560,7 @@ window.changeStatut=async function(statut){
   const r=allReps.find(r=>r.id===id)
   if(r)r.statut=statut
   renderAll()
-  showToast(`Statut mis à jour : ${window.STATUTS[statut]?.label||statut}`,'ok')
+  showToast(`Statut mis à jour : ${STATUTS[statut]?.label||statut}`,'ok')
 }
 
 window.deleteRep=async function(id,nom){
