@@ -277,6 +277,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="nhr"></div>
     <div class="ng">
       <div class="ngl">Finance</div>
+      <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges<span class="nc" id="nb-charges">—</span></a>
       <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis<span class="nc">0</span></button>
       <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures<span class="nc">0</span></button>
       <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Statistiques</button>
@@ -460,16 +461,21 @@ document.getElementById('uEmail').textContent=email
 document.getElementById('uAv').textContent=email[0].toUpperCase()
 
 // Charger toutes les données
-let stock=[],reps=[],fours=[],tasks=[]
+let stock=[],reps=[],fours=[],tasks=[],charges=[]
 try {
-  const [r1,r2,r3,r4]=await Promise.all([
+  const [r1,r2,r3,r4,r5]=await Promise.all([
     sb.from('stock').select('*'),
     sb.from('reparations').select('*'),
     sb.from('fournisseurs').select('*'),
-    sb.from('taches').select('*').order('created_at',{ascending:false})
+    sb.from('taches').select('*').order('created_at',{ascending:false}),
+    sb.from('charges').select('*')
   ])
-  stock=r1.data||[]; reps=r2.data||[]; fours=r3.data||[]; tasks=r4.data||[]
+  stock=r1.data||[]; reps=r2.data||[]; fours=r3.data||[]; tasks=r4.data||[]; charges=r5.data||[]
 } catch(e) { showError('Impossible de charger les données Supabase : '+e.message); throw e }
+
+// Calcul des charges mensuelles (somme des charges actives ramenées au mois)
+function chargeToMensuel(c){const m=Number(c.montant)||0;if(c.frequence==='annuelle')return m/12;if(c.frequence==='trimestrielle')return m/3;if(c.frequence==='ponctuelle')return 0;return m;}
+const chargesMensuelles=charges.filter(c=>c.actif!==false).reduce((a,c)=>a+chargeToMensuel(c),0)
 
 // Calculs
 const totalStock=stock.length
@@ -482,7 +488,7 @@ const now2=new Date()
 const caMonth=reps.filter(r=>{const d=new Date(r.created_at);return d.getMonth()===now2.getMonth()&&d.getFullYear()===now2.getFullYear()}).reduce((a,r)=>a+Number(r.prix_final||0),0)
 const coutMonth=reps.filter(r=>{const d=new Date(r.created_at);return d.getMonth()===now2.getMonth()&&d.getFullYear()===now2.getFullYear()&&r.statut!=='annule'}).reduce((a,r)=>a+Number(r.cout_pieces||0),0)
 const margeMonth=caMonth-coutMonth
-const beneficeNet=margeMonth-85
+const beneficeNet=margeMonth-chargesMensuelles
 const tasksPending=tasks.filter(t=>!t.faite).length
 const foursActifs=fours.filter(f=>f.actif)
 const months=[],caByMonth=[],repsCountByMonth=[]
@@ -504,6 +510,7 @@ if(nbStock){nbStock.textContent=alrts.length||'—';nbStock.className=alrts.leng
 ;(document.getElementById('nb-cli')||{}).textContent=(typeof clients!=='undefined'?clients.length:'')
 ;(document.getElementById('nb-four')||{}).textContent=foursActifs.length
 ;(document.getElementById('nb-task')||{}).textContent=tasksPending
+;(document.getElementById('nb-charges')||{}).textContent=charges.filter(c=>c.actif!==false).length
 
 // Insights
 const h2=new Date().getHours(); const sal=h2<12?'Bonjour':h2<18?'Bon après-midi':'Bonsoir'
@@ -542,7 +549,7 @@ ${insights.length>0?`<div class="g" style="grid-template-columns:repeat(${Math.m
 <div class="g g4">
   <div class="kpi"><div class="kl">CA ce mois</div><div class="kn">${caMonth.toFixed(0)} €</div><div class="km"><span class="tag ${caMonth>=85?'tok':'tn'}">${caMonth>=85?'Seuil atteint':'objectif 85€'}</span></div></div>
   <div class="kpi"><div class="kl">CA total</div><div class="kn">${caTotal.toFixed(0)} €</div><div class="km"><span class="tag tn">${reps.length} réparation${reps.length>1?'s':''}</span></div></div>
-  <div class="kpi"><div class="kl">Bénéfice net (mois)</div><div class="kn" style="color:${beneficeNet>=0?'var(--ok)':'var(--d)'}">${beneficeNet.toFixed(0)} €</div><div class="km"><span class="tag tn">marge ${margeMonth.toFixed(0)}€ − charges 85€</span></div></div>
+  <div class="kpi"><div class="kl">Bénéfice net (mois)</div><div class="kn" style="color:${beneficeNet>=0?'var(--ok)':'var(--d)'}">${beneficeNet.toFixed(0)} €</div><div class="km"><span class="tag tn">marge ${margeMonth.toFixed(0)}€ − charges ${chargesMensuelles.toFixed(0)}€</span></div></div>
   <div class="kpi"><div class="kl">Valeur du stock</div><div class="kn">${valeurStock.toFixed(0)} €</div><div class="km"><span class="tag tn">${totalStock} références</span>${alrts.length>0?` <span class="tag tw">${alrts.length} alerte${alrts.length>1?'s':''}</span>`:''}</div></div>
 </div>
 
