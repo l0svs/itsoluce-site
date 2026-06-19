@@ -2318,12 +2318,90 @@ function submitForm(e){
 
   const data = new FormData(form);
 
-  fetch('https://formspree.io/f/mlgabvor', {
-    method: 'POST',
-    body: data,
-    headers: { 'Accept': 'application/json' }
-  })
-  .then(res => {
+  // Récupérer les valeurs du formulaire
+  const prenom = data.get('prenom') || '';
+  const nom = data.get('nom') || '';
+  const email = data.get('email') || '';
+  const telephone = data.get('telephone') || '';
+  const appareil = data.get('appareil') || '';
+  const description = data.get('description') || '';
+  const nomComplet = [prenom, nom].filter(Boolean).join(' ');
+
+  // Config Supabase
+  const SB_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo';
+
+  // Fonction pour insérer dans Supabase
+  async function saveToSupabase() {
+    try {
+      // 1. Vérifier si le client existe déjà (par email)
+      let clientId = null;
+      if (email) {
+        const checkRes = await fetch(`${SB_URL}/rest/v1/clients?email=eq.${encodeURIComponent(email)}&select=id`, {
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+        });
+        const existing = await checkRes.json();
+        if (existing && existing.length > 0) {
+          clientId = existing[0].id;
+        }
+      }
+
+      // 2. Créer le client s'il n'existe pas
+      if (!clientId) {
+        const clientRes = await fetch(`${SB_URL}/rest/v1/clients`, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            nom: nomComplet,
+            email: email || null,
+            telephone: telephone || null,
+            type: 'particulier'
+          })
+        });
+        const newClient = await clientRes.json();
+        if (newClient && newClient[0]) clientId = newClient[0].id;
+      }
+
+      // 3. Créer la demande de réparation
+      await fetch(`${SB_URL}/rest/v1/reparations`, {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          client_nom: nomComplet,
+          client_email: email || null,
+          client_telephone: telephone || null,
+          appareil: appareil || null,
+          panne_description: description || null,
+          statut: 'recu',
+          prix_devis: 0,
+          prix_final: 0
+        })
+      });
+    } catch(err) {
+      console.warn('Supabase sync error (non-bloquant):', err);
+    }
+  }
+
+  // Envoyer à Formspree ET Supabase en parallèle
+  Promise.all([
+    fetch('https://formspree.io/f/mlgabvor', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }),
+    saveToSupabase()
+  ])
+  .then(([res]) => {
     if (res.ok) {
       form.reset();
       ok.style.display = 'block';
