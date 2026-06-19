@@ -329,8 +329,8 @@ function renderAll(){
   document.getElementById('k-actifs').textContent=actifs
   document.getElementById('k-rapide').textContent=rapide
   document.getElementById('k-note').textContent=noteMoy+'★'
-  document.getElementById('ph-sub').textContent=`${total} fournisseur${total>1?'s':''}`
-  (document.getElementById('nb-four')||{}).textContent=actifs
+  document.getElementById('ph-sub').textContent=`${total} fournisseur${total>1?'s':''}`;
+  (document.getElementById('nb-four')||{}).textContent=actifs;
   renderCards()
 }
 
