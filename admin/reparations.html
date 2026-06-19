@@ -259,9 +259,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
       <div class="kpi-strip">
         <div class="kpi"><div class="kpi-label">Dossiers actifs</div><div class="kpi-val" id="k-actifs">—</div><div class="kpi-sub">en cours</div></div>
-        <div class="kpi"><div class="kpi-label">Terminés ce mois</div><div class="kpi-val" id="k-termines">—</div><div class="kpi-sub">rendus au client</div></div>
         <div class="kpi"><div class="kpi-label">CA ce mois</div><div class="kpi-val" id="k-ca">—</div><div class="kpi-sub">réparations facturées</div></div>
-        <div class="kpi"><div class="kpi-label">Total dossiers</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
+        <div class="kpi"><div class="kpi-label">Coût pièces</div><div class="kpi-val" id="k-cout" style="color:var(--w)">—</div><div class="kpi-sub">ce mois</div></div>
+        <div class="kpi"><div class="kpi-label">Marge nette</div><div class="kpi-val" id="k-marge" style="color:var(--ok)">—</div><div class="kpi-sub" id="k-marge-pct">— en moyenne</div></div>
       </div>
 
       <div class="toolbar">
@@ -281,8 +281,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
               <th>Panne</th>
               <th>Statut</th>
               <th>Reçu le</th>
-              <th style="text-align:right;">Devis</th>
-              <th style="text-align:right;">Final</th>
+              <th style="text-align:right;">Coût</th>
+              <th style="text-align:right;">Facturé</th>
+              <th style="text-align:right;">Marge</th>
               <th style="width:70px;"></th>
             </tr>
           </thead>
@@ -348,6 +349,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
     <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
 
+    <div class="fg-sep">Pièce & Coûts</div>
+    <div class="fg">
+      <label>Pièce utilisée (depuis le stock)</label>
+      <select id="f-piece" onchange="onPieceChange()">
+        <option value="">Aucune pièce / non liée au stock</option>
+      </select>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>Coût de la pièce (€)</label><input type="number" id="f-cout" placeholder="0.00" min="0" step="0.01"/></div>
+      <div class="fg"><label>Marge estimée (€)</label><input type="text" id="f-marge" disabled style="opacity:.6;cursor:not-allowed;" value="—"/></div>
+    </div>
+    <div style="font-size:11px;color:var(--t3);margin:-6px 0 14px;padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté quand le dossier passe en « Prêt » ou « Rendu ».</div>
+
     <div class="fg-sep">Suivi & Prix</div>
     <div class="fg">
       <label>Statut</label>
@@ -363,7 +377,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
     <div class="fg-row">
       <div class="fg"><label>Prix devis (€)</label><input type="number" id="f-devis" placeholder="0.00" min="0" step="0.01"/></div>
-      <div class="fg"><label>Prix final (€)</label><input type="number" id="f-final" placeholder="0.00" min="0" step="0.01"/></div>
+      <div class="fg"><label>Prix final (€)</label><input type="number" id="f-final" placeholder="0.00" min="0" step="0.01" oninput="updateMarge()"/></div>
     </div>
     <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations, pièces utilisées..."></textarea></div>
   </div>
@@ -417,16 +431,17 @@ const STATUTS={
 }
 window.STATUTS=STATUTS
 
-let currentStatusId=null
+window.currentStatusId=null
 
 function openStatusMenu(id,el){
-  currentStatusId=id
+  window.currentStatusId=id
   const menu=document.getElementById('statusMenu')
   const rect=el.getBoundingClientRect()
   menu.style.top=(rect.bottom+4)+'px'
   menu.style.left=rect.left+'px'
   menu.classList.add('open')
 }
+window.openStatusMenu=openStatusMenu
 
 document.addEventListener('click',e=>{
   if(!e.target.closest('#statusMenu')&&!e.target.closest('.statut')){
@@ -449,9 +464,39 @@ function openPanel(r=null){
   document.getElementById('f-devis').value=r?.prix_devis||''
   document.getElementById('f-final').value=r?.prix_final||''
   document.getElementById('f-notes').value=r?.notes||''
+  // Remplir le sélecteur de pièces depuis le stock
+  if(window.fillPieceSelect)window.fillPieceSelect(r?.piece_id||'')
+  document.getElementById('f-cout').value=r?.cout_pieces||''
+  updateMarge()
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   document.getElementById('f-client').focus()
+}
+
+function onPieceChange(){
+  const sel=document.getElementById('f-piece')
+  const opt=sel.options[sel.selectedIndex]
+  if(opt&&opt.dataset.achat){
+    document.getElementById('f-cout').value=opt.dataset.achat
+    // Si pas de prix final déjà saisi, suggérer le prix de vente de la pièce
+    const final=document.getElementById('f-final')
+    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0){
+      final.value=opt.dataset.vente
+    }
+  } else {
+    document.getElementById('f-cout').value=''
+  }
+  updateMarge()
+}
+
+function updateMarge(){
+  const final=Number(document.getElementById('f-final').value)||0
+  const cout=Number(document.getElementById('f-cout').value)||0
+  const marge=final-cout
+  const el=document.getElementById('f-marge')
+  if(final===0&&cout===0){el.value='—';el.style.color='';return}
+  el.value=marge.toFixed(2)+' €'
+  el.style.color=marge>=0?'var(--ok)':'var(--d)'
 }
 function closePanel(){
   document.getElementById('overlay').classList.remove('open')
@@ -555,12 +600,25 @@ document.getElementById('uEmail').textContent=session.user.email
 document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 
 let allReps=[]
+let allStockPieces=[]
 let activeFilter='Tous'
 
+// Exposer le remplissage du select de pièces (appelé depuis openPanel)
+window.fillPieceSelect=function(selectedId){
+  const sel=document.getElementById('f-piece')
+  if(!sel)return
+  sel.innerHTML='<option value="">Aucune pièce / non liée au stock</option>'+
+    allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''}>${p.nom} (stock: ${p.quantite}) — achat ${Number(p.prix_achat||0).toFixed(2)}€</option>`).join('')
+}
+
 async function loadReps(){
-  const {data,error}=await sb.from('reparations').select('*').order('created_at',{ascending:false})
-  if(error){console.error(error);return}
-  allReps=data||[]
+  const [rRep,rStock]=await Promise.all([
+    sb.from('reparations').select('*').order('created_at',{ascending:false}),
+    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom')
+  ])
+  if(rRep.error){console.error(rRep.error);return}
+  allReps=rRep.data||[]
+  allStockPieces=rStock.data||[]
   renderAll()
   document.getElementById('ldr').style.display='none'
   const pb=document.getElementById('pageBody')
@@ -572,18 +630,20 @@ function renderAll(){updateKPIs();renderFilters();renderTable()}
 function updateKPIs(){
   const now=new Date()
   const actifs=allReps.filter(r=>!['rendu','annule'].includes(r.statut)).length
-  const termines=allReps.filter(r=>{
-    const d=new Date(r.updated_at||r.created_at)
-    return r.statut==='rendu'&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()
-  }).length
-  const ca=allReps.filter(r=>{
+  const moisReps=allReps.filter(r=>{
     const d=new Date(r.created_at)
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()
-  }).reduce((a,r)=>a+Number(r.prix_final||0),0)
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&r.statut!=='annule'
+  })
+  const ca=moisReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
+  const coutPieces=moisReps.reduce((a,r)=>a+Number(r.cout_pieces||0),0)
+  const marge=ca-coutPieces
+  const margePct=ca>0?((marge/ca)*100).toFixed(0):0
   document.getElementById('k-actifs').textContent=actifs
-  document.getElementById('k-termines').textContent=termines
   document.getElementById('k-ca').textContent=ca.toFixed(0)+'€'
-  document.getElementById('k-total').textContent=allReps.length
+  document.getElementById('k-cout').textContent=coutPieces.toFixed(0)+'€'
+  document.getElementById('k-marge').textContent=marge.toFixed(0)+'€'
+  document.getElementById('k-marge').style.color=marge>=0?'var(--ok)':'var(--d)'
+  document.getElementById('k-marge-pct').textContent=ca>0?`${margePct}% en moyenne`:'—'
   document.getElementById('ph-sub').textContent=`${allReps.length} dossier${allReps.length>1?'s':''}`
   const nb=document.getElementById('nb-actives')
   if(nb){nb.textContent=actifs||'✓';nb.className=actifs>0?'nc ok':'nc'}
@@ -621,7 +681,7 @@ function renderTable(){
   if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
   tbody.innerHTML=rows.map(r=>{
-    const st=STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
+    const st=window.STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
     const date=new Date(r.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
     return`<tr data-id="${r.id}">
       <td>
@@ -639,8 +699,9 @@ function renderTable(){
         <button class="statut ${st.cls}" onclick="openStatusMenu(${r.id},this)">${st.label} ▾</button>
       </td>
       <td style="color:var(--t3);white-space:nowrap;">${date}</td>
-      <td style="text-align:right;color:var(--t2);">${r.prix_devis?Number(r.prix_devis).toFixed(0)+'€':'—'}</td>
+      <td style="text-align:right;color:var(--t2);">${r.cout_pieces?Number(r.cout_pieces).toFixed(0)+'€':'—'}</td>
       <td style="text-align:right;font-weight:500;">${r.prix_final?Number(r.prix_final).toFixed(0)+'€':'—'}</td>
+      <td style="text-align:right;font-weight:500;color:${(Number(r.prix_final||0)-Number(r.cout_pieces||0))>=0?'var(--ok)':'var(--d)'};">${r.prix_final?((Number(r.prix_final||0)-Number(r.cout_pieces||0)).toFixed(0)+'€'):'—'}</td>
       <td>
         <div class="actions">
           <button class="act-btn" onclick="editRep(${r.id})" title="Modifier">
@@ -666,12 +727,37 @@ window.changeStatut=async function(statut){
   if(!window.currentStatusId)return
   const id=window.currentStatusId
   document.getElementById('statusMenu').classList.remove('open')
-  const {error}=await sb.from('reparations').update({statut,updated_at:new Date().toISOString()}).eq('id',id)
-  if(error){showToast('Erreur : '+error.message,'err');return}
+  window.currentStatusId=null
   const r=allReps.find(r=>r.id===id)
-  if(r)r.statut=statut
+
+  // Faut-il décrémenter le stock ? (passage en pret/rendu + pièce liée + pas déjà fait)
+  const statutAvance=['pret','rendu'].includes(statut)
+  const doitDecrementer = r && statutAvance && r.piece_id && r.stock_decremente!==true
+
+  const maj={statut,updated_at:new Date().toISOString()}
+  if(doitDecrementer)maj.stock_decremente=true
+
+  const {error}=await sb.from('reparations').update(maj).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  if(r){r.statut=statut;if(doitDecrementer)r.stock_decremente=true}
+
+  // Décrémenter le stock
+  if(doitDecrementer){
+    const piece=allStockPieces.find(p=>p.id===Number(r.piece_id))
+    if(piece && Number(piece.quantite)>0){
+      const newQty=Number(piece.quantite)-1
+      const stockRes=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',piece.id)
+      if(!stockRes.error){
+        piece.quantite=newQty
+        renderAll()
+        showToast(`${window.STATUTS[statut]?.label} · Stock décrémenté : ${piece.nom} (${newQty} restant${newQty>1?'s':''})`,'ok')
+        return
+      }
+    }
+  }
+
   renderAll()
-  showToast(`Statut mis à jour : ${STATUTS[statut]?.label||statut}`,'ok')
+  showToast(`Statut mis à jour : ${window.STATUTS[statut]?.label||statut}`,'ok')
 }
 
 window.deleteRep=async function(id,nom){
@@ -692,6 +778,9 @@ window.saveDossier=async function(){
   if(!appareil){showToast('Le type d\'appareil est requis','err');return}
   if(!panne){showToast('La description de la panne est requise','err');return}
 
+  const pieceVal=document.getElementById('f-piece').value
+  const nouveauStatut=document.getElementById('f-statut').value
+
   const payload={
     client_nom:nom,
     client_email:document.getElementById('f-email').value.trim()||null,
@@ -700,15 +789,23 @@ window.saveDossier=async function(){
     marque:document.getElementById('f-marque').value.trim()||null,
     modele:document.getElementById('f-modele').value.trim()||null,
     panne_description:panne,
-    statut:document.getElementById('f-statut').value,
+    statut:nouveauStatut,
     prix_devis:Number(document.getElementById('f-devis').value)||0,
     prix_final:Number(document.getElementById('f-final').value)||0,
+    piece_id:pieceVal?Number(pieceVal):null,
+    cout_pieces:Number(document.getElementById('f-cout').value)||0,
     notes:document.getElementById('f-notes').value.trim()||null,
     updated_at:new Date().toISOString()
   }
 
   document.getElementById('saveBtn').textContent='Enregistrement...'
   document.getElementById('saveBtn').disabled=true
+
+  const ancien = id ? allReps.find(r=>r.id===Number(id)) : null
+  const dejaDecremente = ancien && ancien.stock_decremente === true
+  const statutAvance = ['pret','rendu'].includes(nouveauStatut)
+  const doitDecrementer = statutAvance && pieceVal && !dejaDecremente
+  if(doitDecrementer) payload.stock_decremente = true
 
   let error
   if(id){
@@ -721,13 +818,27 @@ window.saveDossier=async function(){
     if(!error&&res.data)allReps.unshift(res.data)
   }
 
+  if(!error && doitDecrementer){
+    const piece=allStockPieces.find(p=>p.id===Number(pieceVal))
+    if(piece && Number(piece.quantite)>0){
+      const newQty=Number(piece.quantite)-1
+      const stockRes=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',piece.id)
+      if(!stockRes.error){
+        piece.quantite=newQty
+        showToast(`Stock décrémenté : ${piece.nom} (${newQty} restant${newQty>1?'s':''})`,'ok')
+      }
+    } else if(piece && Number(piece.quantite)<=0){
+      showToast(`⚠️ ${piece.nom} était déjà en rupture`,'err')
+    }
+  }
+
   document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
   document.getElementById('saveBtn').disabled=false
 
   if(error){showToast('Erreur : '+error.message,'err');return}
   closePanel()
   renderAll()
-  showToast(id?`Dossier "${nom}" mis à jour ✓`:`Dossier "${nom}" créé ✓`,'ok')
+  if(!doitDecrementer)showToast(id?`Dossier "${nom}" mis à jour ✓`:`Dossier "${nom}" créé ✓`,'ok')
 }
 
 window.exportCSV=function(){
