@@ -357,8 +357,8 @@ function renderAll(){
   document.getElementById('k-ca').textContent=ca.toFixed(0)+'€'
   document.getElementById('k-moy').textContent=moy
   document.getElementById('k-new').textContent=newCli
-  document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`
-  (document.getElementById('nb-cli')||{}).textContent=total||'0'
+  document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`;
+  (document.getElementById('nb-cli')||{}).textContent=total||'0';
   renderTable()
 }
 
