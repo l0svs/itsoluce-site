@@ -319,7 +319,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
     <div class="totaux-box">
       <div class="tot-row"><span>Sous-total</span><span id="t-soustotal">0,00 €</span></div>
-      <div class="tot-row"><span>Remise (€)</span><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:90px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/></div>
+      <div class="tot-row"><span>Remise</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-remise-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
+      <div class="tot-row" id="remise-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="remise-montant"></span></div>
       <div class="tot-row final"><span>TOTAL</span><span id="t-total">0,00 €</span></div>
     </div>
 
@@ -381,10 +382,31 @@ function calcTotaux(){
     tr.querySelector('.l-total').value=total.toFixed(2).replace('.',',');
     sousTotal+=total;
   });
-  const remise=Number(document.getElementById('f-remise').value)||0;
-  const total=Math.max(0,sousTotal-remise);
+  const remiseVal=Number(document.getElementById('f-remise').value)||0;
+  const remiseType=document.getElementById('f-remise-type').value;
+  // Calculer le montant réel de la remise en euros
+  let remiseEuros=0;
+  if(remiseType==='pct'){
+    remiseEuros=sousTotal*(remiseVal/100);
+  } else {
+    remiseEuros=remiseVal;
+  }
+  remiseEuros=Math.min(remiseEuros,sousTotal); // pas de remise > sous-total
+  const total=Math.max(0,sousTotal-remiseEuros);
   document.getElementById('t-soustotal').textContent=sousTotal.toFixed(2).replace('.',',')+' €';
   document.getElementById('t-total').textContent=total.toFixed(2).replace('.',',')+' €';
+  // Afficher le détail de la remise en % (montant correspondant en €)
+  const detail=document.getElementById('remise-detail');
+  const montantEl=document.getElementById('remise-montant');
+  if(remiseType==='pct'&&remiseVal>0){
+    detail.style.display='flex';
+    montantEl.textContent=`− ${remiseEuros.toFixed(2).replace('.',',')} €`;
+    detail.querySelector('span').textContent=`soit ${remiseVal}% de remise`;
+  } else {
+    detail.style.display='none';
+  }
+  // Mémoriser le montant réel pour la sauvegarde
+  window._remiseEuros=remiseEuros;
 }
 function getLignes(){
   const lignes=[];
@@ -409,6 +431,7 @@ function openPanel(f){
   document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
   document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
   document.getElementById('f-remise').value=f?(f.remise||0):0;
+  document.getElementById('f-remise-type').value='euro';
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
   document.getElementById('f-paiement').value=f?(f.mode_paiement||''):'';
   document.getElementById('f-notes').value=f?(f.notes||''):'';
@@ -687,7 +710,10 @@ window.saveFacture=async function(){
   const lignes=getLignes()
   if(lignes.length===0){showToast('Ajoutez au moins une ligne','err');return}
   const sousTotal=lignes.reduce((a,l)=>a+l.total,0)
-  const remise=Number(document.getElementById('f-remise').value)||0
+  const remiseVal=Number(document.getElementById('f-remise').value)||0
+  const remiseType=document.getElementById('f-remise-type').value
+  let remise=remiseType==='pct'?sousTotal*(remiseVal/100):remiseVal
+  remise=Math.min(remise,sousTotal)
   const total=Math.max(0,sousTotal-remise)
   const repLink=window._repLink||null
   const clientSelId=document.getElementById('f-client-select').value
