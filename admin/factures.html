@@ -919,7 +919,7 @@ window.deleteFacture=async function(id,num){
 }
 
 // ─── TEMPLATE PDF ───
-function buildTemplateHTML(f){
+function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${l.description||''}</td>
@@ -939,8 +939,10 @@ function buildTemplateHTML(f){
   const mCarte=Number(f.montant_carte)||0
   const mEspeces=Number(f.montant_especes)||0
   const renduMixte=(mCarte+mEspeces)-Number(f.total)
+  // Mode PDF : hauteur fixe = une page A4 pile (210x297mm ratio), pied de page en bas, pas de débordement
+  const hauteurStyle=forPdf?'height:296mm;':'min-height:292mm;'
   return `
-  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:44px 44px;width:210mm;min-height:292mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;">
+  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:44px 44px;width:210mm;${hauteurStyle}box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;">
     <div style="flex:1;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
       <div style="display:flex;align-items:center;gap:14px;">
@@ -1025,32 +1027,41 @@ window.previewFacture=function(id){
 }
 
 async function genererPDFBlob(){
-  const modal=document.getElementById('pdfModal')
-  const el=modal.firstElementChild
+  // Générer le template en mode PDF (hauteur = contenu réel, pas de min-height)
+  const wrap=document.createElement('div')
+  wrap.style.position='fixed'
+  wrap.style.left='-99999px'
+  wrap.style.top='0'
+  wrap.style.width='210mm'
+  wrap.style.background='#ffffff'
+  wrap.innerHTML=buildTemplateHTML(currentPdfDoc,true)
+  document.body.appendChild(wrap)
+  const el=wrap.firstElementChild
+
   const scale=2
-  const canvas=await html2canvas(el,{scale:scale,useCORS:true,backgroundColor:'#ffffff',windowWidth:el.scrollWidth,windowHeight:el.scrollHeight})
+  const canvas=await html2canvas(el,{scale:scale,useCORS:true,backgroundColor:'#ffffff'})
+  document.body.removeChild(wrap)
+
   const {jsPDF}=window.jspdf
   const pdf=new jsPDF('p','mm','a4')
   const pageW=210, pageH=297
-  // Largeur/hauteur de l'image en pixels
   const imgWpx=canvas.width
   const imgHpx=canvas.height
-  // Combien de pixels représentent une page A4 (même ratio que la largeur)
-  const pxPerPage=Math.floor((pageH*imgWpx)/pageW)
-  // Hauteur totale en mm
+  // Hauteur totale de l'image rapportée à la largeur d'une page A4
   const totalHmm=(imgHpx*pageW)/imgWpx
-  // Si tient sur une page → une seule image pleine page
-  if(totalHmm<=pageH+8){
+
+  // Cas normal : tient sur une page → forcer une page A4 exacte (pas de débordement)
+  if(totalHmm<=pageH+10){
     const imgData=canvas.toDataURL('image/jpeg',0.95)
-    pdf.addImage(imgData,'JPEG',0,0,pageW,Math.min(totalHmm,pageH),undefined,'FAST')
+    pdf.addImage(imgData,'JPEG',0,0,pageW,pageH,undefined,'FAST')
     return pdf
   }
-  // Sinon : découper l'image en tranches d'une page, chacune sur sa propre page PDF
-  let renderedPx=0
-  let pageNum=0
+
+  // Cas multi-pages : découpage net par tranches d'une page exacte
+  const pxPerPage=Math.floor((pageH*imgWpx)/pageW)
+  let renderedPx=0, pageNum=0
   while(renderedPx<imgHpx){
     const slicePx=Math.min(pxPerPage,imgHpx-renderedPx)
-    // Créer un canvas temporaire pour cette tranche
     const tmp=document.createElement('canvas')
     tmp.width=imgWpx
     tmp.height=slicePx
@@ -1059,7 +1070,6 @@ async function genererPDFBlob(){
     ctx.fillRect(0,0,tmp.width,tmp.height)
     ctx.drawImage(canvas,0,renderedPx,imgWpx,slicePx,0,0,imgWpx,slicePx)
     const sliceData=tmp.toDataURL('image/jpeg',0.95)
-    // Hauteur de cette tranche en mm
     const sliceHmm=(slicePx*pageW)/imgWpx
     if(pageNum>0)pdf.addPage()
     pdf.addImage(sliceData,'JPEG',0,0,pageW,sliceHmm,undefined,'FAST')
