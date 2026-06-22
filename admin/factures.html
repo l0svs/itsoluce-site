@@ -329,7 +329,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission"/></div>
       <div class="fg"><label>Statut</label><select id="f-statut"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
     </div>
-    <div class="fg"><label>Mode de paiement</label><select id="f-paiement"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option></select></div>
+    <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option></select></div>
+    <div class="fg" id="especes-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
+      <label>Montant donné par le client (€)</label>
+      <input type="number" id="f-montant-donne" min="0" step="0.01" placeholder="Ex : 50.00" oninput="calcRendu()"/>
+      <div id="rendu-affichage" style="margin-top:8px;font-size:13px;font-weight:600;color:var(--ok);display:none;"></div>
+    </div>
     <div class="fg"><label>Note (visible sur la facture)</label><textarea id="f-notes" placeholder="Ex : Merci de votre confiance."></textarea></div>
   </div>
   <div class="panel-footer" style="flex-wrap:wrap;">
@@ -360,17 +365,53 @@ if(sa){document.documentElement.style.setProperty('--a',sa);document.documentEle
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3500);}
 
 // ─── LIGNES DYNAMIQUES ───
-function addLigne(desc,qte,prix){
-  desc=desc||''; qte=qte||1; prix=prix||0;
+function addLigne(desc,qte,prix,stockId){
+  desc=desc||''; qte=qte||1; prix=prix||0; stockId=stockId||'';
   const tb=document.getElementById('lignesBody');
   const tr=document.createElement('tr');
+  tr.dataset.stockId=stockId;
   tr.innerHTML=`
-    <td><input type="text" class="l-desc" value="${String(desc).replace(/"/g,'&quot;')}" placeholder="Ex : Remplacement batterie"/></td>
+    <td>
+      <input type="text" class="l-desc" value="${String(desc).replace(/"/g,'&quot;')}" placeholder="Ex : Remplacement batterie"/>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:3px;">
+        <select class="l-stock" onchange="onStockPick(this)" style="flex:1;font-size:10.5px;padding:3px 5px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t2);font-family:inherit;cursor:pointer;"><option value="">📦 Choisir un article du stock...</option></select>
+        <span class="l-stock-tag" style="font-size:10px;color:var(--ok);white-space:nowrap;${stockId?'':'display:none;'}">✓ lié</span>
+      </div>
+    </td>
     <td><input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()"/></td>
     <td><input type="number" class="l-prix" value="${prix}" min="0" step="0.01" oninput="calcTotaux()"/></td>
     <td><input type="text" class="l-total" value="0,00" disabled style="opacity:.7;border:none;background:none;"/></td>
     <td><button class="ligne-del" onclick="this.closest('tr').remove();calcTotaux()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td>`;
   tb.appendChild(tr);
+  // Remplir le sélecteur stock de cette ligne
+  const sel=tr.querySelector('.l-stock');
+  const stock=(window.getStock?window.getStock():[]);
+  stock.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.id;
+    const label=[s.nom,s.marque,s.modele].filter(Boolean).join(' ');
+    o.textContent=`${label} — ${Number(s.prix_vente||0).toFixed(2)}€ (stock: ${s.quantite})`;
+    o.dataset.nom=label;
+    o.dataset.prix=s.prix_vente||0;
+    if(String(s.id)===String(stockId))o.selected=true;
+    sel.appendChild(o);
+  });
+  calcTotaux();
+}
+
+function onStockPick(sel){
+  const tr=sel.closest('tr');
+  const opt=sel.options[sel.selectedIndex];
+  if(sel.value){
+    // Remplir description + prix depuis l'article du stock
+    tr.querySelector('.l-desc').value=opt.dataset.nom||'';
+    tr.querySelector('.l-prix').value=opt.dataset.prix||0;
+    tr.dataset.stockId=sel.value;
+    tr.querySelector('.l-stock-tag').style.display='inline';
+  } else {
+    tr.dataset.stockId='';
+    tr.querySelector('.l-stock-tag').style.display='none';
+  }
   calcTotaux();
 }
 function calcTotaux(){
@@ -408,13 +449,42 @@ function calcTotaux(){
   // Mémoriser le montant réel pour la sauvegarde
   window._remiseEuros=remiseEuros;
 }
+
+// Affiche/masque la zone espèces selon le mode de paiement
+function onPaiementChange(){
+  const mode=document.getElementById('f-paiement').value;
+  const box=document.getElementById('especes-box');
+  if(mode==='especes'){box.style.display='block';calcRendu();}
+  else{box.style.display='none';}
+}
+// Calcule la monnaie à rendre
+function calcRendu(){
+  const donne=Number(document.getElementById('f-montant-donne').value)||0;
+  const totalTxt=document.getElementById('t-total').textContent.replace(/[^0-9,]/g,'').replace(',','.');
+  const total=Number(totalTxt)||0;
+  const aff=document.getElementById('rendu-affichage');
+  if(donne>0&&total>0){
+    const rendu=donne-total;
+    aff.style.display='block';
+    if(rendu>=0){
+      aff.style.color='var(--ok)';
+      aff.textContent=`À rendre au client : ${rendu.toFixed(2).replace('.',',')} €`;
+    } else {
+      aff.style.color='var(--d)';
+      aff.textContent=`Montant insuffisant : il manque ${Math.abs(rendu).toFixed(2).replace('.',',')} €`;
+    }
+  } else {
+    aff.style.display='none';
+  }
+}
 function getLignes(){
   const lignes=[];
   document.querySelectorAll('#lignesBody tr').forEach(tr=>{
     const desc=tr.querySelector('.l-desc').value.trim();
     const qte=Number(tr.querySelector('.l-qte').value)||0;
     const prix=Number(tr.querySelector('.l-prix').value)||0;
-    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix});
+    const stockId=tr.dataset.stockId||'';
+    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:stockId?Number(stockId):null});
   });
   return lignes;
 }
@@ -434,11 +504,13 @@ function openPanel(f){
   document.getElementById('f-remise-type').value='euro';
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
   document.getElementById('f-paiement').value=f?(f.mode_paiement||''):'';
+  document.getElementById('f-montant-donne').value=f?(f.montant_donne||''):'';
+  onPaiementChange();
   document.getElementById('f-notes').value=f?(f.notes||''):'';
   document.getElementById('f-date-emission').value=f?(f.date_emission||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10);
   // Lignes
   document.getElementById('lignesBody').innerHTML='';
-  if(f&&f.lignes&&f.lignes.length){f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire));}
+  if(f&&f.lignes&&f.lignes.length){f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id));}
   else{addLigne();}
   // Sélecteurs
   if(window.fillRepSelect)window.fillRepSelect();
@@ -568,6 +640,8 @@ loadNotifs();
 let allFactures=[]
 let allReps=[]
 let allClients=[]
+let allStock=[]
+window.getStock=()=>allStock
 let activeFilter='Tous'
 let currentPdfDoc=null
 
@@ -580,15 +654,17 @@ async function nextNumero(cle, format){
 }
 
 async function load(){
-  const [rFac,rRep,rCli]=await Promise.all([
+  const [rFac,rRep,rCli,rStock]=await Promise.all([
     sb.from('factures').select('*').order('created_at',{ascending:false}),
     sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,marque,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom')
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
+    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom')
   ])
   if(rFac.error){showError(rFac.error.message);return}
   allFactures=rFac.data||[]
   allReps=rRep.data||[]
   allClients=rCli.data||[]
+  allStock=rStock.data||[]
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
@@ -752,8 +828,16 @@ window.saveFacture=async function(){
     total:total,
     remise:remise,
     notes:document.getElementById('f-notes').value.trim()||null,
+    montant_donne:(document.getElementById('f-paiement').value==='especes'&&document.getElementById('f-montant-donne').value)?Number(document.getElementById('f-montant-donne').value):null,
     updated_at:new Date().toISOString()
   }
+
+  // Déterminer s'il faut décrémenter le stock (création uniquement, articles liés, pas déjà fait)
+  const ancienne = id ? allFactures.find(f=>f.id===Number(id)) : null
+  const dejaDecremente = ancienne && ancienne.stock_decremente === true
+  const lignesStock = lignes.filter(l=>l.stock_id)
+  const doitDecrementer = !id && lignesStock.length>0 && !dejaDecremente
+  if(doitDecrementer) payload.stock_decremente = true
 
   let error
   if(id){
@@ -769,6 +853,19 @@ window.saveFacture=async function(){
   document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
   document.getElementById('saveBtn').disabled=false
   if(error){showToast('Erreur : '+error.message,'err');return}
+
+  // Décrémentation du stock pour les lignes liées à un article
+  if(doitDecrementer){
+    for(const l of lignesStock){
+      const art=allStock.find(s=>s.id===l.stock_id)
+      if(art){
+        const newQte=Math.max(0,Number(art.quantite||0)-Number(l.quantite||1))
+        await sb.from('stock').update({quantite:newQte}).eq('id',l.stock_id)
+        art.quantite=newQte
+      }
+    }
+  }
+
   window._repLink=null
   closePanel()
   renderAll()
@@ -798,6 +895,9 @@ function buildTemplateHTML(f){
   const modeLabel={especes:'espèces',carte:'carte'}
   const estPayee=f.statut==='payee'
   const modePaie=f.mode_paiement?modeLabel[f.mode_paiement]||f.mode_paiement:''
+  const estEspeces=f.mode_paiement==='especes'&&f.montant_donne
+  const montantDonne=Number(f.montant_donne)||0
+  const rendu=montantDonne-Number(f.total)
   return `
   <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:48px 44px;width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;">
     <div style="flex:1;">
@@ -852,6 +952,10 @@ function buildTemplateHTML(f){
         <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#1a1a1a;border-top:2px solid #1d4ed8;padding-top:8px;margin-top:6px;">
           <span>TOTAL</span><span>${Number(f.total).toFixed(2).replace('.',',')} €</span>
         </div>
+        ${estEspeces?`
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;margin-top:8px;border-top:1px dashed #ddd;padding-top:8px;"><span>Reçu en espèces</span><span>${montantDonne.toFixed(2).replace('.',',')} €</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#16a34a;"><span>Monnaie rendue</span><span>${(rendu>=0?rendu:0).toFixed(2).replace('.',',')} €</span></div>
+        `:''}
       </div>
     </div>
     ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${f.notes}</div>`:''}
