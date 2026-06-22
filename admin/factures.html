@@ -178,9 +178,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tot-row{display:flex;justify-content:space-between;font-size:13px;color:var(--t2);margin-bottom:6px;}
 .tot-row.final{font-size:17px;font-weight:600;color:var(--t1);border-top:1px solid var(--ln2);padding-top:8px;margin-top:8px;}
 /* APERÇU PDF MODAL */
-.pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 20px;}
+.pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:80px 20px 40px;}
 .pdf-overlay.open{display:flex;}
-.pdf-modal{background:#fff;width:210mm;max-width:100%;min-height:297mm;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;}
+.pdf-modal{background:#fff;width:210mm;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;transform-origin:top center;}
+@media(max-width:900px){.pdf-modal{transform:scale(.7);}}
+@media(max-width:680px){.pdf-modal{transform:scale(.45);}}
 .pdf-actions{position:fixed;top:20px;right:30px;display:flex;gap:8px;z-index:401;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -314,6 +316,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission"/></div>
       <div class="fg"><label>Statut</label><select id="f-statut"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
     </div>
+    <div class="fg"><label>Mode de paiement</label><select id="f-paiement"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option></select></div>
     <div class="fg"><label>Note (visible sur la facture)</label><textarea id="f-notes" placeholder="Ex : Merci de votre confiance."></textarea></div>
   </div>
   <div class="panel-footer" style="flex-wrap:wrap;">
@@ -395,6 +398,7 @@ function openPanel(f){
   document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
   document.getElementById('f-remise').value=f?(f.remise||0):0;
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
+  document.getElementById('f-paiement').value=f?(f.mode_paiement||''):'';
   document.getElementById('f-notes').value=f?(f.notes||''):'';
   document.getElementById('f-date-emission').value=f?(f.date_emission||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10);
   // Lignes
@@ -705,6 +709,7 @@ window.saveFacture=async function(){
     reparation_numero:repLink?repLink.numero:null,
     date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
     statut:document.getElementById('f-statut').value,
+    mode_paiement:document.getElementById('f-paiement').value||null,
     lignes:lignes,
     total:total,
     remise:remise,
@@ -752,8 +757,12 @@ function buildTemplateHTML(f){
     </tr>`).join('')
   const sousTotal=(f.lignes||[]).reduce((a,l)=>a+Number(l.total),0)
   const dateEm=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
+  const modeLabel={especes:'espèces',carte:'carte'}
+  const estPayee=f.statut==='payee'
+  const modePaie=f.mode_paiement?modeLabel[f.mode_paiement]||f.mode_paiement:''
   return `
-  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:48px 44px;width:210mm;box-sizing:border-box;background:#fff;">
+  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:48px 44px;width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;">
+    <div style="flex:1;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
       <div style="display:flex;align-items:center;gap:14px;">
         <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="width:60px;height:60px;border-radius:10px;" alt="logo"/>
@@ -768,13 +777,16 @@ function buildTemplateHTML(f){
     </div>
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;">
       <div>
-        <div style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">FACTURE</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">FACTURE</span>
+          ${estPayee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">PAYÉE</span>`:''}
+        </div>
         <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${f.numero}</div>
         ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${f.reparation_numero}</div>`:''}
       </div>
       <div style="text-align:right;font-size:12px;color:#555;">
         <div>Date d'émission : <strong>${dateEm}</strong></div>
-        <div style="margin-top:3px;">Échéance : <strong>À réception</strong></div>
+        ${estPayee?`<div style="margin-top:3px;color:#16a34a;">Réglée${modePaie?` par ${modePaie}`:''}</div>`:`<div style="margin-top:3px;">Échéance : <strong>À réception</strong></div>`}
       </div>
     </div>
     <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:30px;">
@@ -805,9 +817,9 @@ function buildTemplateHTML(f){
       </div>
     </div>
     ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${f.notes}</div>`:''}
+    </div>
     <div style="margin-top:40px;padding-top:18px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.8;">
-      <div><strong style="color:#555;">Conditions de paiement :</strong> ${ENTREPRISE.conditions}</div>
-      <div><strong style="color:#555;">Coordonnées bancaires :</strong> ${ENTREPRISE.iban}</div>
+      ${estPayee?`<div><strong style="color:#16a34a;">Facture acquittée</strong>${modePaie?` — réglée par ${modePaie}`:''}. Merci de votre paiement.</div>`:`<div><strong style="color:#555;">Conditions de paiement :</strong> ${ENTREPRISE.conditions}</div><div><strong style="color:#555;">Coordonnées bancaires :</strong> ${ENTREPRISE.iban}</div>`}
       <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
       <div style="margin-top:14px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
     </div>
@@ -824,15 +836,23 @@ window.previewFacture=function(id){
 
 async function genererPDFBlob(){
   const modal=document.getElementById('pdfModal')
-  const canvas=await html2canvas(modal.firstElementChild,{scale:2,useCORS:true,backgroundColor:'#ffffff'})
+  const el=modal.firstElementChild
+  const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',windowWidth:el.scrollWidth,windowHeight:el.scrollHeight})
   const imgData=canvas.toDataURL('image/jpeg',0.95)
   const {jsPDF}=window.jspdf
   const pdf=new jsPDF('p','mm','a4')
-  const pw=210, ph=(canvas.height*pw)/canvas.width
-  let heightLeft=ph, position=0
-  pdf.addImage(imgData,'JPEG',0,position,pw,ph)
-  heightLeft-=297
-  while(heightLeft>0){position-=297;pdf.addPage();pdf.addImage(imgData,'JPEG',0,position,pw,ph);heightLeft-=297}
+  const pageW=210, pageH=297
+  const imgH=(canvas.height*pageW)/canvas.width
+  // Si le contenu tient sur une page (avec petite marge de tolérance), une seule page pleine
+  if(imgH<=pageH+2){
+    pdf.addImage(imgData,'JPEG',0,0,pageW,pageH,undefined,'FAST')
+  } else {
+    // Contenu multi-pages
+    let heightLeft=imgH, position=0
+    pdf.addImage(imgData,'JPEG',0,position,pageW,imgH)
+    heightLeft-=pageH
+    while(heightLeft>0){position-=pageH;pdf.addPage();pdf.addImage(imgData,'JPEG',0,position,pageW,imgH);heightLeft-=pageH}
+  }
   return pdf
 }
 
@@ -852,7 +872,16 @@ window.sendPdf=async function(){
   try{
     const pdf=await genererPDFBlob()
     const pdfBase64=pdf.output('datauristring').split(',')[1]
-    const html=`<p>Bonjour,</p><p>Veuillez trouver ci-joint votre facture <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>.</p><p>Conditions : ${ENTREPRISE.conditions}<br>IBAN : ${ENTREPRISE.iban}</p><p>Bien à vous,<br>${ENTREPRISE.nom}<br>${ENTREPRISE.site}</p>`
+    const prenom=(f.client_nom||'').split(' ')[0]||''
+    const modeLbl={especes:'espèces',carte:'carte'}
+    const mp=f.mode_paiement?modeLbl[f.mode_paiement]||f.mode_paiement:''
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br>contact@itsoluce.be<br>+32 474 05 66 59<br>www.itsoluce.be</p>`
+    let html
+    if(f.statut==='payee'){
+      html=`<p>Bonjour ${prenom},</p><p>Merci d'avoir fait confiance à IT Soluce.</p><p>Vous trouverez ci-joint votre facture <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>, réglée${mp?` par ${mp}`:''}. Ce document fait office de justificatif acquitté.</p><p>Je reste à votre disposition pour toute question, et n'hésitez pas à me recontacter pour vos futurs besoins.</p>${signature}`
+    } else {
+      html=`<p>Bonjour ${prenom},</p><p>Merci d'avoir fait confiance à IT Soluce.</p><p>Vous trouverez ci-joint votre facture <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>. Le règlement se fait à réception, par virement sur le compte ${ENTREPRISE.iban}.</p><p>Je reste à votre disposition pour toute question.</p>${signature}`
+    }
     const {data:{session}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-invoice`,{
       method:'POST',
