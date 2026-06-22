@@ -277,6 +277,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <table class="table">
           <thead>
             <tr>
+              <th style="width:90px;">N° suivi</th>
               <th>Client</th>
               <th>Appareil</th>
               <th>Panne</th>
@@ -612,6 +613,17 @@ window.fillPieceSelect=function(selectedId){
     allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''}>${p.nom} (stock: ${p.quantite}) — achat ${Number(p.prix_achat||0).toFixed(2)}€</option>`).join('')
 }
 
+// Génère le prochain numéro séquentiel via le compteur Supabase
+async function nextNumero(cle, prefix){
+  // Lire la valeur actuelle
+  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+  const nouvelle=(cpt?.valeur||0)+1
+  // Incrémenter
+  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
+  return `${prefix}-${String(nouvelle).padStart(4,'0')}`
+}
+window.nextNumero=nextNumero
+
 async function loadReps(){
   const [rRep,rStock]=await Promise.all([
     sb.from('reparations').select('*').order('created_at',{ascending:false}),
@@ -619,6 +631,16 @@ async function loadReps(){
   ])
   if(rRep.error){console.error(rRep.error);return}
   allReps=rRep.data||[]
+  allStockPieces=rStock.data||[]
+
+  // Attribution rétroactive des numéros aux dossiers existants sans numéro
+  const sansNumero=allReps.filter(r=>!r.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
+  for(const r of sansNumero){
+    const num=await nextNumero('reparation','REP')
+    await sb.from('reparations').update({numero:num}).eq('id',r.id)
+    r.numero=num
+  }
+
   allStockPieces=rStock.data||[]
   renderAll()
   document.getElementById('ldr').style.display='none'
@@ -685,6 +707,7 @@ function renderTable(){
     const st=window.STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
     const date=new Date(r.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
     return`<tr data-id="${r.id}">
+      <td><span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${r.numero||'—'}</span></td>
       <td>
         <div style="font-weight:500;">${r.client_nom}</div>
         <div style="font-size:11px;color:var(--t3);">${r.client_telephone||r.client_email||''}</div>
@@ -814,6 +837,7 @@ window.saveDossier=async function(){
     error=res.error
     if(!error){const idx=allReps.findIndex(r=>r.id===Number(id));if(idx>=0)allReps[idx]={...allReps[idx],...payload,id:Number(id)}}
   } else {
+    payload.numero=await nextNumero('reparation','REP')
     const res=await sb.from('reparations').insert(payload).select().single()
     error=res.error
     if(!error&&res.data)allReps.unshift(res.data)
@@ -844,7 +868,7 @@ window.saveDossier=async function(){
 
 window.exportCSV=function(){
   if(!allReps.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['id','client_nom','client_email','client_telephone','appareil','marque','modele','panne_description','statut','prix_devis','prix_final','notes','created_at']
+  const cols=['numero','id','client_nom','client_email','client_telephone','appareil','marque','modele','panne_description','statut','cout_pieces','prix_devis','prix_final','notes','created_at']
   const csv=[cols.join(','),...allReps.map(r=>cols.map(c=>`"${String(r[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
   const a=document.createElement('a')
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
