@@ -413,6 +413,14 @@ document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 let allClients=[]
 let allReps=[]
 
+async function nextNumero(cle, prefix){
+  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+  const nouvelle=(cpt?.valeur||0)+1
+  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
+  return `${prefix}-${String(nouvelle).padStart(4,'0')}`
+}
+window.nextNumero=nextNumero
+
 async function load(){
   const [r1,r2]=await Promise.all([
     sb.from('clients').select('*').order('created_at',{ascending:false}),
@@ -439,6 +447,13 @@ async function load(){
       c.ca=cReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
       c.last_rep=cReps[0]?.created_at
     })
+    // Attribution rétroactive des numéros clients
+    const sansNumero=allClients.filter(c=>!c.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
+    for(const c of sansNumero){
+      const num=await nextNumero('client','CLI')
+      await sb.from('clients').update({numero:num}).eq('id',c.id)
+      c.numero=num
+    }
   }
   allReps=r2.data||[]
   renderAll()
@@ -479,7 +494,7 @@ window.renderTable=function(){
       <td><div class="cli-av">${initials}</div></td>
       <td>
         <div style="font-weight:500;">${c.nom||'—'}</div>
-        <div style="font-size:11px;color:var(--t3);">${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+        <div style="font-size:11px;color:var(--t3);">${c.numero?`<span style="font-family:monospace;color:var(--a);">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
       </td>
       <td>
         <div>${c.email||'—'}</div>
@@ -506,7 +521,7 @@ window.showDetail=function(id){
   document.getElementById('detailBody').innerHTML=`
     <div class="dp-av">${initials}</div>
     <div class="dp-name">${c.nom||'—'}</div>
-    <div class="dp-sub">${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+    <div class="dp-sub">${c.numero?`<span style="font-family:monospace;color:var(--a);font-weight:600;">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
     <div class="dp-stat">
       <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${reps.length}</div></div>
       <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(0)}€</div></div>
@@ -562,6 +577,7 @@ window.saveClient=async function(){
     error=res.error
     if(!error){const idx=allClients.findIndex(c=>c.id===Number(id));if(idx>=0)allClients[idx]={...allClients[idx],...payload}}
   } else {
+    payload.numero=await nextNumero('client','CLI')
     const res=await sb.from('clients').insert(payload).select().single()
     error=res.error
     if(!error&&res.data){res.data.reps_count=0;res.data.ca=0;allClients.unshift(res.data)}
@@ -585,7 +601,7 @@ window.deleteClient=async function(id,nom){
 
 window.exportCSV=function(){
   if(!allClients.length){showToast('Aucune donnée','err');return}
-  const cols=['id','nom','email','telephone','adresse','type','notes','created_at']
+  const cols=['numero','id','nom','email','telephone','adresse','type','notes','created_at']
   const csv=[cols.join(','),...allClients.map(c=>cols.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
   const a=document.createElement('a')
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
