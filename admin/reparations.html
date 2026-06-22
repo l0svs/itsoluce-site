@@ -325,6 +325,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <input type="hidden" id="f-id"/>
 
     <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Client</div>
+    <div class="fg">
+      <label>Client existant ou nouveau</label>
+      <select id="f-client-select" onchange="onClientSelect()">
+        <option value="">➕ Nouveau client</option>
+      </select>
+    </div>
     <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
     <div class="fg-row">
       <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
@@ -470,6 +476,12 @@ function openPanel(r=null){
   if(window.fillPieceSelect)window.fillPieceSelect(r?.piece_id||'')
   document.getElementById('f-cout').value=r?.cout_pieces||''
   updateMarge()
+  // Remplir le sélecteur de clients existants + réinitialiser sur "Nouveau client"
+  if(window.fillClientSelect)window.fillClientSelect()
+  const csel=document.getElementById('f-client-select')
+  if(csel){csel.value='';}
+  // Déverrouiller les champs client (cas nouveau dossier / modification)
+  ;['f-client','f-email','f-tel'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}})
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   document.getElementById('f-client').focus()
@@ -603,7 +615,45 @@ document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 
 let allReps=[]
 let allStockPieces=[]
+let allClientsRep=[]
 let activeFilter='Tous'
+
+// Remplir le sélecteur de clients existants
+window.fillClientSelect=function(){
+  const sel=document.getElementById('f-client-select')
+  if(!sel)return
+  sel.innerHTML='<option value="">➕ Nouveau client</option>'+
+    allClientsRep.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
+}
+
+// Quand on sélectionne un client existant, remplir les champs
+window.onClientSelect=function(){
+  const sel=document.getElementById('f-client-select')
+  const opt=sel.options[sel.selectedIndex]
+  if(sel.value){
+    document.getElementById('f-client').value=opt.dataset.nom||''
+    document.getElementById('f-email').value=opt.dataset.email||''
+    document.getElementById('f-tel').value=opt.dataset.tel||''
+    // Verrouiller les champs (lecture seule visuelle) puisque le client existe
+    document.getElementById('f-client').readOnly=true
+    document.getElementById('f-email').readOnly=true
+    document.getElementById('f-tel').readOnly=true
+    document.getElementById('f-client').style.opacity='.6'
+    document.getElementById('f-email').style.opacity='.6'
+    document.getElementById('f-tel').style.opacity='.6'
+  } else {
+    // Nouveau client : vider et déverrouiller
+    document.getElementById('f-client').value=''
+    document.getElementById('f-email').value=''
+    document.getElementById('f-tel').value=''
+    document.getElementById('f-client').readOnly=false
+    document.getElementById('f-email').readOnly=false
+    document.getElementById('f-tel').readOnly=false
+    document.getElementById('f-client').style.opacity='1'
+    document.getElementById('f-email').style.opacity='1'
+    document.getElementById('f-tel').style.opacity='1'
+  }
+}
 
 // Exposer le remplissage du select de pièces (appelé depuis openPanel)
 window.fillPieceSelect=function(selectedId){
@@ -625,13 +675,15 @@ async function nextNumero(cle, prefix){
 window.nextNumero=nextNumero
 
 async function loadReps(){
-  const [rRep,rStock]=await Promise.all([
+  const [rRep,rStock,rCli]=await Promise.all([
     sb.from('reparations').select('*').order('created_at',{ascending:false}),
-    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom')
+    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom'),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom')
   ])
   if(rRep.error){console.error(rRep.error);return}
   allReps=rRep.data||[]
   allStockPieces=rStock.data||[]
+  allClientsRep=rCli.data||[]
 
   // Attribution rétroactive des numéros aux dossiers existants sans numéro
   const sansNumero=allReps.filter(r=>!r.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
@@ -804,8 +856,44 @@ window.saveDossier=async function(){
 
   const pieceVal=document.getElementById('f-piece').value
   const nouveauStatut=document.getElementById('f-statut').value
+  const clientSelId=document.getElementById('f-client-select').value
+
+  // Gestion du client : créer si nouveau (seulement à la création d'un dossier)
+  let clientLieId = clientSelId ? Number(clientSelId) : null
+  if(!id){
+    if(clientSelId){
+      // Client existant sélectionné → on le lie
+      clientLieId=Number(clientSelId)
+    } else {
+      // Nouveau client : vérifier s'il existe déjà par email/nom, sinon le créer
+      const email=document.getElementById('f-email').value.trim()
+      let existant=null
+      if(email)existant=allClientsRep.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())
+      if(!existant)existant=allClientsRep.find(c=>c.nom&&c.nom.toLowerCase()===nom.toLowerCase())
+      if(existant){
+        clientLieId=existant.id
+      } else {
+        // Créer le nouveau client avec un numéro
+        const numCli=await nextNumero('client','CLI')
+        const newCli={
+          numero:numCli,
+          nom:nom,
+          email:email||null,
+          telephone:document.getElementById('f-tel').value.trim()||null,
+          type:'particulier',
+          updated_at:new Date().toISOString()
+        }
+        const resCli=await sb.from('clients').insert(newCli).select().single()
+        if(!resCli.error&&resCli.data){
+          clientLieId=resCli.data.id
+          allClientsRep.unshift(resCli.data)
+        }
+      }
+    }
+  }
 
   const payload={
+    client_id:clientLieId,
     client_nom:nom,
     client_email:document.getElementById('f-email').value.trim()||null,
     client_telephone:document.getElementById('f-tel').value.trim()||null,
