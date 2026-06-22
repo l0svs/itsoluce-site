@@ -591,7 +591,14 @@ const ENTREPRISE={
   iban:'BE02 7320 8265 2640',
   logo:'https://itsoluce.be/favicon_io/android-chrome-512x512.png',
   mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
-  conditions:'Paiement comptant à réception de la facture.'
+  conditions:'Paiement comptant à réception de la facture.',
+  cgv:[
+    ['Garantie','Les réparations bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre) à compter de la date de restitution, hors casse, oxydation, mauvaise utilisation ou intervention d\'un tiers. La garantie légale de conformité (art. 1649bis et s. du Code civil) reste applicable sur les pièces neuves fournies.'],
+    ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne peut être tenu responsable de la perte de données, de programmes ou de tout dommage indirect survenant lors de la réparation. La responsabilité d\'IT Soluce est limitée au montant de la prestation facturée.'],
+    ['Appareils non récupérés','Tout appareil non récupéré dans un délai de 30 jours après notification de fin d\'intervention pourra être considéré comme abandonné et faire l\'objet d\'un recyclage ou d\'une revente pour couvrir les frais engagés, conformément à la législation en vigueur.'],
+    ['Paiement','Toute facture est payable comptant à réception. Conformément à l\'art. XII et au Code de droit économique, tout retard de paiement entraîne de plein droit un intérêt de retard et une indemnité forfaitaire après mise en demeure restée sans effet.'],
+    ['Litiges','Les présentes conditions sont soumises au droit belge. En cas de litige, les tribunaux de l\'arrondissement du Brabant wallon sont seuls compétents. Le client consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
+  ]
 }
 
 function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
@@ -1010,10 +1017,16 @@ function buildTemplateHTML(f,forPdf){
     </div>
     ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${f.notes}</div>`:''}
     </div>
-    <div style="margin-top:40px;padding-top:18px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.8;">
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
       ${estPayee?`<div><strong style="color:#16a34a;">Facture acquittée</strong>${modePaie?` — réglée par ${modePaie}`:''}. Merci de votre paiement.</div>`:`<div><strong style="color:#555;">Conditions de paiement :</strong> ${ENTREPRISE.conditions}</div><div><strong style="color:#555;">Coordonnées bancaires :</strong> ${ENTREPRISE.iban}</div>`}
       <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
-      <div style="margin-top:14px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dotted #ddd;">
+        <div style="font-size:8.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Conditions générales de vente</div>
+        <div style="font-size:7.2px;color:#999;line-height:1.5;text-align:justify;">
+          ${(ENTREPRISE.cgv||[]).map((c,i)=>`<span><strong style="color:#777;">${i+1}. ${c[0]}.</strong> ${c[1]}</span>`).join(' ')}
+        </div>
+      </div>
+      <div style="margin-top:10px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
     </div>
   </div>`
 }
