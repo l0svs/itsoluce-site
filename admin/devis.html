@@ -1,1 +1,1131 @@
+<!doctype html>
+<html lang="fr" data-mode="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IT Soluce ERP — Devis</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
+[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+.topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}.logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}.logo-sep{width:1px;height:14px;background:var(--ln2);}.logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
+.tb-div{width:1px;height:18px;background:var(--ln2);flex-shrink:0;}.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
+.tb-crumb{font-size:12px;color:var(--t3);flex:1;display:flex;align-items:center;gap:6px;}.tb-crumb a{color:var(--t3);text-decoration:none;}.tb-crumb a:hover{color:var(--a);}.tb-crumb span{color:var(--t2);}
+.tb-r{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.mstrip{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;padding:3px;gap:1px;}
+.mbtn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;background:none;cursor:pointer;border-radius:4px;color:var(--t3);transition:all .12s;}.mbtn:hover{color:var(--t1);background:var(--bg4);}.mbtn.on{background:var(--ad);color:var(--a);}
+.mbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.upill{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 4px;border:1px solid var(--ln2);border-radius:99px;background:var(--bg3);font-size:12px;color:var(--t2);}
+.uav{width:22px;height:22px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.bout{padding:5px 10px;border:1px solid var(--ln2);border-radius:5px;background:none;color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;}.bout:hover{color:var(--d);border-color:var(--d);}
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:var(--sw);background:var(--bg2);border-right:1px solid var(--ln);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 0;}
+.ng{padding:14px 10px 4px;}.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
+.nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
+.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);}
+.nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
+.nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
+.nhr{height:1px;background:var(--ln);margin:8px 10px;}.sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
+.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
+.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-primary{background:var(--a);color:#fff;}.btn-primary:hover{opacity:.85;}
+.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}.btn-secondary:hover{color:var(--t1);}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
+.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
+.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
+.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
+.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
+.search-wrap{position:relative;flex:1;max-width:300px;}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
+.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}.search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
+.filter-btn{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;white-space:nowrap;}
+.filter-btn:hover{color:var(--t1);}.filter-btn.active{background:var(--a);color:#fff;border-color:var(--a);}
+/* CARDS FOURNISSEURS */
+.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start;}
+.four-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:18px;transition:border-color .15s;}
+.four-card:hover{border-color:var(--a);}
+.four-card.inactive{opacity:.5;}
+.fc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.fc-av{width:40px;height:40px;border-radius:8px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
+.fc-info{flex:1;min-width:0;}
+.fc-name{font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fc-cat{font-size:11px;color:var(--t3);margin-top:2px;}
+.fc-actions{display:flex;gap:4px;flex-shrink:0;}
+.act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
+.act-btn:hover{background:var(--bg3);color:var(--t1);}.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.stars{display:flex;gap:2px;margin-bottom:12px;}
+.star{font-size:13px;color:var(--w);}.star.off{color:var(--bg4);}
+.fc-fields{display:flex;flex-direction:column;gap:6px;}
+.fc-field{display:flex;align-items:center;gap:8px;font-size:12px;}
+.fc-fl{color:var(--t3);width:80px;flex-shrink:0;font-size:11px;}
+.fc-fv{color:var(--t1);}
+.fc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--ln);}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;}
+.tag-ok{background:rgba(52,211,153,.12);color:var(--ok);}
+.tag-off{background:var(--bg4);color:var(--t3);}
+.toggle-actif{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);cursor:pointer;}
+.tog{width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;}
+.tog.on{background:var(--ok);border-color:var(--ok);}
+.tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
+.tog.on .tog-thumb{transform:translateX(14px);}
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}.panel-overlay.open{opacity:1;pointer-events:all;}
+.panel{position:fixed;right:0;top:0;bottom:0;width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
+.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}.panel-close:hover{background:var(--bg4);color:var(--t1);}
+.panel-body{flex:1;overflow-y:auto;padding:20px;}.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.fg{margin-bottom:13px;}.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}.fg textarea{resize:vertical;min-height:60px;}.fg select option{background:var(--bg3);}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
+.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
+.star-pick{display:flex;gap:4px;cursor:pointer;}.sp{font-size:20px;color:var(--bg4);transition:color .1s;}.sp.on{color:var(--w);}
+.empty-grid{padding:60px 0;text-align:center;grid-column:1/-1;}
+.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}.empty-sub{font-size:12px;color:var(--t3);}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
+.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
+.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.cards-wrap{grid-template-columns:1fr;}}
 
+/* NOTIFICATIONS */
+.notif-wrap{position:relative;}
+.notif-bell{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--ln2);border-radius:8px;background:var(--bg3);color:var(--t2);cursor:pointer;transition:all .12s;position:relative;}
+.notif-bell:hover{color:var(--t1);background:var(--bg4);}
+.notif-bell svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.notif-count{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:99px;background:var(--d);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg2);}
+.notif-count.hidden{display:none;}
+.notif-panel{position:absolute;top:42px;right:0;width:340px;max-height:440px;background:var(--bg2);border:1px solid var(--ln2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.35);z-index:300;display:none;flex-direction:column;overflow:hidden;}
+.notif-panel.open{display:flex;}
+.notif-head{padding:12px 14px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.notif-title{font-size:13px;font-weight:600;color:var(--t1);}
+.notif-clear{font-size:11px;color:var(--a);cursor:pointer;background:none;border:none;font-family:inherit;}
+.notif-clear:hover{text-decoration:underline;}
+.notif-list{flex:1;overflow-y:auto;}
+.notif-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--ln);cursor:pointer;transition:background .1s;text-decoration:none;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item:hover{background:var(--bg3);}
+.notif-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ni-new{background:rgba(59,130,246,.15);}
+.ni-stock{background:rgba(251,191,36,.15);}
+.ni-time{background:rgba(248,113,113,.15);}
+.ni-task{background:rgba(52,211,153,.15);}
+.notif-body{flex:1;min-width:0;}
+.notif-txt{font-size:12px;color:var(--t1);line-height:1.4;}
+.notif-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.notif-empty{padding:36px 14px;text-align:center;color:var(--t3);font-size:12px;}
+.notif-empty-ico{font-size:24px;margin-bottom:8px;opacity:.4;}
+
+
+/* CHARGES */
+.charge-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--ln);transition:background .1s;}
+.charge-row:hover{background:var(--bg2);}
+.charge-row:last-child{border-bottom:none;}
+.charge-row.inactive{opacity:.45;}
+.cr-ico{width:34px;height:34px;border-radius:8px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.cr-main{flex:1;min-width:0;}
+.cr-lib{font-size:13px;font-weight:500;color:var(--t1);}
+.cr-cat{font-size:11px;color:var(--t3);margin-top:1px;}
+.cr-freq{font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;background:var(--bg4);color:var(--t2);white-space:nowrap;}
+.cr-mensuel{font-size:13px;font-weight:600;color:var(--t1);text-align:right;min-width:90px;}
+.cr-mensuel small{font-size:10px;color:var(--t3);font-weight:400;display:block;}
+.cr-actions{display:flex;gap:3px;opacity:0;transition:opacity .12s;}
+.charge-row:hover .cr-actions{opacity:1;}
+.cr-tog{width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.cr-tog.on{background:var(--ok);border-color:var(--ok);}
+.cr-tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
+.cr-tog.on .cr-tog-thumb{transform:translateX(14px);}
+.total-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--bg2);border:1px solid var(--ln2);border-radius:10px;margin:0 24px 16px;}
+.tb-lbl{font-size:12px;color:var(--t2);}
+.tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
+.tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
+
+/* TABLEAU PRINCIPAL */
+.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
+.empty{padding:60px 24px;text-align:center;}
+.actions{display:flex;align-items:center;gap:3px;opacity:0;}
+.table tr:hover .actions{opacity:1;}
+.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.table{width:100%;border-collapse:collapse;}
+.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
+.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
+.table tr:hover td{background:var(--bg2);}
+.table tr:last-child td{border-bottom:none;}
+
+/* FACTURES SPÉCIFIQUE */
+.statut-fac{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+.sf-brouillon{background:rgba(139,139,160,0.15);color:#8b8ba0;}
+.sf-envoyee{background:rgba(59,130,246,0.15);color:#3b82f6;}
+.sf-payee{background:rgba(52,211,153,0.15);color:#34d399;}
+.sf-accepte{background:rgba(52,211,153,0.15);color:#34d399;}
+.sf-envoye{background:rgba(59,130,246,0.15);color:#3b82f6;}
+.sf-refuse{background:rgba(248,113,113,0.15);color:#f87171;}
+.sf-expire{background:rgba(251,146,60,0.15);color:#fb923c;}
+.sf-retard{background:rgba(248,113,113,0.15);color:#f87171;}
+.sf-annulee{background:rgba(107,114,128,0.15);color:#6b7280;}
+/* LIGNES DOCUMENT */
+.lignes-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.lignes-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:6px 8px;border-bottom:1px solid var(--ln);}
+.lignes-table td{padding:4px;}
+.lignes-table input{width:100%;padding:7px 8px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;}
+.lignes-table input:focus{border-color:var(--a);}
+.ligne-del{width:28px;height:28px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.ligne-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.ligne-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.add-ligne{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px dashed var(--ln2);border-radius:6px;background:none;color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;}
+.add-ligne:hover{border-color:var(--a);color:var(--a);}
+.add-ligne svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.totaux-box{margin-top:14px;padding:14px;background:var(--bg3);border-radius:8px;}
+.tot-row{display:flex;justify-content:space-between;font-size:13px;color:var(--t2);margin-bottom:6px;}
+.tot-row.final{font-size:17px;font-weight:600;color:var(--t1);border-top:1px solid var(--ln2);padding-top:8px;margin-top:8px;}
+/* APERÇU PDF MODAL */
+.pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:80px 20px 40px;}
+.pdf-overlay.open{display:flex;}
+.pdf-modal{background:#fff;width:210mm;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;transform-origin:top center;}
+@media(max-width:900px){.pdf-modal{transform:scale(.7);}}
+@media(max-width:680px){.pdf-modal{transform:scale(.45);}}
+.pdf-actions{position:fixed;top:20px;right:30px;display:flex;gap:8px;z-index:401;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a href="/admin/dashboard.html" class="logo"><span class="logo-m">IT</span><span class="logo-sep"></span><span class="logo-s">SOLUCE</span></a>
+  <div class="tb-div"></div><span class="tb-badge">ERP</span>
+  <button onclick="history.length>1?history.back():location.href='/admin/dashboard.html'" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Retour</button>
+  <div class="tb-crumb">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/admin/dashboard.html">Dashboard</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span>Devis</span>
+  </div>
+  <div class="tb-r">
+    <div class="notif-wrap">
+      <button class="notif-bell" onclick="toggleNotifs(event)" title="Notifications"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-count hidden" id="notifCount">0</span></button>
+      <div class="notif-panel" id="notifPanel"><div class="notif-head"><span class="notif-title">Notifications</span><button class="notif-clear" onclick="markAllRead()">Tout marquer comme lu</button></div><div class="notif-list" id="notifList"></div></div>
+    </div>
+    <div class="mstrip">
+      <button class="mbtn" data-m="light" onclick="setMode('light')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <button class="mbtn on" data-m="auto" onclick="setMode('auto')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" stroke="none"/></svg></button>
+      <button class="mbtn" data-m="dark" onclick="setMode('dark')"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <div class="tb-div"></div>
+    <div class="upill"><div class="uav" id="uAv">—</div><span id="uEmail" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span></div>
+    <button class="bout" onclick="doLogout()">Quitter</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="ng"><div class="ngl">Vue d'ensemble</div><a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a></div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Opérations</div>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
+      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
+      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs</a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Finance</div>
+      <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges</a>
+      <a href="/admin/devis.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
+      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Gestion</div>
+      <button class="nl"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</button>
+      <a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
+    </div>
+    <div class="sf">IT Soluce ERP · v1.0</div>
+</aside>
+  <div class="content" id="mainContent">
+    <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
+    <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="page-head">
+        <div class="ph-left"><h1>Devis</h1><p id="ph-sub">— devis</p></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau devis</button>
+        </div>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi"><div class="kpi-label">Devis acceptés (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--ok)">—</div><div class="kpi-sub">montant accepté</div></div>
+        <div class="kpi"><div class="kpi-label">En attente</div><div class="kpi-val" id="k-attente" style="color:var(--w)">—</div><div class="kpi-sub">envoyés, sans réponse</div></div>
+        <div class="kpi"><div class="kpi-label">Taux d'acceptation</div><div class="kpi-val" id="k-retard" style="color:var(--a)">—</div><div class="kpi-sub">devis acceptés / envoyés</div></div>
+        <div class="kpi"><div class="kpi-label">Total devis</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderTable()"/></div>
+        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr>
+            <th style="width:100px;">N°</th><th>Client</th><th>Réf. répar.</th><th>Émis le</th><th>Statut</th><th style="text-align:right;">Montant</th><th style="width:130px;"></th>
+          </tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🧾</div><div class="empty-title">Aucune facture</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer la première</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel" style="width:520px;">
+  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouveau devis</span><button class="panel-close" onclick="closePanel()">×</button></div>
+  <div class="panel-body">
+    <input type="hidden" id="f-id"/>
+    <input type="hidden" id="f-numero"/>
+
+    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Depuis une réparation (optionnel)</div>
+    <div class="fg">
+      <label>Pré-remplir depuis une réparation</label>
+      <select id="f-rep" onchange="onRepSelect()"><option value="">— Aucune (saisie manuelle) —</option></select>
+    </div>
+
+    <div class="fg-sep">Client</div>
+    <div class="fg">
+      <label>Client existant ou nouveau</label>
+      <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
+    </div>
+    <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+    <div class="fg-row">
+      <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
+      <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
+    </div>
+    <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+
+    <div class="fg-sep">Lignes de facturation</div>
+    <table class="lignes-table">
+      <thead><tr><th style="width:46%;">Description</th><th style="width:14%;">Qté</th><th style="width:22%;">Prix unit. €</th><th style="width:14%;">Total</th><th style="width:36px;"></th></tr></thead>
+      <tbody id="lignesBody"></tbody>
+    </table>
+    <button class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
+
+    <div class="totaux-box">
+      <div class="tot-row"><span>Sous-total</span><span id="t-soustotal">0,00 €</span></div>
+      <div class="tot-row"><span>Remise</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-remise-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
+      <div class="tot-row" id="remise-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="remise-montant"></span></div>
+      <div class="tot-row final"><span>TOTAL</span><span id="t-total">0,00 €</span></div>
+    </div>
+
+    <div class="fg-sep">Détails</div>
+    <div class="fg-row">
+      <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission" oninput="majValidite()"/></div>
+      <div class="fg"><label>Validité jusqu'au</label><input type="date" id="f-date-validite"/></div>
+    </div>
+    <div class="fg"><label>Statut</label><select id="f-statut"><option value="brouillon">Brouillon</option><option value="envoye">Envoyé</option><option value="accepte">Accepté</option><option value="refuse">Refusé</option></select></div>
+    
+    <div class="fg"><label>Note (visible sur la facture)</label><textarea id="f-notes" placeholder="Ex : Merci de votre confiance."></textarea></div>
+  </div>
+  <div class="panel-footer" style="flex-wrap:wrap;">
+    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveDevis()" style="flex:2;" id="saveBtn">Enregistrer</button>
+  </div>
+</div>
+
+<!-- APERÇU PDF -->
+<div class="pdf-overlay" id="pdfOverlay">
+  <div class="pdf-actions">
+    <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
+    <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
+    <button class="btn btn-secondary" onclick="convertirEnFacture()" id="convertBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Convertir en facture</button>
+    <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
+  </div>
+  <div class="pdf-modal" id="pdfModal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
+const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
+const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
+if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3500);}
+
+// ─── LIGNES DYNAMIQUES ───
+function addLigne(desc,qte,prix,stockId){
+  desc=desc||''; qte=qte||1; prix=prix||0; stockId=stockId||'';
+  const tb=document.getElementById('lignesBody');
+  const tr=document.createElement('tr');
+  tr.dataset.stockId=stockId;
+  tr.innerHTML=`
+    <td>
+      <input type="text" class="l-desc" value="${String(desc).replace(/"/g,'&quot;')}" placeholder="Ex : Remplacement batterie"/>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:3px;">
+        <select class="l-stock" onchange="onStockPick(this)" style="flex:1;font-size:10.5px;padding:3px 5px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t2);font-family:inherit;cursor:pointer;"><option value="">📦 Choisir un article du stock...</option></select>
+        <span class="l-stock-tag" style="font-size:10px;color:var(--ok);white-space:nowrap;${stockId?'':'display:none;'}">✓ lié</span>
+      </div>
+    </td>
+    <td><input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()"/></td>
+    <td><input type="number" class="l-prix" value="${prix}" min="0" step="0.01" oninput="calcTotaux()"/></td>
+    <td><input type="text" class="l-total" value="0,00" disabled style="opacity:.7;border:none;background:none;"/></td>
+    <td><button class="ligne-del" onclick="this.closest('tr').remove();calcTotaux()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td>`;
+  tb.appendChild(tr);
+  // Remplir le sélecteur stock de cette ligne
+  const sel=tr.querySelector('.l-stock');
+  const stock=(window.getStock?window.getStock():[]);
+  stock.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.id;
+    const label=[s.nom,s.marque,s.modele].filter(Boolean).join(' ');
+    o.textContent=`${label} — ${Number(s.prix_vente||0).toFixed(2)}€ (stock: ${s.quantite})`;
+    o.dataset.nom=label;
+    o.dataset.prix=s.prix_vente||0;
+    if(String(s.id)===String(stockId))o.selected=true;
+    sel.appendChild(o);
+  });
+  calcTotaux();
+}
+
+function onStockPick(sel){
+  const tr=sel.closest('tr');
+  const opt=sel.options[sel.selectedIndex];
+  if(sel.value){
+    // Remplir description + prix depuis l'article du stock
+    tr.querySelector('.l-desc').value=opt.dataset.nom||'';
+    tr.querySelector('.l-prix').value=opt.dataset.prix||0;
+    tr.dataset.stockId=sel.value;
+    tr.querySelector('.l-stock-tag').style.display='inline';
+  } else {
+    tr.dataset.stockId='';
+    tr.querySelector('.l-stock-tag').style.display='none';
+  }
+  calcTotaux();
+}
+function calcTotaux(){
+  let sousTotal=0;
+  document.querySelectorAll('#lignesBody tr').forEach(tr=>{
+    const qte=Number(tr.querySelector('.l-qte').value)||0;
+    const prix=Number(tr.querySelector('.l-prix').value)||0;
+    const total=qte*prix;
+    tr.querySelector('.l-total').value=total.toFixed(2).replace('.',',');
+    sousTotal+=total;
+  });
+  const remiseVal=Number(document.getElementById('f-remise').value)||0;
+  const remiseType=document.getElementById('f-remise-type').value;
+  // Calculer le montant réel de la remise en euros
+  let remiseEuros=0;
+  if(remiseType==='pct'){
+    remiseEuros=sousTotal*(remiseVal/100);
+  } else {
+    remiseEuros=remiseVal;
+  }
+  remiseEuros=Math.min(remiseEuros,sousTotal); // pas de remise > sous-total
+  const total=Math.max(0,sousTotal-remiseEuros);
+  document.getElementById('t-soustotal').textContent=sousTotal.toFixed(2).replace('.',',')+' €';
+  document.getElementById('t-total').textContent=total.toFixed(2).replace('.',',')+' €';
+  // Afficher le détail de la remise en % (montant correspondant en €)
+  const detail=document.getElementById('remise-detail');
+  const montantEl=document.getElementById('remise-montant');
+  if(remiseType==='pct'&&remiseVal>0){
+    detail.style.display='flex';
+    montantEl.textContent=`− ${remiseEuros.toFixed(2).replace('.',',')} €`;
+    detail.querySelector('span').textContent=`soit ${remiseVal}% de remise`;
+  } else {
+    detail.style.display='none';
+  }
+  // Mémoriser le montant réel pour la sauvegarde
+  window._remiseEuros=remiseEuros;
+}
+
+// (paiement non applicable aux devis)
+function onPaiementChange(){}
+function calcRendu(){}
+function calcMixte(){}
+// Recalcule la date de validité (+15 jours) quand on change la date d'émission
+function majValidite(){
+  const em=document.getElementById('f-date-emission').value;
+  if(!em)return;
+  const d=new Date(em);d.setDate(d.getDate()+15);
+  document.getElementById('f-date-validite').value=d.toISOString().slice(0,10);
+}
+function getLignes(){
+  const lignes=[];
+  document.querySelectorAll('#lignesBody tr').forEach(tr=>{
+    const desc=tr.querySelector('.l-desc').value.trim();
+    const qte=Number(tr.querySelector('.l-qte').value)||0;
+    const prix=Number(tr.querySelector('.l-prix').value)||0;
+    const stockId=tr.dataset.stockId||'';
+    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:stockId?Number(stockId):null});
+  });
+  return lignes;
+}
+
+// ─── PANNEAU ───
+function openPanel(f){
+  f=f||null;
+  document.getElementById('panelTitle').textContent=f?'Modifier le devis':'Nouveau devis';
+  document.getElementById('saveBtn').textContent=f?'Mettre à jour':'Enregistrer';
+  document.getElementById('f-id').value=f?f.id:'';
+  document.getElementById('f-numero').value=f?f.numero:'';
+  document.getElementById('f-client').value=f?f.client_nom:'';
+  document.getElementById('f-email').value=f?(f.client_email||''):'';
+  document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
+  document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
+  document.getElementById('f-remise').value=f?(f.remise||0):0;
+  document.getElementById('f-remise-type').value='euro';
+  document.getElementById('f-statut').value=f?f.statut:'brouillon';
+  document.getElementById('f-notes').value=f?(f.notes||''):'';
+  document.getElementById('f-date-emission').value=f?(f.date_emission||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10);
+  // Date de validité : celle du devis, ou émission + 15 jours
+  if(f&&f.date_validite){document.getElementById('f-date-validite').value=f.date_validite;}
+  else{const d=new Date();d.setDate(d.getDate()+15);document.getElementById('f-date-validite').value=d.toISOString().slice(0,10);}
+  // Lignes
+  document.getElementById('lignesBody').innerHTML='';
+  if(f&&f.lignes&&f.lignes.length){f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id));}
+  else{addLigne();}
+  // Sélecteurs
+  if(window.fillRepSelect)window.fillRepSelect();
+  if(window.fillClientSelect)window.fillClientSelect();
+  document.getElementById('f-rep').value='';
+  document.getElementById('f-client-select').value='';
+  ['f-client','f-email','f-tel','f-adresse'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}});
+  calcTotaux();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+function closePdf(){document.getElementById('pdfOverlay').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closePdf();}});
+</script>
+<script>
+window.toggleNotifs=function(e){
+  e.stopPropagation();
+  const p=document.getElementById('notifPanel');
+  p.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  const p=document.getElementById('notifPanel');
+  if(p&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
+});
+</script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const sb=createClient(SB,SK)
+
+// Config entreprise (template)
+const ENTREPRISE={
+  nom:'IT Soluce',
+  adresse:'Chaussée d\'Hondzocht 164',
+  cp_ville:'1480 Tubize',
+  email:'contact@itsoluce.be',
+  tel:'+32 474 05 66 59',
+  site:'www.itsoluce.be',
+  bce:'[à compléter]',
+  iban:'BE02 7320 8265 2640',
+  logo:'https://itsoluce.be/favicon_io/android-chrome-512x512.png',
+  mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
+  conditions:'Paiement comptant à réception de la facture.',
+  cgv:[
+    ['Validité de l\'offre','Le présent devis est valable durant la période indiquée ci-dessus. Passé ce délai, IT Soluce se réserve le droit de réviser les prix, notamment en fonction de la disponibilité et du coût des pièces.'],
+    ['Acceptation','Le devis devient ferme et vaut commande dès réception de l\'accord écrit du client (email, signature ou confirmation explicite). Toute intervention ne débute qu\'après cette acceptation.'],
+    ['Prix et pièces','Les prix sont exprimés en euros, TVA non applicable (art. 56bis du Code de la TVA). Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord.'],
+    ['Garantie','Les réparations réalisées bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre), hors casse, oxydation ou mauvaise utilisation. La garantie légale de conformité reste applicable sur les pièces neuves.'],
+    ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne saurait être tenu responsable d\'une perte de données. Sa responsabilité est limitée au montant de la prestation.'],
+    ['Droit applicable','Le présent devis est soumis au droit belge. En cas de litige, les tribunaux du Brabant wallon sont seuls compétents. Le consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
+  ]
+}
+
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+
+try {
+const {data:{session}}=await sb.auth.getSession()
+if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+document.getElementById('uEmail').textContent=session.user.email
+document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
+// ── SYSTÈME DE NOTIFICATIONS ──
+async function loadNotifs(){
+  try {
+    const [rRep,rStock,rTask]=await Promise.all([
+      sb.from('reparations').select('id,client_nom,appareil,statut,vue,created_at'),
+      sb.from('stock').select('id,nom,quantite,seuil_alerte'),
+      sb.from('taches').select('id,titre,priorite,faite')
+    ]);
+    const reps=rRep.data||[], stock=rStock.data||[], tasks=rTask.data||[];
+    const notifs=[];
+    const now=new Date();
+
+    // Nouvelles demandes (vue=false)
+    reps.filter(r=>r.vue===false).forEach(r=>{
+      notifs.push({type:'new',ico:'🆕',cls:'ni-new',txt:`Nouvelle demande de ${r.client_nom}`,sub:`${r.appareil||'Appareil'} · ${new Date(r.created_at).toLocaleDateString('fr-BE')}`,link:'/admin/reparations.html'});
+    });
+
+    // Réparations bloquées (statut recu depuis +3 jours et déjà vue)
+    reps.filter(r=>r.statut==='recu'&&r.vue!==false).forEach(r=>{
+      const days=Math.floor((now-new Date(r.created_at))/(1000*60*60*24));
+      if(days>=3)notifs.push({type:'time',ico:'⏰',cls:'ni-time',txt:`${r.client_nom} en attente depuis ${days}j`,sub:`Statut « Reçu » non traité`,link:'/admin/reparations.html'});
+    });
+
+    // Stock rupture/faible
+    stock.filter(p=>Number(p.quantite)===0).forEach(p=>{
+      notifs.push({type:'stock',ico:'📦',cls:'ni-stock',txt:`Rupture : ${p.nom}`,sub:`Stock épuisé · à recommander`,link:'/admin/stock.html'});
+    });
+    stock.filter(p=>Number(p.quantite)>0&&Number(p.quantite)<=Number(p.seuil_alerte)).forEach(p=>{
+      notifs.push({type:'stock',ico:'📦',cls:'ni-stock',txt:`Stock faible : ${p.nom}`,sub:`${p.quantite} restant(s) · seuil ${p.seuil_alerte}`,link:'/admin/stock.html'});
+    });
+
+    // Tâches urgentes
+    tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+    });
+
+    renderNotifs(notifs);
+  } catch(e){ console.warn('Notifs:',e); }
+}
+
+function renderNotifs(notifs){
+  const count=document.getElementById('notifCount');
+  const list=document.getElementById('notifList');
+  if(!count||!list)return;
+  // Le compteur ne compte que les nouvelles demandes (vue=false) + urgences
+  const unread=notifs.filter(n=>n.type==='new').length;
+  if(unread>0){count.textContent=unread;count.classList.remove('hidden');}
+  else{count.classList.add('hidden');}
+  if(notifs.length===0){
+    list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
+    return;
+  }
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+}
+
+window.markAllRead=async function(){
+  try {
+    const {data}=await sb.from('reparations').select('id').eq('vue',false);
+    if(data&&data.length){
+      const ids=data.map(r=>r.id);
+      await sb.from('reparations').update({vue:true}).in('id',ids);
+    }
+    document.getElementById('notifPanel').classList.remove('open');
+    loadNotifs();
+  } catch(e){ console.warn(e); }
+}
+
+loadNotifs();
+
+
+
+let allDevis=[]
+let allReps=[]
+let allClients=[]
+let allStock=[]
+window.getStock=()=>allStock
+let activeFilter='Tous'
+let currentPdfDoc=null
+
+async function nextNumero(cle, format){
+  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+  const nouvelle=(cpt?.valeur||0)+1
+  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
+  if(format==='facture'){const an=new Date().getFullYear();return `${an}-${String(nouvelle).padStart(4,'0')}`}
+  if(format==='devis'){return `DEV-${String(nouvelle).padStart(4,'0')}`}
+  return `${String(nouvelle).padStart(4,'0')}`
+}
+
+async function load(){
+  const [rDev,rRep,rCli,rStock]=await Promise.all([
+    sb.from('devis').select('*').order('created_at',{ascending:false}),
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,marque,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
+    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom')
+  ])
+  if(rDev.error){showError(rDev.error.message);return}
+  allDevis=rDev.data||[]
+  allReps=rRep.data||[]
+  allClients=rCli.data||[]
+  allStock=rStock.data||[]
+  renderAll()
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('pageBody').style.display='flex'
+}
+
+// Remplir sélecteur réparations
+window.fillRepSelect=function(){
+  const sel=document.getElementById('f-rep')
+  if(!sel)return
+  sel.innerHTML='<option value="">— Aucune (saisie manuelle) —</option>'+
+    allReps.map(r=>`<option value="${r.id}">${r.numero||''} · ${r.client_nom} · ${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||''}</option>`).join('')
+}
+window.fillClientSelect=function(){
+  const sel=document.getElementById('f-client-select')
+  if(!sel)return
+  sel.innerHTML='<option value="">➕ Nouveau client</option>'+
+    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
+}
+window.onClientSelect=function(){
+  const sel=document.getElementById('f-client-select')
+  const opt=sel.options[sel.selectedIndex]
+  if(sel.value){
+    document.getElementById('f-client').value=opt.dataset.nom||''
+    document.getElementById('f-email').value=opt.dataset.email||''
+    document.getElementById('f-tel').value=opt.dataset.tel||''
+    document.getElementById('f-adresse').value=opt.dataset.adr||''
+  }
+}
+window.onRepSelect=function(){
+  const sel=document.getElementById('f-rep')
+  if(!sel.value){return}
+  const r=allReps.find(x=>x.id===Number(sel.value))
+  if(!r)return
+  // Pré-remplir le client
+  document.getElementById('f-client').value=r.client_nom||''
+  document.getElementById('f-email').value=r.client_email||''
+  document.getElementById('f-tel').value=r.client_telephone||''
+  // Adresse depuis la fiche client si dispo
+  const cli=allClients.find(c=>c.id===r.client_id||c.email===r.client_email||c.nom===r.client_nom)
+  if(cli){document.getElementById('f-adresse').value=cli.adresse||''}
+  // Pré-remplir une ligne avec la réparation
+  document.getElementById('lignesBody').innerHTML=''
+  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'appareil'
+  const desc=`Réparation ${appareil}${r.panne_description?' — '+r.panne_description:''}`
+  addLigne(desc, 1, Number(r.prix_final)||0)
+  // Mémoriser le lien réparation
+  window._repLink={id:r.id,numero:r.numero}
+  calcTotaux()
+}
+
+function renderAll(){updateKPIs();renderFilters();renderTable()}
+
+function updateKPIs(){
+  const now=new Date()
+  const moisDev=allDevis.filter(f=>{const d=new Date(f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
+  const accepteMois=moisDev.filter(f=>f.statut==='accepte').reduce((a,f)=>a+Number(f.total||0),0)
+  const attente=allDevis.filter(f=>f.statut==='envoye').reduce((a,f)=>a+Number(f.total||0),0)
+  const nbEnvoyes=allDevis.filter(f=>['envoye','accepte','refuse'].includes(f.statut)).length
+  const nbAcceptes=allDevis.filter(f=>f.statut==='accepte').length
+  const taux=nbEnvoyes>0?Math.round((nbAcceptes/nbEnvoyes)*100):0
+  document.getElementById('k-paye').textContent=accepteMois.toFixed(0)+'€'
+  document.getElementById('k-attente').textContent=attente.toFixed(0)+'€'
+  document.getElementById('k-retard').textContent=taux+'%'
+  document.getElementById('k-total').textContent=allDevis.length
+  document.getElementById('ph-sub').textContent=`${allDevis.length} devis`
+}
+
+function renderFilters(){
+  const all=['Tous','brouillon','envoye','accepte','refuse']
+  const labels={'Tous':'Tous','brouillon':'Brouillons','envoye':'Envoyés','accepte':'Acceptés','refuse':'Refusés'}
+  const colors={'brouillon':'#8b8ba0','envoye':'#3b82f6','accepte':'#34d399','refuse':'#f87171'}
+  document.getElementById('filterBtns').innerHTML=all.map(s=>{
+    const a=activeFilter===s
+    return`<button class="filter-btn ${a?'active':''}" style="${a&&colors[s]?`background:${colors[s]};border-color:${colors[s]};`:''}" onclick="setFilter('${s}')">${labels[s]}</button>`
+  }).join('')
+}
+window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
+
+function renderTable(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim()
+  const STAT={brouillon:{l:'Brouillon',c:'sf-brouillon'},envoye:{l:'Envoyé',c:'sf-envoye'},accepte:{l:'Accepté',c:'sf-accepte'},refuse:{l:'Refusé',c:'sf-refuse'},expire:{l:'Expiré',c:'sf-expire'}}
+  const now=new Date()
+  let rows=allDevis.filter(f=>{
+    const mf=activeFilter==='Tous'||f.statut===activeFilter
+    const ms=!q||[f.numero,f.client_nom,f.reparation_numero].some(v=>v&&v.toLowerCase().includes(q))
+    return mf&&ms
+  })
+  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
+  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
+  empty.style.display='none'
+  tb.innerHTML=rows.map(f=>{
+    let stKey=f.statut
+    if(f.statut==='envoye'&&f.date_validite&&new Date(f.date_validite)<now)stKey='expire'
+    const st=STAT[stKey]||STAT.brouillon
+    const date=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})
+    return`<tr>
+      <td><span style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}</span>${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</td>
+      <td><div style="font-weight:500;">${f.client_nom}</div><div style="font-size:11px;color:var(--t3);">${f.client_email||''}</div></td>
+      <td><span style="font-family:monospace;font-size:11px;color:var(--a);">${f.reparation_numero||'—'}</span></td>
+      <td style="color:var(--t3);white-space:nowrap;">${date}</td>
+      <td><span class="statut-fac ${st.c}">${st.l}</span></td>
+      <td style="text-align:right;font-weight:600;">${Number(f.total||0).toFixed(2).replace('.',',')} €</td>
+      <td><div class="actions" style="opacity:1;justify-content:flex-end;">
+        <button class="act-btn" onclick="previewDevis(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="act-btn" onclick="editDevis(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="act-btn del" onclick="deleteDevis(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div></td>
+    </tr>`
+  }).join('')
+}
+
+window.editDevis=function(id){const f=allDevis.find(x=>x.id===id);if(f){window._repLink=f.reparation_id?{id:f.reparation_id,numero:f.reparation_numero}:null;openPanel(f)}}
+
+window.saveDevis=async function(){
+  const id=document.getElementById('f-id').value
+  const nom=document.getElementById('f-client').value.trim()
+  if(!nom){showToast('Le nom du client est requis','err');return}
+  const lignes=getLignes()
+  if(lignes.length===0){showToast('Ajoutez au moins une ligne','err');return}
+  const sousTotal=lignes.reduce((a,l)=>a+l.total,0)
+  const remiseVal=Number(document.getElementById('f-remise').value)||0
+  const remiseType=document.getElementById('f-remise-type').value
+  let remise=remiseType==='pct'?sousTotal*(remiseVal/100):remiseVal
+  remise=Math.min(remise,sousTotal)
+  const total=Math.max(0,sousTotal-remise)
+  const repLink=window._repLink||null
+  const clientSelId=document.getElementById('f-client-select').value
+
+  document.getElementById('saveBtn').textContent='Enregistrement...'
+  document.getElementById('saveBtn').disabled=true
+
+  // Gérer le client (créer si nouveau, à la création seulement)
+  let clientLieId = clientSelId?Number(clientSelId):null
+  if(!id && !clientSelId){
+    const email=document.getElementById('f-email').value.trim()
+    let existant=null
+    if(email)existant=allClients.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())
+    if(!existant)existant=allClients.find(c=>c.nom&&c.nom.toLowerCase()===nom.toLowerCase())
+    if(existant){clientLieId=existant.id}
+    else{
+      const numCli=await nextNumero('client','client')
+      const newCli={numero:numCli,nom:nom,email:email||null,telephone:document.getElementById('f-tel').value.trim()||null,adresse:document.getElementById('f-adresse').value.trim()||null,type:'particulier',updated_at:new Date().toISOString()}
+      const rc=await sb.from('clients').insert(newCli).select().single()
+      if(!rc.error&&rc.data){clientLieId=rc.data.id;allClients.unshift(rc.data)}
+    }
+  }
+
+  const payload={
+    client_id:clientLieId,
+    client_nom:nom,
+    client_email:document.getElementById('f-email').value.trim()||null,
+    client_telephone:document.getElementById('f-tel').value.trim()||null,
+    client_adresse:document.getElementById('f-adresse').value.trim()||null,
+    reparation_id:repLink?repLink.id:null,
+    reparation_numero:repLink?repLink.numero:null,
+    date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
+    date_validite:document.getElementById('f-date-validite').value||null,
+    statut:document.getElementById('f-statut').value,
+    lignes:lignes,
+    total:total,
+    remise:remise,
+    notes:document.getElementById('f-notes').value.trim()||null,
+    updated_at:new Date().toISOString()
+  }
+
+  // Déterminer s'il faut décrémenter le stock (création uniquement, articles liés, pas déjà fait)
+  const ancienne = id ? allDevis.find(f=>f.id===Number(id)) : null
+  const dejaDecremente = ancienne && ancienne.stock_decremente === true
+  const lignesStock = lignes.filter(l=>l.stock_id)
+  const doitDecrementer = !id && lignesStock.length>0 && !dejaDecremente
+  if(doitDecrementer) payload.stock_decremente = true
+
+  let error
+  if(id){
+    const res=await sb.from('devis').update(payload).eq('id',id)
+    error=res.error
+    if(!error){const i=allDevis.findIndex(f=>f.id===Number(id));if(i>=0)allDevis[i]={...allDevis[i],...payload,id:Number(id)}}
+  } else {
+    payload.numero=await nextNumero('devis','devis')
+    const res=await sb.from('devis').insert(payload).select().single()
+    error=res.error
+    if(!error&&res.data)allDevis.unshift(res.data)
+  }
+  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
+  document.getElementById('saveBtn').disabled=false
+  if(error){showToast('Erreur : '+error.message,'err');return}
+
+  // Décrémentation du stock pour les lignes liées à un article
+  if(doitDecrementer){
+    for(const l of lignesStock){
+      const art=allStock.find(s=>s.id===l.stock_id)
+      if(art){
+        const newQte=Math.max(0,Number(art.quantite||0)-Number(l.quantite||1))
+        await sb.from('stock').update({quantite:newQte}).eq('id',l.stock_id)
+        art.quantite=newQte
+      }
+    }
+  }
+
+  window._repLink=null
+  closePanel()
+  renderAll()
+  showToast(id?`Devis ${payload.numero||''} mis à jour ✓`:`Devis ${payload.numero} créé ✓`,'ok')
+}
+
+window.deleteDevis=async function(id,num){
+  if(!confirm(`Supprimer la facture ${num} ?\n\nAttention : en comptabilité, une facture émise ne devrait pas être supprimée mais annulée.`))return
+  const {error}=await sb.from('devis').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  allDevis=allDevis.filter(f=>f.id!==id)
+  renderAll()
+  showToast(`Devis ${num} supprimé`,'ok')
+}
+
+// ─── TEMPLATE PDF ───
+function buildTemplateHTML(f,forPdf){
+  const lignesHTML=(f.lignes||[]).map(l=>`
+    <tr>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${l.description||''}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.quantite}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
+    </tr>`).join('')
+  const sousTotal=(f.lignes||[]).reduce((a,l)=>a+Number(l.total),0)
+  const dateEm=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
+  const dateVal=f.date_validite?new Date(f.date_validite).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'}):'—'
+  const accepte=f.statut==='accepte' 
+  // Mode PDF : hauteur fixe = une page A4 pile (210x297mm ratio), pied de page en bas, pas de débordement
+  const hauteurStyle=forPdf?'height:296mm;':'min-height:292mm;'
+  return `
+  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:44px 44px;width:210mm;${hauteurStyle}box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;">
+    <div style="flex:1;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="width:60px;height:60px;border-radius:10px;" alt="logo"/>
+        <div>
+          <div style="font-size:22px;font-weight:700;color:#1d4ed8;letter-spacing:-.5px;">${ENTREPRISE.nom}</div>
+          <div style="font-size:11px;color:#666;margin-top:2px;">Réparations informatiques & électroniques</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#555;line-height:1.7;">
+        ${ENTREPRISE.adresse}<br>${ENTREPRISE.cp_ville}<br>${ENTREPRISE.email}<br>${ENTREPRISE.tel}<br>BCE : ${ENTREPRISE.bce}
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">DEVIS</span>
+          ${accepte?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">ACCEPTÉ</span>`:''}
+        </div>
+        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${f.numero}</div>
+        ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${f.reparation_numero}</div>`:''}
+      </div>
+      <div style="text-align:right;font-size:12px;color:#555;">
+        <div>Date d'émission : <strong>${dateEm}</strong></div>
+        <div style="margin-top:3px;">Valable jusqu'au : <strong>${dateVal}</strong></div>
+      </div>
+    </div>
+    <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:30px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Facturé à</div>
+      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${f.client_nom||''}</div>
+      ${f.client_adresse?`<div style="font-size:12px;color:#555;margin-top:2px;">${f.client_adresse}</div>`:''}
+      ${f.client_email?`<div style="font-size:12px;color:#555;margin-top:2px;">${f.client_email}</div>`:''}
+      ${f.client_telephone?`<div style="font-size:12px;color:#555;">${f.client_telephone}</div>`:''}
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
+      <thead><tr style="background:#1d4ed8;">
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#fff;text-align:left;border-radius:6px 0 0 0;">Description</th>
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:center;">Qté</th>
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:right;">Prix unit.</th>
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:right;border-radius:0 6px 0 0;">Total</th>
+      </tr></thead>
+      <tbody>${lignesHTML}</tbody>
+    </table>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px;">
+      <div style="width:260px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;">
+          <span>Sous-total</span><span>${sousTotal.toFixed(2).replace('.',',')} €</span>
+        </div>
+        ${Number(f.remise)>0?`<div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;"><span>Remise</span><span>− ${Number(f.remise).toFixed(2).replace('.',',')} €</span></div>`:''}
+        <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#1a1a1a;border-top:2px solid #1d4ed8;padding-top:8px;margin-top:6px;">
+          <span>TOTAL</span><span>${Number(f.total).toFixed(2).replace('.',',')} €</span>
+        </div>
+
+      </div>
+    </div>
+    ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${f.notes}</div>`:''}
+    </div>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
+      <div><strong style="color:#555;">Validité :</strong> Ce devis est valable jusqu'au ${dateVal}. Passé ce délai, les prix sont susceptibles d'être révisés.</div>
+      <div><strong style="color:#555;">Acceptation :</strong> Pour accepter ce devis, merci de nous retourner votre accord par email ou de nous contacter. Tout accord vaut commande.</div>
+      <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dotted #ddd;">
+        <div style="font-size:8.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Conditions générales</div>
+        <div style="font-size:7.2px;color:#999;line-height:1.5;text-align:justify;">
+          ${(ENTREPRISE.cgv||[]).map((c,i)=>`<span><strong style="color:#777;">${i+1}. ${c[0]}.</strong> ${c[1]}</span>`).join(' ')}
+        </div>
+      </div>
+      <div style="margin-top:10px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
+    </div>
+  </div>`
+}
+
+window.previewDevis=function(id){
+  const f=allDevis.find(x=>x.id===id)
+  if(!f)return
+  currentPdfDoc=f
+  document.getElementById('pdfModal').innerHTML=buildTemplateHTML(f)
+  document.getElementById('pdfOverlay').classList.add('open')
+}
+
+async function genererPDFBlob(){
+  // Générer le template en mode PDF (hauteur = contenu réel, pas de min-height)
+  const wrap=document.createElement('div')
+  wrap.style.position='fixed'
+  wrap.style.left='-99999px'
+  wrap.style.top='0'
+  wrap.style.width='210mm'
+  wrap.style.background='#ffffff'
+  wrap.innerHTML=buildTemplateHTML(currentPdfDoc,true)
+  document.body.appendChild(wrap)
+  const el=wrap.firstElementChild
+
+  const scale=2
+  const canvas=await html2canvas(el,{scale:scale,useCORS:true,backgroundColor:'#ffffff'})
+  document.body.removeChild(wrap)
+
+  const {jsPDF}=window.jspdf
+  const pdf=new jsPDF('p','mm','a4')
+  const pageW=210, pageH=297
+  const imgWpx=canvas.width
+  const imgHpx=canvas.height
+  // Hauteur totale de l'image rapportée à la largeur d'une page A4
+  const totalHmm=(imgHpx*pageW)/imgWpx
+
+  // Cas normal : tient sur une page → forcer une page A4 exacte (pas de débordement)
+  if(totalHmm<=pageH+10){
+    const imgData=canvas.toDataURL('image/jpeg',0.95)
+    pdf.addImage(imgData,'JPEG',0,0,pageW,pageH,undefined,'FAST')
+    return pdf
+  }
+
+  // Cas multi-pages : découpage net par tranches d'une page exacte
+  const pxPerPage=Math.floor((pageH*imgWpx)/pageW)
+  let renderedPx=0, pageNum=0
+  while(renderedPx<imgHpx){
+    const slicePx=Math.min(pxPerPage,imgHpx-renderedPx)
+    const tmp=document.createElement('canvas')
+    tmp.width=imgWpx
+    tmp.height=slicePx
+    const ctx=tmp.getContext('2d')
+    ctx.fillStyle='#ffffff'
+    ctx.fillRect(0,0,tmp.width,tmp.height)
+    ctx.drawImage(canvas,0,renderedPx,imgWpx,slicePx,0,0,imgWpx,slicePx)
+    const sliceData=tmp.toDataURL('image/jpeg',0.95)
+    const sliceHmm=(slicePx*pageW)/imgWpx
+    if(pageNum>0)pdf.addPage()
+    pdf.addImage(sliceData,'JPEG',0,0,pageW,sliceHmm,undefined,'FAST')
+    renderedPx+=slicePx
+    pageNum++
+  }
+  return pdf
+}
+
+window.downloadPdf=async function(){
+  if(!currentPdfDoc)return
+  showToast('Génération du PDF...','ok')
+  const pdf=await genererPDFBlob()
+  pdf.save(`Devis_${currentPdfDoc.numero}.pdf`)
+}
+
+window.sendPdf=async function(){
+  if(!currentPdfDoc)return
+  const f=currentPdfDoc
+  if(!f.client_email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
+  const btn=document.getElementById('sendPdfBtn')
+  btn.disabled=true;btn.textContent='Envoi en cours...'
+  try{
+    const pdf=await genererPDFBlob()
+    const pdfBase64=pdf.output('datauristring').split(',')[1]
+    const prenom=(f.client_nom||'').split(' ')[0]||''
+    const dateVal=f.date_validite?new Date(f.date_validite).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'}):''
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br>contact@itsoluce.be<br>+32 474 05 66 59<br>www.itsoluce.be</p>`
+    const html=`<p>Bonjour ${prenom},</p><p>Merci de votre intérêt pour IT Soluce.</p><p>Vous trouverez ci-joint votre devis <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>${dateVal?`, valable jusqu'au ${dateVal}`:''}.</p><p>Pour l'accepter, il vous suffit de me répondre à cet email ou de me contacter. Je reste à votre disposition pour toute question.</p>${signature}`
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:f.client_email,subject:`Devis ${f.numero} — IT Soluce`,html:html,pdfBase64:pdfBase64,pdfName:`Devis_${f.numero}.pdf`})
+    })
+    const result=await res.json()
+    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
+    // Marquer comme envoyée
+    await sb.from('devis').update({statut:f.statut==='brouillon'?'envoye':f.statut,email_envoye:true,date_envoi:new Date().toISOString()}).eq('id',f.id)
+    const i=allDevis.findIndex(x=>x.id===f.id)
+    if(i>=0){allDevis[i].email_envoye=true;allDevis[i].date_envoi=new Date().toISOString();if(allDevis[i].statut==='brouillon')allDevis[i].statut='envoye'}
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+    closePdf();renderAll()
+    showToast(`Devis ${f.numero} envoyé à ${f.client_email} ✓`,'ok')
+  }catch(err){
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+    showToast('Erreur envoi : '+err.message,'err')
+  }
+}
+
+window.convertirEnFacture=async function(){
+  const d=currentPdfDoc
+  if(!d)return
+  if(d.converti_facture_id){showToast('Ce devis a déjà été converti en facture','err');return}
+  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nUne nouvelle facture sera créée avec les mêmes informations.`))return
+  const btn=document.getElementById('convertBtn')
+  btn.disabled=true;btn.textContent='Conversion...'
+  try{
+    // Générer un numéro de facture (format année-séquence)
+    const numFacture=await nextNumero('facture','facture')
+    const facturePayload={
+      numero:numFacture,
+      devis_id:d.id,
+      client_id:d.client_id||null,
+      client_nom:d.client_nom,
+      client_email:d.client_email||null,
+      client_telephone:d.client_telephone||null,
+      client_adresse:d.client_adresse||null,
+      reparation_id:d.reparation_id||null,
+      reparation_numero:d.reparation_numero||null,
+      date_emission:new Date().toISOString().slice(0,10),
+      statut:'brouillon',
+      lignes:d.lignes||[],
+      total:d.total||0,
+      remise:d.remise||0,
+      notes:d.notes||null,
+      stock_decremente:false,
+      updated_at:new Date().toISOString()
+    }
+    const resFac=await sb.from('factures').insert(facturePayload).select().single()
+    if(resFac.error)throw new Error(resFac.error.message)
+    // Marquer le devis comme accepté + converti
+    await sb.from('devis').update({statut:'accepte',converti_facture_id:resFac.data.id,updated_at:new Date().toISOString()}).eq('id',d.id)
+    const i=allDevis.findIndex(x=>x.id===d.id)
+    if(i>=0){allDevis[i].statut='accepte';allDevis[i].converti_facture_id=resFac.data.id}
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Convertir en facture'
+    closePdf();renderAll()
+    showToast(`Facture ${numFacture} créée depuis le devis ${d.numero} ✓ — Retrouvez-la dans Factures`,'ok')
+  }catch(err){
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Convertir en facture'
+    showToast('Erreur conversion : '+err.message,'err')
+  }
+}
+
+window.exportCSV=function(){
+  if(!allDevis.length){showToast('Aucune donnée','err');return}
+  const cols=['numero','client_nom','client_email','reparation_numero','date_emission','statut','total','created_at']
+  const csv=[cols.join(','),...allDevis.map(f=>cols.map(k=>`"${String(f[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const a=document.createElement('a')
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download=`itsoluce_factures_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  showToast('Export téléchargé ✓','ok')
+}
+
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+await load()
+
+} catch(err){
+  console.error(err)
+  showError(err.message||'Erreur inattendue')
+}
+</script>
+</body>
+</html>
