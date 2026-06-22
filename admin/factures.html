@@ -940,7 +940,7 @@ function buildTemplateHTML(f){
   const mEspeces=Number(f.montant_especes)||0
   const renduMixte=(mCarte+mEspeces)-Number(f.total)
   return `
-  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:48px 44px;width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;">
+  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:44px 44px;width:210mm;min-height:292mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;">
     <div style="flex:1;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
       <div style="display:flex;align-items:center;gap:14px;">
@@ -1027,21 +1027,44 @@ window.previewFacture=function(id){
 async function genererPDFBlob(){
   const modal=document.getElementById('pdfModal')
   const el=modal.firstElementChild
-  const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',windowWidth:el.scrollWidth,windowHeight:el.scrollHeight})
-  const imgData=canvas.toDataURL('image/jpeg',0.95)
+  const scale=2
+  const canvas=await html2canvas(el,{scale:scale,useCORS:true,backgroundColor:'#ffffff',windowWidth:el.scrollWidth,windowHeight:el.scrollHeight})
   const {jsPDF}=window.jspdf
   const pdf=new jsPDF('p','mm','a4')
   const pageW=210, pageH=297
-  const imgH=(canvas.height*pageW)/canvas.width
-  // Si le contenu tient sur une page (avec petite marge de tolérance), une seule page pleine
-  if(imgH<=pageH+2){
-    pdf.addImage(imgData,'JPEG',0,0,pageW,pageH,undefined,'FAST')
-  } else {
-    // Contenu multi-pages
-    let heightLeft=imgH, position=0
-    pdf.addImage(imgData,'JPEG',0,position,pageW,imgH)
-    heightLeft-=pageH
-    while(heightLeft>0){position-=pageH;pdf.addPage();pdf.addImage(imgData,'JPEG',0,position,pageW,imgH);heightLeft-=pageH}
+  // Largeur/hauteur de l'image en pixels
+  const imgWpx=canvas.width
+  const imgHpx=canvas.height
+  // Combien de pixels représentent une page A4 (même ratio que la largeur)
+  const pxPerPage=Math.floor((pageH*imgWpx)/pageW)
+  // Hauteur totale en mm
+  const totalHmm=(imgHpx*pageW)/imgWpx
+  // Si tient sur une page → une seule image pleine page
+  if(totalHmm<=pageH+8){
+    const imgData=canvas.toDataURL('image/jpeg',0.95)
+    pdf.addImage(imgData,'JPEG',0,0,pageW,Math.min(totalHmm,pageH),undefined,'FAST')
+    return pdf
+  }
+  // Sinon : découper l'image en tranches d'une page, chacune sur sa propre page PDF
+  let renderedPx=0
+  let pageNum=0
+  while(renderedPx<imgHpx){
+    const slicePx=Math.min(pxPerPage,imgHpx-renderedPx)
+    // Créer un canvas temporaire pour cette tranche
+    const tmp=document.createElement('canvas')
+    tmp.width=imgWpx
+    tmp.height=slicePx
+    const ctx=tmp.getContext('2d')
+    ctx.fillStyle='#ffffff'
+    ctx.fillRect(0,0,tmp.width,tmp.height)
+    ctx.drawImage(canvas,0,renderedPx,imgWpx,slicePx,0,0,imgWpx,slicePx)
+    const sliceData=tmp.toDataURL('image/jpeg',0.95)
+    // Hauteur de cette tranche en mm
+    const sliceHmm=(slicePx*pageW)/imgWpx
+    if(pageNum>0)pdf.addPage()
+    pdf.addImage(sliceData,'JPEG',0,0,pageW,sliceHmm,undefined,'FAST')
+    renderedPx+=slicePx
+    pageNum++
   }
   return pdf
 }
