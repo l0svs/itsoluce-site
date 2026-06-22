@@ -329,11 +329,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission"/></div>
       <div class="fg"><label>Statut</label><select id="f-statut"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
     </div>
-    <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option></select></div>
+    <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option><option value="mixte">Mixte (carte + espèces)</option></select></div>
     <div class="fg" id="especes-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
       <label>Montant donné par le client (€)</label>
       <input type="number" id="f-montant-donne" min="0" step="0.01" placeholder="Ex : 50.00" oninput="calcRendu()"/>
       <div id="rendu-affichage" style="margin-top:8px;font-size:13px;font-weight:600;color:var(--ok);display:none;"></div>
+    </div>
+    <div class="fg" id="mixte-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
+      <label>Répartition du paiement</label>
+      <div class="fg-row" style="margin-top:4px;">
+        <div class="fg" style="margin-bottom:8px;"><label style="font-size:10px;">Payé en carte (€)</label><input type="number" id="f-mixte-carte" min="0" step="0.01" placeholder="0.00" oninput="calcMixte()"/></div>
+        <div class="fg" style="margin-bottom:8px;"><label style="font-size:10px;">Payé en espèces (€)</label><input type="number" id="f-mixte-especes" min="0" step="0.01" placeholder="0.00" oninput="calcMixte()"/></div>
+      </div>
+      <div id="mixte-affichage" style="font-size:12px;font-weight:600;display:none;"></div>
     </div>
     <div class="fg"><label>Note (visible sur la facture)</label><textarea id="f-notes" placeholder="Ex : Merci de votre confiance."></textarea></div>
   </div>
@@ -450,12 +458,15 @@ function calcTotaux(){
   window._remiseEuros=remiseEuros;
 }
 
-// Affiche/masque la zone espèces selon le mode de paiement
+// Affiche/masque les zones selon le mode de paiement
 function onPaiementChange(){
   const mode=document.getElementById('f-paiement').value;
-  const box=document.getElementById('especes-box');
-  if(mode==='especes'){box.style.display='block';calcRendu();}
-  else{box.style.display='none';}
+  const boxEsp=document.getElementById('especes-box');
+  const boxMix=document.getElementById('mixte-box');
+  boxEsp.style.display=(mode==='especes')?'block':'none';
+  boxMix.style.display=(mode==='mixte')?'block':'none';
+  if(mode==='especes')calcRendu();
+  if(mode==='mixte')calcMixte();
 }
 // Calcule la monnaie à rendre
 function calcRendu(){
@@ -475,6 +486,28 @@ function calcRendu(){
     }
   } else {
     aff.style.display='none';
+  }
+}
+// Vérifie la répartition du paiement mixte
+function calcMixte(){
+  const carte=Number(document.getElementById('f-mixte-carte').value)||0;
+  const especes=Number(document.getElementById('f-mixte-especes').value)||0;
+  const totalTxt=document.getElementById('t-total').textContent.replace(/[^0-9,]/g,'').replace(',','.');
+  const total=Number(totalTxt)||0;
+  const aff=document.getElementById('mixte-affichage');
+  const somme=carte+especes;
+  if(somme<=0||total<=0){aff.style.display='none';return;}
+  aff.style.display='block';
+  const diff=somme-total;
+  if(Math.abs(diff)<0.01){
+    aff.style.color='var(--ok)';
+    aff.textContent=`✓ Total réglé : ${somme.toFixed(2).replace('.',',')} € (${carte.toFixed(2).replace('.',',')}€ carte + ${especes.toFixed(2).replace('.',',')}€ espèces)`;
+  } else if(diff>0){
+    aff.style.color='var(--w)';
+    aff.textContent=`Trop perçu de ${diff.toFixed(2).replace('.',',')} € — à rendre en espèces`;
+  } else {
+    aff.style.color='var(--d)';
+    aff.textContent=`Il manque ${Math.abs(diff).toFixed(2).replace('.',',')} € pour atteindre le total`;
   }
 }
 function getLignes(){
@@ -505,6 +538,8 @@ function openPanel(f){
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
   document.getElementById('f-paiement').value=f?(f.mode_paiement||''):'';
   document.getElementById('f-montant-donne').value=f?(f.montant_donne||''):'';
+  document.getElementById('f-mixte-carte').value=f?(f.montant_carte||''):'';
+  document.getElementById('f-mixte-especes').value=f?(f.montant_especes||''):'';
   onPaiementChange();
   document.getElementById('f-notes').value=f?(f.notes||''):'';
   document.getElementById('f-date-emission').value=f?(f.date_emission||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10);
@@ -829,6 +864,8 @@ window.saveFacture=async function(){
     remise:remise,
     notes:document.getElementById('f-notes').value.trim()||null,
     montant_donne:(document.getElementById('f-paiement').value==='especes'&&document.getElementById('f-montant-donne').value)?Number(document.getElementById('f-montant-donne').value):null,
+    montant_carte:(document.getElementById('f-paiement').value==='mixte'&&document.getElementById('f-mixte-carte').value)?Number(document.getElementById('f-mixte-carte').value):null,
+    montant_especes:(document.getElementById('f-paiement').value==='mixte'&&document.getElementById('f-mixte-especes').value)?Number(document.getElementById('f-mixte-especes').value):null,
     updated_at:new Date().toISOString()
   }
 
@@ -892,12 +929,16 @@ function buildTemplateHTML(f){
     </tr>`).join('')
   const sousTotal=(f.lignes||[]).reduce((a,l)=>a+Number(l.total),0)
   const dateEm=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
-  const modeLabel={especes:'espèces',carte:'carte'}
+  const modeLabel={especes:'espèces',carte:'carte',mixte:'carte + espèces'}
   const estPayee=f.statut==='payee'
   const modePaie=f.mode_paiement?modeLabel[f.mode_paiement]||f.mode_paiement:''
   const estEspeces=f.mode_paiement==='especes'&&f.montant_donne
   const montantDonne=Number(f.montant_donne)||0
   const rendu=montantDonne-Number(f.total)
+  const estMixte=f.mode_paiement==='mixte'&&(f.montant_carte||f.montant_especes)
+  const mCarte=Number(f.montant_carte)||0
+  const mEspeces=Number(f.montant_especes)||0
+  const renduMixte=(mCarte+mEspeces)-Number(f.total)
   return `
   <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:48px 44px;width:210mm;min-height:297mm;box-sizing:border-box;background:#fff;display:flex;flex-direction:column;">
     <div style="flex:1;">
@@ -955,6 +996,13 @@ function buildTemplateHTML(f){
         ${estEspeces?`
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;margin-top:8px;border-top:1px dashed #ddd;padding-top:8px;"><span>Reçu en espèces</span><span>${montantDonne.toFixed(2).replace('.',',')} €</span></div>
         <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#16a34a;"><span>Monnaie rendue</span><span>${(rendu>=0?rendu:0).toFixed(2).replace('.',',')} €</span></div>
+        `:''}
+        ${estMixte?`
+        <div style="margin-top:8px;border-top:1px dashed #ddd;padding-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:3px 0;"><span>Payé par carte</span><span>${mCarte.toFixed(2).replace('.',',')} €</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:3px 0;"><span>Payé en espèces</span><span>${mEspeces.toFixed(2).replace('.',',')} €</span></div>
+          ${renduMixte>0.009?`<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#16a34a;"><span>Monnaie rendue</span><span>${renduMixte.toFixed(2).replace('.',',')} €</span></div>`:''}
+        </div>
         `:''}
       </div>
     </div>
@@ -1015,7 +1063,7 @@ window.sendPdf=async function(){
     const pdf=await genererPDFBlob()
     const pdfBase64=pdf.output('datauristring').split(',')[1]
     const prenom=(f.client_nom||'').split(' ')[0]||''
-    const modeLbl={especes:'espèces',carte:'carte'}
+    const modeLbl={especes:'espèces',carte:'carte',mixte:'carte et espèces'}
     const mp=f.mode_paiement?modeLbl[f.mode_paiement]||f.mode_paiement:''
     const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br>contact@itsoluce.be<br>+32 474 05 66 59<br>www.itsoluce.be</p>`
     let html
