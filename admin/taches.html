@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Garanties</title>
+<title>IT Soluce ERP — Tâches</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,24 +155,46 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* TABLEAU */
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.table{width:100%;border-collapse:collapse;}
-.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
-.empty{padding:60px 24px;text-align:center;}
-/* GARANTIE BADGES */
-.gar-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;white-space:nowrap;}
-.gar-ok{background:rgba(52,211,153,0.13);color:#16a34a;}
-.gar-expire{background:rgba(248,113,113,0.13);color:#dc2626;}
-.gar-dot{width:7px;height:7px;border-radius:50%;}
-.gar-ok .gar-dot{background:#16a34a;}
-.gar-expire .gar-dot{background:#dc2626;}
-.gar-bar{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:5px;width:120px;}
-.gar-bar-fill{height:100%;border-radius:99px;transition:width .3s;}
+/* TÂCHES */
+.add-task{display:flex;gap:8px;padding:14px 24px;flex-wrap:wrap;align-items:center;}
+.add-task input[type=text]{flex:1;min-width:200px;padding:9px 12px;background:var(--bg2);border:1px solid var(--ln2);border-radius:7px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
+.add-task input[type=text]:focus{border-color:var(--a);}
+.add-task select,.add-task input[type=date]{padding:8px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:7px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;cursor:pointer;}
+.task-filters{display:flex;gap:6px;padding:0 24px 8px;flex-wrap:wrap;align-items:center;}
+.task-groups{flex:1;overflow-y:auto;padding:8px 24px 24px;}
+.task-group{margin-bottom:18px;}
+.tg-head{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--ln);}
+.tg-count{background:var(--bg4);color:var(--t2);font-size:10px;padding:1px 7px;border-radius:99px;}
+.tg-head.retard{color:var(--d);}
+.tg-head.aujourdhui{color:var(--a);}
+.task-item{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;border-radius:8px;transition:background .1s;cursor:pointer;}
+.task-item:hover{background:var(--bg2);}
+.task-check{width:18px;height:18px;border:2px solid var(--ln2);border-radius:5px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;margin-top:1px;}
+.task-check:hover{border-color:var(--a);}
+.task-check.done{background:var(--ok);border-color:var(--ok);}
+.task-check svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.task-check.done svg{opacity:1;}
+.task-main{flex:1;min-width:0;}
+.task-titre{font-size:13px;color:var(--t1);font-weight:500;}
+.task-item.done .task-titre{text-decoration:line-through;color:var(--t3);}
+.task-meta{display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;}
+.task-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:4px;}
+.prio-urgente{background:rgba(248,113,113,.13);color:#dc2626;}
+.prio-importante{background:rgba(251,146,60,.13);color:#ea580c;}
+.prio-normale{background:rgba(139,139,160,.13);color:#8b8ba0;}
+.cat-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;}
+.cat-achat{background:rgba(59,130,246,.13);color:#2563eb;}
+.cat-client{background:rgba(16,185,129,.13);color:#059669;}
+.cat-admin{background:rgba(139,92,246,.13);color:#7c3aed;}
+.cat-marketing{background:rgba(236,72,153,.13);color:#db2777;}
+.cat-perso{background:rgba(107,114,128,.13);color:#6b7280;}
+.task-date{font-size:11px;color:var(--t3);}
+.task-date.retard{color:var(--d);font-weight:500;}
+.task-link{font-size:10px;color:var(--a);font-family:monospace;}
+.task-del{width:24px;height:24px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .12s;flex-shrink:0;}
+.task-item:hover .task-del{opacity:1;}
+.task-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.task-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 </style>
 </head>
 <body>
@@ -184,7 +206,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Garanties</span>
+    <span>Tâches</span>
   </div>
   <div class="tb-r">
     <div class="notif-wrap">
@@ -209,7 +231,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="ngl">Opérations</div>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
-      <a href="/admin/garanties.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
+      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
       <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
       <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs</a>
     </div>
@@ -228,7 +250,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="nhr"></div>
     <div class="ng">
       <div class="ngl">Gestion</div>
-      <a href="/admin/taches.html" class="nl"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</a>
+      <a href="/admin/taches.html" class="nl active"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</a>
       <a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
     </div>
     <div class="sf">IT Soluce ERP · v1.0</div>
@@ -237,28 +259,53 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
-        <div class="ph-left"><h1>Garanties</h1><p id="ph-sub">— réparations sous garantie</p></div>
+        <div class="ph-left"><h1>Tâches</h1><p id="ph-sub">— tâches</p></div>
       </div>
       <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Sous garantie</div><div class="kpi-val" id="k-actives" style="color:var(--ok)">—</div><div class="kpi-sub">réparations couvertes</div></div>
-        <div class="kpi"><div class="kpi-label">Expire bientôt</div><div class="kpi-val" id="k-bientot" style="color:var(--w)">—</div><div class="kpi-sub">dans moins de 15 jours</div></div>
-        <div class="kpi"><div class="kpi-label">Expirées</div><div class="kpi-val" id="k-expirees" style="color:var(--t3)">—</div><div class="kpi-sub">garantie terminée</div></div>
-        <div class="kpi"><div class="kpi-label">Durée garantie</div><div class="kpi-val">3<span style="font-size:13px;color:var(--t3);font-weight:400;"> mois</span></div><div class="kpi-sub">après réparation</div></div>
+        <div class="kpi"><div class="kpi-label">Actives</div><div class="kpi-val" id="k-actives">—</div><div class="kpi-sub">à faire</div></div>
+        <div class="kpi"><div class="kpi-label">En retard</div><div class="kpi-val" id="k-retard" style="color:var(--d)">—</div><div class="kpi-sub">échéance dépassée</div></div>
+        <div class="kpi"><div class="kpi-label">Aujourd'hui</div><div class="kpi-val" id="k-aujourdhui" style="color:var(--a)">—</div><div class="kpi-sub">à traiter</div></div>
+        <div class="kpi"><div class="kpi-label">Terminées (7j)</div><div class="kpi-val" id="k-faites" style="color:var(--ok)">—</div><div class="kpi-sub">cette semaine</div></div>
       </div>
-      <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="Nom client, REP-XXXX, appareil..." oninput="renderTable()"/></div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      <div class="add-task">
+        <input type="text" id="t-titre" placeholder="Nouvelle tâche... (ex : Commander écran iPhone 12)" onkeydown="if(event.key==='Enter')quickAdd()"/>
+        <select id="t-prio"><option value="normale">Normale</option><option value="importante">Importante</option><option value="urgente">Urgente</option></select>
+        <select id="t-cat"><option value="">Catégorie</option><option value="achat">Achat/Stock</option><option value="client">Client</option><option value="admin">Admin</option><option value="marketing">Marketing</option><option value="perso">Perso</option></select>
+        <input type="date" id="t-date" title="Échéance"/>
+        <button class="btn btn-primary" onclick="quickAdd()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button>
       </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:90px;">N° suivi</th><th>Client</th><th>Appareil</th><th>Fin réparation</th><th>Expire le</th><th>Statut garantie</th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🛡️</div><div style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;">Aucune réparation terminée</div><div style="font-size:12px;color:var(--t3);">Les garanties apparaîtront ici une fois des réparations passées en « prêt » ou « rendu ».</div></div>
+      <div class="task-filters">
+        <div id="filterPrio" style="display:flex;gap:4px;"></div>
+        <div style="width:1px;height:18px;background:var(--ln2);margin:0 4px;"></div>
+        <div id="filterCat" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+        <label style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;"><input type="checkbox" id="showDone" onchange="render()"/> Afficher les terminées</label>
       </div>
+      <div class="task-groups" id="taskGroups"></div>
     </div>
+  </div>
+</div>
+
+<!-- Panneau édition -->
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-head"><span class="panel-title">Modifier la tâche</span><button class="panel-close" onclick="closePanel()">×</button></div>
+  <div class="panel-body">
+    <input type="hidden" id="e-id"/>
+    <div class="fg"><label>Titre *</label><input type="text" id="e-titre"/></div>
+    <div class="fg-row">
+      <div class="fg"><label>Priorité</label><select id="e-prio"><option value="normale">Normale</option><option value="importante">Importante</option><option value="urgente">Urgente</option></select></div>
+      <div class="fg"><label>Catégorie</label><select id="e-cat"><option value="">—</option><option value="achat">Achat/Stock</option><option value="client">Client</option><option value="admin">Admin</option><option value="marketing">Marketing</option><option value="perso">Perso</option></select></div>
+    </div>
+    <div class="fg"><label>Échéance</label><input type="date" id="e-date"/></div>
+    <div class="fg-sep">Lien (optionnel)</div>
+    <div class="fg"><label>Client</label><select id="e-client"><option value="">— Aucun —</option></select></div>
+    <div class="fg"><label>Réparation</label><select id="e-rep"><option value="">— Aucune —</option></select></div>
+    <div class="fg"><label>Notes</label><textarea id="e-notes"></textarea></div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-secondary" onclick="deleteFromPanel()" id="ePanelDel">Supprimer</button>
+    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveEdit()" style="flex:2;">Mettre à jour</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -271,6 +318,8 @@ setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('
 const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
 if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
 </script>
 <script>
 window.toggleNotifs=function(e){
@@ -289,7 +338,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
-const GARANTIE_MOIS=3
 
 function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
@@ -369,87 +417,235 @@ loadNotifs();
 
 
 
-let allGaranties=[]
-let activeFilter='Toutes'
-
-// Calcule les infos de garantie d'une réparation
-function calcGarantie(r){
-  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
-  const expire=new Date(debut)
-  expire.setMonth(expire.getMonth()+GARANTIE_MOIS)
-  const now=new Date()
-  const joursRestants=Math.ceil((expire-now)/(1000*60*60*24))
-  const dureeTotale=GARANTIE_MOIS*30
-  const pct=Math.max(0,Math.min(100,(joursRestants/dureeTotale)*100))
-  return {debut,expire,joursRestants,sousGarantie:joursRestants>0,pct}
-}
+let allTaches=[]
+let allClients=[]
+let allReps=[]
+let filterPrio='Toutes'
+let filterCat='Toutes'
+const PRIO_LABEL={urgente:'Urgente',importante:'Importante',normale:'Normale'}
+const CAT_LABEL={achat:'Achat/Stock',client:'Client',admin:'Admin',marketing:'Marketing',perso:'Perso'}
 
 async function load(){
-  const {data,error}=await sb.from('reparations').select('*').in('statut',['pret','rendu']).order('date_fin',{ascending:false,nullsFirst:false})
-  if(error){showError(error.message);return}
-  allGaranties=(data||[]).map(r=>({...r,_gar:calcGarantie(r)}))
-  renderAll()
+  const [rT,rC,rR]=await Promise.all([
+    sb.from('taches').select('*').order('created_at',{ascending:false}),
+    sb.from('clients').select('id,numero,nom').order('nom'),
+    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele').order('created_at',{ascending:false})
+  ])
+  if(rT.error){showError(rT.error.message);return}
+  allTaches=rT.data||[]
+  allClients=rC.data||[]
+  allReps=rR.data||[]
+  fillSelects()
+  renderFilters()
+  render()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
+function fillSelects(){
+  const cs=document.getElementById('e-client')
+  cs.innerHTML='<option value="">— Aucun —</option>'+allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
+  const rs=document.getElementById('e-rep')
+  rs.innerHTML='<option value="">— Aucune —</option>'+allReps.map(r=>`<option value="${r.id}" data-num="${r.numero||''}">${r.numero||''} · ${r.client_nom}</option>`).join('')
+}
 
-function updateKPIs(){
-  const actives=allGaranties.filter(g=>g._gar.sousGarantie)
-  const bientot=actives.filter(g=>g._gar.joursRestants<=15)
-  const expirees=allGaranties.filter(g=>!g._gar.sousGarantie)
-  document.getElementById('k-actives').textContent=actives.length
-  document.getElementById('k-bientot').textContent=bientot.length
-  document.getElementById('k-expirees').textContent=expirees.length
-  document.getElementById('ph-sub').textContent=`${allGaranties.length} réparation${allGaranties.length>1?'s':''} terminée${allGaranties.length>1?'s':''} · ${actives.length} sous garantie`
+window.quickAdd=async function(){
+  const titre=document.getElementById('t-titre').value.trim()
+  if(!titre){document.getElementById('t-titre').focus();return}
+  const payload={
+    titre,
+    priorite:document.getElementById('t-prio').value,
+    categorie:document.getElementById('t-cat').value||null,
+    due_at:document.getElementById('t-date').value||null,
+    faite:false,
+    updated_at:new Date().toISOString()
+  }
+  const res=await sb.from('taches').insert(payload).select().single()
+  if(res.error){showToast('Erreur : '+res.error.message,'err');return}
+  allTaches.unshift(res.data)
+  document.getElementById('t-titre').value=''
+  document.getElementById('t-date').value=''
+  document.getElementById('t-cat').value=''
+  document.getElementById('t-prio').value='normale'
+  render()
+  showToast('Tâche ajoutée ✓','ok')
+  document.getElementById('t-titre').focus()
+}
+
+window.toggleTask=async function(id,e){
+  if(e)e.stopPropagation()
+  const t=allTaches.find(x=>x.id===id)
+  if(!t)return
+  const nv=!t.faite
+  const {error}=await sb.from('taches').update({faite:nv,updated_at:new Date().toISOString()}).eq('id',id)
+  if(error){showToast('Erreur','err');return}
+  t.faite=nv
+  if(nv)t.date_faite=new Date().toISOString()
+  render()
+}
+
+window.delTask=async function(id,e){
+  if(e)e.stopPropagation()
+  const t=allTaches.find(x=>x.id===id)
+  if(!confirm(`Supprimer la tâche "${t?t.titre:''}" ?`))return
+  const {error}=await sb.from('taches').delete().eq('id',id)
+  if(error){showToast('Erreur','err');return}
+  allTaches=allTaches.filter(x=>x.id!==id)
+  render()
+  showToast('Tâche supprimée','ok')
+}
+
+window.editTask=function(id){
+  const t=allTaches.find(x=>x.id===id)
+  if(!t)return
+  document.getElementById('e-id').value=t.id
+  document.getElementById('e-titre').value=t.titre||''
+  document.getElementById('e-prio').value=t.priorite||'normale'
+  document.getElementById('e-cat').value=t.categorie||''
+  document.getElementById('e-date').value=t.due_at?t.due_at.slice(0,10):''
+  document.getElementById('e-client').value=t.client_id||''
+  document.getElementById('e-rep').value=t.reparation_id||''
+  document.getElementById('e-notes').value=t.notes||''
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+}
+
+window.saveEdit=async function(){
+  const id=document.getElementById('e-id').value
+  const titre=document.getElementById('e-titre').value.trim()
+  if(!titre){showToast('Le titre est requis','err');return}
+  const cs=document.getElementById('e-client'),rs=document.getElementById('e-rep')
+  const payload={
+    titre,
+    priorite:document.getElementById('e-prio').value,
+    categorie:document.getElementById('e-cat').value||null,
+    due_at:document.getElementById('e-date').value||null,
+    client_id:cs.value?Number(cs.value):null,
+    client_nom:cs.value?cs.options[cs.selectedIndex].dataset.nom:null,
+    reparation_id:rs.value?Number(rs.value):null,
+    reparation_numero:rs.value?rs.options[rs.selectedIndex].dataset.num:null,
+    notes:document.getElementById('e-notes').value.trim()||null,
+    updated_at:new Date().toISOString()
+  }
+  const {error}=await sb.from('taches').update(payload).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  const i=allTaches.findIndex(t=>t.id===Number(id))
+  if(i>=0)allTaches[i]={...allTaches[i],...payload,id:Number(id)}
+  closePanel()
+  render()
+  showToast('Tâche mise à jour ✓','ok')
+}
+
+window.deleteFromPanel=async function(){
+  const id=document.getElementById('e-id').value
+  if(!id)return
+  const t=allTaches.find(x=>x.id===Number(id))
+  if(!confirm(`Supprimer la tâche "${t?t.titre:''}" ?`))return
+  const {error}=await sb.from('taches').delete().eq('id',id)
+  if(error){showToast('Erreur','err');return}
+  allTaches=allTaches.filter(x=>x.id!==Number(id))
+  closePanel()
+  render()
+  showToast('Tâche supprimée','ok')
 }
 
 function renderFilters(){
-  const all=['Toutes','Sous garantie','Expire bientôt','Expirées']
-  document.getElementById('filterBtns').innerHTML=all.map(s=>{
-    const a=activeFilter===s
-    return`<button class="filter-btn ${a?'active':''}" onclick="setFilter('${s}')">${s}</button>`
+  const prios=['Toutes','urgente','importante','normale']
+  document.getElementById('filterPrio').innerHTML=prios.map(p=>{
+    const a=filterPrio===p
+    const lbl=p==='Toutes'?'Toutes':PRIO_LABEL[p]
+    return`<button class="filter-btn ${a?'active':''}" onclick="setPrio('${p}')">${lbl}</button>`
+  }).join('')
+  const cats=['Toutes','achat','client','admin','marketing','perso']
+  document.getElementById('filterCat').innerHTML=cats.map(c=>{
+    const a=filterCat===c
+    const lbl=c==='Toutes'?'Toutes cat.':CAT_LABEL[c]
+    return`<button class="filter-btn ${a?'active':''}" onclick="setCat('${c}')">${lbl}</button>`
   }).join('')
 }
-window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
+window.setPrio=function(p){filterPrio=p;renderFilters();render()}
+window.setCat=function(c){filterCat=c;renderFilters();render()}
 
-function renderTable(){
-  const q=document.getElementById('searchInput').value.toLowerCase().trim()
-  let rows=allGaranties.filter(g=>{
-    let mf=true
-    if(activeFilter==='Sous garantie')mf=g._gar.sousGarantie
-    else if(activeFilter==='Expirées')mf=!g._gar.sousGarantie
-    else if(activeFilter==='Expire bientôt')mf=g._gar.sousGarantie&&g._gar.joursRestants<=15
-    const ms=!q||[g.numero,g.client_nom,g.appareil,g.marque,g.modele].some(v=>v&&String(v).toLowerCase().includes(q))
-    return mf&&ms
+function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
+
+function render(){
+  const showDone=document.getElementById('showDone').checked
+  const today=startOfDay(new Date())
+  const actives=allTaches.filter(t=>!t.faite)
+  // KPIs
+  const enRetard=actives.filter(t=>t.due_at&&startOfDay(t.due_at)<today)
+  const auj=actives.filter(t=>t.due_at&&startOfDay(t.due_at).getTime()===today.getTime())
+  const weekAgo=new Date(today);weekAgo.setDate(weekAgo.getDate()-7)
+  const faites7j=allTaches.filter(t=>t.faite&&t.updated_at&&new Date(t.updated_at)>=weekAgo)
+  document.getElementById('k-actives').textContent=actives.length
+  document.getElementById('k-retard').textContent=enRetard.length
+  document.getElementById('k-aujourdhui').textContent=auj.length
+  document.getElementById('k-faites').textContent=faites7j.length
+  document.getElementById('ph-sub').textContent=`${actives.length} tâche${actives.length>1?'s':''} active${actives.length>1?'s':''}`
+
+  // Filtrer
+  let list=allTaches.filter(t=>{
+    if(!showDone&&t.faite)return false
+    if(filterPrio!=='Toutes'&&t.priorite!==filterPrio)return false
+    if(filterCat!=='Toutes'&&t.categorie!==filterCat)return false
+    return true
   })
-  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
-  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  tb.innerHTML=rows.map(g=>{
-    const gar=g._gar
-    const appareil=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
-    const dDebut=gar.debut.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    const dExpire=gar.expire.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    let badge,barColor
-    if(gar.sousGarantie){
-      const urgent=gar.joursRestants<=15
-      badge=`<span class="gar-badge gar-ok"><span class="gar-dot"></span>Sous garantie · ${gar.joursRestants} j</span>`
-      barColor=urgent?'#fb923c':'#16a34a'
-    } else {
-      badge=`<span class="gar-badge gar-expire"><span class="gar-dot"></span>Expirée · depuis ${Math.abs(gar.joursRestants)} j</span>`
-      barColor='#dc2626'
-    }
-    return`<tr>
-      <td><span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${g.numero||'—'}</span></td>
-      <td><div style="font-weight:500;">${g.client_nom||'—'}</div><div style="font-size:11px;color:var(--t3);">${g.client_telephone||g.client_email||''}</div></td>
-      <td>${appareil}</td>
-      <td style="color:var(--t3);white-space:nowrap;">${dDebut}</td>
-      <td style="white-space:nowrap;font-weight:500;">${dExpire}</td>
-      <td>${badge}<div class="gar-bar"><div class="gar-bar-fill" style="width:${gar.pct}%;background:${barColor};"></div></div></td>
-    </tr>`
-  }).join('')
+
+  // Grouper par échéance
+  const groups={retard:[],aujourdhui:[],semaine:[],plustard:[],sansdate:[],faites:[]}
+  const in7=new Date(today);in7.setDate(in7.getDate()+7)
+  list.forEach(t=>{
+    if(t.faite){groups.faites.push(t);return}
+    if(!t.due_at){groups.sansdate.push(t);return}
+    const d=startOfDay(t.due_at)
+    if(d<today)groups.retard.push(t)
+    else if(d.getTime()===today.getTime())groups.aujourdhui.push(t)
+    else if(d<=in7)groups.semaine.push(t)
+    else groups.plustard.push(t)
+  })
+  // Tri par priorité dans chaque groupe
+  const prioRank={urgente:0,importante:1,normale:2}
+  Object.values(groups).forEach(g=>g.sort((a,b)=>(prioRank[a.priorite]??3)-(prioRank[b.priorite]??3)))
+
+  const order=[
+    ['retard','En retard','retard'],
+    ['aujourdhui',"Aujourd'hui",'aujourdhui'],
+    ['semaine','Cette semaine',''],
+    ['plustard','Plus tard',''],
+    ['sansdate','Sans échéance',''],
+  ]
+  if(showDone)order.push(['faites','Terminées',''])
+
+  let html=''
+  order.forEach(([key,label,cls])=>{
+    const g=groups[key]
+    if(g.length===0)return
+    html+=`<div class="task-group"><div class="tg-head ${cls}">${label}<span class="tg-count">${g.length}</span></div>${g.map(renderTask).join('')}</div>`
+  })
+  if(!html)html=`<div style="text-align:center;padding:50px;color:var(--t3);"><div style="font-size:28px;margin-bottom:10px;opacity:.4;">✓</div><div style="font-size:13px;">Aucune tâche ${filterPrio!=='Toutes'||filterCat!=='Toutes'?'pour ce filtre':'en cours'}</div></div>`
+  document.getElementById('taskGroups').innerHTML=html
+}
+
+function renderTask(t){
+  const today=startOfDay(new Date())
+  let dateHtml=''
+  if(t.due_at){
+    const d=startOfDay(t.due_at)
+    const retard=!t.faite&&d<today
+    const dStr=new Date(t.due_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
+    dateHtml=`<span class="task-date ${retard?'retard':''}">📅 ${dStr}</span>`
+  }
+  const catHtml=t.categorie?`<span class="cat-tag cat-${t.categorie}">${CAT_LABEL[t.categorie]||t.categorie}</span>`:''
+  const prioHtml=t.priorite&&t.priorite!=='normale'?`<span class="task-tag prio-${t.priorite}">${PRIO_LABEL[t.priorite]}</span>`:''
+  const linkHtml=t.reparation_numero?`<span class="task-link">${t.reparation_numero}</span>`:(t.client_nom?`<span class="task-link">${t.client_nom}</span>`:'')
+  return`<div class="task-item ${t.faite?'done':''}" onclick="editTask(${t.id})">
+    <div class="task-check ${t.faite?'done':''}" onclick="toggleTask(${t.id},event)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="task-main">
+      <div class="task-titre">${t.titre}</div>
+      <div class="task-meta">${prioHtml}${catHtml}${dateHtml}${linkHtml}</div>
+    </div>
+    <button class="task-del" onclick="delTask(${t.id},event)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+  </div>`
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
