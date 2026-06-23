@@ -149,20 +149,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .stars{display:flex;gap:1px;}
 .star{font-size:10px;color:var(--w);}
 .star.off{color:var(--bg4);}
-/* WHATSAPP */
-.wa-card{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;overflow:hidden;}
-.wa-head{padding:11px 14px;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:8px;}
-.wa-ico{width:28px;height:28px;border-radius:7px;background:rgba(37,211,102,.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.wa-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ln);}
-.wa-s{background:var(--bg2);padding:12px 14px;}
-.wa-sl{font-size:10px;color:var(--t3);font-weight:500;margin-bottom:4px;}
-.wa-sv{font-size:20px;font-weight:600;color:var(--t1);letter-spacing:-1px;}
-.wa-msg{display:flex;align-items:flex-start;padding:8px 14px;border-bottom:1px solid var(--ln);gap:8px;}
-.wa-msg:last-child{border-bottom:none;}
-.wa-bubble{background:var(--bg3);border-radius:0 8px 8px 8px;padding:7px 10px;flex:1;}
-.wa-bname{font-size:10px;font-weight:600;color:var(--a);margin-bottom:2px;}
-.wa-btext{font-size:12px;color:var(--t1);line-height:1.5;}
-.wa-btime{font-size:10px;color:var(--t3);margin-top:3px;}
 /* SOCIAL */
 .srow{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--ln);gap:10px;}
 .srow:last-child{border-bottom:none;}
@@ -281,12 +267,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges<span class="nc" id="nb-charges">—</span></a>
       <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
-      <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Statistiques</button>
     </div>
     <div class="nhr"></div>
     <div class="ng">
       <div class="ngl">Communication</div>
-      <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="nc" id="nb-wa">0</span></button>
       <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Marketing</button>
       <button class="nl" onclick="soon()"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</button>
     </div>
@@ -583,13 +567,7 @@ ${insights.length>0?`<div class="g" style="grid-template-columns:repeat(${Math.m
 
 <div class="sh"><span class="sl">Communication & Partenaires</span></div>
 <div class="g g3">
-  <div class="wa-card">
-    <div class="wa-head"><div class="wa-ico">💬</div><div><div style="font-size:12px;font-weight:600;color:var(--t1);">WhatsApp Business</div><div style="font-size:11px;color:var(--t3);">+32 474 05 66 59</div></div><span class="tag tok" style="margin-left:auto;">Actif</span></div>
-    <div class="wa-stat"><div class="wa-s"><div class="wa-sl">Reçus</div><div class="wa-sv">1</div></div><div class="wa-s"><div class="wa-sl">Non lus</div><div class="wa-sv" style="color:var(--w)">1</div></div><div class="wa-s"><div class="wa-sl">Répondus</div><div class="wa-sv" style="color:var(--ok)">0</div></div></div>
-    <div class="wa-msg"><div class="wa-bubble"><div class="wa-bname">Fanny Bohée</div><div class="wa-btext">Bonjour, suite à votre mail concernant la tablette Kurio...</div><div class="wa-btime">31 mai · 12:29</div></div></div>
-    <div class="row"><div class="rm" style="color:var(--t3);font-size:12px;">Ouvrir WhatsApp Business</div><a href="https://wa.me/32474056659" target="_blank" class="tag tb" style="text-decoration:none;">Ouvrir →</a></div>
-  </div>
-  <div class="card"><div class="ch"><span class="ct">Fournisseurs</span><a href="#" class="cl">Gérer →</a></div>${foursActifs.length===0?`<div class="row"><div class="rm"><div class="rn" style="color:var(--t3)">Aucun fournisseur</div></div></div>`:foursActifs.map(f=>`<div class="frow"><div class="fav">${f.nom[0]}</div><div class="fm"><div class="fn">${f.nom}</div><div class="fs">${f.categorie||'—'} · ${f.delai_livraison||'—'}</div></div><div style="text-align:right;"><div class="stars">${stars(f.note||3)}</div></div></div>`).join('')}</div>
+  <div class="card"><div class="ch"><span class="ct">Fournisseurs</span><a href="/admin/fournisseurs.html" class="cl">Gérer →</a></div>${foursActifs.length===0?`<div class="row"><div class="rm"><div class="rn" style="color:var(--t3)">Aucun fournisseur</div></div></div>`:foursActifs.map(f=>`<div class="frow"><div class="fav">${f.nom[0]}</div><div class="fm"><div class="fn">${f.nom}</div><div class="fs">${f.categorie||'—'} · ${f.delai_livraison||'—'}</div></div><div style="text-align:right;"><div class="stars">${stars(f.note||3)}</div></div></div>`).join('')}</div>
   <div class="card"><div class="ch"><span class="ct">Tâches prioritaires</span><span style="font-size:11px;color:var(--t3);">${tasksPending} en attente</span></div>${tasks.slice(0,7).map(t=>`<div class="task"><div class="tbox ${t.faite?'done':''}"></div><span class="ttxt ${t.faite?'done':''}">${t.titre}</span><span class="tag ${t.priorite==='urgente'?'td':t.priorite==='importante'?'tw':t.faite?'tok':'tn'}">${t.faite?'✓':t.priorite}</span></div>`).join('')}</div>
 </div>
 
