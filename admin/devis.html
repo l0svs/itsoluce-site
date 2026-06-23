@@ -1042,8 +1042,8 @@ window.sendPdf=async function(){
     const pdfBase64=pdf.output('datauristring').split(',')[1]
     const prenom=(f.client_nom||'').split(' ')[0]||''
     const dateVal=f.date_validite?new Date(f.date_validite).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'}):''
-    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br>contact@itsoluce.be<br>+32 474 05 66 59<br>www.itsoluce.be</p>`
-    const html=`<p>Bonjour ${prenom},</p><p>Merci de votre intérêt pour IT Soluce.</p><p>Vous trouverez ci-joint votre devis <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>${dateVal?`, valable jusqu'au ${dateVal}`:''}.</p><p>Pour l'accepter, il vous suffit de me répondre à cet email ou de me contacter. Je reste à votre disposition pour toute question.</p>${signature}`
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br><a href="mailto:contact@itsoluce.be" style="color:#1d4ed8;text-decoration:none;">contact@itsoluce.be</a><br>+32 474 05 66 59<br><a href="https://itsoluce.be/" style="color:#1d4ed8;text-decoration:none;">https://itsoluce.be/</a></p>`
+    const html=`<p>Bonjour ${prenom},</p><p>Vous trouverez ci-joint votre devis <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>${dateVal?`, valable jusqu'au ${dateVal}`:''}.</p><p>Pour l'accepter, il vous suffit de me répondre à cet email ou de me contacter. Je reste à votre disposition pour toute question.</p>${signature}`
     const {data:{session}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-invoice`,{
       method:'POST',
