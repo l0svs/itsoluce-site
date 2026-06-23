@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Planning</title>
+<title>IT Soluce ERP — Performance</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,56 +155,45 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* PLANNING */
-.cal-toolbar{display:flex;align-items:center;gap:12px;padding:12px 24px;flex-wrap:wrap;}
-.cal-nav{display:flex;align-items:center;gap:4px;}
-.cal-navbtn{width:30px;height:30px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
-.cal-navbtn:hover{color:var(--t1);border-color:var(--a);}
-.cal-navbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.cal-title{font-size:15px;font-weight:600;color:var(--t1);min-width:170px;text-transform:capitalize;}
-.cal-today{padding:6px 12px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;}
-.cal-today:hover{color:var(--t1);}
-.cal-switch{display:flex;background:var(--bg3);border:1px solid var(--ln2);border-radius:7px;padding:2px;margin-left:auto;}
-.cal-switch button{padding:5px 14px;border:none;background:none;color:var(--t3);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border-radius:5px;transition:all .12s;}
-.cal-switch button.on{background:var(--a);color:#fff;}
-/* GRILLE MOIS */
-.cal-month{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow:hidden;}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px;}
-.cal-wd{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:6px 0;}
-.cal-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:1px;background:var(--ln);border:1px solid var(--ln);border-radius:8px;overflow:hidden;}
-.cal-cell{background:var(--bg2);padding:5px 6px;min-height:78px;cursor:pointer;transition:background .1s;overflow:hidden;display:flex;flex-direction:column;}
-.cal-cell:hover{background:var(--bg3);}
-.cal-cell.other{background:var(--bg);opacity:.5;}
-.cal-cell.today{background:var(--ad);}
-.cal-daynum{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:3px;}
-.cal-cell.today .cal-daynum{color:var(--a);}
-.cal-evt{font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#fff;font-weight:500;}
-.cal-more{font-size:9px;color:var(--t3);font-weight:500;}
-/* TYPES COULEURS */
-.t-domicile{background:#3b82f6;}
-.t-depot{background:#8b5cf6;}
-.t-retrait{background:#10b981;}
-.t-autre{background:#6b7280;}
-.dot-domicile{background:#3b82f6;}
-.dot-depot{background:#8b5cf6;}
-.dot-retrait{background:#10b981;}
-.dot-autre{background:#6b7280;}
-/* VUE SEMAINE */
-.cal-week{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow-y:auto;}
-.week-day{border:1px solid var(--ln);border-radius:8px;margin-bottom:8px;overflow:hidden;}
-.week-day-head{padding:8px 14px;background:var(--bg3);font-size:12px;font-weight:600;color:var(--t1);display:flex;align-items:center;justify-content:space-between;text-transform:capitalize;}
-.week-day-head.today{background:var(--ad);color:var(--a);}
-.week-day-body{padding:4px;}
-.week-evt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;cursor:pointer;transition:background .1s;}
-.week-evt:hover{background:var(--bg3);}
-.week-evt-time{font-size:12px;font-weight:600;color:var(--t1);min-width:48px;}
-.week-evt-bar{width:3px;height:32px;border-radius:99px;flex-shrink:0;}
-.week-evt-info{flex:1;min-width:0;}
-.week-evt-titre{font-size:12px;font-weight:500;color:var(--t1);}
-.week-evt-sub{font-size:11px;color:var(--t3);margin-top:1px;}
-.week-empty{padding:14px;font-size:12px;color:var(--t3);text-align:center;}
-.type-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;color:#fff;}
-.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+/* PERFORMANCE */
+.pf-wrap{flex:1;overflow-y:auto;padding:8px 24px 24px;}
+.pf-section{margin-bottom:22px;}
+.pf-sh{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.pf-sh svg{width:15px;height:15px;stroke:var(--t3);fill:none;stroke-width:2;}
+.pf-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.pf-k{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+.pf-k-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
+.pf-k-label{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:7px;}
+.pf-k-val{font-size:23px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
+.pf-k-sub{font-size:11px;color:var(--t3);margin-top:6px;}
+.pf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pf-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
+.pf-card-head{padding:12px 16px;border-bottom:1px solid var(--ln);font-size:13px;font-weight:600;color:var(--t1);}
+.pf-card-body{padding:6px 0;}
+/* Barres CA mensuel */
+.pf-bar-row{display:flex;align-items:center;gap:12px;padding:7px 16px;}
+.pf-bar-label{font-size:11px;color:var(--t2);width:62px;flex-shrink:0;text-transform:capitalize;}
+.pf-bar-track{flex:1;height:22px;background:var(--bg3);border-radius:5px;overflow:hidden;position:relative;}
+.pf-bar-fill{height:100%;border-radius:5px;background:var(--a);min-width:2px;transition:width .4s;}
+.pf-bar-val{font-size:11px;font-weight:600;color:var(--t1);width:62px;text-align:right;flex-shrink:0;}
+/* Lignes liste (top clients, appareils) */
+.pf-row{display:flex;align-items:center;gap:11px;padding:9px 16px;border-bottom:1px solid var(--ln);}
+.pf-row:last-child{border-bottom:none;}
+.pf-rank{width:22px;height:22px;border-radius:6px;background:var(--bg4);color:var(--t2);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pf-rank.gold{background:rgba(251,191,36,.18);color:#d97706;}
+.pf-row-main{flex:1;min-width:0;}
+.pf-row-t{font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pf-row-s{font-size:11px;color:var(--t3);margin-top:1px;}
+.pf-row-val{font-size:13px;font-weight:600;color:var(--t1);flex-shrink:0;}
+.pf-mini-bar{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:4px;}
+.pf-mini-fill{height:100%;border-radius:99px;}
+.pf-empty{padding:24px 16px;text-align:center;font-size:12px;color:var(--t3);}
+.pf-donut-wrap{display:flex;align-items:center;gap:18px;padding:16px;}
+.pf-legend{flex:1;display:flex;flex-direction:column;gap:7px;}
+.pf-leg-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.pf-leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.pf-leg-label{flex:1;color:var(--t2);}
+.pf-leg-val{font-weight:600;color:var(--t1);}
 </style>
 </head>
 <body>
@@ -216,7 +205,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Planning</span>
+    <span>Performance</span>
   </div>
   <div class="tb-r">
     <div class="notif-wrap">
@@ -251,12 +240,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges</a>
       <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
-      <a href="/admin/performance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Performance</a>
+      <a href="/admin/performance.html" class="nl active"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Performance</a>
     </div>
     <div class="nhr"></div>
     <div class="ng">
       <div class="ngl">Communication</div>
-      <a href="/admin/planning.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
     </div>
     <div class="nhr"></div>
@@ -271,61 +260,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
-        <div class="ph-left"><h1>Planning</h1><p id="ph-sub">— rendez-vous</p></div>
-        <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau rendez-vous</button>
+        <div class="ph-left"><h1>Performance</h1><p id="ph-sub">— tableau de bord commercial</p></div>
       </div>
-      <div class="cal-toolbar">
-        <div class="cal-nav">
-          <button class="cal-navbtn" onclick="navCal(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-          <button class="cal-navbtn" onclick="navCal(1)"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
-        </div>
-        <button class="cal-today" onclick="goToday()">Aujourd'hui</button>
-        <div class="cal-title" id="calTitle">—</div>
-        <div style="display:flex;align-items:center;gap:14px;margin-left:8px;flex-wrap:wrap;">
-          <span class="type-pill t-domicile"><span class="dot" style="background:#fff;"></span>Domicile</span>
-          <span class="type-pill t-depot"><span class="dot" style="background:#fff;"></span>Dépôt</span>
-          <span class="type-pill t-retrait"><span class="dot" style="background:#fff;"></span>Retrait</span>
-          <span class="type-pill t-autre"><span class="dot" style="background:#fff;"></span>Autre</span>
-        </div>
-        <div class="cal-switch">
-          <button id="btnMonth" class="on" onclick="setView('month')">Mois</button>
-          <button id="btnWeek" onclick="setView('week')">Semaine</button>
-        </div>
-      </div>
-      <div class="cal-month" id="viewMonth">
-        <div class="cal-weekdays">
-          <div class="cal-wd">Lun</div><div class="cal-wd">Mar</div><div class="cal-wd">Mer</div><div class="cal-wd">Jeu</div><div class="cal-wd">Ven</div><div class="cal-wd">Sam</div><div class="cal-wd">Dim</div>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
-      <div class="cal-week" id="viewWeek" style="display:none;"></div>
+      <div class="pf-wrap" id="pfWrap"></div>
     </div>
-  </div>
-</div>
-
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-<div class="panel" id="panel">
-  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouveau rendez-vous</span><button class="panel-close" onclick="closePanel()">×</button></div>
-  <div class="panel-body">
-    <input type="hidden" id="f-id"/>
-    <div class="fg"><label>Titre *</label><input type="text" id="f-titre" placeholder="ex : Remplacement écran iPhone"/></div>
-    <div class="fg"><label>Type</label><select id="f-type"><option value="domicile">Domicile</option><option value="depot">Dépôt</option><option value="retrait">Retrait</option><option value="autre">Autre</option></select></div>
-    <div class="fg-row">
-      <div class="fg"><label>Date *</label><input type="date" id="f-date"/></div>
-      <div class="fg"><label>Heure</label><input type="time" id="f-heure"/></div>
-    </div>
-    <div class="fg"><label>Durée estimée</label><select id="f-duree"><option value="30">30 minutes</option><option value="60" selected>1 heure</option><option value="90">1h30</option><option value="120">2 heures</option><option value="">Non définie</option></select></div>
-    <div class="fg-sep">Lien (optionnel)</div>
-    <div class="fg"><label>Client</label><select id="f-client" onchange="onClientPick()"><option value="">— Aucun —</option></select></div>
-    <div class="fg"><label>Réparation</label><select id="f-rep"><option value="">— Aucune —</option></select></div>
-    <div class="fg"><label>Lieu / Adresse</label><input type="text" id="f-lieu" placeholder="Adresse de l'intervention"/></div>
-    <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Détails, matériel à prévoir..."></textarea></div>
-    <div class="fg" style="display:flex;align-items:center;gap:10px;"><label style="margin:0;">Rendez-vous terminé</label><div class="cr-tog" id="togTermine" onclick="toggleTermine()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;" id="togTermineThumb"></div></div><input type="hidden" id="f-termine" value="false"/></div>
-  </div>
-  <div class="panel-footer">
-    <button class="btn btn-secondary" id="delBtn" onclick="deleteRdv()" style="display:none;">Supprimer</button>
-    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveRdv()" style="flex:2;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -338,9 +276,6 @@ setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('
 const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
 if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
-function toggleTermine(){const i=document.getElementById('f-termine');const on=i.value==='true';i.value=String(!on);const t=document.getElementById('togTermine');const th=document.getElementById('togTermineThumb');t.style.background=!on?'var(--ok)':'var(--bg4)';t.style.borderColor=!on?'var(--ok)':'var(--ln2)';th.style.transform=!on?'translateX(14px)':'translateX(0)';}
-function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
 </script>
 <script>
 window.toggleNotifs=function(e){
@@ -438,265 +373,132 @@ loadNotifs();
 
 
 
-let allRdv=[]
-let allClients=[]
-let allReps=[]
-let currentDate=new Date()
-let currentView='month'
-const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
-const JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi']
-const TYPE_LABEL={domicile:'Domicile',depot:'Dépôt',retrait:'Retrait',autre:'Autre'}
+const MOIS=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc']
+const now=new Date()
 
-async function load(){
-  const [rRdv,rCli,rRep]=await Promise.all([
-    sb.from('rendezvous').select('*').order('date_debut',{ascending:true}),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false})
-  ])
-  if(rRdv.error){showError(rRdv.error.message);return}
-  allRdv=rRdv.data||[]
-  allClients=rCli.data||[]
-  allReps=rRep.data||[]
-  fillSelects()
-  render()
-  document.getElementById('ldr').style.display='none'
-  document.getElementById('pageBody').style.display='flex'
-}
+// ─── CHARGEMENT ───
+const [rRep,rFac,rDev,rCli]=await Promise.all([
+  sb.from('reparations').select('*'),
+  sb.from('factures').select('*'),
+  sb.from('devis').select('*'),
+  sb.from('clients').select('*')
+])
+const reps=rRep.data||[]
+const factures=rFac.data||[]
+const devis=rDev.data||[]
+const clients=rCli.data||[]
 
-function fillSelects(){
-  const cs=document.getElementById('f-client')
-  cs.innerHTML='<option value="">— Aucun —</option>'+allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
-  const rs=document.getElementById('f-rep')
-  rs.innerHTML='<option value="">— Aucune —</option>'+allReps.map(r=>`<option value="${r.id}" data-num="${r.numero||''}">${r.numero||''} · ${r.client_nom} · ${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||''}</option>`).join('')
-}
+// ─── CONVERSION ───
+const devisEnvoyes=devis.filter(d=>['envoye','accepte','refuse'].includes(d.statut)).length
+const devisAcceptes=devis.filter(d=>d.statut==='accepte').length
+const devisRefuses=devis.filter(d=>d.statut==='refuse').length
+const tauxAccept=devisEnvoyes>0?Math.round((devisAcceptes/devisEnvoyes)*100):0
+const repsTerminees=reps.filter(r=>['pret','rendu'].includes(r.statut)).length
+const repsAnnulees=reps.filter(r=>r.statut==='annule').length
 
-window.onClientPick=function(){
-  const sel=document.getElementById('f-client')
-  const opt=sel.options[sel.selectedIndex]
-  if(sel.value && opt.dataset.adr && !document.getElementById('f-lieu').value){
-    document.getElementById('f-lieu').value=opt.dataset.adr
+// ─── FINANCES ───
+const facturesPayees=factures.filter(f=>f.statut==='payee')
+const caTotal=facturesPayees.reduce((a,f)=>a+Number(f.total||0),0)
+// Si pas de factures payées, fallback sur prix_final des réparations terminées
+const caRepTotal=reps.filter(r=>['pret','rendu'].includes(r.statut)).reduce((a,r)=>a+Number(r.prix_final||0),0)
+const caEffectif=caTotal>0?caTotal:caRepTotal
+const nbVentes=facturesPayees.length>0?facturesPayees.length:repsTerminees
+const panierMoyen=nbVentes>0?caEffectif/nbVentes:0
+// Marge moyenne (prix_final - cout_pieces sur réparations terminées)
+const repsTerm=reps.filter(r=>['pret','rendu'].includes(r.statut))
+const margeTotale=repsTerm.reduce((a,r)=>a+(Number(r.prix_final||0)-Number(r.cout_pieces||0)),0)
+const margeMoyenne=repsTerm.length>0?margeTotale/repsTerm.length:0
+
+// CA des 6 derniers mois
+const caParMois=[]
+for(let i=5;i>=0;i--){
+  const d=new Date(now.getFullYear(),now.getMonth()-i,1)
+  const m=d.getMonth(),y=d.getFullYear()
+  let montant=0
+  if(facturesPayees.length>0){
+    montant=facturesPayees.filter(f=>{const fd=new Date(f.date_paiement||f.date_emission||f.created_at);return fd.getMonth()===m&&fd.getFullYear()===y}).reduce((a,f)=>a+Number(f.total||0),0)
+  } else {
+    montant=repsTerm.filter(r=>{const rd=new Date(r.date_fin||r.created_at);return rd.getMonth()===m&&rd.getFullYear()===y}).reduce((a,r)=>a+Number(r.prix_final||0),0)
   }
+  caParMois.push({label:`${MOIS[m]} ${String(y).slice(2)}`,montant})
 }
+const caMax=Math.max(...caParMois.map(c=>c.montant),1)
 
-function render(){
-  document.getElementById('ph-sub').textContent=`${allRdv.length} rendez-vous`
-  if(currentView==='month')renderMonth()
-  else renderWeek()
-}
+// ─── CLIENTS ───
+const nbClients=clients.length
+const nouveauxMois=clients.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
+// Clients récurrents : count réparations par client_nom
+const repsByClient={}
+reps.forEach(r=>{const k=r.client_nom||'—';if(!repsByClient[k])repsByClient[k]={nom:k,count:0,ca:0};repsByClient[k].count++;repsByClient[k].ca+=Number(r.prix_final||0)})
+const clientsArr=Object.values(repsByClient)
+const recurrents=clientsArr.filter(c=>c.count>=2).length
+// Top clients par CA
+const topClients=clientsArr.filter(c=>c.ca>0).sort((a,b)=>b.ca-a.ca).slice(0,5)
+const topMax=Math.max(...topClients.map(c=>c.ca),1)
 
-function sameDay(d1,d2){return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
+// ─── APPAREILS ───
+function categorie(r){
+  const t=((r.appareil||'')+' '+(r.marque||'')+' '+(r.modele||'')).toLowerCase()
+  if(/iphone|samsung|smartphone|téléphone|telephone|xiaomi|huawei|pixel|oneplus|gsm/.test(t))return 'Smartphone'
+  if(/ipad|tablet|tablette|galaxy tab/.test(t))return 'Tablette'
+  if(/pc|ordi|laptop|macbook|portable|fixe|tour|imac|écran|ecran/.test(t))return 'Ordinateur'
+  if(/console|playstation|ps4|ps5|xbox|switch|nintendo|manette/.test(t))return 'Console'
+  return 'Autre'
+}
+const appCount={}
+reps.forEach(r=>{const c=categorie(r);if(!appCount[c])appCount[c]={cat:c,count:0,ca:0};appCount[c].count++;appCount[c].ca+=Number(r.prix_final||0)})
+const appArr=Object.values(appCount).sort((a,b)=>b.count-a.count)
+const appTotal=appArr.reduce((a,x)=>a+x.count,0)
+const APP_COL={'Smartphone':'#3b82f6','Tablette':'#8b5cf6','Ordinateur':'#10b981','Console':'#f59e0b','Autre':'#6b7280'}
 
-function rdvOfDay(date){
-  return allRdv.filter(r=>sameDay(new Date(r.date_debut),date)).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut))
-}
+// ─── RENDU ───
+function kpi(label,val,sub,color){return `<div class="pf-k"><div class="pf-k-accent" style="background:${color}"></div><div class="pf-k-label">${label}</div><div class="pf-k-val" style="color:${color}">${val}</div><div class="pf-k-sub">${sub}</div></div>`}
 
-function renderMonth(){
-  document.getElementById('viewMonth').style.display='flex'
-  document.getElementById('viewWeek').style.display='none'
-  const y=currentDate.getFullYear(),m=currentDate.getMonth()
-  document.getElementById('calTitle').textContent=`${MOIS[m]} ${y}`
-  // Premier lundi de la grille
-  const first=new Date(y,m,1)
-  let startDay=first.getDay()-1; if(startDay<0)startDay=6
-  const gridStart=new Date(y,m,1-startDay)
-  const today=new Date()
-  let html=''
-  for(let i=0;i<42;i++){
-    const d=new Date(gridStart);d.setDate(gridStart.getDate()+i)
-    const other=d.getMonth()!==m
-    const isToday=sameDay(d,today)
-    const evts=rdvOfDay(d)
-    const dateStr=d.toISOString().slice(0,10)
-    let evtHtml=evts.slice(0,3).map(e=>{
-      const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-      return `<div class="cal-evt t-${e.type}" onclick="event.stopPropagation();editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}">${h} ${e.titre}</div>`
-    }).join('')
-    if(evts.length>3)evtHtml+=`<div class="cal-more">+${evts.length-3} autre(s)</div>`
-    html+=`<div class="cal-cell ${other?'other':''} ${isToday?'today':''}" onclick="openPanelDate('${dateStr}')"><div class="cal-daynum">${d.getDate()}</div>${evtHtml}</div>`
-  }
-  document.getElementById('calGrid').innerHTML=html
-}
+let html=''
 
-function renderWeek(){
-  document.getElementById('viewMonth').style.display='none'
-  document.getElementById('viewWeek').style.display='flex'
-  const cur=new Date(currentDate)
-  let dow=cur.getDay()-1; if(dow<0)dow=6
-  const monday=new Date(cur);monday.setDate(cur.getDate()-dow)
-  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6)
-  document.getElementById('calTitle').textContent=`${monday.getDate()} ${MOIS[monday.getMonth()].slice(0,4)}. — ${sunday.getDate()} ${MOIS[sunday.getMonth()].slice(0,4)}. ${sunday.getFullYear()}`
-  const today=new Date()
-  let html=''
-  for(let i=0;i<7;i++){
-    const d=new Date(monday);d.setDate(monday.getDate()+i)
-    const evts=rdvOfDay(d)
-    const isToday=sameDay(d,today)
-    const dateStr=d.toISOString().slice(0,10)
-    let body=''
-    if(evts.length===0){body=`<div class="week-empty">Aucun rendez-vous</div>`}
-    else{
-      body=evts.map(e=>{
-        const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-        const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
-        const col={domicile:'#3b82f6',depot:'#8b5cf6',retrait:'#10b981',autre:'#6b7280'}[e.type]
-        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-bar" style="background:${col};"></div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${e.titre}</div>${sub?`<div class="week-evt-sub">${sub}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
-      }).join('')
-    }
-    html+=`<div class="week-day"><div class="week-day-head ${isToday?'today':''}"><span>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}</span><button onclick="openPanelDate('${dateStr}')" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:18px;line-height:1;">+</button></div><div class="week-day-body">${body}</div></div>`
-  }
-  document.getElementById('viewWeek').innerHTML=html
-}
+// SECTION CONVERSION
+html+=`<div class="pf-section"><div class="pf-sh"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Conversion</div><div class="pf-kpis">
+${kpi('Devis envoyés',devisEnvoyes,'au total','#3b82f6')}
+${kpi('Taux d\'acceptation',tauxAccept+'%',`${devisAcceptes} accepté(s) · ${devisRefuses} refusé(s)`,'#10b981')}
+${kpi('Réparations terminées',repsTerminees,'prêtes ou rendues','#8b5cf6')}
+${kpi('Réparations annulées',repsAnnulees,repsAnnulees===0?'aucune':'à analyser','#ef4444')}
+</div></div>`
 
-window.setView=function(v){
-  currentView=v
-  document.getElementById('btnMonth').classList.toggle('on',v==='month')
-  document.getElementById('btnWeek').classList.toggle('on',v==='week')
-  render()
-}
-window.navCal=function(dir){
-  if(currentView==='month')currentDate.setMonth(currentDate.getMonth()+dir)
-  else currentDate.setDate(currentDate.getDate()+dir*7)
-  currentDate=new Date(currentDate)
-  render()
-}
-window.goToday=function(){currentDate=new Date();render()}
+// SECTION FINANCES
+html+=`<div class="pf-section"><div class="pf-sh"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finances</div><div class="pf-kpis">
+${kpi('CA total',caEffectif.toFixed(0)+' €',facturesPayees.length>0?`${facturesPayees.length} facture(s) payée(s)`:'basé sur réparations','#10b981')}
+${kpi('Panier moyen',panierMoyen.toFixed(0)+' €',`sur ${nbVentes} vente(s)`,'#3b82f6')}
+${kpi('Marge moyenne',margeMoyenne.toFixed(0)+' €','par réparation','#8b5cf6')}
+${kpi('Marge totale',margeTotale.toFixed(0)+' €','pièces déduites','#f59e0b')}
+</div></div>`
+
+// CA PAR MOIS (barres horizontales)
+html+=`<div class="pf-section"><div class="pf-grid2">
+<div class="pf-card"><div class="pf-card-head">Chiffre d'affaires — 6 derniers mois</div><div class="pf-card-body">
+${caParMois.map(c=>`<div class="pf-bar-row"><div class="pf-bar-label">${c.label}</div><div class="pf-bar-track"><div class="pf-bar-fill" style="width:${(c.montant/caMax*100).toFixed(0)}%"></div></div><div class="pf-bar-val">${c.montant.toFixed(0)} €</div></div>`).join('')}
+</div></div>
+<div class="pf-card"><div class="pf-card-head">Répartition par type d'appareil</div><div class="pf-card-body">
+${appArr.length===0?'<div class="pf-empty">Aucune réparation enregistrée</div>':`<div class="pf-legend" style="padding:16px;">${appArr.map(a=>`<div class="pf-leg-row"><span class="pf-leg-dot" style="background:${APP_COL[a.cat]}"></span><span class="pf-leg-label">${a.cat}</span><span class="pf-leg-val">${a.count} (${appTotal>0?Math.round(a.count/appTotal*100):0}%)</span></div><div class="pf-mini-bar"><div class="pf-mini-fill" style="width:${appTotal>0?(a.count/appTotal*100):0}%;background:${APP_COL[a.cat]}"></div></div>`).join('')}</div>`}
+</div></div>
+</div></div>`
+
+// SECTION CLIENTS
+html+=`<div class="pf-section"><div class="pf-sh"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</div><div class="pf-kpis" style="margin-bottom:14px;">
+${kpi('Clients au total',nbClients,'enregistrés','#3b82f6')}
+${kpi('Nouveaux ce mois',nouveauxMois,'ce mois-ci','#10b981')}
+${kpi('Clients récurrents',recurrents,'2+ réparations','#8b5cf6')}
+${kpi('Appareil n°1',appArr.length>0?appArr[0].cat:'—',appArr.length>0?`${appArr[0].count} réparation(s)`:'—','#f59e0b')}
+</div>
+<div class="pf-card"><div class="pf-card-head">Top 5 clients (par chiffre d'affaires)</div><div class="pf-card-body">
+${topClients.length===0?'<div class="pf-empty">Aucune donnée client pour le moment</div>':topClients.map((c,i)=>`<div class="pf-row"><div class="pf-rank ${i===0?'gold':''}">${i+1}</div><div class="pf-row-main"><div class="pf-row-t">${c.nom}</div><div class="pf-row-s">${c.count} réparation(s)</div></div><div class="pf-row-val">${c.ca.toFixed(0)} €</div></div>`).join('')}
+</div></div>
+</div>`
+
+document.getElementById('pfWrap').innerHTML=html
+document.getElementById('ldr').style.display='none'
+document.getElementById('pageBody').style.display='flex'
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
-
-// ─── PANNEAU CRUD ───
-function resetForm(){
-  document.getElementById('f-id').value=''
-  document.getElementById('f-titre').value=''
-  document.getElementById('f-type').value='domicile'
-  document.getElementById('f-date').value=''
-  document.getElementById('f-heure').value=''
-  document.getElementById('f-duree').value='60'
-  document.getElementById('f-client').value=''
-  document.getElementById('f-rep').value=''
-  document.getElementById('f-lieu').value=''
-  document.getElementById('f-notes').value=''
-  document.getElementById('f-termine').value='false'
-  const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb')
-  t.style.background='var(--bg4)';t.style.borderColor='var(--ln2)';th.style.transform='translateX(0)'
-}
-
-window.openPanel=function(){
-  resetForm()
-  document.getElementById('panelTitle').textContent='Nouveau rendez-vous'
-  document.getElementById('saveBtn').textContent='Enregistrer'
-  document.getElementById('delBtn').style.display='none'
-  const now=new Date()
-  document.getElementById('f-date').value=now.toISOString().slice(0,10)
-  document.getElementById('f-heure').value='18:00'
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-titre').focus()
-}
-
-window.openPanelDate=function(dateStr){
-  resetForm()
-  document.getElementById('panelTitle').textContent='Nouveau rendez-vous'
-  document.getElementById('saveBtn').textContent='Enregistrer'
-  document.getElementById('delBtn').style.display='none'
-  document.getElementById('f-date').value=dateStr
-  document.getElementById('f-heure').value='18:00'
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-titre').focus()
-}
-
-window.editRdv=function(id){
-  const r=allRdv.find(x=>x.id===id)
-  if(!r)return
-  resetForm()
-  document.getElementById('panelTitle').textContent='Modifier le rendez-vous'
-  document.getElementById('saveBtn').textContent='Mettre à jour'
-  document.getElementById('delBtn').style.display='block'
-  document.getElementById('f-id').value=r.id
-  document.getElementById('f-titre').value=r.titre||''
-  document.getElementById('f-type').value=r.type||'domicile'
-  const d=new Date(r.date_debut)
-  document.getElementById('f-date').value=d.toISOString().slice(0,10)
-  document.getElementById('f-heure').value=d.toTimeString().slice(0,5)
-  // Durée
-  if(r.date_fin){const mins=Math.round((new Date(r.date_fin)-d)/60000);document.getElementById('f-duree').value=['30','60','90','120'].includes(String(mins))?String(mins):''}
-  document.getElementById('f-client').value=r.client_id||''
-  document.getElementById('f-rep').value=r.reparation_id||''
-  document.getElementById('f-lieu').value=r.lieu||''
-  document.getElementById('f-notes').value=r.notes||''
-  document.getElementById('f-termine').value=String(r.termine||false)
-  if(r.termine){const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb');t.style.background='var(--ok)';t.style.borderColor='var(--ok)';th.style.transform='translateX(14px)'}
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-}
-
-window.saveRdv=async function(){
-  const id=document.getElementById('f-id').value
-  const titre=document.getElementById('f-titre').value.trim()
-  const date=document.getElementById('f-date').value
-  if(!titre){showToast('Le titre est requis','err');return}
-  if(!date){showToast('La date est requise','err');return}
-  const heure=document.getElementById('f-heure').value||'00:00'
-  const dateDebut=new Date(`${date}T${heure}`)
-  const duree=document.getElementById('f-duree').value
-  let dateFin=null
-  if(duree){dateFin=new Date(dateDebut.getTime()+Number(duree)*60000)}
-  // Client lié
-  const clientSel=document.getElementById('f-client')
-  const clientId=clientSel.value?Number(clientSel.value):null
-  const clientNom=clientSel.value?clientSel.options[clientSel.selectedIndex].dataset.nom:null
-  // Réparation liée
-  const repSel=document.getElementById('f-rep')
-  const repId=repSel.value?Number(repSel.value):null
-  const repNum=repSel.value?repSel.options[repSel.selectedIndex].dataset.num:null
-
-  const payload={
-    titre,
-    type:document.getElementById('f-type').value,
-    date_debut:dateDebut.toISOString(),
-    date_fin:dateFin?dateFin.toISOString():null,
-    client_id:clientId,
-    client_nom:clientNom,
-    reparation_id:repId,
-    reparation_numero:repNum,
-    lieu:document.getElementById('f-lieu').value.trim()||null,
-    notes:document.getElementById('f-notes').value.trim()||null,
-    termine:document.getElementById('f-termine').value==='true',
-    updated_at:new Date().toISOString()
-  }
-  document.getElementById('saveBtn').textContent='Enregistrement...'
-  document.getElementById('saveBtn').disabled=true
-  let error
-  if(id){
-    const res=await sb.from('rendezvous').update(payload).eq('id',id)
-    error=res.error
-    if(!error){const i=allRdv.findIndex(r=>r.id===Number(id));if(i>=0)allRdv[i]={...allRdv[i],...payload,id:Number(id)}}
-  } else {
-    const res=await sb.from('rendezvous').insert(payload).select().single()
-    error=res.error
-    if(!error&&res.data)allRdv.push(res.data)
-  }
-  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
-  document.getElementById('saveBtn').disabled=false
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  closePanel()
-  render()
-  showToast(id?'Rendez-vous mis à jour ✓':'Rendez-vous créé ✓','ok')
-}
-
-window.deleteRdv=async function(){
-  const id=document.getElementById('f-id').value
-  if(!id)return
-  if(!confirm('Supprimer ce rendez-vous ?'))return
-  const {error}=await sb.from('rendezvous').delete().eq('id',id)
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  allRdv=allRdv.filter(r=>r.id!==Number(id))
-  closePanel()
-  render()
-  showToast('Rendez-vous supprimé','ok')
-}
-
-await load()
 
 } catch(err){
   console.error(err)
