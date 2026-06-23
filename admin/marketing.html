@@ -214,6 +214,37 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .rs-chip{padding:6px 11px;border:1px solid var(--ln2);border-radius:99px;font-size:12px;color:var(--t2);cursor:pointer;user-select:none;transition:all .12s;background:var(--bg2);}
 .rs-chip.on{background:var(--a);color:#fff;border-color:var(--a);}
 .mk-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;color:#fff;}
+/* BOÎTE À OUTILS CONTENU */
+.bo-wrap{flex:1;overflow-y:auto;padding:8px 24px 24px;}
+.bo-section{margin-bottom:24px;}
+.bo-sh{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.bo-sh svg{width:16px;height:16px;stroke:var(--t2);fill:none;stroke-width:2;}
+.bo-sub{font-size:12px;color:var(--t3);margin-bottom:12px;}
+.bo-cat{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;}
+.bo-models{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bo-model{background:var(--bg2);border:1px solid var(--ln);border-radius:9px;padding:13px 14px;display:flex;flex-direction:column;}
+.bo-model-top{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.bo-model-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.bo-model-type{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
+.bo-model-txt{font-size:12px;color:var(--t2);line-height:1.5;white-space:pre-wrap;flex:1;margin-bottom:10px;}
+.bo-model-actions{display:flex;gap:6px;}
+.bo-btn{flex:1;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);transition:all .12s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.bo-btn:hover{color:var(--t1);border-color:var(--a);}
+.bo-btn.primary{background:var(--ad);color:var(--a);border-color:var(--a);}
+.bo-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+.bo-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.bo-chip{padding:6px 12px;border:1px solid var(--ln2);border-radius:99px;font-size:12px;color:var(--t2);cursor:pointer;background:var(--bg2);transition:all .12s;font-family:inherit;}
+.bo-chip:hover{border-color:var(--a);color:var(--t1);}
+.bo-hashblock{background:var(--bg2);border:1px solid var(--ln);border-radius:9px;padding:13px 14px;margin-bottom:10px;}
+.bo-hashblock-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.bo-hashblock-title{font-size:12px;font-weight:600;color:var(--t1);}
+.bo-hashtags{font-size:12px;color:var(--a);line-height:1.6;font-family:monospace;}
+.bo-accroche{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--ln);}
+.bo-accroche:last-child{border-bottom:none;}
+.bo-accroche-txt{flex:1;font-size:12px;color:var(--t1);}
+.bo-copy-mini{width:26px;height:26px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;}
+.bo-copy-mini:hover{color:var(--a);border-color:var(--a);}
+.bo-copy-mini svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
 </style>
 </head>
 <body>
@@ -300,6 +331,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="mk-switch">
           <button id="btnMonth" class="on" onclick="setView('month')">Calendrier</button>
           <button id="btnBoard" onclick="setView('board')">Tableau</button>
+          <button id="btnTools" onclick="setView('tools')">Boîte à outils</button>
         </div>
       </div>
       <div class="mk-month" id="viewMonth">
@@ -309,6 +341,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="mk-grid" id="calGrid"></div>
       </div>
       <div class="mk-board" id="viewBoard" style="display:none;"></div>
+      <div class="bo-wrap" id="viewTools" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -472,7 +505,8 @@ async function load(){
 function render(){
   document.getElementById('ph-sub').textContent=`${allPubs.length} publication${allPubs.length>1?'s':''}`
   if(currentView==='month')renderMonth()
-  else renderBoard()
+  else if(currentView==='board')renderBoard()
+  else renderTools()
 }
 
 function sameDay(d1,d2){return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
@@ -533,10 +567,113 @@ function renderCard(p){
   </div>`
 }
 
+// ─── BOÎTE À OUTILS CONTENU ───
+const MODELES=[
+  {type:'astuce',col:'#3b82f6',txt:"Astuce du jour 💡\n\nVotre smartphone chauffe ou se décharge vite ? Pensez à fermer les applications en arrière-plan et à vérifier l'état de votre batterie.\n\nUn doute ? On diagnostique gratuitement chez IT Soluce."},
+  {type:'astuce',col:'#3b82f6',txt:"Le saviez-vous ? 🔋\n\nUne batterie de smartphone perd en moyenne 20% de sa capacité après 2 ans. Si votre téléphone ne tient plus la journée, un simple remplacement de batterie peut lui redonner une seconde vie — bien moins cher qu'un nouveau téléphone."},
+  {type:'astuce',col:'#3b82f6',txt:"PC qui rame ? 🐌\n\nAvant de le remplacer, sachez qu'un nettoyage logiciel + un passage au SSD peuvent multiplier sa vitesse par 5. On s'en occupe pour vous."},
+  {type:'avantapres',col:'#10b981',txt:"AVANT / APRÈS 📲\n\nÉcran complètement éclaté → comme neuf en moins d'une heure.\n\nVotre appareil mérite une seconde chance. Réparation à domicile dans le Brabant wallon."},
+  {type:'avantapres',col:'#10b981',txt:"Transformation du jour ✨\n\nCe portable mettait 5 minutes à démarrer. Après un nettoyage complet et un SSD, il démarre en 15 secondes.\n\nEt si on faisait pareil avec le vôtre ?"},
+  {type:'casclient',col:'#8b5cf6',txt:"Merci à [Prénom] pour sa confiance ! 🙏\n\nÉcran de iPhone remplacé en 45 minutes, à domicile. Un client satisfait, c'est notre meilleure publicité.\n\nVous aussi, faites confiance à IT Soluce."},
+  {type:'casclient',col:'#8b5cf6',txt:"Intervention chez un client à Tubize aujourd'hui 🛠️\n\nDiagnostic, réparation et explications claires. Parce qu'une réparation réussie, c'est aussi comprendre ce qui s'est passé."},
+  {type:'promo',col:'#ef4444',txt:"OFFRE DE LANCEMENT 🎉\n\nIT Soluce ouvre ses portes ! Pour fêter ça, profitez d'un diagnostic 100% gratuit sur tous vos appareils.\n\nContactez-nous, on se déplace chez vous."},
+  {type:'promo',col:'#ef4444',txt:"Rentrée = bon moment pour faire réviser le matériel 🎒\n\nPC lent, tablette des enfants en panne ? On remet tout en état avant la reprise. Devis gratuit sur demande."},
+  {type:'actu',col:'#f59e0b',txt:"Nouvelle arnaque qui circule ⚠️\n\nDe faux SMS de livraison vous demandent vos données bancaires. Ne cliquez jamais sur ces liens.\n\nUn doute sur la sécurité de vos appareils ? Parlons-en."},
+  {type:'actu',col:'#f59e0b',txt:"Mise à jour disponible 📱\n\nPensez à mettre à jour vos appareils régulièrement : c'est la première protection contre les failles de sécurité. Besoin d'aide ? On est là."}
+]
+const TYPE_LBL_BO={astuce:'Astuce',avantapres:'Avant/Après',casclient:'Cas client',promo:'Promo',actu:'Actu tech'}
+const HASHTAGS=[
+  {titre:'Local — Brabant wallon',tags:'#tubize #brabantwallon #wallonie #reparation #depannage #informatique #proximité'},
+  {titre:'Réparation smartphone',tags:'#reparationsmartphone #reparationtelephone #iphone #samsung #ecrancassé #batterie #gsm'},
+  {titre:'Réparation PC',tags:'#reparationpc #depannageinformatique #ordinateur #pclent #ssd #maintenance #informatique'},
+  {titre:'Consoles & gaming',tags:'#reparationconsole #playstation #xbox #nintendoswitch #gaming #manette'},
+  {titre:'Confiance & service',tags:'#serviceadomicile #devisgratuit #artisan #independant #savoirfaire #clientsatisfait'}
+]
+const ACCROCHES=[
+  "Demandez votre devis gratuit dès aujourd'hui 📩",
+  "Intervention à domicile dans tout le Brabant wallon 🚗",
+  "Un diagnostic offert, sans engagement 🔍",
+  "Réparation rapide, prix transparent, sans frais cachés ✅",
+  "Votre appareil mérite une seconde vie ♻️",
+  "Contactez-nous, on se déplace chez vous ☎️",
+  "Pas de jargon, juste des solutions claires 💬",
+  "Garantie 3 mois sur toutes nos réparations 🛡️"
+]
+
+function renderTools(){
+  document.getElementById('viewTools').style.display='block'
+  document.getElementById('monthNav').style.display='none'
+  document.getElementById('todayBtn').style.display='none'
+  document.getElementById('calTitle').textContent='Boîte à outils contenu'
+
+  let html=''
+  // MODÈLES DE POSTS
+  html+=`<div class="bo-section"><div class="bo-sh"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Modèles de posts</div><div class="bo-sub">Choisissez un modèle, copiez-le ou ajoutez-le directement au calendrier, puis personnalisez-le.</div>`
+  const cats=['astuce','avantapres','casclient','promo','actu']
+  cats.forEach(cat=>{
+    const items=MODELES.filter(m=>m.type===cat)
+    if(items.length===0)return
+    html+=`<div class="bo-cat">${TYPE_LBL_BO[cat]}</div><div class="bo-models">`
+    items.forEach((m,idx)=>{
+      const gi=MODELES.indexOf(m)
+      html+=`<div class="bo-model"><div class="bo-model-top"><span class="bo-model-dot" style="background:${m.col}"></span><span class="bo-model-type">${TYPE_LBL_BO[m.type]}</span></div><div class="bo-model-txt">${m.txt}</div><div class="bo-model-actions"><button class="bo-btn" onclick="copyModele(${gi})"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copier</button><button class="bo-btn primary" onclick="modeleToCalendar(${gi})"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Au calendrier</button></div></div>`
+    })
+    html+=`</div>`
+  })
+  html+=`</div>`
+
+  // HASHTAGS
+  html+=`<div class="bo-section"><div class="bo-sh"><svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>Banque de hashtags</div><div class="bo-sub">Cliquez sur un bloc pour copier tous ses hashtags d'un coup.</div>`
+  HASHTAGS.forEach((h,i)=>{
+    html+=`<div class="bo-hashblock"><div class="bo-hashblock-head"><span class="bo-hashblock-title">${h.titre}</span><button class="bo-copy-mini" onclick="copyText(\`${h.tags}\`,'Hashtags copiés ✓')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div><div class="bo-hashtags">${h.tags}</div></div>`
+  })
+  html+=`</div>`
+
+  // ACCROCHES
+  html+=`<div class="bo-section"><div class="bo-sh"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Accroches &amp; appels à l'action</div><div class="bo-sub">Des phrases prêtes à glisser en fin de publication.</div><div class="mk-card" style="cursor:default;padding:0;">`
+  ACCROCHES.forEach(a=>{
+    html+=`<div class="bo-accroche"><span class="bo-accroche-txt">${a}</span><button class="bo-copy-mini" onclick="copyText(\`${a}\`,'Accroche copiée ✓')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>`
+  })
+  html+=`</div></div>`
+
+  document.getElementById('viewTools').innerHTML=html
+}
+
+window.copyText=function(txt,msg){
+  navigator.clipboard.writeText(txt).then(()=>showToast(msg||'Copié ✓','ok')).catch(()=>showToast('Impossible de copier','err'))
+}
+window.copyModele=function(i){
+  const m=MODELES[i]
+  if(!m)return
+  navigator.clipboard.writeText(m.txt).then(()=>showToast('Modèle copié ✓','ok')).catch(()=>showToast('Impossible de copier','err'))
+}
+window.modeleToCalendar=function(i){
+  const m=MODELES[i]
+  if(!m)return
+  resetForm()
+  document.getElementById('panelTitle').textContent='Nouvelle publication'
+  document.getElementById('saveBtn').textContent='Enregistrer'
+  document.getElementById('delBtn').style.display='none'
+  // Pré-remplir avec le modèle
+  document.getElementById('f-type').value=m.type
+  document.getElementById('f-contenu').value=m.txt
+  // Titre = 1re ligne du modèle (nettoyée)
+  const firstLine=m.txt.split('\\n')[0].replace(/[💡🔋🐌📲✨🙏🛠️🎉🎒⚠️📱]/g,'').trim()
+  document.getElementById('f-titre').value=firstLine
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+  document.getElementById('f-titre').focus()
+}
+
 window.setView=function(v){
   currentView=v
   document.getElementById('btnMonth').classList.toggle('on',v==='month')
   document.getElementById('btnBoard').classList.toggle('on',v==='board')
+  document.getElementById('btnTools').classList.toggle('on',v==='tools')
+  // Masquer tous les conteneurs, le rendu réaffichera le bon
+  document.getElementById('viewMonth').style.display='none'
+  document.getElementById('viewBoard').style.display='none'
+  document.getElementById('viewTools').style.display='none'
   render()
 }
 window.navCal=function(dir){currentDate.setMonth(currentDate.getMonth()+dir);currentDate=new Date(currentDate);render()}
