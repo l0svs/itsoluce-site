@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Garanties</title>
+<title>IT Soluce ERP — Marketing</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,24 +155,65 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* TABLEAU */
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.table{width:100%;border-collapse:collapse;}
-.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
-.empty{padding:60px 24px;text-align:center;}
-/* GARANTIE BADGES */
-.gar-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;white-space:nowrap;}
-.gar-ok{background:rgba(52,211,153,0.13);color:#16a34a;}
-.gar-expire{background:rgba(248,113,113,0.13);color:#dc2626;}
-.gar-dot{width:7px;height:7px;border-radius:50%;}
-.gar-ok .gar-dot{background:#16a34a;}
-.gar-expire .gar-dot{background:#dc2626;}
-.gar-bar{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:5px;width:120px;}
-.gar-bar-fill{height:100%;border-radius:99px;transition:width .3s;}
+/* MARKETING — CALENDRIER ÉDITORIAL */
+.mk-toolbar{display:flex;align-items:center;gap:12px;padding:12px 24px;flex-wrap:wrap;}
+.mk-nav{display:flex;align-items:center;gap:4px;}
+.mk-navbtn{width:30px;height:30px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.mk-navbtn:hover{color:var(--t1);border-color:var(--a);}
+.mk-navbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.mk-title{font-size:15px;font-weight:600;color:var(--t1);min-width:170px;text-transform:capitalize;}
+.mk-today{padding:6px 12px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;}
+.mk-today:hover{color:var(--t1);}
+.mk-switch{display:flex;background:var(--bg3);border:1px solid var(--ln2);border-radius:7px;padding:2px;margin-left:auto;}
+.mk-switch button{padding:5px 14px;border:none;background:none;color:var(--t3);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border-radius:5px;transition:all .12s;}
+.mk-switch button.on{background:var(--a);color:#fff;}
+/* GRILLE MOIS */
+.mk-month{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow:hidden;}
+.mk-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px;}
+.mk-wd{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:6px 0;}
+.mk-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:1px;background:var(--ln);border:1px solid var(--ln);border-radius:8px;overflow:hidden;}
+.mk-cell{background:var(--bg2);padding:5px 6px;min-height:80px;cursor:pointer;transition:background .1s;overflow:hidden;display:flex;flex-direction:column;}
+.mk-cell:hover{background:var(--bg3);}
+.mk-cell.other{background:var(--bg);opacity:.5;}
+.mk-cell.today{background:var(--ad);}
+.mk-daynum{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:3px;}
+.mk-cell.today .mk-daynum{color:var(--a);}
+.mk-evt{font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#fff;font-weight:500;}
+.mk-more{font-size:9px;color:var(--t3);font-weight:500;}
+/* TYPES DE CONTENU COULEURS */
+.ty-astuce{background:#3b82f6;}
+.ty-avantapres{background:#10b981;}
+.ty-casclient{background:#8b5cf6;}
+.ty-promo{background:#ef4444;}
+.ty-actu{background:#f59e0b;}
+.ty-autre{background:#6b7280;}
+/* VUE LISTE PAR STATUT (KANBAN) */
+.mk-board{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:8px 24px 24px;overflow-y:auto;align-items:start;}
+.mk-col{background:var(--bg);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
+.mk-col-head{padding:10px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--ln);position:sticky;top:0;background:var(--bg);z-index:2;}
+.mk-col-count{font-size:10px;font-weight:600;padding:1px 7px;border-radius:99px;background:var(--bg4);color:var(--t2);}
+.mk-col-body{padding:8px;display:flex;flex-direction:column;gap:8px;min-height:60px;}
+.mk-card{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:10px 11px;cursor:pointer;transition:all .12s;}
+.mk-card:hover{border-color:var(--a);}
+.mk-card-top{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.mk-type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.mk-card-type{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;}
+.mk-card-titre{font-size:12px;font-weight:500;color:var(--t1);line-height:1.3;margin-bottom:6px;}
+.mk-card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.mk-card-date{font-size:10px;color:var(--t3);}
+.mk-reseaux{display:flex;gap:3px;}
+.mk-rs{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;}
+.rs-instagram{background:#E1306C;}
+.rs-facebook{background:#1877F2;}
+.rs-tiktok{background:#000;border:1px solid var(--ln2);}
+.rs-linkedin{background:#0A66C2;}
+.rs-google{background:#4285F4;}
+.mk-col-empty{padding:16px;text-align:center;font-size:11px;color:var(--t3);}
+/* TAGS RESEAUX dans le formulaire */
+.rs-pick{display:flex;flex-wrap:wrap;gap:6px;}
+.rs-chip{padding:6px 11px;border:1px solid var(--ln2);border-radius:99px;font-size:12px;color:var(--t2);cursor:pointer;user-select:none;transition:all .12s;background:var(--bg2);}
+.rs-chip.on{background:var(--a);color:#fff;border-color:var(--a);}
+.mk-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;color:#fff;}
 </style>
 </head>
 <body>
@@ -184,7 +225,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Garanties</span>
+    <span>Marketing</span>
   </div>
   <div class="tb-r">
     <div class="notif-wrap">
@@ -209,7 +250,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="ngl">Opérations</div>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
-      <a href="/admin/garanties.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
+      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
       <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
       <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs</a>
     </div>
@@ -224,7 +265,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="ng">
       <div class="ngl">Communication</div>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
-      <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
+      <a href="/admin/marketing.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
     </div>
     <div class="nhr"></div>
     <div class="ng">
@@ -238,28 +279,65 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
-        <div class="ph-left"><h1>Garanties</h1><p id="ph-sub">— réparations sous garantie</p></div>
+        <div class="ph-left"><h1>Marketing</h1><p id="ph-sub">— calendrier éditorial</p></div>
+        <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvelle publication</button>
       </div>
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Sous garantie</div><div class="kpi-val" id="k-actives" style="color:var(--ok)">—</div><div class="kpi-sub">réparations couvertes</div></div>
-        <div class="kpi"><div class="kpi-label">Expire bientôt</div><div class="kpi-val" id="k-bientot" style="color:var(--w)">—</div><div class="kpi-sub">dans moins de 15 jours</div></div>
-        <div class="kpi"><div class="kpi-label">Expirées</div><div class="kpi-val" id="k-expirees" style="color:var(--t3)">—</div><div class="kpi-sub">garantie terminée</div></div>
-        <div class="kpi"><div class="kpi-label">Durée garantie</div><div class="kpi-val">3<span style="font-size:13px;color:var(--t3);font-weight:400;"> mois</span></div><div class="kpi-sub">après réparation</div></div>
+      <div class="mk-toolbar">
+        <div class="mk-nav" id="monthNav">
+          <button class="mk-navbtn" onclick="navCal(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="mk-navbtn" onclick="navCal(1)"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <button class="mk-today" id="todayBtn" onclick="goToday()">Aujourd'hui</button>
+        <div class="mk-title" id="calTitle">—</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-left:8px;flex-wrap:wrap;">
+          <span class="mk-badge ty-astuce">Astuce</span>
+          <span class="mk-badge ty-avantapres">Avant/Après</span>
+          <span class="mk-badge ty-casclient">Cas client</span>
+          <span class="mk-badge ty-promo">Promo</span>
+          <span class="mk-badge ty-actu">Actu tech</span>
+        </div>
+        <div class="mk-switch">
+          <button id="btnMonth" class="on" onclick="setView('month')">Calendrier</button>
+          <button id="btnBoard" onclick="setView('board')">Tableau</button>
+        </div>
       </div>
-      <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="Nom client, REP-XXXX, appareil..." oninput="renderTable()"/></div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      <div class="mk-month" id="viewMonth">
+        <div class="mk-weekdays">
+          <div class="mk-wd">Lun</div><div class="mk-wd">Mar</div><div class="mk-wd">Mer</div><div class="mk-wd">Jeu</div><div class="mk-wd">Ven</div><div class="mk-wd">Sam</div><div class="mk-wd">Dim</div>
+        </div>
+        <div class="mk-grid" id="calGrid"></div>
       </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:90px;">N° suivi</th><th>Client</th><th>Appareil</th><th>Fin réparation</th><th>Expire le</th><th>Statut garantie</th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🛡️</div><div style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;">Aucune réparation terminée</div><div style="font-size:12px;color:var(--t3);">Les garanties apparaîtront ici une fois des réparations passées en « prêt » ou « rendu ».</div></div>
-      </div>
+      <div class="mk-board" id="viewBoard" style="display:none;"></div>
     </div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouvelle publication</span><button class="panel-close" onclick="closePanel()">×</button></div>
+  <div class="panel-body">
+    <input type="hidden" id="f-id"/>
+    <div class="fg"><label>Titre / Idée *</label><input type="text" id="f-titre" placeholder="ex : Astuce — nettoyer son PC lent"/></div>
+    <div class="fg-row">
+      <div class="fg"><label>Type de contenu</label><select id="f-type"><option value="astuce">Astuce</option><option value="avantapres">Avant/Après</option><option value="casclient">Cas client</option><option value="promo">Promo</option><option value="actu">Actu tech</option><option value="autre">Autre</option></select></div>
+      <div class="fg"><label>Statut</label><select id="f-statut"><option value="idee">Idée</option><option value="aredige">À rédiger</option><option value="prete">Prête</option><option value="publiee">Publiée</option></select></div>
+    </div>
+    <div class="fg"><label>Date prévue</label><input type="date" id="f-date"/></div>
+    <div class="fg"><label>Réseaux</label><div class="rs-pick" id="rsPick">
+      <span class="rs-chip" data-rs="instagram" onclick="toggleRs(this)">Instagram</span>
+      <span class="rs-chip" data-rs="facebook" onclick="toggleRs(this)">Facebook</span>
+      <span class="rs-chip" data-rs="tiktok" onclick="toggleRs(this)">TikTok</span>
+      <span class="rs-chip" data-rs="linkedin" onclick="toggleRs(this)">LinkedIn</span>
+      <span class="rs-chip" data-rs="google" onclick="toggleRs(this)">Google Business</span>
+    </div></div>
+    <div class="fg"><label>Contenu / Légende</label><textarea id="f-contenu" rows="5" placeholder="Le texte de la publication..."></textarea></div>
+    <div class="fg"><label>Hashtags</label><textarea id="f-hashtags" rows="2" placeholder="#reparation #tubize #brabantwallon"></textarea></div>
+    <div class="fg"><label>Notes</label><textarea id="f-notes" rows="2" placeholder="Visuel à prévoir, idées..."></textarea></div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-secondary" id="delBtn" onclick="deletePub()" style="display:none;">Supprimer</button>
+    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
+    <button class="btn btn-primary" onclick="savePub()" style="flex:2;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -272,6 +350,9 @@ setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('
 const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
 if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
+function toggleRs(el){el.classList.toggle('on');}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
 </script>
 <script>
 window.toggleNotifs=function(e){
@@ -290,7 +371,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
-const GARANTIE_MOIS=3
 
 function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
@@ -370,87 +450,194 @@ loadNotifs();
 
 
 
-let allGaranties=[]
-let activeFilter='Toutes'
-
-// Calcule les infos de garantie d'une réparation
-function calcGarantie(r){
-  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
-  const expire=new Date(debut)
-  expire.setMonth(expire.getMonth()+GARANTIE_MOIS)
-  const now=new Date()
-  const joursRestants=Math.ceil((expire-now)/(1000*60*60*24))
-  const dureeTotale=GARANTIE_MOIS*30
-  const pct=Math.max(0,Math.min(100,(joursRestants/dureeTotale)*100))
-  return {debut,expire,joursRestants,sousGarantie:joursRestants>0,pct}
-}
+let allPubs=[]
+let currentDate=new Date()
+let currentView='month'
+const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+const TYPE_LABEL={astuce:'Astuce',avantapres:'Avant/Après',casclient:'Cas client',promo:'Promo',actu:'Actu tech',autre:'Autre'}
+const TYPE_COL={astuce:'#3b82f6',avantapres:'#10b981',casclient:'#8b5cf6',promo:'#ef4444',actu:'#f59e0b',autre:'#6b7280'}
+const STATUT_LABEL={idee:'Idée',aredige:'À rédiger',prete:'Prête',publiee:'Publiée'}
+const RS_LABEL={instagram:'IG',facebook:'FB',tiktok:'TT',linkedin:'IN',google:'GB'}
 
 async function load(){
-  const {data,error}=await sb.from('reparations').select('*').in('statut',['pret','rendu']).order('date_fin',{ascending:false,nullsFirst:false})
+  const {data,error}=await sb.from('publications').select('*').order('date_prevue',{ascending:true,nullsFirst:false})
   if(error){showError(error.message);return}
-  allGaranties=(data||[]).map(r=>({...r,_gar:calcGarantie(r)}))
-  renderAll()
+  allPubs=data||[]
+  render()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
-
-function updateKPIs(){
-  const actives=allGaranties.filter(g=>g._gar.sousGarantie)
-  const bientot=actives.filter(g=>g._gar.joursRestants<=15)
-  const expirees=allGaranties.filter(g=>!g._gar.sousGarantie)
-  document.getElementById('k-actives').textContent=actives.length
-  document.getElementById('k-bientot').textContent=bientot.length
-  document.getElementById('k-expirees').textContent=expirees.length
-  document.getElementById('ph-sub').textContent=`${allGaranties.length} réparation${allGaranties.length>1?'s':''} terminée${allGaranties.length>1?'s':''} · ${actives.length} sous garantie`
+function render(){
+  document.getElementById('ph-sub').textContent=`${allPubs.length} publication${allPubs.length>1?'s':''}`
+  if(currentView==='month')renderMonth()
+  else renderBoard()
 }
 
-function renderFilters(){
-  const all=['Toutes','Sous garantie','Expire bientôt','Expirées']
-  document.getElementById('filterBtns').innerHTML=all.map(s=>{
-    const a=activeFilter===s
-    return`<button class="filter-btn ${a?'active':''}" onclick="setFilter('${s}')">${s}</button>`
-  }).join('')
+function sameDay(d1,d2){return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
+function pubsOfDay(date){
+  return allPubs.filter(p=>p.date_prevue&&sameDay(new Date(p.date_prevue+'T00:00:00'),date))
 }
-window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
 
-function renderTable(){
-  const q=document.getElementById('searchInput').value.toLowerCase().trim()
-  let rows=allGaranties.filter(g=>{
-    let mf=true
-    if(activeFilter==='Sous garantie')mf=g._gar.sousGarantie
-    else if(activeFilter==='Expirées')mf=!g._gar.sousGarantie
-    else if(activeFilter==='Expire bientôt')mf=g._gar.sousGarantie&&g._gar.joursRestants<=15
-    const ms=!q||[g.numero,g.client_nom,g.appareil,g.marque,g.modele].some(v=>v&&String(v).toLowerCase().includes(q))
-    return mf&&ms
+function renderMonth(){
+  document.getElementById('viewMonth').style.display='flex'
+  document.getElementById('viewBoard').style.display='none'
+  document.getElementById('monthNav').style.display='flex'
+  document.getElementById('todayBtn').style.display='block'
+  const y=currentDate.getFullYear(),m=currentDate.getMonth()
+  document.getElementById('calTitle').textContent=`${MOIS[m]} ${y}`
+  const first=new Date(y,m,1)
+  let startDay=first.getDay()-1; if(startDay<0)startDay=6
+  const gridStart=new Date(y,m,1-startDay)
+  const today=new Date()
+  let html=''
+  for(let i=0;i<42;i++){
+    const d=new Date(gridStart);d.setDate(gridStart.getDate()+i)
+    const other=d.getMonth()!==m
+    const isToday=sameDay(d,today)
+    const evts=pubsOfDay(d)
+    const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+    let evtHtml=evts.slice(0,3).map(e=>{
+      return `<div class="mk-evt ty-${e.type}" onclick="event.stopPropagation();editPub(${e.id})" style="${e.statut==='publiee'?'opacity:.55;':''}">${e.titre}</div>`
+    }).join('')
+    if(evts.length>3)evtHtml+=`<div class="mk-more">+${evts.length-3} autre(s)</div>`
+    html+=`<div class="mk-cell ${other?'other':''} ${isToday?'today':''}" onclick="openPanelDate('${dateStr}')"><div class="mk-daynum">${d.getDate()}</div>${evtHtml}</div>`
+  }
+  document.getElementById('calGrid').innerHTML=html
+}
+
+function renderBoard(){
+  document.getElementById('viewMonth').style.display='none'
+  document.getElementById('viewBoard').style.display='grid'
+  document.getElementById('monthNav').style.display='none'
+  document.getElementById('todayBtn').style.display='none'
+  document.getElementById('calTitle').textContent='Toutes les publications'
+  const cols=[['idee','Idées'],['aredige','À rédiger'],['prete','Prêtes'],['publiee','Publiées']]
+  let html=''
+  cols.forEach(([key,label])=>{
+    const items=allPubs.filter(p=>(p.statut||'idee')===key)
+    const cards=items.length===0?`<div class="mk-col-empty">Aucune</div>`:items.map(renderCard).join('')
+    html+=`<div class="mk-col"><div class="mk-col-head">${label}<span class="mk-col-count">${items.length}</span></div><div class="mk-col-body">${cards}</div></div>`
   })
-  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
-  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  tb.innerHTML=rows.map(g=>{
-    const gar=g._gar
-    const appareil=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
-    const dDebut=gar.debut.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    const dExpire=gar.expire.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    let badge,barColor
-    if(gar.sousGarantie){
-      const urgent=gar.joursRestants<=15
-      badge=`<span class="gar-badge gar-ok"><span class="gar-dot"></span>Sous garantie · ${gar.joursRestants} j</span>`
-      barColor=urgent?'#fb923c':'#16a34a'
-    } else {
-      badge=`<span class="gar-badge gar-expire"><span class="gar-dot"></span>Expirée · depuis ${Math.abs(gar.joursRestants)} j</span>`
-      barColor='#dc2626'
-    }
-    return`<tr>
-      <td><span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${g.numero||'—'}</span></td>
-      <td><div style="font-weight:500;">${g.client_nom||'—'}</div><div style="font-size:11px;color:var(--t3);">${g.client_telephone||g.client_email||''}</div></td>
-      <td>${appareil}</td>
-      <td style="color:var(--t3);white-space:nowrap;">${dDebut}</td>
-      <td style="white-space:nowrap;font-weight:500;">${dExpire}</td>
-      <td>${badge}<div class="gar-bar"><div class="gar-bar-fill" style="width:${gar.pct}%;background:${barColor};"></div></div></td>
-    </tr>`
-  }).join('')
+  document.getElementById('viewBoard').innerHTML=html
+}
+
+function renderCard(p){
+  const rs=(p.reseaux||[]).map(r=>`<span class="mk-rs rs-${r}">${RS_LABEL[r]||'?'}</span>`).join('')
+  const dStr=p.date_prevue?new Date(p.date_prevue+'T00:00:00').toLocaleDateString('fr-BE',{day:'numeric',month:'short'}):'Pas de date'
+  return `<div class="mk-card" onclick="editPub(${p.id})">
+    <div class="mk-card-top"><span class="mk-type-dot" style="background:${TYPE_COL[p.type]||'#6b7280'}"></span><span class="mk-card-type">${TYPE_LABEL[p.type]||p.type}</span></div>
+    <div class="mk-card-titre">${p.titre}</div>
+    <div class="mk-card-foot"><span class="mk-card-date">📅 ${dStr}</span><div class="mk-reseaux">${rs}</div></div>
+  </div>`
+}
+
+window.setView=function(v){
+  currentView=v
+  document.getElementById('btnMonth').classList.toggle('on',v==='month')
+  document.getElementById('btnBoard').classList.toggle('on',v==='board')
+  render()
+}
+window.navCal=function(dir){currentDate.setMonth(currentDate.getMonth()+dir);currentDate=new Date(currentDate);render()}
+window.goToday=function(){currentDate=new Date();render()}
+
+// ─── CRUD ───
+function getReseaux(){return [...document.querySelectorAll('#rsPick .rs-chip.on')].map(c=>c.dataset.rs)}
+function setReseaux(arr){document.querySelectorAll('#rsPick .rs-chip').forEach(c=>{c.classList.toggle('on',(arr||[]).includes(c.dataset.rs))})}
+function resetForm(){
+  document.getElementById('f-id').value=''
+  document.getElementById('f-titre').value=''
+  document.getElementById('f-type').value='astuce'
+  document.getElementById('f-statut').value='idee'
+  document.getElementById('f-date').value=''
+  document.getElementById('f-contenu').value=''
+  document.getElementById('f-hashtags').value=''
+  document.getElementById('f-notes').value=''
+  setReseaux([])
+}
+
+window.openPanel=function(){
+  resetForm()
+  document.getElementById('panelTitle').textContent='Nouvelle publication'
+  document.getElementById('saveBtn').textContent='Enregistrer'
+  document.getElementById('delBtn').style.display='none'
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+  document.getElementById('f-titre').focus()
+}
+window.openPanelDate=function(dateStr){
+  resetForm()
+  document.getElementById('panelTitle').textContent='Nouvelle publication'
+  document.getElementById('saveBtn').textContent='Enregistrer'
+  document.getElementById('delBtn').style.display='none'
+  document.getElementById('f-date').value=dateStr
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+  document.getElementById('f-titre').focus()
+}
+window.editPub=function(id){
+  const p=allPubs.find(x=>x.id===id)
+  if(!p)return
+  resetForm()
+  document.getElementById('panelTitle').textContent='Modifier la publication'
+  document.getElementById('saveBtn').textContent='Mettre à jour'
+  document.getElementById('delBtn').style.display='block'
+  document.getElementById('f-id').value=p.id
+  document.getElementById('f-titre').value=p.titre||''
+  document.getElementById('f-type').value=p.type||'astuce'
+  document.getElementById('f-statut').value=p.statut||'idee'
+  document.getElementById('f-date').value=p.date_prevue||''
+  document.getElementById('f-contenu').value=p.contenu||''
+  document.getElementById('f-hashtags').value=p.hashtags||''
+  document.getElementById('f-notes').value=p.notes||''
+  setReseaux(p.reseaux||[])
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+}
+
+window.savePub=async function(){
+  const id=document.getElementById('f-id').value
+  const titre=document.getElementById('f-titre').value.trim()
+  if(!titre){showToast('Le titre est requis','err');return}
+  const payload={
+    titre,
+    type:document.getElementById('f-type').value,
+    statut:document.getElementById('f-statut').value,
+    date_prevue:document.getElementById('f-date').value||null,
+    reseaux:getReseaux(),
+    contenu:document.getElementById('f-contenu').value.trim()||null,
+    hashtags:document.getElementById('f-hashtags').value.trim()||null,
+    notes:document.getElementById('f-notes').value.trim()||null,
+    updated_at:new Date().toISOString()
+  }
+  document.getElementById('saveBtn').disabled=true
+  let error
+  if(id){
+    const res=await sb.from('publications').update(payload).eq('id',id)
+    error=res.error
+    if(!error){const i=allPubs.findIndex(p=>p.id===Number(id));if(i>=0)allPubs[i]={...allPubs[i],...payload,id:Number(id)}}
+  } else {
+    const res=await sb.from('publications').insert(payload).select().single()
+    error=res.error
+    if(!error&&res.data)allPubs.push(res.data)
+  }
+  document.getElementById('saveBtn').disabled=false
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  closePanel()
+  render()
+  showToast(id?'Publication mise à jour ✓':'Publication créée ✓','ok')
+}
+
+window.deletePub=async function(){
+  const id=document.getElementById('f-id').value
+  if(!id)return
+  if(!confirm('Supprimer cette publication ?'))return
+  const {error}=await sb.from('publications').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  allPubs=allPubs.filter(p=>p.id!==Number(id))
+  closePanel()
+  render()
+  showToast('Publication supprimée','ok')
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
