@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce — ERP</title>
+<title>IT Soluce ERP — Dashboard</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -200,11 +200,92 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .notif-empty{padding:36px 14px;text-align:center;color:var(--t3);font-size:12px;}
 .notif-empty-ico{font-size:24px;margin-bottom:8px;opacity:.4;}
 
+
+/* DASHBOARD REFONTE */
+.dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px 8px;}
+.dk{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:15px 16px;position:relative;overflow:hidden;}
+.dk-label{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:7px;}
+.dk-val{font-size:25px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
+.dk-sub{font-size:11px;color:var(--t3);margin-top:6px;}
+.dk-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:8px 24px 24px;}
+.dash-col{display:flex;flex-direction:column;gap:14px;}
+.dcard{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
+.dcard-head{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--ln);}
+.dcard-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px;}
+.dcard-title .ic{width:16px;height:16px;stroke:var(--t2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.dcard-link{font-size:11px;color:var(--a);text-decoration:none;font-weight:500;}
+.dcard-link:hover{text-decoration:underline;}
+.dcard-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg4);color:var(--t2);}
+.dcard-body{padding:5px;}
+.drow{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:7px;cursor:pointer;text-decoration:none;transition:background .1s;}
+.drow:hover{background:var(--bg3);}
+.drow-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.drow-main{flex:1;min-width:0;}
+.drow-t{font-size:12.5px;color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drow-s{font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drow-r{font-size:11px;font-weight:600;flex-shrink:0;text-align:right;}
+.dtag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap;}
+.dt-blue{background:rgba(59,130,246,.13);color:#2563eb;}
+.dt-green{background:rgba(52,211,153,.13);color:#059669;}
+.dt-orange{background:rgba(251,146,60,.13);color:#ea580c;}
+.dt-red{background:rgba(248,113,113,.13);color:#dc2626;}
+.dt-gray{background:var(--bg4);color:var(--t2);}
+.dt-purple{background:rgba(139,92,246,.13);color:#7c3aed;}
+.dcard-empty{padding:20px 15px;text-align:center;font-size:12px;color:var(--t3);}
+.dash-greet{padding:18px 24px 4px;}
+.dash-greet h1{font-size:20px;font-weight:600;color:var(--t1);letter-spacing:-.4px;}
+.dash-greet p{font-size:13px;color:var(--t3);margin-top:3px;}
+@media(max-width:1000px){.dash-kpis{grid-template-columns:1fr 1fr;}.dash-grid{grid-template-columns:1fr;}}
+
+/* DASHBOARD REFONTE */
+.dash-hello{padding:20px 24px 4px;}
+.dash-hello h1{font-size:20px;font-weight:600;color:var(--t1);letter-spacing:-.4px;}
+.dash-hello p{font-size:13px;color:var(--t3);margin-top:3px;text-transform:capitalize;}
+.dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px;}
+.dk{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:15px 16px;position:relative;overflow:hidden;}
+.dk-label{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:7px;}
+.dk-val{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
+.dk-sub{font-size:11px;color:var(--t3);margin-top:6px;}
+.dk-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:8px 24px 24px;align-items:start;}
+.dcard{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
+.dcard-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--ln);}
+.dcard-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px;}
+.dcard-title .ico{width:16px;height:16px;stroke:var(--t2);fill:none;stroke-width:2;}
+.dcard-link{font-size:11px;color:var(--a);text-decoration:none;font-weight:500;}
+.dcard-link:hover{text-decoration:underline;}
+.dcard-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg4);color:var(--t2);}
+.dcard-body{max-height:280px;overflow-y:auto;}
+.drow{display:flex;align-items:center;gap:11px;padding:10px 16px;border-bottom:1px solid var(--ln);cursor:pointer;transition:background .1s;text-decoration:none;}
+.drow:last-child{border-bottom:none;}
+.drow:hover{background:var(--bg3);}
+.drow-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.drow-main{flex:1;min-width:0;}
+.drow-t{font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drow-s{font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drow-r{text-align:right;flex-shrink:0;}
+.drow-amount{font-size:13px;font-weight:600;color:var(--t1);}
+.dtag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap;}
+.dtag-blue{background:rgba(59,130,246,.13);color:#3b82f6;}
+.dtag-green{background:rgba(16,185,129,.13);color:#10b981;}
+.dtag-orange{background:rgba(251,146,60,.13);color:#f59e0b;}
+.dtag-red{background:rgba(248,113,113,.13);color:#ef4444;}
+.dtag-violet{background:rgba(139,92,246,.13);color:#8b5cf6;}
+.dtag-gray{background:var(--bg4);color:var(--t2);}
+.dnum{font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:1px 6px;border-radius:4px;}
+.dempty{padding:22px 16px;text-align:center;font-size:12px;color:var(--t3);}
+.dempty .ico{font-size:20px;display:block;margin-bottom:6px;opacity:.4;}
+.dcard.alert{border-color:rgba(248,113,113,.3);}
+.dcard.warn{border-color:rgba(251,146,60,.3);}
+.drow-check{width:16px;height:16px;border:2px solid var(--ln2);border-radius:4px;flex-shrink:0;}
+.gbar{height:4px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:4px;width:90px;}
+.gbar-f{height:100%;border-radius:99px;}
+@media(max-width:1000px){.dash-kpis{grid-template-columns:1fr 1fr;}.dash-grid{grid-template-columns:1fr;}}
+
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
-
 <header class="topbar">
   <a href="/admin/dashboard.html" class="logo">
     <span class="logo-m">IT</span><span class="logo-sep"></span><span class="logo-s">SOLUCE</span>
@@ -245,7 +326,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="bout" onclick="doLogout()">Quitter</button>
   </div>
 </header>
-
 <div class="layout">
   <aside class="sidebar">
     <div class="ng">
@@ -282,59 +362,52 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
     <div class="sf">IT Soluce ERP · v1.0</div>
   </aside>
-
-  <main class="content">
+  <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
-    <div class="page" id="pg" style="display:none;"></div>
-  </main>
+    <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow-y:auto;">
+      <div class="dash-hello">
+        <h1 id="hello">Bonjour Linton</h1>
+        <p id="helloDate">—</p>
+      </div>
+      <div class="dash-kpis" id="kpis"></div>
+      <div class="dash-grid" id="grid"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-function setAccent(c,d,el){
-  document.documentElement.style.setProperty('--a',c)
-  document.documentElement.style.setProperty('--ad',d)
-  localStorage.setItem('erp-a',c)
-  localStorage.setItem('erp-d',d)
-  document.querySelectorAll('.tdot').forEach(e=>e.classList.remove('on'))
-  if(el) el.classList.add('on')
-  if(window._charts) window._charts.forEach(ch=>{
-    if(ch.data&&ch.data.datasets) ch.data.datasets.forEach(ds=>{
-      if(Array.isArray(ds.backgroundColor)) ds.backgroundColor=ds.backgroundColor.map(()=>d)
-      else ds.backgroundColor=d
-      ds.borderColor=c
-    })
-    ch.update()
-  })
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
+const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
+const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
+if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
+function showToast(msg,type){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
+function soon(){showToast('Bientôt disponible','ok');}
+</script>
+<script>
+window.toggleNotifs=function(e){
+  e.stopPropagation();
+  const p=document.getElementById('notifPanel');
+  p.classList.toggle('open');
 }
-function applyMode(m){
-  const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
-  document.documentElement.setAttribute('data-mode',e)
-  const lv=e==='light'
-  const v=(a,b)=>lv?a:b
-  document.documentElement.style.setProperty('--bg',   v('#f8f8f8','#0c0d0f'))
-  document.documentElement.style.setProperty('--bg2',  v('#ffffff','#111214'))
-  document.documentElement.style.setProperty('--bg3',  v('#f2f2f4','#18191c'))
-  document.documentElement.style.setProperty('--bg4',  v('#eaeaec','#1f2023'))
-  document.documentElement.style.setProperty('--ln',   v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
-  document.documentElement.style.setProperty('--ln2',  v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
-  document.documentElement.style.setProperty('--t1',   v('#111114','#e8e8e8'))
-  document.documentElement.style.setProperty('--t2',   v('#52525b','#8a8f98'))
-  document.documentElement.style.setProperty('--t3',   v('#a1a1aa','#4b5059'))
-  if(window._charts) window._charts.forEach(ch=>{ch.options.scales&&Object.values(ch.options.scales).forEach(s=>{s.ticks&&(s.ticks.color=v('#a1a1aa','#4b5059'));s.grid&&(s.grid.color=v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))});ch.update()})
+document.addEventListener('click',function(e){
+  const p=document.getElementById('notifPanel');
+  if(p&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
+});
+</script>
+
+
+<script>
+window.toggleNotifs=function(e){
+  e.stopPropagation();
+  const p=document.getElementById('notifPanel');
+  p.classList.toggle('open');
 }
-function setMode(m){
-  localStorage.setItem('erp-m',m)
-  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m))
-  applyMode(m)
-}
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d')
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd)}
-const sm=localStorage.getItem('erp-m')||'auto'
-document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
-applyMode(sm)
-setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
-window.soon=()=>{}
-window._charts=[]
+document.addEventListener('click',function(e){
+  const p=document.getElementById('notifPanel');
+  if(p&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
+});
 </script>
 
 <script type="module">
@@ -343,7 +416,13 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
+try {
+const {data:{session}}=await sb.auth.getSession()
+if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+document.getElementById('uEmail').textContent=session.user.email
+document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 // ── SYSTÈME DE NOTIFICATIONS ──
 async function loadNotifs(){
   try {
@@ -413,320 +492,206 @@ window.markAllRead=async function(){
 
 loadNotifs();
 
-const ldr=document.getElementById('ldr')
-const pg=document.getElementById('pg')
 
-function show(html){
-  ldr.style.display='none'
-  pg.innerHTML=html
-  pg.style.display='block'
-}
 
-function showError(msg){
-  ldr.style.display='none'
-  pg.innerHTML=`<div style="padding:60px;text-align:center;">
-    <div style="font-size:28px;margin-bottom:12px;">⚠️</div>
-    <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:8px;">Erreur de chargement</div>
-    <div style="font-size:12px;color:var(--t3);margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;">${msg}</div>
-    <button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;">Réessayer</button>
-  </div>`
-  pg.style.display='block'
-}
+// ─── SALUTATION ───
+const now=new Date()
+const h=now.getHours()
+const salut=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir'
+document.getElementById('hello').textContent=`${salut} Linton`
+document.getElementById('helloDate').textContent=now.toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
 
-// Auth
-let session
-try {
-  const res=await sb.auth.getSession()
-  session=res.data.session
-} catch(e) { showError('Impossible de vérifier la session. Vérifiez votre connexion.'); throw e }
-if(!session){ window.location.href='/admin/login.html'; throw new Error('No session') }
+function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
+const today=startOfDay(now)
 
-const email=session.user.email
-document.getElementById('uEmail').textContent=email
-document.getElementById('uAv').textContent=email[0].toUpperCase()
+// ─── CHARGEMENT PARALLÈLE DE TOUTES LES DONNÉES ───
+const [rRep,rFac,rDev,rRdv,rTac,rStock,rCharges]=await Promise.all([
+  sb.from('reparations').select('*'),
+  sb.from('factures').select('*'),
+  sb.from('devis').select('*'),
+  sb.from('rendezvous').select('*'),
+  sb.from('taches').select('*'),
+  sb.from('stock').select('*'),
+  sb.from('charges').select('*')
+])
+const reps=rRep.data||[]
+const factures=rFac.data||[]
+const devis=rDev.data||[]
+const rdvs=rRdv.data||[]
+const taches=rTac.data||[]
+const stock=rStock.data||[]
+const charges=rCharges.data||[]
 
-// Charger toutes les données
-let stock=[],reps=[],fours=[],tasks=[],charges=[]
-try {
-  const [r1,r2,r3,r4,r5]=await Promise.all([
-    sb.from('stock').select('*'),
-    sb.from('reparations').select('*'),
-    sb.from('fournisseurs').select('*'),
-    sb.from('taches').select('*').order('created_at',{ascending:false}),
-    sb.from('charges').select('*')
-  ])
-  stock=r1.data||[]; reps=r2.data||[]; fours=r3.data||[]; tasks=r4.data||[]; charges=r5.data||[]
-} catch(e) { showError('Impossible de charger les données Supabase : '+e.message); throw e }
+// ─── CALCULS KPIs ───
+// CA encaissé ce mois (factures payées ce mois)
+const facturesPayees=factures.filter(f=>f.statut==='payee')
+const caMonth=facturesPayees.filter(f=>{const d=new Date(f.date_paiement||f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reduce((a,f)=>a+Number(f.total||0),0)
 
-// Calcul des charges mensuelles (somme des charges actives ramenées au mois)
-function chargeToMensuel(c){const m=Number(c.montant)||0;if(c.frequence==='annuelle')return m/12;if(c.frequence==='trimestrielle')return m/3;if(c.frequence==='ponctuelle')return 0;return m;}
-const chargesMensuelles=charges.filter(c=>c.actif!==false).reduce((a,c)=>a+chargeToMensuel(c),0)
+// Charges mensuelles (normalisées)
+const chargesMensuelles=charges.filter(c=>c.actif!==false).reduce((a,c)=>{
+  const m=Number(c.montant||0)
+  if(c.frequence==='annuelle')return a+m/12
+  if(c.frequence==='trimestrielle')return a+m/3
+  if(c.frequence==='ponctuelle')return a
+  return a+m
+},0)
 
-// Calculs
-const totalStock=stock.length
-const alrts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte))
-const valeurStock=stock.reduce((a,p)=>a+(Number(p.quantite)*Number(p.prix_achat)),0)
-const recentStock=[...stock].sort((a,b)=>new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at)).slice(0,5)
-const repsActives=reps.filter(r=>r.statut!=='rendu'&&r.statut!=='annule')
-const caTotal=reps.reduce((a,r)=>a+Number(r.prix_final||0),0)
-const now2=new Date()
-const caMonth=reps.filter(r=>{const d=new Date(r.created_at);return d.getMonth()===now2.getMonth()&&d.getFullYear()===now2.getFullYear()}).reduce((a,r)=>a+Number(r.prix_final||0),0)
-const coutMonth=reps.filter(r=>{const d=new Date(r.created_at);return d.getMonth()===now2.getMonth()&&d.getFullYear()===now2.getFullYear()&&r.statut!=='annule'}).reduce((a,r)=>a+Number(r.cout_pieces||0),0)
-const margeMonth=caMonth-coutMonth
+// Marge réparations ce mois (prix_final - cout_pieces)
+const margeMonth=reps.filter(r=>{const d=new Date(r.date_fin||r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&['pret','rendu'].includes(r.statut)}).reduce((a,r)=>a+(Number(r.prix_final||0)-Number(r.cout_pieces||0)),0)
 const beneficeNet=margeMonth-chargesMensuelles
-const tasksPending=tasks.filter(t=>!t.faite).length
-const foursActifs=fours.filter(f=>f.actif)
-const months=[],caByMonth=[],repsCountByMonth=[]
-for(let i=5;i>=0;i--){
-  const d=new Date(now2.getFullYear(),now2.getMonth()-i,1)
-  months.push(d.toLocaleDateString('fr-BE',{month:'short'}))
-  const m=reps.filter(r=>{const rd=new Date(r.created_at);return rd.getMonth()===d.getMonth()&&rd.getFullYear()===d.getFullYear()})
-  caByMonth.push(m.reduce((a,r)=>a+Number(r.prix_final||0),0))
-  repsCountByMonth.push(m.length)
+
+// Factures à encaisser (envoyées non payées)
+const facturesImpayees=factures.filter(f=>f.statut==='envoyee')
+const montantImpaye=facturesImpayees.reduce((a,f)=>a+Number(f.total||0),0)
+// Factures en retard (échéance dépassée)
+const facturesRetard=facturesImpayees.filter(f=>f.date_echeance&&new Date(f.date_echeance)<today)
+
+// Réparations actives
+const repsActives=reps.filter(r=>!['rendu','annule'].includes(r.statut))
+
+// KPIs
+const kpis=[
+  {label:'CA encaissé ce mois',val:caMonth.toFixed(0)+' €',sub:facturesPayees.length+' facture(s) payée(s)',color:'#10b981'},
+  {label:'Bénéfice net ce mois',val:beneficeNet.toFixed(0)+' €',sub:`marge ${margeMonth.toFixed(0)}€ − charges ${chargesMensuelles.toFixed(0)}€`,color:beneficeNet>=0?'#3b82f6':'#ef4444'},
+  {label:'À encaisser',val:montantImpaye.toFixed(0)+' €',sub:facturesImpayees.length+' facture(s) en attente',color:'#f59e0b'},
+  {label:'Réparations actives',val:repsActives.length,sub:'en cours de traitement',color:'#8b5cf6'}
+]
+document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="dk"><div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div></div>`).join('')
+
+// ─── PRÉPARATION DES LISTES ───
+const STATUT_REP={recu:'Reçu',diagnostic:'Diagnostic',attente:'En attente',encours:'En cours',pret:'Prêt',rendu:'Rendu',annule:'Annulé'}
+
+// RDV à venir (futurs, non terminés, triés)
+const rdvAvenir=rdvs.filter(r=>!r.termine&&new Date(r.date_debut)>=today).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut)).slice(0,6)
+const TYPE_COL={domicile:'#3b82f6',depot:'#8b5cf6',retrait:'#10b981',autre:'#6b7280'}
+const TYPE_LBL={domicile:'Domicile',depot:'Dépôt',retrait:'Retrait',autre:'Autre'}
+
+// Tâches urgentes (actives, urgentes ou en retard)
+const tachesUrg=taches.filter(t=>!t.faite&&(t.priorite==='urgente'||(t.due_at&&startOfDay(t.due_at)<=today))).sort((a,b)=>{
+  const ra=a.priorite==='urgente'?0:1,rb=b.priorite==='urgente'?0:1
+  return ra-rb
+}).slice(0,6)
+const CAT_LBL={achat:'Achat/Stock',client:'Client',admin:'Admin',marketing:'Marketing',perso:'Perso'}
+
+// Devis en attente (envoyés, non expirés, non convertis)
+const devisAttente=devis.filter(d=>d.statut==='envoye').sort((a,b)=>new Date(b.date_emission||b.created_at)-new Date(a.date_emission||a.created_at)).slice(0,6)
+
+// Garanties qui expirent bientôt (<15j)
+const garExpire=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
+  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
+  const exp=new Date(debut);exp.setMonth(exp.getMonth()+3)
+  const j=Math.ceil((exp-now)/(1000*60*60*24))
+  return {...r,_jours:j,_exp:exp}
+}).filter(r=>r._jours>0&&r._jours<=15).sort((a,b)=>a._jours-b._jours)
+
+// Alertes stock
+const alerts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte||0))
+
+// ─── RENDU DES CARTES ───
+function emptyCard(ico,txt){return `<div class="dempty"><span class="ico">${ico}</span>${txt}</div>`}
+
+// CARTE : RDV à venir
+let cardRdv=''
+if(rdvAvenir.length===0)cardRdv=emptyCard('📅','Aucun rendez-vous à venir')
+else cardRdv=rdvAvenir.map(r=>{
+  const d=new Date(r.date_debut)
+  const dStr=d.toLocaleDateString('fr-BE',{weekday:'short',day:'numeric',month:'short'})
+  const hStr=d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
+  const sub=[r.client_nom,r.lieu].filter(Boolean).join(' · ')
+  return `<a href="/admin/planning.html" class="drow"><div class="drow-dot" style="background:${TYPE_COL[r.type]||'#6b7280'}"></div><div class="drow-main"><div class="drow-t">${r.titre}</div><div class="drow-s">${dStr} · ${hStr}${sub?' · '+sub:''}</div></div><div class="drow-r"><span class="dtag dtag-gray">${TYPE_LBL[r.type]||'Autre'}</span></div></a>`
+}).join('')
+
+// CARTE : Réparations en cours
+let cardReps=''
+if(repsActives.length===0)cardReps=emptyCard('🔧','Aucune réparation en cours')
+else cardReps=repsActives.slice(0,6).map(r=>{
+  const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+  return `<a href="/admin/reparations.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${r.client_nom||'—'} ${r.numero?`<span class="dnum">${r.numero}</span>`:''}</div><div class="drow-s">${app}</div></div><div class="drow-r"><span class="dtag dtag-blue">${STATUT_REP[r.statut]||r.statut}</span></div></a>`
+}).join('')
+
+// CARTE : Tâches urgentes
+let cardTaches=''
+if(tachesUrg.length===0)cardTaches=emptyCard('✓','Aucune tâche urgente')
+else cardTaches=tachesUrg.map(t=>{
+  const retard=t.due_at&&startOfDay(t.due_at)<today
+  const dStr=t.due_at?new Date(t.due_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'}):''
+  return `<a href="/admin/taches.html" class="drow"><div class="drow-check"></div><div class="drow-main"><div class="drow-t">${t.titre}</div><div class="drow-s">${t.categorie?CAT_LBL[t.categorie]||t.categorie:''}${dStr?(t.categorie?' · ':'')+'📅 '+dStr:''}</div></div><div class="drow-r"><span class="dtag ${t.priorite==='urgente'?'dtag-red':retard?'dtag-orange':'dtag-gray'}">${t.priorite==='urgente'?'Urgent':retard?'En retard':t.priorite}</span></div></a>`
+}).join('')
+
+// CARTE : Factures à encaisser
+let cardFac=''
+if(facturesImpayees.length===0)cardFac=emptyCard('✓','Aucune facture en attente')
+else cardFac=facturesImpayees.sort((a,b)=>new Date(a.date_emission)-new Date(b.date_emission)).slice(0,6).map(f=>{
+  const retard=f.date_echeance&&new Date(f.date_echeance)<today
+  const dStr=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
+  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${f.client_nom||'—'} <span class="dnum">${f.numero}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${Number(f.total||0).toFixed(0)} €</div></div></a>`
+}).join('')
+
+// CARTE : Devis en attente
+let cardDevis=''
+if(devisAttente.length===0)cardDevis=emptyCard('📄','Aucun devis en attente')
+else cardDevis=devisAttente.map(d=>{
+  const dStr=new Date(d.date_emission||d.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
+  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${d.client_nom||'—'} <span class="dnum">${d.numero}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(0)} €</div></div></a>`
+}).join('')
+
+// ─── ASSEMBLAGE DE LA GRILLE ───
+let grid=''
+// Colonne gauche : RDV + Réparations
+grid+='<div style="display:flex;flex-direction:column;gap:14px;">'
+grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Rendez-vous à venir</div><a href="/admin/planning.html" class="dcard-link">Planning →</a></div><div class="dcard-body">${cardRdv}</div></div>`
+grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations en cours</div><a href="/admin/reparations.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardReps}</div></div>`
+grid+='</div>'
+// Colonne droite : Factures + Devis + Tâches
+grid+='<div style="display:flex;flex-direction:column;gap:14px;">'
+grid+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${montantImpaye.toFixed(0)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
+grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis en attente</div><a href="/admin/devis.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardDevis}</div></div>`
+grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches urgentes</div><a href="/admin/taches.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardTaches}</div></div>`
+grid+='</div>'
+
+document.getElementById('grid').innerHTML=grid
+
+// ─── CARTES CONDITIONNELLES (garanties + stock) ───
+// On les ajoute en pleine largeur sous la grille si nécessaire
+let extra=''
+if(garExpire.length>0){
+  const rows=garExpire.slice(0,5).map(r=>{
+    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+    return `<a href="/admin/garanties.html" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${r.client_nom} ${r.numero?`<span class="dnum">${r.numero}</span>`:''}</div><div class="drow-s">${app}</div></div><div class="drow-r"><span class="dtag dtag-orange">Expire dans ${r._jours} j</span></div></a>`
+  }).join('')
+  extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties qui expirent bientôt</div><a href="/admin/garanties.html" class="dcard-link">Garanties →</a></div><div class="dcard-body">${rows}</div></div>`
 }
-const catCount={}; stock.forEach(p=>{catCount[p.categorie]=(catCount[p.categorie]||0)+1})
-const catLabels=Object.keys(catCount); const catVals=Object.values(catCount)
-
-// Sidebar badges
-const nbStock=document.getElementById('nb-stock')
-if(nbStock){nbStock.textContent=alrts.length||'—';nbStock.className=alrts.length?'nc w':'nc'}
-;(document.getElementById('nb-rep')||{}).textContent=repsActives.length
-;(document.getElementById('nb-actives')||{}).textContent=repsActives.length
-;(document.getElementById('nb-cli')||{}).textContent=(typeof clients!=='undefined'?clients.length:'')
-;(document.getElementById('nb-four')||{}).textContent=foursActifs.length
-;(document.getElementById('nb-task')||{}).textContent=tasksPending
-;(document.getElementById('nb-charges')||{}).textContent=charges.filter(c=>c.actif!==false).length
-
-// Insights
-const h2=new Date().getHours(); const sal=h2<12?'Bonjour':h2<18?'Bon après-midi':'Bonsoir'
-const insights=[]
-if(alrts.length>0) insights.push(`<strong>${alrts.length} pièce${alrts.length>1?'s':''}</strong> sous le seuil d'alerte — pense à réapprovisionner.`)
-if(caMonth===0) insights.push(`Aucun CA enregistré ce mois. Objectif minimal : <strong>85€</strong> (charges fixes).`)
-if(tasksPending>0) insights.push(`<strong>${tasksPending} tâche${tasksPending>1?'s':''}</strong> en attente dont certaines urgentes.`)
-if(caMonth>0&&caMonth<85) insights.push(`CA inférieur aux charges fixes (<strong>85€</strong>) ce mois — activité en déficit.`)
-
-// Calendrier dynamique
-function buildCal(){
-  const d=new Date(); const year=d.getFullYear(); const month=d.getMonth(); const today=d.getDate()
-  const first=new Date(year,month,1).getDay(); const days=new Date(year,month+1,0).getDate()
-  const start=(first===0?6:first-1)
-  let h='<div class="cd cdh">Lu</div><div class="cd cdh">Ma</div><div class="cd cdh">Me</div><div class="cd cdh">Je</div><div class="cd cdh">Ve</div><div class="cd cdh">Sa</div><div class="cd cdh">Di</div>'
-  for(let i=0;i<start;i++)h+=`<div class="cd"></div>`
-  for(let i=1;i<=days;i++)h+=`<div class="cd${i===today?' cdt':''}">${i}</div>`
-  return h
+if(alerts.length>0){
+  const rows=alerts.slice(0,5).map(p=>{
+    const rupture=Number(p.quantite)===0
+    return `<a href="/admin/stock.html" class="drow"><div class="drow-dot" style="background:${rupture?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${p.nom}</div><div class="drow-s">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="drow-r"><span class="dtag ${rupture?'dtag-red':'dtag-orange'}">${rupture?'Rupture':'Faible'}</span></div></a>`
+  }).join('')
+  extra+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alertes stock</div><a href="/admin/stock.html" class="dcard-link">Stock →</a></div><div class="dcard-body">${rows}</div></div>`
 }
-
-// Stars
-function stars(n){return[1,2,3,4,5].map(i=>`<span class="star${i>n?' off':''}">★</span>`).join('')}
-
-// HTML
-const html=`
-<div class="ph">
-  <div>
-    <div class="pt">${sal}</div>
-    <div class="pd">${new Date().toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
-  </div>
-</div>
-
-${insights.length>0?`<div class="g" style="grid-template-columns:repeat(${Math.min(insights.length,2)},1fr);margin-bottom:12px;">${insights.slice(0,2).map(i=>`<div class="insight"><div class="insight-ico">💡</div><div class="insight-text">${i}</div></div>`).join('')}</div>`:''}
-
-<div class="sh"><span class="sl">Finances</span></div>
-<div class="g g4">
-  <div class="kpi"><div class="kl">CA ce mois</div><div class="kn">${caMonth.toFixed(0)} €</div><div class="km"><span class="tag ${caMonth>=85?'tok':'tn'}">${caMonth>=85?'Seuil atteint':'objectif 85€'}</span></div></div>
-  <div class="kpi"><div class="kl">CA total</div><div class="kn">${caTotal.toFixed(0)} €</div><div class="km"><span class="tag tn">${reps.length} réparation${reps.length>1?'s':''}</span></div></div>
-  <div class="kpi"><div class="kl">Bénéfice net (mois)</div><div class="kn" style="color:${beneficeNet>=0?'var(--ok)':'var(--d)'}">${beneficeNet.toFixed(0)} €</div><div class="km"><span class="tag tn">marge ${margeMonth.toFixed(0)}€ − charges ${chargesMensuelles.toFixed(0)}€</span></div></div>
-  <div class="kpi"><div class="kl">Valeur du stock</div><div class="kn">${valeurStock.toFixed(0)} €</div><div class="km"><span class="tag tn">${totalStock} références</span>${alrts.length>0?` <span class="tag tw">${alrts.length} alerte${alrts.length>1?'s':''}</span>`:''}</div></div>
-</div>
-
-<div class="sh"><span class="sl">Opérations</span></div>
-<div class="g g4">
-  <div class="kpi"><div class="kl">Réparations actives</div><div class="kn">${repsActives.length}</div><div class="km"><span class="tag tn">en cours</span></div></div>
-  <div class="kpi"><div class="kl">Terminées ce mois</div><div class="kn">${repsCountByMonth[5]||0}</div><div class="km"><span class="tag tn">objectif 5/mois</span></div></div>
-  <div class="kpi"><div class="kl">Tâches en attente</div><div class="kn">${tasksPending}</div><div class="km"><span class="tag ${tasksPending>0?'tw':'tok'}">${tasksPending>0?'à traiter':'tout à jour'}</span></div></div>
-  <div class="kpi"><div class="kl">Fournisseurs actifs</div><div class="kn">${foursActifs.length}</div><div class="km"><span class="tag tn">${fours.length} au total</span></div></div>
-</div>
-
-<div class="sh"><span class="sl">Reports & Insights</span><span class="sa">6 derniers mois</span></div>
-<div class="g g3">
-  <div class="card" style="grid-column:span 2;"><div class="ch"><span class="ct">Chiffre d'affaires mensuel</span><span style="font-size:11px;color:var(--t3)">Total : ${caTotal.toFixed(0)}€</span></div><div class="chart-wrap" style="height:180px;"><canvas id="chartCA"></canvas></div></div>
-  <div class="card"><div class="ch"><span class="ct">Répartition stock</span><span style="font-size:11px;color:var(--t3)">${totalStock} pièces</span></div><div class="chart-wrap" style="height:180px;"><canvas id="chartStock"></canvas></div></div>
-</div>
-<div class="g g2">
-  <div class="card"><div class="ch"><span class="ct">Réparations / mois</span></div><div class="chart-wrap" style="height:140px;"><canvas id="chartReps"></canvas></div></div>
-  <div class="card"><div class="ch"><span class="ct">Niveaux de stock critiques</span></div><div class="chart-wrap" style="height:140px;"><canvas id="chartAlerts"></canvas></div></div>
-</div>
-
-<div class="sh"><span class="sl">Activité</span></div>
-<div class="g g52">
-  <div class="g" style="gap:10px;">
-    <div class="card"><div class="ch"><span class="ct">Réparations en cours</span><a href="#" class="cl">Voir →</a></div>${repsActives.length===0?`<div class="row"><div class="dot dg"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucune réparation active</div></div></div>`:repsActives.slice(0,4).map(r=>`<div class="row"><div class="dot db"></div><div class="rm"><div class="rn">${r.client_nom}</div><div class="rs">${r.appareil||'—'}</div></div><div class="rr"><span class="tag tn">${r.statut}</span></div></div>`).join('')}</div>
-    <div class="card"><div class="ch"><span class="ct">Derniers contacts</span><a href="#" class="cl">CRM →</a></div>${reps.length===0?`<div class="row"><div class="dot dg"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucun client encore</div></div></div>`:reps.slice(-4).reverse().map(r=>`<div class="row"><div class="dot db"></div><div class="rm"><div class="rn">${r.client_nom}</div><div class="rs">${r.appareil||'—'} · ${new Date(r.created_at).toLocaleDateString('fr-BE')}</div></div><div class="rr"><strong>${Number(r.prix_final||0).toFixed(0)}€</strong></div></div>`).join('')}</div>
-  </div>
-  <div class="card"><div class="ch"><span class="ct">Calendrier — ${new Date().toLocaleDateString('fr-BE',{month:'long',year:'numeric'})}</span></div><div class="cal">${buildCal()}</div></div>
-</div>
-
-<div class="sh"><span class="sl">Communication & Partenaires</span></div>
-<div class="g g3">
-  <div class="card"><div class="ch"><span class="ct">Fournisseurs</span><a href="/admin/fournisseurs.html" class="cl">Gérer →</a></div>${foursActifs.length===0?`<div class="row"><div class="rm"><div class="rn" style="color:var(--t3)">Aucun fournisseur</div></div></div>`:foursActifs.map(f=>`<div class="frow"><div class="fav">${f.nom[0]}</div><div class="fm"><div class="fn">${f.nom}</div><div class="fs">${f.categorie||'—'} · ${f.delai_livraison||'—'}</div></div><div style="text-align:right;"><div class="stars">${stars(f.note||3)}</div></div></div>`).join('')}</div>
-  <div class="card"><div class="ch"><span class="ct">Tâches prioritaires</span><span style="font-size:11px;color:var(--t3);">${tasksPending} en attente</span></div>${tasks.slice(0,7).map(t=>`<div class="task"><div class="tbox ${t.faite?'done':''}"></div><span class="ttxt ${t.faite?'done':''}">${t.titre}</span><span class="tag ${t.priorite==='urgente'?'td':t.priorite==='importante'?'tw':t.faite?'tok':'tn'}">${t.faite?'✓':t.priorite}</span></div>`).join('')}</div>
-</div>
-
-<div class="sh"><span class="sl">Surveillance & Administratif</span></div>
-<div class="g g3">
-  <div class="card"><div class="ch"><span class="ct">Alertes stock</span><a href="/admin/stock.html" class="cl">Stock →</a></div>${alrts.length===0?`<div class="row"><div class="dot dok"></div><div class="rm"><div class="rn" style="color:var(--t3)">Aucune alerte</div></div></div>`:alrts.slice(0,5).map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dd':'dw'}"></div><div class="rm"><div class="rn">${p.nom}</div><div class="rs">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="rr"><span class="tag ${Number(p.quantite)===0?'td':'tw'}">${Number(p.quantite)===0?'Rupture':'Faible'}</span></div></div>`).join('')}
-  ${recentStock.length>0?`<div class="ch" style="border-top:1px solid var(--ln);"><span class="ct">Pièces récentes</span></div>${recentStock.map(p=>`<div class="row"><div class="dot ${Number(p.quantite)===0?'dd':Number(p.quantite)<=Number(p.seuil_alerte)?'dw':'dok'}"></div><div class="rm"><div class="rn">${p.nom}</div><div class="rs">${p.categorie} · ${p.fournisseur||'—'}</div></div><div class="rr"><strong>${p.quantite}</strong><span> u.</span></div></div>`).join('')}`:''}
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Réseaux sociaux</span></div>
-    <div class="srow"><div class="sico">📸</div><div class="rm"><div class="rn">Instagram</div><div class="rs">@itsoluce.be</div></div><div class="rr"><strong>0</strong><span> abonnés</span></div></div>
-    <div class="srow"><div class="sico">🎵</div><div class="rm"><div class="rn">TikTok</div><div class="rs">@itsoluce</div></div><div class="rr"><strong>0</strong><span> abonnés</span></div></div>
-    <div class="srow"><div class="sico">💼</div><div class="rm"><div class="rn">LinkedIn</div><div class="rs">IT Soluce</div></div><div class="rr"><strong>0</strong><span> abonnés</span></div></div>
-  </div>
-  <div class="card">
-    <div class="ch"><span class="ct">Administratif</span></div>
-    <div class="row"><div class="dot dw"></div><div class="rm"><div class="rn">Numéro BCE</div><div class="rs">En attente UCM</div></div><div class="rr"><span class="tag tw">En cours</span></div></div>
-    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Caisse sociale UCM</div><div class="rs">Q3 2026</div></div><div class="rr"><strong>~170€</strong></div></div>
-    <div class="row"><div class="dot db"></div><div class="rm"><div class="rn">Charges fixes</div><div class="rs">Accountable · UCM · OVH</div></div><div class="rr"><strong>85€</strong><span>/mois</span></div></div>
-    <div class="row"><div class="dot dok"></div><div class="rm"><div class="rn">Seuil rentabilité</div><div class="rs">Répar. min./mois</div></div><div class="rr"><strong style="color:var(--ok)">1–2</strong></div></div>
-    <div class="ch" style="border-top:1px solid var(--ln);"><span class="ct">Rentabilité ce mois</span></div>
-    <div class="chart-wrap" style="height:120px;"><canvas id="chartRenta"></canvas></div>
-  </div>
-</div>
-`
-
-show(html)
-
-// Charts
-const accent=getComputedStyle(document.documentElement).getPropertyValue('--a').trim()||'#3b82f6'
-const dim=getComputedStyle(document.documentElement).getPropertyValue('--ad').trim()||'rgba(59,130,246,0.12)'
-const grid=getComputedStyle(document.documentElement).getPropertyValue('--ln').trim()||'rgba(255,255,255,0.06)'
-const tc=getComputedStyle(document.documentElement).getPropertyValue('--t3').trim()||'#4b5059'
-
-if(typeof Chart!=='undefined'){Chart.defaults.font.family="'Inter',sans-serif"}
-
-function mkOpts(extra){
-  return Object.assign({
-    responsive:true,
-    maintainAspectRatio:false,
-    animation:{duration:600},
-    plugins:{
-      legend:{display:false},
-      tooltip:{backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}
-    },
-    scales:{
-      x:{ticks:{color:tc,font:{size:10},maxTicksLimit:6},grid:{color:grid,drawBorder:false}},
-      y:{ticks:{color:tc,font:{size:10}},grid:{color:grid,drawBorder:false},beginAtZero:true}
-    }
-  }, extra||{})
+if(extra){
+  const extraDiv=document.createElement('div')
+  extraDiv.className='dash-grid'
+  extraDiv.style.paddingTop='0'
+  extraDiv.innerHTML=extra
+  document.getElementById('grid').parentElement.appendChild(extraDiv)
 }
 
-// Chart CA
-const ctxCA=document.getElementById('chartCA')
-if(ctxCA && typeof Chart!=="undefined"){
-  const c=new Chart(ctxCA,{
-    type:'bar',
-    data:{
-      labels:months,
-      datasets:[{
-        data:caByMonth,
-        backgroundColor:caByMonth.map(v=>v>0?dim:'rgba(255,255,255,0.03)'),
-        borderColor:caByMonth.map(v=>v>0?accent:'rgba(255,255,255,0.08)'),
-        borderWidth:1.5,
-        borderRadius:4
-      }]
-    },
-    options:mkOpts({plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}€`},backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}}})
-  })
-  window._charts.push(c)
-}
+document.getElementById('ldr').style.display='none'
+document.getElementById('pageBody').style.display='flex'
 
-// Chart Stock
-const ctxSt=document.getElementById('chartStock')
-if(ctxSt && typeof Chart!=="undefined"){
-  const catL=catLabels.length>0?catLabels:['Vide']
-  const catV2=catVals.length>0?catVals:[1]
-  const palette=['#3b82f6','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4','#fb923c']
-  const c=new Chart(ctxSt,{
-    type:'doughnut',
-    data:{labels:catL,datasets:[{data:catV2,backgroundColor:palette.slice(0,catL.length),borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',animation:{duration:600},plugins:{legend:{display:true,position:'bottom',labels:{color:tc,font:{size:10},padding:8,boxWidth:10,boxHeight:10}}}}
-  })
-  window._charts.push(c)
-}
-
-// Chart Réparations
-const ctxRp=document.getElementById('chartReps')
-if(ctxRp && typeof Chart!=="undefined"){
-  const c=new Chart(ctxRp,{
-    type:'line',
-    data:{labels:months,datasets:[{data:repsCountByMonth,borderColor:accent,backgroundColor:dim,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:accent,pointBorderWidth:0}]},
-    options:mkOpts({plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y} répar.`},backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}}})
-  })
-  window._charts.push(c)
-}
-
-// Chart Alertes
-const ctxAl=document.getElementById('chartAlerts')
-if(ctxAl && typeof Chart!=="undefined"){
-  const top5=stock.sort((a,b)=>Number(a.quantite)-Number(b.quantite)).slice(0,5)
-  if(top5.length>0){
-    const c=new Chart(ctxAl,{
-      type:'bar',
-      data:{
-        labels:top5.map(p=>p.nom.substring(0,16)),
-        datasets:[{
-          data:top5.map(p=>Number(p.quantite)),
-          backgroundColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'rgba(248,113,113,0.3)':dim),
-          borderColor:top5.map(p=>Number(p.quantite)<=Number(p.seuil_alerte)?'#f87171':accent),
-          borderWidth:1.5,borderRadius:3
-        }]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,animation:{duration:600},
-        indexAxis:'y',
-        plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(10,10,12,0.9)',titleFont:{size:11},bodyFont:{size:11},padding:8}},
-        scales:{
-          x:{ticks:{color:tc,font:{size:10}},grid:{color:grid,drawBorder:false},beginAtZero:true},
-          y:{ticks:{color:tc,font:{size:9}},grid:{color:grid,drawBorder:false}}
-        }
-      }
-    })
-    window._charts.push(c)
-  }
-}
-
-// Chart Rentabilité
-const ctxRn=document.getElementById('chartRenta')
-if(ctxRn && typeof Chart!=="undefined"){
-  const c=new Chart(ctxRn,{
-    type:'doughnut',
-    data:{
-      labels:['CA','Restant'],
-      datasets:[{
-        data:[Math.min(caMonth,85),Math.max(0,85-caMonth)],
-        backgroundColor:[caMonth>=85?'rgba(52,211,153,0.4)':'rgba(251,191,36,0.35)',grid],
-        borderWidth:0,circumference:180,rotation:270
-      }]
-    },
-    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',animation:{duration:600},plugins:{legend:{display:false},tooltip:{enabled:false}}}
-  })
-  window._charts.push(c)
-}
+// ─── COMPTEURS SIDEBAR ───
+function setBadge(id,val){const el=document.getElementById(id);if(el)el.textContent=val}
+setBadge('nb-alert',alerts.length||'')
+setBadge('nb-rep',repsActives.length)
+setBadge('nb-four','')
+setBadge('nb-charges',charges.filter(c=>c.actif!==false).length)
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
-</script>
 
-<script>
-window.toggleNotifs=function(e){
-  e.stopPropagation();
-  const p=document.getElementById('notifPanel');
-  p.classList.toggle('open');
+} catch(err){
+  console.error(err)
+  showError(err.message||'Erreur inattendue')
 }
-document.addEventListener('click',function(e){
-  const p=document.getElementById('notifPanel');
-  if(p&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
-});
 </script>
-
 </body>
 </html>
