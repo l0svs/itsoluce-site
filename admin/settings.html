@@ -396,15 +396,10 @@ select option{background:var(--bg3);}
           <div class="sec-title">Intégrations</div>
           <div class="sec-desc">Services connectés à votre ERP IT Soluce.</div>
           <div class="field-group">
-            <div class="int-row"><div class="int-ico">💬</div><div class="int-info"><div class="int-name">WhatsApp Business</div><div class="int-desc" id="wa-desc">Chargement...</div></div><a href="https://wa.me/" target="_blank" class="btn btn-secondary" style="flex-shrink:0;">Ouvrir</a></div>
             <div class="int-row"><div class="int-ico">🗄️</div><div class="int-info"><div class="int-name">Supabase</div><div class="int-desc">Base de données cloud · esltsiutcjcwdbhkkvms.supabase.co</div></div><span class="btn btn-success" style="flex-shrink:0;cursor:default;">Connecté</span></div>
             <div class="int-row"><div class="int-ico">🌐</div><div class="int-info"><div class="int-name">itsoluce.be</div><div class="int-desc">Site web public · GitHub Pages</div></div><a href="https://itsoluce.be" target="_blank" class="btn btn-secondary" style="flex-shrink:0;">Visiter</a></div>
             <div class="int-row"><div class="int-ico">📧</div><div class="int-info"><div class="int-name">Email OVH Zimbra</div><div class="int-desc">contact@itsoluce.be</div></div><a href="https://webmail.ovh.net" target="_blank" class="btn btn-secondary" style="flex-shrink:0;">Webmail</a></div>
             <div class="int-row"><div class="int-ico">💳</div><div class="int-info"><div class="int-name">SumUp</div><div class="int-desc">Terminal de paiement · Tap to Pay iPhone 16 Pro</div></div><span class="btn btn-success" style="flex-shrink:0;cursor:default;">Configuré</span></div>
-          </div>
-          <div class="field-group">
-            <div class="fg-head">WhatsApp Business — Configuration</div>
-            <div class="field"><div class="field-label"><div class="fl-name">Numéro WhatsApp</div></div><div class="field-input"><input type="tel" id="s-wa-num" placeholder="+32474056659"/></div></div>
           </div>
         </div>
 
@@ -693,7 +688,6 @@ fill('s-email','entreprise_email')
 fill('s-telephone','entreprise_telephone')
 fill('s-site','entreprise_site')
 fill('s-mode','apparence_mode')
-fill('s-wa-num','whatsapp_numero')
 fill('s-taux','finance_taux_horaire')
 fill('s-devise','finance_devise')
 fill('s-delai','finance_delai_paiement')
@@ -715,9 +709,7 @@ document.querySelectorAll('.color-opt').forEach(el=>{
   el.classList.toggle('on',el.dataset.c===savedAccent)
 })
 
-// WhatsApp desc
-const waNum=cfg['whatsapp_numero']||'+32474056659'
-document.getElementById('wa-desc').textContent=`Numéro : ${waNum}`
+
 
 // Marquer dirty sur chaque input
 document.querySelectorAll('input:not([disabled]),select:not([disabled]),textarea:not([disabled])').forEach(el=>{
@@ -746,7 +738,7 @@ window.saveSettings=async function(){
   const pairs=[
     ['entreprise_nom','s-nom'],['entreprise_statut','s-statut'],['entreprise_bce','s-bce'],
     ['entreprise_adresse','s-adresse'],['entreprise_email','s-email'],['entreprise_telephone','s-telephone'],
-    ['entreprise_site','s-site'],['apparence_mode','s-mode'],['whatsapp_numero','s-wa-num'],
+    ['entreprise_site','s-site'],['apparence_mode','s-mode'],
     ['finance_taux_horaire','s-taux'],['finance_devise','s-devise'],['finance_delai_paiement','s-delai'],
     ['finance_mention_tva','s-tva'],['finance_iban','s-iban'],['intervention_rayon','s-rayon'],
     ['intervention_frais_km','s-km'],['fournisseur_default_iphone','s-four-iphone'],
