@@ -1112,7 +1112,7 @@ window.sendPdf=async function(){
     const prenom=(f.client_nom||'').split(' ')[0]||''
     const modeLbl={especes:'espèces',carte:'carte',mixte:'carte et espèces'}
     const mp=f.mode_paiement?modeLbl[f.mode_paiement]||f.mode_paiement:''
-    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br>contact@itsoluce.be<br>+32 474 05 66 59<br>www.itsoluce.be</p>`
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br><a href="mailto:contact@itsoluce.be" style="color:#1d4ed8;text-decoration:none;">contact@itsoluce.be</a><br>+32 474 05 66 59<br><a href="https://itsoluce.be/" style="color:#1d4ed8;text-decoration:none;">https://itsoluce.be/</a></p>`
     let html
     if(f.statut==='payee'){
       html=`<p>Bonjour ${prenom},</p><p>Merci d'avoir fait confiance à IT Soluce.</p><p>Vous trouverez ci-joint votre facture <strong>${f.numero}</strong> d'un montant de <strong>${Number(f.total).toFixed(2).replace('.',',')} €</strong>, réglée${mp?` par ${mp}`:''}. Ce document fait office de justificatif acquitté.</p><p>Je reste à votre disposition pour toute question, et n'hésitez pas à me recontacter pour vos futurs besoins.</p>${signature}`
