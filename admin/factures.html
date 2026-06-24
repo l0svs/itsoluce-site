@@ -317,6 +317,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
     </div>
     <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+    <div class="fg" style="margin-top:4px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <label style="margin:0;font-size:12px;font-weight:500;color:var(--t2);">Client professionnel</label>
+        <div id="togPro" onclick="toggleClientPro()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div id="togProThumb" style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;"></div></div>
+        <input type="hidden" id="f-is-pro" value="false"/>
+      </div>
+      <div id="pro-fields" style="display:none;flex-direction:column;gap:10px;">
+        <input type="text" id="f-societe" placeholder="Nom de la société"/>
+        <input type="text" id="f-tva-client" placeholder="Numéro TVA client (ex : BE 0123.456.789)"/>
+      </div>
+    </div>
 
     <div class="fg-sep">Lignes de facturation</div>
     <table class="lignes-table">
@@ -541,6 +552,7 @@ function openPanel(f){
   document.getElementById('f-email').value=f?(f.client_email||''):'';
   document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
   document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
+  setClientPro(f&&(f.client_societe||f.client_tva),f?.client_societe,f?.client_tva);
   document.getElementById('f-remise').value=f?(f.remise||0):0;
   document.getElementById('f-remise-type').value='euro';
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
@@ -566,6 +578,26 @@ function openPanel(f){
   document.getElementById('panel').classList.add('open');
 }
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+function toggleClientPro(){
+  const isPro=document.getElementById('f-is-pro').value==='true'
+  const newVal=!isPro
+  document.getElementById('f-is-pro').value=String(newVal)
+  const tog=document.getElementById('togPro'),th=document.getElementById('togProThumb')
+  tog.style.background=newVal?'var(--a)':'var(--bg4)'
+  tog.style.borderColor=newVal?'var(--a)':'var(--ln2)'
+  th.style.transform=newVal?'translateX(14px)':'translateX(0)'
+  document.getElementById('pro-fields').style.display=newVal?'flex':'none'
+}
+function setClientPro(val,societe,tva){
+  document.getElementById('f-is-pro').value=String(!!val)
+  const tog=document.getElementById('togPro'),th=document.getElementById('togProThumb')
+  tog.style.background=val?'var(--a)':'var(--bg4)'
+  tog.style.borderColor=val?'var(--a)':'var(--ln2)'
+  th.style.transform=val?'translateX(14px)':'translateX(0)'
+  document.getElementById('pro-fields').style.display=val?'flex':'none'
+  document.getElementById('f-societe').value=societe||''
+  document.getElementById('f-tva-client').value=tva||''
+}
 function closePdf(){document.getElementById('pdfOverlay').classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closePdf();}});
 </script>
@@ -869,6 +901,8 @@ window.saveFacture=async function(){
     client_email:document.getElementById('f-email').value.trim()||null,
     client_telephone:document.getElementById('f-tel').value.trim()||null,
     client_adresse:document.getElementById('f-adresse').value.trim()||null,
+    client_societe:document.getElementById('f-societe').value.trim()||null,
+    client_tva:document.getElementById('f-tva-client').value.trim()||null,
     reparation_id:repLink?repLink.id:null,
     reparation_numero:repLink?repLink.numero:null,
     date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
