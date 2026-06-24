@@ -485,16 +485,18 @@ function openPanel(r=null){
   document.getElementById('f-marque').value=r?.marque||''
   document.getElementById('f-modele').value=r?.modele||''
   document.getElementById('f-panne').value=r?.panne_description||''
+  // Vider la liste de pièces
+  const _pl=document.getElementById('piecesList');if(_pl)_pl.innerHTML=''
   document.getElementById('f-statut').value=r?.statut||'recu'
   document.getElementById('f-devis').value=r?.prix_devis||''
   document.getElementById('f-final').value=r?.prix_final||''
   document.getElementById('f-notes').value=r?.notes||''
   // Remplir le sélecteur de pièces depuis le stock
   // Charger les pièces (nouveau système multi-pièces)
-  loadPiecesData(r?.pieces||[])
+  window.loadPiecesData(r?.pieces||[])
   // Compat ancien dossier (piece_id seul)
   if((!r?.pieces||r.pieces.length===0)&&r?.piece_id){
-    addPieceLigne(r.piece_id,1,r.cout_pieces||0)
+    window.addPieceLigne(r.piece_id,1,r.cout_pieces||0)
   }
   updateMarge()
   // Remplir le sélecteur de clients existants + réinitialiser sur "Nouveau client"
@@ -508,69 +510,6 @@ function openPanel(r=null){
   document.getElementById('f-client').focus()
 }
 
-// ─── MULTI-PIÈCES ───
-function buildPieceOptions(selectedId){
-  return '<option value="">— Aucune —</option>'+
-    allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''} >${p.nom} (stock: ${p.quantite})</option>`).join('')
-}
-function addPieceLigne(pieceId='',qte=1,cout=''){
-  const list=document.getElementById('piecesList')
-  const idx=list.children.length
-  const div=document.createElement('div')
-  div.className='piece-row'
-  div.dataset.idx=idx
-  div.innerHTML=`
-    <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(pieceId)}</select>
-    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:52px;" onchange="recalcCout()" oninput="recalcCout()"/>
-    <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" onchange="recalcCout()" oninput="recalcCout()"/>
-    <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-  `
-  list.appendChild(div)
-  recalcCout()
-}
-function onPieceLigneChange(sel){
-  const row=sel.closest('.piece-row')
-  const opt=sel.options[sel.selectedIndex]
-  if(opt&&opt.dataset.achat){
-    const coutInput=row.querySelectorAll('input')[1]
-    coutInput.value=opt.dataset.achat
-    // Suggérer prix vente si f-final vide
-    const final=document.getElementById('f-final')
-    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
-  }
-  recalcCout()
-}
-function delPieceLigne(btn){
-  btn.closest('.piece-row').remove()
-  recalcCout()
-}
-function recalcCout(){
-  let total=0
-  document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
-    const inputs=row.querySelectorAll('input')
-    const qte=Number(inputs[0].value)||1
-    const cout=Number(inputs[1].value)||0
-    total+=qte*cout
-  })
-  document.getElementById('f-cout').value=total.toFixed(2)
-  updateMarge()
-}
-function getPiecesData(){
-  const pieces=[]
-  document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
-    const sel=row.querySelector('select')
-    const inputs=row.querySelectorAll('input')
-    if(!sel.value)return
-    pieces.push({stock_id:Number(sel.value),nom:sel.options[sel.selectedIndex].text.split(' (')[0],qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
-  })
-  return pieces
-}
-function loadPiecesData(pieces){
-  const list=document.getElementById('piecesList')
-  list.innerHTML=''
-  if(!pieces||pieces.length===0)return
-  pieces.forEach(p=>addPieceLigne(p.stock_id,p.qte,p.cout))
-}
 
 function updateMarge(){
   const final=Number(document.getElementById('f-final').value)||0
@@ -684,6 +623,71 @@ document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 
 let allReps=[]
 let allStockPieces=[]
+
+// ─── MULTI-PIÈCES ───
+window.buildPieceOptions=function buildPieceOptions(selectedId){
+  return '<option value="">— Aucune —</option>'+
+    allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''} >${p.nom} (stock: ${p.quantite})</option>`).join('')
+}
+window.addPieceLigne=function addPieceLigne(pieceId='',qte=1,cout=''){
+  const list=document.getElementById('piecesList')
+  const idx=list.children.length
+  const div=document.createElement('div')
+  div.className='piece-row'
+  div.dataset.idx=idx
+  div.innerHTML=`
+    <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(pieceId)}</select>
+    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:52px;" onchange="recalcCout()" oninput="recalcCout()"/>
+    <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" onchange="recalcCout()" oninput="recalcCout()"/>
+    <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+  `
+  list.appendChild(div)
+  recalcCout()
+}
+window.onPieceLigneChange=function onPieceLigneChange(sel){
+  const row=sel.closest('.piece-row')
+  const opt=sel.options[sel.selectedIndex]
+  if(opt&&opt.dataset.achat){
+    const coutInput=row.querySelectorAll('input')[1]
+    coutInput.value=opt.dataset.achat
+    // Suggérer prix vente si f-final vide
+    const final=document.getElementById('f-final')
+    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
+  }
+  recalcCout()
+}
+window.delPieceLigne=function delPieceLigne(btn){
+  btn.closest('.piece-row').remove()
+  recalcCout()
+}
+window.recalcCout=function recalcCout(){
+  let total=0
+  document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
+    const inputs=row.querySelectorAll('input')
+    const qte=Number(inputs[0].value)||1
+    const cout=Number(inputs[1].value)||0
+    total+=qte*cout
+  })
+  document.getElementById('f-cout').value=total.toFixed(2)
+  updateMarge()
+}
+window.getPiecesData=function getPiecesData(){
+  const pieces=[]
+  document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
+    const sel=row.querySelector('select')
+    const inputs=row.querySelectorAll('input')
+    if(!sel.value)return
+    pieces.push({stock_id:Number(sel.value),nom:sel.options[sel.selectedIndex].text.split(' (')[0],qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+  })
+  return pieces
+}
+window.loadPiecesData=function loadPiecesData(pieces){
+  const list=document.getElementById('piecesList')
+  list.innerHTML=''
+  if(!pieces||pieces.length===0)return
+  pieces.forEach(p=>addPieceLigne(p.stock_id,p.qte,p.cout))
+}
+
 let allClientsRep=[]
 let activeFilter='Tous'
 
