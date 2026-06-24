@@ -175,6 +175,16 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .notif-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
 .ni-new{background:rgba(59,130,246,.15);}
 .ni-stock{background:rgba(251,191,36,.15);}
+.pieces-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+.piece-row{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--ln);border-radius:7px;padding:8px 10px;}
+.piece-row select{flex:2;min-width:0;padding:6px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;}
+.piece-row input{width:72px;flex-shrink:0;padding:6px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;text-align:right;}
+.piece-row .piece-del{width:26px;height:26px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;}
+.piece-row .piece-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.piece-row .piece-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.add-piece-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px dashed var(--ln2);border-radius:7px;background:none;color:var(--a);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;width:100%;}
+.add-piece-btn:hover{background:var(--ad);border-color:var(--a);}
+.add-piece-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
 .ni-time{background:rgba(248,113,113,.15);}
 .ni-task{background:rgba(52,211,153,.15);}
 .notif-body{flex:1;min-width:0;}
@@ -365,18 +375,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
     <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
 
-    <div class="fg-sep">Pièce & Coûts</div>
+    <div class="fg-sep">Pièces & Coûts</div>
     <div class="fg">
-      <label>Pièce utilisée (depuis le stock)</label>
-      <select id="f-piece" onchange="onPieceChange()">
-        <option value="">Aucune pièce / non liée au stock</option>
-      </select>
+      <label>Pièces utilisées (depuis le stock)</label>
+      <div class="pieces-list" id="piecesList"></div>
+      <button type="button" class="add-piece-btn" onclick="addPieceLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
     </div>
     <div class="fg-row">
-      <div class="fg"><label>Coût de la pièce (€)</label><input type="number" id="f-cout" placeholder="0.00" min="0" step="0.01"/></div>
+      <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
       <div class="fg"><label>Marge estimée (€)</label><input type="text" id="f-marge" disabled style="opacity:.6;cursor:not-allowed;" value="—"/></div>
     </div>
-    <div style="font-size:11px;color:var(--t3);margin:-6px 0 14px;padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté quand le dossier passe en « Prêt » ou « Rendu ».</div>
+    <div style="font-size:11px;color:var(--t3);margin:-6px 0 14px;padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
 
     <div class="fg-sep">Suivi & Prix</div>
     <div class="fg">
@@ -481,8 +490,12 @@ function openPanel(r=null){
   document.getElementById('f-final').value=r?.prix_final||''
   document.getElementById('f-notes').value=r?.notes||''
   // Remplir le sélecteur de pièces depuis le stock
-  if(window.fillPieceSelect)window.fillPieceSelect(r?.piece_id||'')
-  document.getElementById('f-cout').value=r?.cout_pieces||''
+  // Charger les pièces (nouveau système multi-pièces)
+  loadPiecesData(r?.pieces||[])
+  // Compat ancien dossier (piece_id seul)
+  if((!r?.pieces||r.pieces.length===0)&&r?.piece_id){
+    addPieceLigne(r.piece_id,1,r.cout_pieces||0)
+  }
   updateMarge()
   // Remplir le sélecteur de clients existants + réinitialiser sur "Nouveau client"
   if(window.fillClientSelect)window.fillClientSelect()
@@ -495,20 +508,68 @@ function openPanel(r=null){
   document.getElementById('f-client').focus()
 }
 
-function onPieceChange(){
-  const sel=document.getElementById('f-piece')
+// ─── MULTI-PIÈCES ───
+function buildPieceOptions(selectedId){
+  return '<option value="">— Aucune —</option>'+
+    allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''} >${p.nom} (stock: ${p.quantite})</option>`).join('')
+}
+function addPieceLigne(pieceId='',qte=1,cout=''){
+  const list=document.getElementById('piecesList')
+  const idx=list.children.length
+  const div=document.createElement('div')
+  div.className='piece-row'
+  div.dataset.idx=idx
+  div.innerHTML=`
+    <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(pieceId)}</select>
+    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:52px;" onchange="recalcCout()" oninput="recalcCout()"/>
+    <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" onchange="recalcCout()" oninput="recalcCout()"/>
+    <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+  `
+  list.appendChild(div)
+  recalcCout()
+}
+function onPieceLigneChange(sel){
+  const row=sel.closest('.piece-row')
   const opt=sel.options[sel.selectedIndex]
   if(opt&&opt.dataset.achat){
-    document.getElementById('f-cout').value=opt.dataset.achat
-    // Si pas de prix final déjà saisi, suggérer le prix de vente de la pièce
+    const coutInput=row.querySelectorAll('input')[1]
+    coutInput.value=opt.dataset.achat
+    // Suggérer prix vente si f-final vide
     const final=document.getElementById('f-final')
-    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0){
-      final.value=opt.dataset.vente
-    }
-  } else {
-    document.getElementById('f-cout').value=''
+    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
   }
+  recalcCout()
+}
+function delPieceLigne(btn){
+  btn.closest('.piece-row').remove()
+  recalcCout()
+}
+function recalcCout(){
+  let total=0
+  document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
+    const inputs=row.querySelectorAll('input')
+    const qte=Number(inputs[0].value)||1
+    const cout=Number(inputs[1].value)||0
+    total+=qte*cout
+  })
+  document.getElementById('f-cout').value=total.toFixed(2)
   updateMarge()
+}
+function getPiecesData(){
+  const pieces=[]
+  document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
+    const sel=row.querySelector('select')
+    const inputs=row.querySelectorAll('input')
+    if(!sel.value)return
+    pieces.push({stock_id:Number(sel.value),nom:sel.options[sel.selectedIndex].text.split(' (')[0],qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+  })
+  return pieces
+}
+function loadPiecesData(pieces){
+  const list=document.getElementById('piecesList')
+  list.innerHTML=''
+  if(!pieces||pieces.length===0)return
+  pieces.forEach(p=>addPieceLigne(p.stock_id,p.qte,p.cout))
 }
 
 function updateMarge(){
@@ -664,12 +725,8 @@ window.onClientSelect=function(){
 }
 
 // Exposer le remplissage du select de pièces (appelé depuis openPanel)
-window.fillPieceSelect=function(selectedId){
-  const sel=document.getElementById('f-piece')
-  if(!sel)return
-  sel.innerHTML='<option value="">Aucune pièce / non liée au stock</option>'+
-    allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''}>${p.nom} (stock: ${p.quantite}) — achat ${Number(p.prix_achat||0).toFixed(2)}€</option>`).join('')
-}
+// fillPieceSelect remplacé par loadPiecesData pour le multi-pièces
+window.fillPieceSelect=function(selectedId){}
 
 // Génère le prochain numéro séquentiel via le compteur Supabase
 async function nextNumero(cle, prefix){
@@ -816,7 +873,7 @@ window.changeStatut=async function(statut){
 
   // Faut-il décrémenter le stock ? (passage en pret/rendu + pièce liée + pas déjà fait)
   const statutAvance=['pret','rendu'].includes(statut)
-  const doitDecrementer = r && statutAvance && r.piece_id && r.stock_decremente!==true
+  const doitDecrementer = r && statutAvance && (r.pieces?.length>0||r.piece_id) && r.stock_decremente!==true
 
   const maj={statut,updated_at:new Date().toISOString()}
   if(doitDecrementer)maj.stock_decremente=true
@@ -827,19 +884,20 @@ window.changeStatut=async function(statut){
   if(error){showToast('Erreur : '+error.message,'err');return}
   if(r){r.statut=statut;if(doitDecrementer)r.stock_decremente=true;if(maj.date_fin)r.date_fin=maj.date_fin}
 
-  // Décrémenter le stock
+  // Décrémenter le stock (multi-pièces)
   if(doitDecrementer){
-    const piece=allStockPieces.find(p=>p.id===Number(r.piece_id))
-    if(piece && Number(piece.quantite)>0){
-      const newQty=Number(piece.quantite)-1
+    const pcs=r.pieces&&r.pieces.length>0?r.pieces:[{stock_id:r.piece_id,qte:1}]
+    let toastMsg=`${window.STATUTS[statut]?.label} · Stock mis à jour`
+    for(const pd of pcs){
+      const piece=allStockPieces.find(p=>p.id===Number(pd.stock_id||pd))
+      if(!piece||Number(piece.quantite)<=0)continue
+      const newQty=Math.max(0,Number(piece.quantite)-(pd.qte||1))
       const stockRes=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',piece.id)
-      if(!stockRes.error){
-        piece.quantite=newQty
-        renderAll()
-        showToast(`${window.STATUTS[statut]?.label} · Stock décrémenté : ${piece.nom} (${newQty} restant${newQty>1?'s':''})`,'ok')
-        return
-      }
+      if(!stockRes.error)piece.quantite=newQty
     }
+    renderAll()
+    showToast(toastMsg,'ok')
+    return
   }
 
   renderAll()
@@ -864,7 +922,8 @@ window.saveDossier=async function(){
   if(!appareil){showToast('Le type d\'appareil est requis','err');return}
   if(!panne){showToast('La description de la panne est requise','err');return}
 
-  const pieceVal=document.getElementById('f-piece').value
+  const piecesData=getPiecesData()
+  const pieceVal=piecesData.length>0?String(piecesData[0].stock_id):''  // compat legacy
   const nouveauStatut=document.getElementById('f-statut').value
   const clientSelId=document.getElementById('f-client-select').value
 
@@ -914,8 +973,9 @@ window.saveDossier=async function(){
     statut:nouveauStatut,
     prix_devis:Number(document.getElementById('f-devis').value)||0,
     prix_final:Number(document.getElementById('f-final').value)||0,
-    piece_id:pieceVal?Number(pieceVal):null,
-    cout_pieces:Number(document.getElementById('f-cout').value)||0,
+    piece_id:piecesData.length>0?piecesData[0].stock_id:null,
+    cout_pieces:piecesData.reduce((a,p)=>a+p.qte*p.cout,0),
+    pieces:piecesData,
     notes:document.getElementById('f-notes').value.trim()||null,
     updated_at:new Date().toISOString()
   }
@@ -926,7 +986,7 @@ window.saveDossier=async function(){
   const ancien = id ? allReps.find(r=>r.id===Number(id)) : null
   const dejaDecremente = ancien && ancien.stock_decremente === true
   const statutAvance = ['pret','rendu'].includes(nouveauStatut)
-  const doitDecrementer = statutAvance && pieceVal && !dejaDecremente
+  const doitDecrementer = statutAvance && piecesData.length>0 && !dejaDecremente
   if(doitDecrementer) payload.stock_decremente = true
   // Enregistrer la date de fin au premier passage en prêt/rendu (pour la garantie)
   if(statutAvance && !(ancien && ancien.date_fin)) payload.date_fin = new Date().toISOString()
@@ -944,16 +1004,16 @@ window.saveDossier=async function(){
   }
 
   if(!error && doitDecrementer){
-    const piece=allStockPieces.find(p=>p.id===Number(pieceVal))
-    if(piece && Number(piece.quantite)>0){
-      const newQty=Number(piece.quantite)-1
+    for(const pd of piecesData){
+      const piece=allStockPieces.find(p=>p.id===pd.stock_id)
+      if(!piece)continue
+      const newQty=Math.max(0,Number(piece.quantite)-pd.qte)
       const stockRes=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',piece.id)
       if(!stockRes.error){
         piece.quantite=newQty
-        showToast(`Stock décrémenté : ${piece.nom} (${newQty} restant${newQty>1?'s':''})`,'ok')
+        if(newQty===0)showToast(`⚠️ Rupture : ${piece.nom}`,'err')
+        else showToast(`Stock mis à jour : ${piece.nom} (${newQty} restant${newQty>1?'s':''})`,'ok')
       }
-    } else if(piece && Number(piece.quantite)<=0){
-      showToast(`⚠️ ${piece.nom} était déjà en rupture`,'err')
     }
   }
 
