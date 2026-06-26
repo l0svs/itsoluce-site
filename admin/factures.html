@@ -378,6 +378,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="pdf-actions">
     <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
     <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
+    <button class="btn btn-secondary" onclick="previewAcompte()" id="acompteBtn" style="display:none;background:#fff;"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Reçu d'acompte</button>
     <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
   <div class="pdf-modal" id="pdfModal"></div>
@@ -1108,6 +1109,12 @@ function buildTemplateHTML(f,forPdf){
 }
 
 window.previewFacture=function(id){
+  // Afficher le bouton reçu acompte uniquement si acompte > 0
+  setTimeout(()=>{
+    const f=allFactures.find(x=>x.id===id)
+    const btn=document.getElementById('acompteBtn')
+    if(btn)btn.style.display=(f&&Number(f.acompte||0)>0)?'flex':'none'
+  },100)
   const f=allFactures.find(x=>x.id===id)
   if(!f)return
   currentPdfDoc=f
@@ -1211,6 +1218,121 @@ window.sendPdf=async function(){
     showToast(`Facture ${f.numero} envoyée à ${f.client_email} ✓`,'ok')
   }catch(err){
     btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+    showToast('Erreur envoi : '+err.message,'err')
+  }
+}
+
+
+// ─── REÇU D'ACOMPTE ───
+function buildRecuHTML(f){
+  const ENTREPRISE_LOC={nom:'IT Soluce',adresse:'Chaussée d\'Hondzocht 164, 1480 Tubize',email:'contact@itsoluce.be',tel:'+32 474 05 66 59',site:'https://itsoluce.be/',iban:'BE02 7320 8265 2640',bce:'BE 1027.026.003'}
+  const dateRecu=new Date().toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
+  const acompte=Number(f.acompte||0)
+  const solde=Math.max(0,Number(f.total||0)-acompte)
+  return `<div style="font-family:Inter,Arial,sans-serif;width:210mm;min-height:150mm;padding:20mm;box-sizing:border-box;background:#fff;color:#1a1a1a;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #1d4ed8;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" style="width:48px;height:48px;border-radius:8px;"/>
+        <div><div style="font-size:22px;font-weight:700;color:#1d4ed8;letter-spacing:-.5px;">Soluce</div><div style="font-size:11px;color:#666;">Réparations informatiques & électroniques</div></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:24px;font-weight:800;color:#1d4ed8;letter-spacing:-1px;">REÇU D'ACOMPTE</div>
+        <div style="font-size:12px;color:#555;margin-top:4px;">Lié à la facture <strong>${f.numero}</strong></div>
+        <div style="font-size:12px;color:#555;">Date : <strong>${dateRecu}</strong></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <div style="font-size:10px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Émetteur</div>
+        <div style="font-size:13px;font-weight:600;">${ENTREPRISE_LOC.nom}</div>
+        <div style="font-size:12px;color:#555;">${ENTREPRISE_LOC.adresse}</div>
+        <div style="font-size:12px;color:#555;">BCE : ${ENTREPRISE_LOC.bce}</div>
+        <div style="font-size:12px;color:#555;">${ENTREPRISE_LOC.email}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:10px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Client</div>
+        ${f.client_societe?`<div style="font-size:12px;font-weight:700;text-transform:uppercase;">${f.client_societe}</div>`:''}
+        <div style="font-size:13px;font-weight:600;">${f.client_nom||'—'}</div>
+        ${f.client_tva?`<div style="font-size:11px;color:#666;">TVA : ${f.client_tva}</div>`:''}
+        ${f.client_adresse?`<div style="font-size:12px;color:#555;">${f.client_adresse}</div>`:''}
+        ${f.client_email?`<div style="font-size:12px;color:#555;">${f.client_email}</div>`:''}
+      </div>
+    </div>
+    <div style="background:#f0f4ff;border:1px solid #c7d7ff;border-radius:10px;padding:20px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:13px;color:#555;margin-bottom:6px;">Acompte reçu ce jour</div>
+      <div style="font-size:36px;font-weight:800;color:#1d4ed8;letter-spacing:-1px;">${acompte.toFixed(2).replace('.',',')} €</div>
+      <div style="font-size:12px;color:#555;margin-top:8px;">Sur un total de <strong>${Number(f.total||0).toFixed(2).replace('.',',')} €</strong> (facture ${f.numero})</div>
+    </div>
+    <div style="background:#f8f8f8;border-radius:8px;padding:14px 18px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;"><span style="font-size:13px;color:#555;">Total facture</span><span style="font-size:13px;font-weight:600;">${Number(f.total||0).toFixed(2).replace('.',',')} €</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;"><span style="font-size:13px;color:#555;">Acompte versé</span><span style="font-size:13px;font-weight:600;color:#16a34a;">− ${acompte.toFixed(2).replace('.',',')} €</span></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 4px;"><span style="font-size:14px;font-weight:700;">Solde restant dû</span><span style="font-size:16px;font-weight:800;color:#1d4ed8;">${solde.toFixed(2).replace('.',',')} €</span></div>
+    </div>
+    <div style="font-size:11px;color:#999;border-top:1px solid #eee;padding-top:12px;text-align:center;">Ce document atteste de la réception de l'acompte indiqué. Il ne constitue pas une facture. La facture définitive ${f.numero} sera émise à la fin de la prestation. TVA non applicable, art. 56bis du Code de la TVA.</div>
+  </div>`
+}
+
+async function genererRecuBlob(){
+  const f=currentPdfDoc
+  if(!f)return null
+  const container=document.createElement('div')
+  container.style.cssText='position:fixed;left:-9999px;top:0;background:#fff;z-index:-1;'
+  container.innerHTML=buildRecuHTML(f)
+  document.body.appendChild(container)
+  const {jsPDF}=window.jspdf
+  const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff'})
+  document.body.removeChild(container)
+  const imgW=210,imgH=(canvas.height*imgW)/canvas.width
+  const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'})
+  const pageH=297
+  if(imgH<=pageH+10){
+    pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,imgW,Math.min(imgH,pageH))
+  } else {
+    let y=0
+    while(y<imgH){
+      if(y>0)pdf.addPage()
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,-y,imgW,imgH)
+      y+=pageH
+    }
+  }
+  return pdf
+}
+
+window.previewAcompte=async function(){
+  const f=currentPdfDoc
+  if(!f||Number(f.acompte||0)<=0){showToast('Aucun acompte sur cette facture','err');return}
+  const pdf=await genererRecuBlob()
+  if(!pdf)return
+  pdf.save(`Recu_acompte_${f.numero}.pdf`)
+  // Proposer l'envoi par email
+  if(f.client_email&&confirm(`Reçu téléchargé ✓\n\nVoulez-vous également l'envoyer par email à ${f.client_email} ?`)){
+    await sendAcompte()
+  }
+}
+
+window.sendAcompte=async function(){
+  const f=currentPdfDoc
+  if(!f||Number(f.acompte||0)<=0){showToast('Aucun acompte sur cette facture','err');return}
+  if(!f.client_email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
+  const pdf=await genererRecuBlob()
+  if(!pdf)return
+  const pdfBase64=pdf.output('datauristring').split(',')[1]
+  const prenom=(f.client_nom||'').split(' ')[0]||''
+  const acompte=Number(f.acompte||0)
+  const solde=Math.max(0,Number(f.total||0)-acompte)
+  const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br><a href="mailto:contact@itsoluce.be" style="color:#1d4ed8;text-decoration:none;">contact@itsoluce.be</a><br>+32 474 05 66 59<br><a href="https://itsoluce.be/" style="color:#1d4ed8;text-decoration:none;">https://itsoluce.be/</a></p>`
+  const html=`<p>Bonjour ${prenom},</p><p>Merci pour votre acompte de <strong>${acompte.toFixed(2).replace('.',',')} €</strong> reçu ce jour.</p><p>Vous trouverez ci-joint votre reçu d'acompte lié à la facture <strong>${f.numero}</strong>. Le solde restant dû s'élève à <strong>${solde.toFixed(2).replace('.',',')} €</strong>, qui sera réglé à la fin de la prestation.</p><p>Je reste à votre disposition pour toute question.</p>${signature}`
+  try{
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:f.client_email,subject:`Reçu d'acompte — Facture ${f.numero} — IT Soluce`,html,pdfBase64,pdfName:`Recu_acompte_${f.numero}.pdf`})
+    })
+    const result=await res.json()
+    if(!res.ok)throw new Error(result.error||'Échec de l\'envoi')
+    showToast(`Reçu d'acompte envoyé à ${f.client_email} ✓`,'ok')
+  }catch(err){
     showToast('Erreur envoi : '+err.message,'err')
   }
 }
