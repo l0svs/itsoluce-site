@@ -341,6 +341,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="tot-row"><span>Remise</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-remise-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
       <div class="tot-row" id="remise-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="remise-montant"></span></div>
       <div class="tot-row final"><span>TOTAL</span><span id="t-total">0,00 €</span></div>
+      <div class="tot-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--ln2);"><span>Acompte reçu</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-acompte" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-acompte-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
+      <div class="tot-row" id="acompte-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="acompte-montant"></span></div>
+      <div class="tot-row final" style="color:var(--a);"><span>SOLDE À PAYER</span><span id="t-solde">0,00 €</span></div>
     </div>
 
     <div class="fg-sep">Détails</div>
@@ -473,8 +476,28 @@ function calcTotaux(){
   } else {
     detail.style.display='none';
   }
-  // Mémoriser le montant réel pour la sauvegarde
+  // Acompte
+  const acompteVal=Number(document.getElementById('f-acompte').value)||0;
+  const acompteType=document.getElementById('f-acompte-type').value;
+  let acompteEuros=acompteType==='pct'?total*(acompteVal/100):acompteVal;
+  acompteEuros=Math.min(acompteEuros,total);
+  const solde=Math.max(0,total-acompteEuros);
+  document.getElementById('t-solde').textContent=solde.toFixed(2).replace('.',',')+' €';
+  const adetail=document.getElementById('acompte-detail');
+  const amontantEl=document.getElementById('acompte-montant');
+  if(acompteType==='pct'&&acompteVal>0){
+    adetail.style.display='flex';
+    amontantEl.textContent=`− ${acompteEuros.toFixed(2).replace('.',',')} €`;
+    adetail.querySelector('span').textContent=`soit ${acompteVal}% d'acompte`;
+  } else {
+    adetail.style.display='none';
+  }
+  // Masquer le solde si acompte = 0
+  document.getElementById('t-solde').closest('.tot-row').style.display=acompteEuros>0?'flex':'none';
+  document.getElementById('acompte-detail').style.display=(acompteType==='pct'&&acompteVal>0)?'flex':'none';
+  // Mémoriser pour la sauvegarde
   window._remiseEuros=remiseEuros;
+  window._acompteEuros=acompteEuros;
 }
 
 // Affiche/masque les zones selon le mode de paiement
@@ -554,6 +577,8 @@ function openPanel(f){
   document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
   setClientPro(f&&(f.client_societe||f.client_tva),f?.client_societe,f?.client_tva);
   document.getElementById('f-remise').value=f?(f.remise||0):0;
+  document.getElementById('f-acompte').value=f?(f.acompte||0):0;
+  document.getElementById('f-acompte-type').value=f?(f.acompte_type||'euro'):'euro';
   document.getElementById('f-remise-type').value='euro';
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
   document.getElementById('f-paiement').value=f?(f.mode_paiement||''):'';
@@ -1043,6 +1068,15 @@ function buildTemplateHTML(f,forPdf){
         ${Number(f.remise)>0?`<div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;"><span>Remise</span><span>− ${Number(f.remise).toFixed(2).replace('.',',')} €</span></div>`:''}
         <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#1a1a1a;border-top:2px solid #1d4ed8;padding-top:8px;margin-top:6px;">
           <span>TOTAL</span><span>${Number(f.total).toFixed(2).replace('.',',')} €</span>
+          ${Number(f.acompte||0)>0?`
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;border-top:1px dashed #ddd;margin-top:4px;">
+            <span>Acompte reçu</span><span>− ${Number(f.acompte||0).toFixed(2).replace('.',',')} €</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;padding:8px 0;border-top:2px solid #1d4ed8;margin-top:4px;color:#1d4ed8;">
+            <span>SOLDE À PAYER</span><span>${Math.max(0,Number(f.total||0)-Number(f.acompte||0)).toFixed(2).replace('.',',')} €</span>
+          </div>
+          <div style="display:none`:''}
         </div>
         ${estEspeces?`
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#555;padding:5px 0;margin-top:8px;border-top:1px dashed #ddd;padding-top:8px;"><span>Reçu en espèces</span><span>${montantDonne.toFixed(2).replace('.',',')} €</span></div>
