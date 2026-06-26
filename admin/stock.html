@@ -171,6 +171,28 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 @keyframes spin{to{transform:rotate(360deg);}}
 
 @media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.kpi-strip{flex-wrap:wrap;}.kpi{flex:1 1 calc(50% - 5px);}}
+/* CALCULATEUR FRAIS DE PORT */
+.calc-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.calc-modal.open{opacity:1;pointer-events:all;}
+.calc-box{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.calc-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;}
+.calc-title{font-size:14px;font-weight:600;color:var(--t1);}
+.calc-close{width:28px;height:28px;border:none;background:none;color:var(--t3);cursor:pointer;font-size:18px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.calc-close:hover{background:var(--bg4);color:var(--t1);}
+.calc-body{padding:20px;}
+.calc-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.calc-row label{font-size:12px;font-weight:500;color:var(--t2);width:180px;flex-shrink:0;}
+.calc-row input{flex:1;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:7px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
+.calc-row input:focus{border-color:var(--a);}
+.calc-result{background:var(--bg3);border:1px solid var(--ln);border-radius:9px;padding:14px 16px;margin-top:6px;}
+.calc-result-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.calc-result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--ln);}
+.calc-result-row:last-child{border-bottom:none;padding-top:8px;margin-top:4px;}
+.calc-result-label{font-size:12px;color:var(--t2);}
+.calc-result-val{font-size:13px;font-weight:600;color:var(--t1);}
+.calc-result-val.highlight{color:var(--a);font-size:15px;}
+.calc-info{font-size:11px;color:var(--t3);margin-top:12px;padding:10px;background:var(--bg4);border-radius:7px;line-height:1.5;}
+.calc-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;}
 
 /* NOTIFICATIONS */
 .notif-wrap{position:relative;}
@@ -280,6 +302,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <p id="ph-sub">— pièces référencées</p>
         </div>
         <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="openCalc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+            Frais de port
+          </button>
           <button class="btn btn-secondary" onclick="exportCSV()">
             <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Exporter
@@ -431,6 +457,46 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   </div>
 </div>
 
+<!-- CALCULATEUR FRAIS DE PORT -->
+<div class="calc-modal" id="calcModal" onclick="closeCalcOutside(event)">
+  <div class="calc-box">
+    <div class="calc-head">
+      <span class="calc-title">🚚 Calculateur frais de port — Alibaba</span>
+      <button class="calc-close" onclick="closeCalc()">×</button>
+    </div>
+    <div class="calc-body">
+      <div class="calc-row">
+        <label>Nombre de pièces commandées</label>
+        <input type="number" id="c-nb" placeholder="ex : 10" min="1" step="1" oninput="calcPort()"/>
+      </div>
+      <div class="calc-row">
+        <label>Prix total des pièces (€)</label>
+        <input type="number" id="c-total" placeholder="ex : 200.00" min="0" step="0.01" oninput="calcPort()"/>
+      </div>
+      <div class="calc-row">
+        <label>Frais de livraison Alibaba (€)</label>
+        <input type="number" id="c-port" placeholder="ex : 30.00" min="0" step="0.01" oninput="calcPort()"/>
+      </div>
+      <div class="calc-row">
+        <label>Frais de douane / TVA import (€)</label>
+        <input type="number" id="c-douane" placeholder="ex : 0.00" min="0" step="0.01" oninput="calcPort()"/>
+      </div>
+      <div class="calc-result" id="calcResult" style="display:none;">
+        <div class="calc-result-title">Résultat</div>
+        <div class="calc-result-row"><span class="calc-result-label">Coût total commande</span><span class="calc-result-val" id="cr-total">—</span></div>
+        <div class="calc-result-row"><span class="calc-result-label">Frais à répartir (port + douane)</span><span class="calc-result-val" id="cr-frais">—</span></div>
+        <div class="calc-result-row"><span class="calc-result-label">Frais par pièce</span><span class="calc-result-val" id="cr-parpiece">—</span></div>
+        <div class="calc-result-row"><span class="calc-result-label" style="font-weight:600;color:var(--t1);">Prix d'achat réel par pièce</span><span class="calc-result-val highlight" id="cr-final">—</span></div>
+      </div>
+      <div class="calc-info">💡 C'est le <strong>prix d'achat réel par pièce</strong> que tu dois saisir dans ton stock. Il inclut ta part des frais de livraison et de douane, ce qui te donnera une marge correcte lors de tes réparations.</div>
+    </div>
+    <div class="calc-footer">
+      <button class="btn btn-secondary" onclick="resetCalc()" style="flex:1;">Réinitialiser</button>
+      <button class="btn btn-primary" onclick="closeCalc()" style="flex:1;">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -467,6 +533,32 @@ function showToast(msg,type='ok'){
   t.textContent=msg
   t.className='toast show '+(type==='ok'?'ok':'err')
   setTimeout(()=>t.className='toast',3000)
+}
+
+// ─── CALCULATEUR FRAIS DE PORT ───
+function openCalc(){document.getElementById('calcModal').classList.add('open');}
+function closeCalc(){document.getElementById('calcModal').classList.remove('open');}
+function closeCalcOutside(e){if(e.target===document.getElementById('calcModal'))closeCalc();}
+function resetCalc(){
+  ['c-nb','c-total','c-port','c-douane'].forEach(id=>{document.getElementById(id).value=''})
+  document.getElementById('calcResult').style.display='none'
+}
+function calcPort(){
+  const nb=Number(document.getElementById('c-nb').value)||0
+  const total=Number(document.getElementById('c-total').value)||0
+  const port=Number(document.getElementById('c-port').value)||0
+  const douane=Number(document.getElementById('c-douane').value)||0
+  if(nb<=0||total<=0){document.getElementById('calcResult').style.display='none';return}
+  const frais=port+douane
+  const coutTotal=total+frais
+  const fraisParPiece=frais/nb
+  const prixParPiece=total/nb
+  const prixFinal=prixParPiece+fraisParPiece
+  document.getElementById('calcResult').style.display='block'
+  document.getElementById('cr-total').textContent=coutTotal.toFixed(2)+' €'
+  document.getElementById('cr-frais').textContent=frais.toFixed(2)+' €'
+  document.getElementById('cr-parpiece').textContent=fraisParPiece.toFixed(2)+' €'
+  document.getElementById('cr-final').textContent=prixFinal.toFixed(2)+' €'
 }
 
 function openPanel(piece=null){
