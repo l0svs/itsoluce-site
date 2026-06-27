@@ -421,6 +421,820 @@ select option{background:var(--bg3);}
             <div class="field"><div class="field-label"><div class="fl-name">Délai de paiement (jours)</div><div class="fl-desc">Délai affiché sur les factures</div></div><div class="field-input"><input type="number" id="s-delai" placeholder="14" min="0"/></div></div>
           </div>
           <div class="field-group">
+            <div class="fg-head">Formule de prix de vente</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Coefficient sur la pièce</div><div class="fl-desc">Multiplicateur appliqué au prix d'achat (ex : 2)</div></div><div class="field-input"><input type="number" id="s-coef" placeholder="2" min="1" step="0.1" oninput="updateFormulePreview()"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Montant fixe (€)</div><div class="fl-desc">Main d'œuvre + déplacement ajoutés (ex : 20)</div></div><div class="field-input"><input type="number" id="s-fixe" placeholder="20" min="0" step="1" oninput="updateFormulePreview()"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Aperçu</div><div class="fl-desc">Exemple sur une pièce à 50€ d'achat</div></div><div class="field-input"><div id="formule-preview" style="font-size:13px;color:var(--a);font-weight:600;padding:8px 0;">50 × 2 + 20 = 120,00 €</div></div></div>
+          </div>
+          <div class="field-group">
+            <div class="fg-head">Mentions légales</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Mention TVA</div><div class="fl-desc">Affichée en bas de chaque facture</div></div><div class="field-input"><input type="text" id="s-tva" placeholder="TVA non applicable, article 56bis du Code TVA"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">IBAN</div><div class="fl-desc">Compte bancaire pour les virements clients</div></div><div class="field-input"><input type="text" id="s-iban" placeholder="BE02 7320 8265 2640"/></div></div>
+          </div>
+        </div>
+
+        <!-- ALERTES -->
+        <div class="sec" id="sec-alertes">
+          <div class="sec-title">Notifications & Alertes</div>
+          <div class="sec-desc">Configurez les seuils d'alerte et les notifications automatiques.</div>
+          <div class="field-group">
+            <div class="fg-head">Alertes stock</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Seuil d'alerte global</div><div class="fl-desc">Alerte si quantité ≤ cette valeur (par défaut pour toutes les pièces)</div></div><div class="field-input"><input type="number" id="s-seuil" placeholder="2" min="0"/></div></div>
+          </div>
+          <div class="field-group">
+            <div class="fg-head">Notifications par email</div>
+            <div class="field">
+              <div class="field-label"><div class="fl-name">Activer les alertes email</div><div class="fl-desc">Reçois un email quand le stock est bas</div></div>
+              <div class="field-input" style="display:flex;justify-content:flex-end;">
+                <label class="toggle"><input type="checkbox" id="s-alerte-email" onchange="markDirty()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+            </div>
+            <div class="field"><div class="field-label"><div class="fl-name">Email de notification</div><div class="fl-desc">Adresse qui recevra les alertes</div></div><div class="field-input"><input type="email" id="s-alerte-dest" placeholder="contact@itsoluce.be"/></div></div>
+          </div>
+        </div>
+
+        <!-- DONNÉES & SÉCURITÉ -->
+        <div class="sec" id="sec-donnees">
+          <div class="sec-title">Données & Sécurité</div>
+          <div class="sec-desc">Exportez vos données ou gérez les tables de votre ERP.</div>
+
+          <div class="field-group" style="margin-bottom:16px;">
+            <div class="fg-head">Informations système</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Version de l'ERP</div></div><div class="field-input"><input type="text" value="IT Soluce ERP v1.0" disabled style="opacity:.5;cursor:not-allowed;"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Base de données</div></div><div class="field-input"><input type="text" value="Supabase · PostgreSQL" disabled style="opacity:.5;cursor:not-allowed;"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Dernière connexion</div></div><div class="field-input"><input type="text" id="sys-last-login" disabled style="opacity:.5;cursor:not-allowed;"/></div></div>
+          </div>
+
+          <p style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;">Exporter les données</p>
+          <div class="export-grid">
+            <div class="export-card"><div class="export-name">Stock</div><div class="export-desc">Toutes les pièces, quantités et prix</div><button class="btn btn-secondary" onclick="exportTable('stock')">Exporter CSV</button></div>
+            <div class="export-card"><div class="export-name">Réparations</div><div class="export-desc">Historique complet des dossiers</div><button class="btn btn-secondary" onclick="exportTable('reparations')">Exporter CSV</button></div>
+            <div class="export-card"><div class="export-name">Clients</div><div class="export-desc">Base CRM et contacts</div><button class="btn btn-secondary" onclick="exportTable('clients')">Exporter CSV</button></div>
+            <div class="export-card"><div class="export-name">Fournisseurs</div><div class="export-desc">Liste et coordonnées</div><button class="btn btn-secondary" onclick="exportTable('fournisseurs')">Exporter CSV</button></div>
+          </div>
+
+          <div class="danger-zone">
+            <div class="dz-title">⚠️ Zone dangereuse</div>
+            <div class="dz-row"><div><div class="dz-info">Vider la table Stock</div><div class="dz-sub">Supprime toutes les pièces référencées</div></div><button class="btn btn-danger" onclick="resetTable('stock')">Vider</button></div>
+            <div class="dz-row"><div><div class="dz-info">Vider les Réparations</div><div class="dz-sub">Supprime tous les dossiers de réparation</div></div><button class="btn btn-danger" onclick="resetTable('reparations')">Vider</button></div>
+            <div class="dz-row"><div><div class="dz-info">Vider les Tâches</div><div class="dz-sub">Supprime toutes les tâches</div></div><button class="btn btn-danger" onclick="resetTable('taches')">Vider</button></div>
+          </div>
+        </div>
+
+      </div><!-- end settings-content -->
+
+      <!-- SAVE BAR -->
+      <div class="save-bar" id="saveBar">
+        <span class="save-bar-msg">Modifications non sauvegardées</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="cancelChanges()">Annuler</button>
+          <button class="btn btn-primary" onclick="saveSettings()">Sauvegarder</button>
+        </div>
+      </div>
+
+    </div><!-- end settings-wrap -->
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// MODE
+function applyMode(m){
+  const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
+  document.documentElement.setAttribute('data-mode',e)
+  const lv=e==='light'
+  const v=(a,b)=>lv?a:b
+  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
+  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
+  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
+  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
+  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
+  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
+  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
+  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
+  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
+}
+function setMode(m){
+  localStorage.setItem('erp-m',m)
+  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m))
+  applyMode(m)
+  if(document.getElementById('s-mode'))document.getElementById('s-mode').value=m
+  markDirty()
+}
+function applyModeSelect(m){setMode(m)}
+
+const sm=localStorage.getItem('erp-m')||'auto'
+document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
+applyMode(sm)
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
+
+// ACCENT
+function applyAccent(c,d){
+  document.documentElement.style.setProperty('--a',c)
+  document.documentElement.style.setProperty('--ad',d)
+  localStorage.setItem('erp-a',c)
+  localStorage.setItem('erp-d',d)
+}
+function pickColor(el){
+  document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('on'))
+  el.classList.add('on')
+  applyAccent(el.dataset.c,el.dataset.d)
+  markDirty()
+}
+const sa=localStorage.getItem('erp-a')
+const sd=localStorage.getItem('erp-d')
+if(sa){applyAccent(sa,sd)}
+
+// SECTION NAV
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('visible'))
+  document.getElementById('sec-'+id).classList.add('visible')
+  document.querySelectorAll('.sn-item').forEach(b=>b.classList.remove('active'))
+  event.currentTarget.classList.add('active')
+}
+
+// DIRTY
+let dirty=false
+let originalValues={}
+function markDirty(){
+  dirty=true
+  document.getElementById('saveBar').classList.add('visible')
+}
+function cancelChanges(){
+  dirty=false
+  document.getElementById('saveBar').classList.remove('visible')
+  // Restaurer les valeurs
+  Object.entries(originalValues).forEach(([id,val])=>{
+    const el=document.getElementById(id)
+    if(el&&el.type==='checkbox')el.checked=val==='true'
+    else if(el)el.value=val
+  })
+}
+
+// TOAST
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='toast show '+(type==='ok'?'ok':'err')
+  setTimeout(()=>t.className='toast',3000)
+}
+
+// SECTION CHANGE
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('visible'))
+  document.getElementById('sec-'+id).classList.add('visible')
+  document.querySelectorAll('.sn-item').forEach(b=>b.classList.remove('active'))
+  event.currentTarget.classList.add('active')
+}
+function updateFormulePreview(){
+  const coef=Number(document.getElementById('s-coef').value)||2
+  const fixe=Number(document.getElementById('s-fixe').value)||20
+  const ex=50*coef+fixe
+  const el=document.getElementById('formule-preview')
+  if(el)el.textContent=`50 × ${coef} + ${fixe} = ${ex.toFixed(2).replace('.',',')} €`
+}
+</script>
+
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const sb=createClient(SB,SK)
+
+
+// ── SYSTÈME DE NOTIFICATIONS ──
+async function loadNotifs(){
+  try {
+    const [rRep,rStock,rTask]=await Promise.all([
+      sb.from('reparations').select('id,client_nom,appareil,statut,vue,created_at'),
+      sb.from('stock').select('id,nom,quantite,seuil_alerte'),
+      sb.from('taches').select('id,titre,priorite,faite')
+    ]);
+    const reps=rRep.data||[], stock=rStock.data||[], tasks=rTask.data||[];
+    const notifs=[];
+    const now=new Date();
+
+    // Nouvelles demandes (vue=false)
+    reps.filter(r=>r.vue===false).forEach(r=>{
+      notifs.push({type:'new',ico:'🆕',cls:'ni-new',txt:`Nouvelle demande de ${r.client_nom}`,sub:`${r.appareil||'Appareil'} · ${new Date(r.created_at).toLocaleDateString('fr-BE')}`,link:'/admin/reparations.html'});
+    });
+
+    // Réparations bloquées (statut recu depuis +3 jours et déjà vue)
+    reps.filter(r=>r.statut==='recu'&&r.vue!==false).forEach(r=>{
+      const days=Math.floor((now-new Date(r.created_at))/(1000*60*60*24));
+      if(days>=3)notifs.push({type:'time',ico:'⏰',cls:'ni-time',txt:`${r.client_nom} en attente depuis ${days}j`,sub:`Statut « Reçu » non traité`,link:'/admin/reparations.html'});
+    });
+
+    // Stock rupture/faible
+    stock.filter(p=>Number(p.quantite)===0).forEach(p=>{
+      notifs.push({type:'stock',ico:'📦',cls:'ni-stock',txt:`Rupture : ${p.nom}`,sub:`Stock épuisé · à recommander`,link:'/admin/stock.html'});
+    });
+    stock.filter(p=>Number(p.quantite)>0&&Number(p.quantite)<=Number(p.seuil_alerte)).forEach(p=>{
+      notifs.push({type:'stock',ico:'📦',cls:'ni-stock',txt:`Stock faible : ${p.nom}`,sub:`${p.quantite} restant(s) · seuil ${p.seuil_alerte}`,link:'/admin/stock.html'});
+    });
+
+    // Tâches urgentes
+    tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+    });
+
+    renderNotifs(notifs);
+  } catch(e){ console.warn('Notifs:',e); }
+}
+
+function renderNotifs(notifs){
+  const count=document.getElementById('notifCount');
+  const list=document.getElementById('notifList');
+  if(!count||!list)return;
+  // Le compteur ne compte que les nouvelles demandes (vue=false) + urgences
+  const unread=notifs.filter(n=>n.type==='new').length;
+  if(unread>0){count.textContent=unread;count.classList.remove('hidden');}
+  else{count.classList.add('hidden');}
+  if(notifs.length===0){
+    list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
+    return;
+  }
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+}
+
+window.markAllRead=async function(){
+  try {
+    const {data}=await sb.from('reparations').select('id').eq('vue',false);
+    if(data&&data.length){
+      const ids=data.map(r=>r.id);
+      await sb.from('reparations').update({vue:true}).in('id',ids);
+    }
+    document.getElementById('notifPanel').classList.remove('open');
+    loadNotifs();
+  } catch(e){ console.warn(e); }
+}
+
+loadNotifs();
+
+// Auth
+const {data:{session}}=await sb.auth.getSession()
+if(!session){window.location.href='/admin/login.html'}
+
+const email=session.user.email
+document.getElementById('uEmail').textContent=email
+document.getElementById('uAv').textContent=email[0].toUpperCase()
+document.getElementById('s-compte-email').value=email
+
+const loginTime=new Date(session.user.last_sign_in_at||Date.now()).toLocaleString('fr-BE')
+document.getElementById('s-last-login').value=loginTime
+document.getElementById('sys-last-login').value=loginTime
+
+// Charger les settings
+const {data:rows}=await sb.from('settings').select('*')
+const cfg={}
+if(rows)rows.forEach(r=>{cfg[r.cle]=r.valeur})
+
+// Remplir les champs
+function fill(id,cle){
+  const el=document.getElementById(id)
+  if(!el)return
+  const val=cfg[cle]||''
+  if(el.type==='checkbox')el.checked=val==='true'
+  else el.value=val
+  window.originalValues=window.originalValues||{}
+  window.originalValues[id]=val
+}
+fill('s-nom','entreprise_nom')
+fill('s-statut','entreprise_statut')
+fill('s-bce','entreprise_bce')
+fill('s-adresse','entreprise_adresse')
+fill('s-email','entreprise_email')
+fill('s-telephone','entreprise_telephone')
+fill('s-site','entreprise_site')
+fill('s-mode','apparence_mode')
+fill('s-taux','finance_taux_horaire')
+fill('s-devise','finance_devise')
+fill('s-delai','finance_delai_paiement')
+fill('s-tva','finance_mention_tva')
+fill('s-iban','finance_iban')
+// Formule de prix (défaut 2 et 20, sync localStorage)
+const coefVal=cfg['finance_coef']||localStorage.getItem('erp-coef')||'2'
+const fixeVal=cfg['finance_fixe']||localStorage.getItem('erp-fixe')||'20'
+document.getElementById('s-coef').value=coefVal
+document.getElementById('s-fixe').value=fixeVal
+localStorage.setItem('erp-coef',coefVal)
+localStorage.setItem('erp-fixe',fixeVal)
+window.originalValues['s-coef']=coefVal
+window.originalValues['s-fixe']=fixeVal
+if(typeof updateFormulePreview==='function')updateFormulePreview()
+fill('s-rayon','intervention_rayon')
+fill('s-km','intervention_frais_km')
+fill('s-four-iphone','fournisseur_default_iphone')
+fill('s-four-samsung','fournisseur_default_samsung')
+fill('s-four-outillage','fournisseur_default_outillage')
+fill('s-seuil','alertes_seuil_global')
+fill('s-alerte-email','alertes_email_actif')
+fill('s-alerte-dest','alertes_email_destinataire')
+
+// Couleur accent sauvegardée
+const savedAccent=cfg['apparence_accent']||'#3b82f6'
+const savedDim=cfg['apparence_accent_dim']||'rgba(59,130,246,0.12)'
+document.querySelectorAll('.color-opt').forEach(el=>{
+  el.classList.toggle('on',el.dataset.c===savedAccent)
+})
+
+
+
+// Marquer dirty sur chaque input
+document.querySelectorAll('input:not([disabled]),select:not([disabled]),textarea:not([disabled])').forEach(el=>{
+  el.addEventListener('input',()=>window.markDirty())
+  el.addEventListener('change',()=>window.markDirty())
+})
+
+// Charger utilisateurs
+const {data:users}=await sb.auth.admin?.listUsers?.()??{data:null}
+const usersList=document.getElementById('users-list')
+// Afficher les utilisateurs connus (depuis la table auth via user_email)
+const knownUsers=[
+  {email:'linton@itsoluce.be',role:'Administrateur'},
+  {email:'pauline@itsoluce.be',role:'Éditeur'}
+]
+usersList.innerHTML=knownUsers.map(u=>`
+  <div class="user-row">
+    <div class="u-av">${u.email[0].toUpperCase()}</div>
+    <div class="u-info"><div class="u-name">${u.email}</div><div class="u-email">${u.email===email?'Compte actuel':''}</div></div>
+    <span class="u-role ${u.role==='Éditeur'?'editor':''}">${u.role}</span>
+    ${u.email!==email?`<button class="btn btn-danger" onclick="deleteUser('${u.email}')" style="font-size:11px;padding:4px 10px;">Supprimer</button>`:'<span style="font-size:11px;color:var(--t3);">Vous</span>'}
+  </div>`).join('')
+
+// Sauvegarder
+window.saveSettings=async function(){
+  const pairs=[
+    ['entreprise_nom','s-nom'],['entreprise_statut','s-statut'],['entreprise_bce','s-bce'],
+    ['entreprise_adresse','s-adresse'],['entreprise_email','s-email'],['entreprise_telephone','s-telephone'],
+    ['entreprise_site','s-site'],['apparence_mode','s-mode'],
+    ['finance_taux_horaire','s-taux'],['finance_devise','s-devise'],['finance_delai_paiement','s-delai'],
+    ['finance_mention_tva','s-tva'],['finance_iban','s-iban'],['intervention_rayon','s-rayon'],
+    ['intervention_frais_km','s-km'],['fournisseur_default_iphone','s-four-iphone'],
+    ['fournisseur_default_samsung','s-four-samsung'],['fournisseur_default_outillage','s-four-outillage'],
+    ['alertes_seuil_global','s-seuil'],['alertes_email_actif','s-alerte-email'],
+    ['alertes_email_destinataire','s-alerte-dest']
+  ]
+  // Accent
+  const activeColor=document.querySelector('.color-opt.on')
+  if(activeColor){
+    pairs.push(['apparence_accent',null])
+    pairs.push(['apparence_accent_dim',null])
+    await sb.from('settings').upsert({cle:'apparence_accent',valeur:activeColor.dataset.c},{onConflict:'cle'})
+    await sb.from('settings').upsert({cle:'apparence_accent_dim',valeur:activeColor.dataset.d},{onConflict:'cle'})
+  }
+  const updates=pairs.filter(([,id])=>id).map(([cle,id])=>{
+    const el=document.getElementById(id)
+    return{cle,valeur:el?el.type==='checkbox'?String(el.checked):el.value:''}
+  })
+  const {error}=await sb.from('settings').upsert(updates,{onConflict:'cle'})
+  // Formule de prix de vente (localStorage + Supabase)
+  const coef=document.getElementById('s-coef').value||'2'
+  const fixe=document.getElementById('s-fixe').value||'20'
+  localStorage.setItem('erp-coef',coef)
+  localStorage.setItem('erp-fixe',fixe)
+  await sb.from('settings').upsert([{cle:'finance_coef',valeur:coef},{cle:'finance_fixe',valeur:fixe}],{onConflict:'cle'})
+  if(error){showToast('Erreur : '+error.message,'err')}
+  else{
+    window.dirty=false
+    document.getElementById('saveBar').classList.remove('visible')
+    showToast('Paramètres sauvegardés ✓','ok')
+    // Mettre à jour originalValues
+    updates.forEach(u=>{
+      const pair=pairs.find(([cle])=>cle===u.cle)
+      if(pair&&pair[1])window.originalValues[pair[1]]=u.valeur
+    })
+  }
+}
+
+// Changer MDP
+window.changePassword=async function(){
+  const pwd=document.getElementById('s-mdp').value
+  const pwd2=document.getElementById('s-mdp2').value
+  if(!pwd){showToast('Entrez un mot de passe','err');return}
+  if(pwd!==pwd2){showToast('Les mots de passe ne correspondent pas','err');return}
+  if(pwd.length<8){showToast('Minimum 8 caractères','err');return}
+  const {error}=await sb.auth.updateUser({password:pwd})
+  if(error)showToast('Erreur : '+error.message,'err')
+  else{
+    showToast('Mot de passe mis à jour ✓','ok')
+    document.getElementById('s-mdp').value=''
+    document.getElementById('s-mdp2').value=''
+  }
+}
+
+// Ajouter utilisateur
+window.addUser=async function(){
+  const em=document.getElementById('new-user-email').value.trim()
+  const pw=document.getElementById('new-user-pwd').value
+  if(!em||!pw){showToast('Email et mot de passe requis','err');return}
+  if(pw.length<8){showToast('Mot de passe : minimum 8 caractères','err');return}
+  showToast('Fonctionnalité nécessitant une clé service_role Supabase — à configurer côté backend.','err')
+}
+
+// Supprimer utilisateur
+window.deleteUser=async function(userEmail){
+  if(!confirm(`Supprimer définitivement ${userEmail} ?`))return
+  showToast('Fonctionnalité nécessitant une clé service_role Supabase — à configurer côté backend.','err')
+}
+
+// Export CSV
+window.exportTable=async function(table){
+  const {data,error}=await sb.from(table).select('*')
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  if(!data||data.length===0){showToast('Aucune donnée à exporter','err');return}
+  const cols=Object.keys(data[0])
+  const csv=[cols.join(','),...data.map(r=>cols.map(c=>`"${String(r[c]||'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const a=document.createElement('a')
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download=`itsoluce_${table}_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  showToast(`Export ${table} téléchargé ✓`,'ok')
+}
+
+// Reset table
+window.resetTable=async function(table){
+  if(!confirm(`⚠️ Vider définitivement la table "${table}" ? Cette action est irréversible.`))return
+  const {data}=await sb.from(table).select('id')
+  if(!data||data.length===0){showToast('Table déjà vide','ok');return}
+  const ids=data.map(r=>r.id)
+  const {error}=await sb.from(table).delete().in('id',ids)
+  if(error)showToast('Erreur : '+error.message,'err')
+  else showToast(`Table ${table} vidée ✓`,'ok')
+}
+
+// Logout
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
+// Afficher
+document.getElementById('ldr').style.display='none'
+document.getElementById('settingsWrap').style.display='flex'
+</script>
+
+<script>
+window.toggleNotifs=function(e){
+  e.stopPropagation();
+  const p=document.getElementById('notifPanel');
+  p.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  const p=document.getElementById('notifPanel');
+  if(p&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
+});
+</script>
+
+</body>
+</html>.sn-item.active{color:var(--a);background:var(--ad);}
+.sn-item svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}
+.sn-item.active svg{opacity:1;}
+.sn-group{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;padding:12px 16px 4px;}
+
+/* SETTINGS CONTENT */
+.settings-content{flex:1;overflow-y:auto;padding:28px 32px;max-width:900px;}
+
+/* SECTION */
+.sec{display:none;}
+.sec.visible{display:block;}
+.sec-title{font-size:16px;font-weight:600;color:var(--t1);letter-spacing:-.3px;margin-bottom:4px;}
+.sec-desc{font-size:12px;color:var(--t3);margin-bottom:24px;}
+
+/* FIELD GROUP */
+.field-group{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.fg-head{padding:12px 16px;border-bottom:1px solid var(--ln);font-size:12px;font-weight:600;color:var(--t1);}
+.field{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--ln);gap:16px;}
+.field:last-child{border-bottom:none;}
+.field-label{flex:1;}
+.fl-name{font-size:12px;color:var(--t1);font-weight:500;}
+.fl-desc{font-size:11px;color:var(--t3);margin-top:2px;}
+.field-input{flex-shrink:0;min-width:240px;}
+
+/* INPUTS */
+input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="url"],input[type="password"],select,textarea{
+  width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--a);}
+textarea{resize:vertical;min-height:60px;}
+select option{background:var(--bg3);}
+
+/* TOGGLE */
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(--bg4);border:1px solid var(--ln2);border-radius:99px;cursor:pointer;transition:all .2s;}
+.toggle input:checked+.toggle-track{background:var(--a);border-color:var(--a);}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none;}
+.toggle input:checked~.toggle-thumb{transform:translateX(16px);}
+
+/* COULEURS */
+.color-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
+.color-opt:hover{transform:scale(1.15);}
+.color-opt.on{border-color:var(--t1);transform:scale(1.1);}
+
+/* BOUTONS */
+.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;}
+.btn-primary{background:var(--a);color:#fff;}
+.btn-primary:hover{opacity:.85;}
+.btn-secondary{background:var(--bg4);color:var(--t2);border:1px solid var(--ln2);}
+.btn-secondary:hover{color:var(--t1);border-color:var(--ln2);}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
+.btn-danger:hover{background:rgba(248,113,113,.2);}
+.btn-success{background:rgba(52,211,153,.12);color:var(--ok);border:1px solid rgba(52,211,153,.2);}
+.btn-success:hover{background:rgba(52,211,153,.2);}
+
+/* SAVE BAR */
+.save-bar{display:none;position:sticky;bottom:0;background:var(--bg2);border-top:1px solid var(--ln);padding:12px 32px;flex-shrink:0;align-items:center;justify-content:space-between;gap:12px;}
+.save-bar.visible{display:flex;}
+.save-bar-msg{font-size:12px;color:var(--t2);}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}
+.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
+
+/* UTILISATEURS */
+.user-card{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.user-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--ln);gap:12px;}
+.user-row:last-child{border-bottom:none;}
+.u-av{width:32px;height:32px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.u-info{flex:1;}
+.u-name{font-size:13px;color:var(--t1);font-weight:500;}
+.u-email{font-size:11px;color:var(--t3);}
+.u-role{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;background:var(--ad);color:var(--a);}
+.u-role.editor{background:rgba(251,191,36,.12);color:var(--w);}
+
+/* INTÉGRATIONS */
+.int-row{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--ln);gap:12px;}
+.int-row:last-child{border-bottom:none;}
+.int-ico{width:36px;height:36px;border-radius:8px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.int-info{flex:1;}
+.int-name{font-size:13px;font-weight:500;color:var(--t1);}
+.int-desc{font-size:11px;color:var(--t3);margin-top:2px;}
+
+/* EXPORT */
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.export-card{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.export-name{font-size:13px;font-weight:500;color:var(--t1);}
+.export-desc{font-size:11px;color:var(--t3);}
+
+/* DANGER ZONE */
+.danger-zone{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:8px;padding:16px;margin-bottom:16px;}
+.dz-title{font-size:12px;font-weight:600;color:var(--d);margin-bottom:12px;}
+.dz-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(248,113,113,.1);}
+.dz-row:last-child{border-bottom:none;}
+.dz-info{font-size:12px;color:var(--t1);}
+.dz-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+
+/* INFO BOX */
+.info-box{background:var(--ad);border:1px solid var(--a);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--t1);margin-bottom:16px;display:flex;gap:8px;align-items:flex-start;}
+
+/* LOADER */
+.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
+.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:900px){.settings-nav{display:none;}.settings-content{padding:20px 16px;}}
+@media(max-width:640px){.sidebar{display:none;}.export-grid{grid-template-columns:1fr;}}
+
+/* NOTIFICATIONS */
+.notif-wrap{position:relative;}
+.notif-bell{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--ln2);border-radius:8px;background:var(--bg3);color:var(--t2);cursor:pointer;transition:all .12s;position:relative;}
+.notif-bell:hover{color:var(--t1);background:var(--bg4);}
+.notif-bell svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.notif-count{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:99px;background:var(--d);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg2);}
+.notif-count.hidden{display:none;}
+.notif-panel{position:absolute;top:42px;right:0;width:340px;max-height:440px;background:var(--bg2);border:1px solid var(--ln2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.35);z-index:300;display:none;flex-direction:column;overflow:hidden;}
+.notif-panel.open{display:flex;}
+.notif-head{padding:12px 14px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.notif-title{font-size:13px;font-weight:600;color:var(--t1);}
+.notif-clear{font-size:11px;color:var(--a);cursor:pointer;background:none;border:none;font-family:inherit;}
+.notif-clear:hover{text-decoration:underline;}
+.notif-list{flex:1;overflow-y:auto;}
+.notif-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--ln);cursor:pointer;transition:background .1s;text-decoration:none;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item:hover{background:var(--bg3);}
+.notif-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ni-new{background:rgba(59,130,246,.15);}
+.ni-stock{background:rgba(251,191,36,.15);}
+.ni-time{background:rgba(248,113,113,.15);}
+.ni-task{background:rgba(52,211,153,.15);}
+.notif-body{flex:1;min-width:0;}
+.notif-txt{font-size:12px;color:var(--t1);line-height:1.4;}
+.notif-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.notif-empty{padding:36px 14px;text-align:center;color:var(--t3);font-size:12px;}
+.notif-empty-ico{font-size:24px;margin-bottom:8px;opacity:.4;}
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="/admin/dashboard.html" class="logo">
+    <span class="logo-m">IT</span><span class="logo-sep"></span><span class="logo-s">SOLUCE</span>
+  </a>
+  <div class="tb-div"></div>
+  <span class="tb-badge">ERP</span>
+  <button onclick="history.length>1?history.back():location.href='/admin/dashboard.html'" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t2)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Retour</button>
+  <div class="tb-crumb">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/admin/dashboard.html">Dashboard</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span>Paramètres</span>
+  </div>
+  <div class="tb-r">
+    <div class="mstrip">
+      <button class="mbtn" data-m="light" onclick="setMode('light')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <button class="mbtn on" data-m="auto" onclick="setMode('auto')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" stroke="none"/></svg></button>
+      <button class="mbtn" data-m="dark" onclick="setMode('dark')"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <div class="tb-div"></div>
+    <div class="upill"><div class="uav" id="uAv">—</div><span id="uEmail" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span></div>
+    <button class="bout" onclick="doLogout()">Quitter</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR PRINCIPALE -->
+  <aside class="sidebar">
+    <div class="ng"><div class="ngl">Vue d'ensemble</div><a href="/admin/dashboard.html" class="nl "><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a></div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Opérations</div>
+      <a href="/admin/stock.html" class="nl "><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-stock">—</span></a>
+      <a href="/admin/reparations.html" class="nl "><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-actives">—</span></a>
+      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
+      <a href="/admin/clients.html" class="nl "><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc" id="nb-cli">—</span></a>
+      <a href="/admin/fournisseurs.html" class="nl "><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Finance</div>
+      <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges</a>
+      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
+      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+      <a href="/admin/performance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Performance</a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Communication</div>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
+    </div>
+    <div class="nhr"></div>
+    <div class="ng">
+      <div class="ngl">Gestion</div>
+      <a href="/admin/taches.html" class="nl"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</a>
+      <a href="/admin/settings.html" class="nl active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
+    </div>
+    <div class="sf">IT Soluce ERP · v1.0</div>
+  </aside>
+
+  <!-- CONTENU -->
+  <main class="content">
+    <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
+    <div class="settings-wrap" id="settingsWrap" style="display:none;">
+
+      <!-- NAV SETTINGS -->
+      <nav class="settings-nav">
+        <div class="sn-group">Général</div>
+        <button class="sn-item active" onclick="showSec('entreprise')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Entreprise</button>
+        <button class="sn-item" onclick="showSec('apparence')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>Apparence</button>
+        <button class="sn-item" onclick="showSec('compte')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Compte</button>
+        <div class="sn-group">Équipe</div>
+        <button class="sn-item" onclick="showSec('utilisateurs')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utilisateurs</button>
+        <button class="sn-item" onclick="showSec('integrations')"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Intégrations</button>
+        <div class="sn-group">Finance</div>
+        <button class="sn-item" onclick="showSec('facturation')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Facturation</button>
+        <div class="sn-group">Système</div>
+        <button class="sn-item" onclick="showSec('alertes')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alertes</button>
+        <button class="sn-item" onclick="showSec('donnees')"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Données & Sécurité</button>
+      </nav>
+
+      <!-- SECTIONS -->
+      <div class="settings-content" id="settingsContent">
+
+        <!-- ENTREPRISE -->
+        <div class="sec visible" id="sec-entreprise">
+          <div class="sec-title">Entreprise</div>
+          <div class="sec-desc">Informations générales sur IT Soluce. Ces données apparaissent sur vos factures et devis.</div>
+          <div class="field-group">
+            <div class="fg-head">Identité</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Nom de l'entreprise</div></div><div class="field-input"><input type="text" id="s-nom" placeholder="IT Soluce"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Statut juridique</div></div><div class="field-input"><input type="text" id="s-statut" placeholder="Indépendant complémentaire"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Numéro BCE</div><div class="fl-desc">Format : BE 0XXX.XXX.XXX</div></div><div class="field-input"><input type="text" id="s-bce" placeholder="En attente d'attribution"/></div></div>
+          </div>
+          <div class="field-group">
+            <div class="fg-head">Coordonnées</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Adresse</div></div><div class="field-input"><input type="text" id="s-adresse" placeholder="Chaussée d'Hondzocht 164, 1480 Tubize"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Email professionnel</div></div><div class="field-input"><input type="email" id="s-email" placeholder="contact@itsoluce.be"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Téléphone</div></div><div class="field-input"><input type="tel" id="s-telephone" placeholder="+32 474 05 66 59"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Site web</div></div><div class="field-input"><input type="url" id="s-site" placeholder="https://itsoluce.be"/></div></div>
+          </div>
+        </div>
+
+        <!-- APPARENCE -->
+        <div class="sec" id="sec-apparence">
+          <div class="sec-title">Apparence</div>
+          <div class="sec-desc">Personnalise les couleurs et le mode d'affichage de l'ERP.</div>
+          <div class="field-group">
+            <div class="fg-head">Couleur d'accent</div>
+            <div class="field">
+              <div class="field-label"><div class="fl-name">Couleur principale</div><div class="fl-desc">Appliquée aux boutons, liens et éléments actifs</div></div>
+              <div class="field-input">
+                <div class="color-grid">
+                  <div class="color-opt on" data-c="#3b82f6" data-d="rgba(59,130,246,0.12)" style="background:#3b82f6;" onclick="pickColor(this)" title="Bleu"></div>
+                  <div class="color-opt" data-c="#34d399" data-d="rgba(52,211,153,0.12)" style="background:#34d399;" onclick="pickColor(this)" title="Vert"></div>
+                  <div class="color-opt" data-c="#a78bfa" data-d="rgba(167,139,250,0.12)" style="background:#a78bfa;" onclick="pickColor(this)" title="Violet"></div>
+                  <div class="color-opt" data-c="#fbbf24" data-d="rgba(251,191,36,0.12)" style="background:#fbbf24;" onclick="pickColor(this)" title="Ambre"></div>
+                  <div class="color-opt" data-c="#f87171" data-d="rgba(248,113,113,0.12)" style="background:#f87171;" onclick="pickColor(this)" title="Rouge"></div>
+                  <div class="color-opt" data-c="#06b6d4" data-d="rgba(6,182,212,0.12)" style="background:#06b6d4;" onclick="pickColor(this)" title="Cyan"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="fg-head">Mode d'affichage</div>
+            <div class="field">
+              <div class="field-label"><div class="fl-name">Thème par défaut</div><div class="fl-desc">Auto = s'adapte à l'heure (clair 7h–20h, sombre 20h–7h)</div></div>
+              <div class="field-input">
+                <select id="s-mode" onchange="applyModeSelect(this.value)">
+                  <option value="auto">Auto (jour/nuit)</option>
+                  <option value="light">Toujours clair</option>
+                  <option value="dark">Toujours sombre</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMPTE -->
+        <div class="sec" id="sec-compte">
+          <div class="sec-title">Compte</div>
+          <div class="sec-desc">Gérez les informations de votre compte personnel.</div>
+          <div class="field-group">
+            <div class="fg-head">Informations</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Adresse email</div><div class="fl-desc">Votre identifiant de connexion</div></div><div class="field-input"><input type="email" id="s-compte-email" disabled style="opacity:.5;cursor:not-allowed;"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Rôle</div></div><div class="field-input"><input type="text" id="s-compte-role" disabled value="Administrateur" style="opacity:.5;cursor:not-allowed;"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Dernière connexion</div></div><div class="field-input"><input type="text" id="s-last-login" disabled style="opacity:.5;cursor:not-allowed;"/></div></div>
+          </div>
+          <div class="field-group">
+            <div class="fg-head">Sécurité</div>
+            <div class="field">
+              <div class="field-label"><div class="fl-name">Nouveau mot de passe</div><div class="fl-desc">Laissez vide pour ne pas changer</div></div>
+              <div class="field-input"><input type="password" id="s-mdp" placeholder="Nouveau mot de passe"/></div>
+            </div>
+            <div class="field">
+              <div class="field-label"><div class="fl-name">Confirmer le mot de passe</div></div>
+              <div class="field-input"><input type="password" id="s-mdp2" placeholder="Confirmer"/></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()" style="margin-bottom:16px;">Mettre à jour le mot de passe</button>
+          <div class="field-group">
+            <div class="fg-head">Session</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Se déconnecter</div><div class="fl-desc">Ferme la session sur cet appareil</div></div><div class="field-input"><button class="btn btn-danger" onclick="doLogout()">Se déconnecter</button></div></div>
+          </div>
+        </div>
+
+        <!-- UTILISATEURS -->
+        <div class="sec" id="sec-utilisateurs">
+          <div class="sec-title">Utilisateurs</div>
+          <div class="sec-desc">Gérez les accès à l'ERP. Chaque utilisateur a ses propres identifiants.</div>
+          <div class="info-box"><span>⚠️</span><span>La suppression d'un utilisateur est définitive. Assurez-vous avant de supprimer un compte.</span></div>
+          <div id="users-list" class="user-card"></div>
+          <div class="field-group" style="margin-top:16px;">
+            <div class="fg-head">Ajouter un utilisateur</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Email</div></div><div class="field-input"><input type="email" id="new-user-email" placeholder="email@exemple.com"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Mot de passe temporaire</div></div><div class="field-input"><input type="password" id="new-user-pwd" placeholder="Min. 8 caractères"/></div></div>
+            <div class="field"><div class="field-label"></div><div class="field-input"><button class="btn btn-primary" onclick="addUser()">Ajouter l'utilisateur</button></div></div>
+          </div>
+        </div>
+
+        <!-- INTÉGRATIONS -->
+        <div class="sec" id="sec-integrations">
+          <div class="sec-title">Intégrations</div>
+          <div class="sec-desc">Services connectés à votre ERP IT Soluce.</div>
+          <div class="field-group">
+            <div class="int-row"><div class="int-ico">🗄️</div><div class="int-info"><div class="int-name">Supabase</div><div class="int-desc">Base de données cloud · esltsiutcjcwdbhkkvms.supabase.co</div></div><span class="btn btn-success" style="flex-shrink:0;cursor:default;">Connecté</span></div>
+            <div class="int-row"><div class="int-ico">🌐</div><div class="int-info"><div class="int-name">itsoluce.be</div><div class="int-desc">Site web public · GitHub Pages</div></div><a href="https://itsoluce.be" target="_blank" class="btn btn-secondary" style="flex-shrink:0;">Visiter</a></div>
+            <div class="int-row"><div class="int-ico">📧</div><div class="int-info"><div class="int-name">Email OVH Zimbra</div><div class="int-desc">contact@itsoluce.be</div></div><a href="https://webmail.ovh.net" target="_blank" class="btn btn-secondary" style="flex-shrink:0;">Webmail</a></div>
+            <div class="int-row"><div class="int-ico">💳</div><div class="int-info"><div class="int-name">SumUp</div><div class="int-desc">Terminal de paiement · Tap to Pay iPhone 16 Pro</div></div><span class="btn btn-success" style="flex-shrink:0;cursor:default;">Configuré</span></div>
+          </div>
+        </div>
+
+        <!-- FACTURATION -->
+        <div class="sec" id="sec-facturation">
+          <div class="sec-title">Facturation & Finance</div>
+          <div class="sec-desc">Paramètres financiers utilisés dans vos devis et factures.</div>
+          <div class="field-group">
+            <div class="fg-head">Tarification</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Taux horaire main d'œuvre</div><div class="fl-desc">Utilisé pour le calcul automatique des devis</div></div><div class="field-input"><input type="number" id="s-taux" placeholder="40" min="0" step="5"/></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Devise</div></div><div class="field-input"><select id="s-devise"><option value="EUR">EUR — Euro (€)</option><option value="USD">USD — Dollar ($)</option></select></div></div>
+            <div class="field"><div class="field-label"><div class="fl-name">Délai de paiement (jours)</div><div class="fl-desc">Délai affiché sur les factures</div></div><div class="field-input"><input type="number" id="s-delai" placeholder="14" min="0"/></div></div>
+          </div>
+          <div class="field-group">
             <div class="fg-head">Mentions légales</div>
             <div class="field"><div class="field-label"><div class="fl-name">Mention TVA</div><div class="fl-desc">Affichée en bas de chaque facture</div></div><div class="field-input"><input type="text" id="s-tva" placeholder="TVA non applicable, article 56bis du Code TVA"/></div></div>
             <div class="field"><div class="field-label"><div class="fl-name">IBAN</div><div class="fl-desc">Compte bancaire pour les virements clients</div></div><div class="field-input"><input type="text" id="s-iban" placeholder="BE02 7320 8265 2640"/></div></div>
