@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Garanties</title>
+<title>IT Soluce ERP — Relances</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,24 +155,31 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* TABLEAU */
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.table{width:100%;border-collapse:collapse;}
-.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
-.empty{padding:60px 24px;text-align:center;}
-/* GARANTIE BADGES */
-.gar-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;white-space:nowrap;}
-.gar-ok{background:rgba(52,211,153,0.13);color:#16a34a;}
-.gar-expire{background:rgba(248,113,113,0.13);color:#dc2626;}
-.gar-dot{width:7px;height:7px;border-radius:50%;}
-.gar-ok .gar-dot{background:#16a34a;}
-.gar-expire .gar-dot{background:#dc2626;}
-.gar-bar{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:5px;width:120px;}
-.gar-bar-fill{height:100%;border-radius:99px;transition:width .3s;}
+/* RELANCES */
+.rl-wrap{flex:1;overflow-y:auto;padding:8px 24px 24px;}
+.rl-intro{font-size:12px;color:var(--t3);margin-bottom:16px;line-height:1.5;max-width:680px;}
+.rl-row{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--bg2);border:1px solid var(--ln);border-radius:10px;margin-bottom:8px;transition:border-color .12s;}
+.rl-row:hover{border-color:var(--ln2);}
+.rl-row.done{opacity:.55;}
+.rl-av{width:38px;height:38px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex-shrink:0;}
+.rl-main{flex:1;min-width:0;}
+.rl-nom{font-size:13px;font-weight:600;color:var(--t1);}
+.rl-detail{font-size:11px;color:var(--t3);margin-top:2px;}
+.rl-since{font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;flex-shrink:0;}
+.rl-since.urgent{background:rgba(248,113,113,.12);color:var(--d);}
+.rl-since.normal{background:rgba(251,191,36,.12);color:var(--w);}
+.rl-since.ok{background:var(--ad);color:var(--a);}
+.rl-actions{display:flex;gap:6px;flex-shrink:0;}
+.rl-btn{padding:6px 12px;border-radius:6px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);transition:all .12s;display:flex;align-items:center;gap:5px;}
+.rl-btn:hover{color:var(--t1);border-color:var(--a);}
+.rl-btn.primary{background:var(--ad);color:var(--a);border-color:var(--a);}
+.rl-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+.rl-empty{text-align:center;padding:48px 16px;color:var(--t3);}
+.rl-empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
+.rl-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--bg3);border:1px solid var(--ln2);border-radius:8px;padding:3px;width:fit-content;}
+.rl-tab{padding:6px 16px;border:none;background:none;color:var(--t3);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border-radius:6px;transition:all .12s;}
+.rl-tab.on{background:var(--a);color:#fff;}
+.rl-mail-preview{background:var(--bg3);border:1px solid var(--ln);border-radius:8px;padding:14px;margin-top:8px;font-size:12px;color:var(--t2);line-height:1.6;white-space:pre-wrap;}
 </style>
 </head>
 <body>
@@ -184,7 +191,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Garanties</span>
+    <span>Relances</span>
   </div>
   <div class="tb-r">
     <div class="notif-wrap">
@@ -209,7 +216,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="ngl">Opérations</div>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
-      <a href="/admin/garanties.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
+      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
       <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
       <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs</a>
     </div>
@@ -226,7 +233,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="ngl">Communication</div>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
-      <a href="/admin/relances.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Relances</a>
+      <a href="/admin/relances.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Relances</a>
     </div>
     <div class="nhr"></div>
     <div class="ng">
@@ -240,26 +247,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
-        <div class="ph-left"><h1>Garanties</h1><p id="ph-sub">— réparations sous garantie</p></div>
+        <div class="ph-left"><h1>Relances clients</h1><p id="ph-sub">—</p></div>
       </div>
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Sous garantie</div><div class="kpi-val" id="k-actives" style="color:var(--ok)">—</div><div class="kpi-sub">réparations couvertes</div></div>
-        <div class="kpi"><div class="kpi-label">Expire bientôt</div><div class="kpi-val" id="k-bientot" style="color:var(--w)">—</div><div class="kpi-sub">dans moins de 15 jours</div></div>
-        <div class="kpi"><div class="kpi-label">Expirées</div><div class="kpi-val" id="k-expirees" style="color:var(--t3)">—</div><div class="kpi-sub">garantie terminée</div></div>
-        <div class="kpi"><div class="kpi-label">Durée garantie</div><div class="kpi-val">3<span style="font-size:13px;color:var(--t3);font-weight:400;"> mois</span></div><div class="kpi-sub">après réparation</div></div>
-      </div>
-      <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="Nom client, REP-XXXX, appareil..." oninput="renderTable()"/></div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-      </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:90px;">N° suivi</th><th>Client</th><th>Appareil</th><th>Fin réparation</th><th>Expire le</th><th>Statut garantie</th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🛡️</div><div style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;">Aucune réparation terminée</div><div style="font-size:12px;color:var(--t3);">Les garanties apparaîtront ici une fois des réparations passées en « prêt » ou « rendu ».</div></div>
+      <div class="rl-wrap">
+        <p class="rl-intro">Recontactez vos anciens clients pour entretenir la relation et générer de nouvelles réparations. Un client satisfait revient — et recommande. Les clients dont la dernière réparation date de 6 mois ou plus apparaissent ici.</p>
+        <div class="rl-tabs">
+          <button class="rl-tab on" id="tab-todo" onclick="setTab('todo')">À relancer</button>
+          <button class="rl-tab" id="tab-done" onclick="setTab('done')">Déjà relancés</button>
+        </div>
+        <div id="rlList"></div>
       </div>
     </div>
   </div>
@@ -292,7 +288,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
-const GARANTIE_MOIS=3
 
 function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
@@ -372,87 +367,126 @@ loadNotifs();
 
 
 
-let allGaranties=[]
-let activeFilter='Toutes'
+let allRelances=[]
+let currentTab='todo'
 
-// Calcule les infos de garantie d'une réparation
-function calcGarantie(r){
-  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
-  const expire=new Date(debut)
-  expire.setMonth(expire.getMonth()+GARANTIE_MOIS)
+function moisEcoules(dateStr){
+  const d=new Date(dateStr)
   const now=new Date()
-  const joursRestants=Math.ceil((expire-now)/(1000*60*60*24))
-  const dureeTotale=GARANTIE_MOIS*30
-  const pct=Math.max(0,Math.min(100,(joursRestants/dureeTotale)*100))
-  return {debut,expire,joursRestants,sousGarantie:joursRestants>0,pct}
+  return (now.getFullYear()-d.getFullYear())*12+(now.getMonth()-d.getMonth())
 }
 
 async function load(){
-  const {data,error}=await sb.from('reparations').select('*').in('statut',['pret','rendu']).order('date_fin',{ascending:false,nullsFirst:false})
+  // Récupérer les réparations terminées (rendu) avec email client
+  const {data:reps,error}=await sb.from('reparations').select('*').in('statut',['rendu','pret']).order('created_at',{ascending:false})
   if(error){showError(error.message);return}
-  allGaranties=(data||[]).map(r=>({...r,_gar:calcGarantie(r)}))
-  renderAll()
+  // Garder la dernière réparation par client (email), calculer ancienneté
+  const parClient={}
+  ;(reps||[]).forEach(r=>{
+    const key=(r.client_email||r.client_nom||'').toLowerCase().trim()
+    if(!key)return
+    const dateRef=r.date_fin||r.created_at
+    if(!parClient[key]||new Date(dateRef)>new Date(parClient[key].dateRef)){
+      parClient[key]={
+        client_nom:r.client_nom||'Client',
+        client_email:r.client_email||'',
+        appareil:r.appareil||r.modele||'votre appareil',
+        dateRef,
+        reparation_id:r.id,
+        relance_envoyee_le:r.relance_envoyee_le||null
+      }
+    }
+  })
+  allRelances=Object.values(parClient).map(c=>({...c,mois:moisEcoules(c.dateRef)}))
+  // À relancer = 6 mois+ et pas encore relancé (ou relancé il y a 6 mois+)
+  render()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
-
-function updateKPIs(){
-  const actives=allGaranties.filter(g=>g._gar.sousGarantie)
-  const bientot=actives.filter(g=>g._gar.joursRestants<=15)
-  const expirees=allGaranties.filter(g=>!g._gar.sousGarantie)
-  document.getElementById('k-actives').textContent=actives.length
-  document.getElementById('k-bientot').textContent=bientot.length
-  document.getElementById('k-expirees').textContent=expirees.length
-  document.getElementById('ph-sub').textContent=`${allGaranties.length} réparation${allGaranties.length>1?'s':''} terminée${allGaranties.length>1?'s':''} · ${actives.length} sous garantie`
+function aRelancer(c){
+  if(c.mois<6)return false
+  if(!c.relance_envoyee_le)return true
+  // Si déjà relancé mais il y a plus de 6 mois, on peut re-relancer
+  return moisEcoules(c.relance_envoyee_le)>=6
 }
 
-function renderFilters(){
-  const all=['Toutes','Sous garantie','Expire bientôt','Expirées']
-  document.getElementById('filterBtns').innerHTML=all.map(s=>{
-    const a=activeFilter===s
-    return`<button class="filter-btn ${a?'active':''}" onclick="setFilter('${s}')">${s}</button>`
-  }).join('')
-}
-window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
-
-function renderTable(){
-  const q=document.getElementById('searchInput').value.toLowerCase().trim()
-  let rows=allGaranties.filter(g=>{
-    let mf=true
-    if(activeFilter==='Sous garantie')mf=g._gar.sousGarantie
-    else if(activeFilter==='Expirées')mf=!g._gar.sousGarantie
-    else if(activeFilter==='Expire bientôt')mf=g._gar.sousGarantie&&g._gar.joursRestants<=15
-    const ms=!q||[g.numero,g.client_nom,g.appareil,g.marque,g.modele].some(v=>v&&String(v).toLowerCase().includes(q))
-    return mf&&ms
-  })
-  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
-  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  tb.innerHTML=rows.map(g=>{
-    const gar=g._gar
-    const appareil=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
-    const dDebut=gar.debut.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    const dExpire=gar.expire.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    let badge,barColor
-    if(gar.sousGarantie){
-      const urgent=gar.joursRestants<=15
-      badge=`<span class="gar-badge gar-ok"><span class="gar-dot"></span>Sous garantie · ${gar.joursRestants} j</span>`
-      barColor=urgent?'#fb923c':'#16a34a'
+function render(){
+  const todo=allRelances.filter(aRelancer)
+  const done=allRelances.filter(c=>c.relance_envoyee_le&&!aRelancer(c))
+  document.getElementById('ph-sub').textContent=`${todo.length} client${todo.length>1?'s':''} à relancer`
+  const list=currentTab==='todo'?todo:done
+  const container=document.getElementById('rlList')
+  if(list.length===0){
+    container.innerHTML=`<div class="rl-empty"><div class="rl-empty-ico">${currentTab==='todo'?'✅':'📭'}</div><div>${currentTab==='todo'?'Aucun client à relancer pour le moment.':'Aucune relance envoyée pour le moment.'}</div></div>`
+    return
+  }
+  container.innerHTML=list.map(c=>{
+    const initiale=(c.client_nom||'?')[0].toUpperCase()
+    const moisLabel=c.mois>=12?`${Math.floor(c.mois/12)} an${c.mois>=24?'s':''}`:`${c.mois} mois`
+    const cls=c.mois>=12?'urgent':c.mois>=8?'normal':'ok'
+    const dateRepFmt=new Date(c.dateRef).toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'})
+    const hasEmail=!!c.client_email
+    let actions=''
+    if(currentTab==='todo'){
+      actions=`<div class="rl-actions">
+        ${hasEmail?`<button class="rl-btn primary" onclick="envoyerRelance('${c.client_email}','${(c.client_nom||'').replace(/'/g,"\\'")}','${(c.appareil||'').replace(/'/g,"\\'")}',${c.reparation_id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Relancer</button>`:`<span style="font-size:11px;color:var(--t3);">Pas d'email</span>`}
+        <button class="rl-btn" onclick="marquerRelance(${c.reparation_id})" title="Marquer comme relancé sans envoyer">Marquer fait</button>
+      </div>`
     } else {
-      badge=`<span class="gar-badge gar-expire"><span class="gar-dot"></span>Expirée · depuis ${Math.abs(gar.joursRestants)} j</span>`
-      barColor='#dc2626'
+      const relFmt=c.relance_envoyee_le?new Date(c.relance_envoyee_le).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):''
+      actions=`<span style="font-size:11px;color:var(--t3);">Relancé le ${relFmt}</span>`
     }
-    return`<tr>
-      <td><span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${g.numero||'—'}</span></td>
-      <td><div style="font-weight:500;">${g.client_nom||'—'}</div><div style="font-size:11px;color:var(--t3);">${g.client_telephone||g.client_email||''}</div></td>
-      <td>${appareil}</td>
-      <td style="color:var(--t3);white-space:nowrap;">${dDebut}</td>
-      <td style="white-space:nowrap;font-weight:500;">${dExpire}</td>
-      <td>${badge}<div class="gar-bar"><div class="gar-bar-fill" style="width:${gar.pct}%;background:${barColor};"></div></div></td>
-    </tr>`
+    return `<div class="rl-row ${currentTab==='done'?'done':''}">
+      <div class="rl-av">${initiale}</div>
+      <div class="rl-main">
+        <div class="rl-nom">${c.client_nom}</div>
+        <div class="rl-detail">${c.appareil} · réparé le ${dateRepFmt}${hasEmail?' · '+c.client_email:''}</div>
+      </div>
+      <span class="rl-since ${cls}">il y a ${moisLabel}</span>
+      ${actions}
+    </div>`
   }).join('')
+}
+
+window.setTab=function(t){
+  currentTab=t
+  document.getElementById('tab-todo').classList.toggle('on',t==='todo')
+  document.getElementById('tab-done').classList.toggle('on',t==='done')
+  render()
+}
+
+window.envoyerRelance=async function(email,nom,appareil,repId){
+  const prenom=(nom||'').split(' ')[0]||''
+  const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br><a href="mailto:contact@itsoluce.be" style="color:#1d4ed8;text-decoration:none;">contact@itsoluce.be</a><br>+32 474 05 66 59<br><a href="https://itsoluce.be/" style="color:#1d4ed8;text-decoration:none;">https://itsoluce.be/</a></p>`
+  const html=`<p>Bonjour ${prenom},</p><p>Il y a quelques mois, vous nous avez fait confiance pour la réparation de ${appareil}. Nous espérons qu'il fonctionne toujours parfaitement !</p><p>Un petit souci, une batterie qui faiblit, ou un autre appareil à faire réparer ? IT Soluce reste à votre disposition, à domicile ou par dépôt, partout en Belgique.</p><p>N'hésitez pas à me contacter, le diagnostic est toujours gratuit.</p>${signature}<p style="color:#999;font-size:11px;margin-top:16px;">Si vous ne souhaitez plus recevoir ce type de message, répondez simplement STOP à cet email.</p>`
+  if(!confirm(`Envoyer une relance à ${nom} (${email}) ?`))return
+  try{
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:email,subject:`IT Soluce — Prenons soin de vos appareils`,html})
+    })
+    const result=await res.json()
+    if(!res.ok)throw new Error(result.error||'Échec')
+    await sb.from('reparations').update({relance_envoyee_le:new Date().toISOString()}).eq('id',repId)
+    const c=allRelances.find(x=>x.reparation_id===repId)
+    if(c)c.relance_envoyee_le=new Date().toISOString()
+    render()
+    showToast(`Relance envoyée à ${nom} ✓`,'ok')
+  }catch(err){
+    showToast('Erreur : '+err.message,'err')
+  }
+}
+
+window.marquerRelance=async function(repId){
+  if(!confirm('Marquer ce client comme relancé (sans envoyer d\'email) ?'))return
+  await sb.from('reparations').update({relance_envoyee_le:new Date().toISOString()}).eq('id',repId)
+  const c=allRelances.find(x=>x.reparation_id===repId)
+  if(c)c.relance_envoyee_le=new Date().toISOString()
+  render()
+  showToast('Client marqué comme relancé','ok')
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
