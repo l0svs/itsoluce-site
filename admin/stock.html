@@ -424,11 +424,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg-row">
       <div class="fg">
         <label>Prix d'achat (€)</label>
-        <input type="number" id="f-achat" placeholder="0.00" min="0" step="0.01"/>
+        <input type="number" id="f-achat" placeholder="0.00" min="0" step="0.01" oninput="onAchatChange()"/>
       </div>
       <div class="fg">
         <label>Prix de vente (€)</label>
-        <input type="number" id="f-vente" placeholder="0.00" min="0" step="0.01"/>
+        <input type="number" id="f-vente" placeholder="0.00" min="0" step="0.01" oninput="updateMargeStock()"/>
+      </div>
+    </div>
+    <div id="prix-helper" style="display:none;margin:-6px 0 14px;padding:10px 12px;background:var(--bg3);border-radius:7px;font-size:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
+        <span style="color:var(--t2);">Prix de vente suggéré : <strong id="prix-suggere" style="color:var(--a);">—</strong></span>
+        <button type="button" onclick="appliquerPrixSuggere()" style="padding:3px 10px;border:1px solid var(--a);border-radius:5px;background:var(--ad);color:var(--a);font-size:11px;font-family:inherit;cursor:pointer;">Appliquer</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span style="color:var(--t3);" id="formule-rappel">Formule : achat × 2 + 20€</span>
+        <span style="color:var(--t2);">Marge : <strong id="marge-affichee" style="color:var(--ok);">—</strong></span>
       </div>
     </div>
 
@@ -561,6 +571,50 @@ function calcPort(){
   document.getElementById('cr-final').textContent=prixFinal.toFixed(2)+' €'
 }
 
+// ─── CALCUL PRIX DE VENTE PARAMÉTRABLE ───
+function getFormule(){
+  const coef=Number(localStorage.getItem('erp-coef'))||2
+  const fixe=Number(localStorage.getItem('erp-fixe'))||20
+  return {coef,fixe}
+}
+function calcPrixVente(achat){
+  const {coef,fixe}=getFormule()
+  return achat>0 ? (achat*coef+fixe) : 0
+}
+function onAchatChange(){
+  const achat=Number(document.getElementById('f-achat').value)||0
+  const helper=document.getElementById('prix-helper')
+  const {coef,fixe}=getFormule()
+  document.getElementById('formule-rappel').textContent=`Formule : achat × ${coef} + ${fixe}€`
+  if(achat<=0){helper.style.display='none';return}
+  helper.style.display='block'
+  const suggere=calcPrixVente(achat)
+  document.getElementById('prix-suggere').textContent=suggere.toFixed(2)+' €'
+  // Si le champ vente est vide, on pré-remplit automatiquement
+  const venteInput=document.getElementById('f-vente')
+  if(!venteInput.value||Number(venteInput.value)===0){
+    venteInput.value=suggere.toFixed(2)
+  }
+  updateMargeStock()
+}
+function appliquerPrixSuggere(){
+  const achat=Number(document.getElementById('f-achat').value)||0
+  if(achat<=0)return
+  document.getElementById('f-vente').value=calcPrixVente(achat).toFixed(2)
+  updateMargeStock()
+}
+function updateMargeStock(){
+  const achat=Number(document.getElementById('f-achat').value)||0
+  const vente=Number(document.getElementById('f-vente').value)||0
+  const el=document.getElementById('marge-affichee')
+  if(!el)return
+  if(achat<=0||vente<=0){el.textContent='—';return}
+  const marge=vente-achat
+  const pct=achat>0?Math.round((marge/achat)*100):0
+  el.textContent=`${marge.toFixed(2)} € (${pct}%)`
+  el.style.color=marge>0?'var(--ok)':'var(--d)'
+}
+
 function openPanel(piece=null){
   document.getElementById('panelTitle').textContent=piece?'Modifier la pièce':'Ajouter une pièce'
   document.getElementById('saveBtn').textContent=piece?'Mettre à jour':'Enregistrer'
@@ -575,6 +629,8 @@ function openPanel(piece=null){
   document.getElementById('f-vente').value=piece?.prix_vente||''
   document.getElementById('f-four').value=piece?.fournisseur||''
   document.getElementById('f-notes').value=piece?.notes||''
+  // Rafraîchir le helper prix de vente / marge
+  if(typeof onAchatChange==='function')onAchatChange()
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   document.getElementById('f-nom').focus()
