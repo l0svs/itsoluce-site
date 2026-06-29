@@ -170,6 +170,97 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
+
+/* ───────────────────────────────────────────────
+   MODULE STOCK FOURNISSEURS / FONEDAY
+   Ajout non destructif : le stock atelier existant reste intact.
+─────────────────────────────────────────────── */
+.view-switch{display:flex;align-items:center;gap:6px;padding:14px 24px 0;flex-shrink:0;}
+.view-tab{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--ln2);border-radius:7px;background:var(--bg2);color:var(--t2);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;}
+.view-tab:hover{color:var(--t1);background:var(--bg3);}
+.view-tab.active{background:var(--ad);color:var(--a);border-color:var(--a);}
+.view-tab .mini-count{font-size:10px;font-weight:700;min-width:18px;height:16px;display:inline-flex;align-items:center;justify-content:center;border-radius:99px;background:var(--bg4);color:var(--t3);padding:0 5px;}
+.view-tab.active .mini-count{background:rgba(59,130,246,.18);color:var(--a);}
+#atelierView{display:contents;}
+#supplierView{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.supplier-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 24px 0;flex-shrink:0;}
+.supplier-title{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-.2px;}
+.supplier-sub{font-size:11px;color:var(--t3);margin-top:2px;max-width:720px;line-height:1.5;}
+.supplier-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.supplier-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:12px 24px 0;flex-shrink:0;}
+.skpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:10px 12px;min-width:0;}
+.skpi-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.55px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.skpi-val{font-size:17px;font-weight:650;color:var(--t1);letter-spacing:-.6px;line-height:1.15;margin-top:3px;}
+.skpi-sub{font-size:10px;color:var(--t3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.supplier-toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
+.supplier-toolbar .search-wrap{max-width:360px;}
+.supplier-select{padding:7px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t2);font-size:12px;font-family:inherit;outline:none;min-width:120px;}
+.supplier-select:focus{border-color:var(--a);color:var(--t1);}
+.supplier-select option{background:var(--bg2);color:var(--t1);}
+.quick-filters{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+.quick-chip{padding:6px 10px;border-radius:99px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.quick-chip:hover{color:var(--t1);background:var(--bg3);}
+.quick-chip.active{background:var(--ad);border-color:var(--a);color:var(--a);}
+.supplier-scroll{flex:1;overflow:auto;padding:0 24px 24px;}
+.supplier-message{margin:0 24px 10px;padding:10px 12px;border:1px solid var(--ln);border-radius:8px;background:var(--bg2);font-size:12px;color:var(--t2);display:none;}
+.supplier-message.warn{border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.08);color:var(--w);}
+.supplier-message.err{border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.08);color:var(--d);}
+.supplier-groups{display:flex;flex-direction:column;gap:12px;}
+.supplier-group{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
+.sg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-bottom:1px solid var(--ln);background:linear-gradient(180deg,var(--bg2),var(--bg3));}
+.sg-title{font-size:14px;font-weight:650;color:var(--t1);letter-spacing:-.25px;}
+.sg-meta{font-size:11px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.sg-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.sg-pill{font-size:10px;font-weight:700;padding:3px 7px;border-radius:99px;background:var(--bg4);color:var(--t2);white-space:nowrap;}
+.sg-body{padding:14px 15px 12px;}
+.option-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.option-card{border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);padding:11px;min-width:0;position:relative;overflow:hidden;}
+.option-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--ln2);}
+.option-card.eco::before{background:var(--ok);}
+.option-card.reco::before{background:var(--a);}
+.option-card.premium::before{background:var(--w);}
+.option-role{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.option-role strong{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.55px;color:var(--t2);}
+.option-name{font-size:12px;font-weight:600;color:var(--t1);line-height:1.35;min-height:32px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.option-ref{font-size:10px;color:var(--t3);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.metric{background:var(--bg2);border:1px solid var(--ln);border-radius:7px;padding:7px 8px;min-width:0;}
+.metric-l{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.45px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.metric-v{font-size:12px;font-weight:650;color:var(--t1);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.metric-v.ok{color:var(--ok);}.metric-v.warn{color:var(--w);}.metric-v.danger{color:var(--d);}.metric-v.accent{color:var(--a);}
+.catalog-table-wrap{border:1px solid var(--ln);border-radius:8px;overflow:auto;background:var(--bg2);}
+.catalog-table{width:100%;border-collapse:collapse;border-spacing:0;min-width:1120px;}
+.catalog-table th{padding:8px 9px;text-align:left;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.55px;border-bottom:1px solid var(--ln);background:var(--bg3);white-space:nowrap;position:sticky;top:0;z-index:2;}
+.catalog-table td{padding:8px 9px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:11px;color:var(--t2);}
+.catalog-table tr:last-child td{border-bottom:none;}
+.catalog-table tr:hover td{background:var(--bg3);}
+.catalog-name{font-weight:600;color:var(--t1);max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.catalog-sub{font-size:10px;color:var(--t3);max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:99px;white-space:nowrap;}
+.pill-premium{background:rgba(251,191,36,.13);color:var(--w);}
+.pill-reco{background:rgba(59,130,246,.14);color:var(--a);}
+.pill-eco{background:rgba(52,211,153,.13);color:var(--ok);}
+.pill-check{background:rgba(251,191,36,.13);color:var(--w);}
+.pill-avoid{background:rgba(248,113,113,.13);color:var(--d);}
+.pill-neutral{background:var(--bg4);color:var(--t2);}
+.pill-site{background:rgba(59,130,246,.12);color:var(--a);}
+.pill-nosite{background:var(--bg4);color:var(--t3);}
+.mini-actions{display:flex;align-items:center;gap:4px;justify-content:flex-end;}
+.mini-action{height:24px;padding:0 8px;border:1px solid var(--ln2);border-radius:5px;background:var(--bg3);color:var(--t2);font-size:10px;font-family:inherit;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.mini-action:hover{background:var(--bg4);color:var(--t1);}
+.mini-action.primary{border-color:rgba(59,130,246,.35);background:var(--ad);color:var(--a);}
+.mini-action.danger{border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.1);color:var(--d);}
+.mini-select{height:24px;max-width:108px;padding:0 6px;border:1px solid var(--ln2);border-radius:5px;background:var(--bg3);color:var(--t2);font-size:10px;font-family:inherit;outline:none;}
+.mini-select:disabled{opacity:.45;cursor:not-allowed;}
+.market-gap.pos{color:var(--d);}.market-gap.neg{color:var(--ok);}.market-gap.flat{color:var(--t3);}
+.supplier-empty{padding:56px 20px;text-align:center;color:var(--t3);border:1px dashed var(--ln2);border-radius:10px;background:var(--bg2);}
+.supplier-empty-title{font-size:14px;font-weight:600;color:var(--t2);margin-bottom:6px;}
+.supplier-empty-sub{font-size:12px;color:var(--t3);max-width:560px;margin:0 auto;line-height:1.55;}
+.status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.status-dot.ok{background:var(--ok);}.status-dot.warn{background:var(--w);}.status-dot.danger{background:var(--d);}.status-dot.neutral{background:var(--t3);}
+@media(max-width:980px){.supplier-kpis{grid-template-columns:repeat(3,minmax(0,1fr));}.option-grid{grid-template-columns:1fr;}.supplier-toolbar{flex-wrap:wrap;}.supplier-toolbar .search-wrap{max-width:none;width:100%;flex-basis:100%;}.supplier-head{flex-direction:column;}.supplier-actions{width:100%;flex-wrap:wrap;}.view-switch{overflow-x:auto;}.view-tab{white-space:nowrap;}}
+@media(max-width:640px){.supplier-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.supplier-toolbar,.supplier-head,.supplier-kpis,.supplier-scroll{padding-left:14px;padding-right:14px;}.view-switch{padding-left:14px;padding-right:14px;}}
+
 @media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.kpi-strip{flex-wrap:wrap;}.kpi{flex:1 1 calc(50% - 5px);}}
 /* CALCULATEUR FRAIS DE PORT */
 .calc-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
@@ -324,6 +415,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="kpi"><div class="kpi-label">Valeur totale</div><div class="kpi-val" id="k-valeur">—</div><div class="kpi-sub">coût d'achat</div></div>
       </div>
 
+      <!-- VUES STOCK -->
+      <div class="view-switch">
+        <button class="view-tab active" id="tab-atelier" onclick="setStockView('atelier')">Stock atelier <span class="mini-count" id="tabAtelierCount">—</span></button>
+        <button class="view-tab" id="tab-fournisseur" onclick="setStockView('fournisseur')">Catalogue fournisseurs <span class="mini-count" id="tabSupplierCount">—</span></button>
+        <button class="view-tab" id="tab-client" onclick="setStockView('client')">Options client <span class="mini-count" id="tabClientCount">—</span></button>
+      </div>
+
+      <div id="atelierView">
+
       <!-- TOOLBAR -->
       <div class="toolbar">
         <div class="search-wrap">
@@ -358,6 +458,71 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="empty-ico">📦</div>
           <div class="empty-title">Aucune pièce trouvée</div>
           <div class="empty-sub">Essaie un autre terme de recherche ou <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">ajoute une pièce</button></div>
+        </div>
+      </div>
+
+      </div><!-- end atelierView -->
+
+      <!-- MODULE CATALOGUE FOURNISSEURS / FONEDAY -->
+      <div id="supplierView">
+        <div class="supplier-head">
+          <div>
+            <div class="supplier-title" id="supplierViewTitle">Catalogue fournisseurs</div>
+            <div class="supplier-sub" id="supplierViewSub">Listing complet dynamique des variantes fournisseurs : qualité, technologie, stock fournisseur, prix d'achat HT, prix conseillé, marge estimée et statut commercial.</div>
+          </div>
+          <div class="supplier-actions">
+            <button class="btn btn-secondary" onclick="refreshSupplierCatalog()">
+              <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
+              Rafraîchir
+            </button>
+            <button class="btn btn-primary" onclick="syncFonedayCatalog()">
+              <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+              Sync Foneday
+            </button>
+            <button class="btn btn-secondary" onclick="exportSupplierCSV()">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export fournisseur
+            </button>
+          </div>
+        </div>
+
+        <div class="supplier-kpis">
+          <div class="skpi"><div class="skpi-label">Variantes</div><div class="skpi-val" id="sk-total">—</div><div class="skpi-sub">lignes fournisseurs</div></div>
+          <div class="skpi"><div class="skpi-label">Groupes</div><div class="skpi-val" id="sk-groups">—</div><div class="skpi-sub">modèle + réparation</div></div>
+          <div class="skpi"><div class="skpi-label">En stock fournisseur</div><div class="skpi-val" id="sk-available" style="color:var(--ok)">—</div><div class="skpi-sub">disponibles à commander</div></div>
+          <div class="skpi"><div class="skpi-label">À valider</div><div class="skpi-val" id="sk-review" style="color:var(--w)">—</div><div class="skpi-sub">mapping / qualité</div></div>
+          <div class="skpi"><div class="skpi-label">Prix min conseillé</div><div class="skpi-val" id="sk-minprice">—</div><div class="skpi-sub">sur la vue filtrée</div></div>
+          <div class="skpi"><div class="skpi-label">Marge moyenne</div><div class="skpi-val" id="sk-margin">—</div><div class="skpi-sub">vente - achat</div></div>
+        </div>
+
+        <div class="supplier-toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="search-input" type="text" id="supplierSearchInput" placeholder="Rechercher : iPhone 13 écran, OLED, réf fournisseur..." oninput="renderSupplierCatalog()"/>
+          </div>
+          <select class="supplier-select" id="supSupplierFilter" onchange="renderSupplierCatalog()"><option value="Tous">Tous fournisseurs</option></select>
+          <select class="supplier-select" id="supRepairFilter" onchange="renderSupplierCatalog()"><option value="Tous">Toutes réparations</option></select>
+          <select class="supplier-select" id="supQualityFilter" onchange="renderSupplierCatalog()"><option value="Tous">Toutes qualités</option></select>
+          <select class="supplier-select" id="supStatusFilter" onchange="renderSupplierCatalog()"><option value="Tous">Tous statuts</option></select>
+          <div class="quick-filters">
+            <button class="quick-chip active" id="sq-iphone" onclick="setSupplierQuick('iphone')">iPhone</button>
+            <button class="quick-chip" id="sq-screen" onclick="setSupplierQuick('screen')">Écrans</button>
+            <button class="quick-chip" id="sq-available" onclick="setSupplierQuick('available')">Stock dispo</button>
+            <button class="quick-chip" id="sq-recommended" onclick="setSupplierQuick('recommended')">Recommandé</button>
+            <button class="quick-chip" id="sq-review" onclick="setSupplierQuick('review')">À valider</button>
+            <button class="quick-chip" id="sq-all" onclick="setSupplierQuick('all')">Tout</button>
+          </div>
+          <div class="toolbar-right"><span class="count-badge" id="supplierCountBadge"></span></div>
+        </div>
+
+        <div class="supplier-message" id="supplierMessage"></div>
+        <div class="supplier-scroll">
+          <div class="loader" id="supplierLoader" style="display:none;height:160px;"><div class="spin"></div>Chargement catalogue fournisseur</div>
+          <div class="supplier-groups" id="supplierGroups"></div>
+          <div class="supplier-empty" id="supplierEmpty" style="display:none;">
+            <div class="supplier-empty-title">Aucune variante fournisseur trouvée</div>
+            <div class="supplier-empty-sub" id="supplierEmptySub">Vérifie les filtres ou la présence des données Foneday dans Supabase. La page sait lire la vue <strong>v_stock_page_items</strong> ou, à défaut, les tables <strong>supplier_items</strong>, <strong>repair_offers</strong> et <strong>market_prices</strong>.</div>
+          </div>
         </div>
       </div>
 
@@ -447,6 +612,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <label>Fournisseur</label>
       <select id="f-four">
         <option value="">Choisir...</option>
+        <option>Foneday</option>
+        <option>Utopya</option>
         <option>Charleroi Mobile Parts</option>
         <option>Brussels Tech Supply</option>
         <option>AliExpress Store</option>
@@ -755,11 +922,20 @@ document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 let allStock=[]
 let activeFilter='Tous'
 
+// State catalogue fournisseurs / Foneday
+let currentStockView='atelier'
+let supplierCatalog=[]
+let supplierLoading=false
+let supplierError=''
+let supplierQuick='iphone'
+let supplierRealtimeReady=false
+
 // Charger le stock
 async function loadStock(){
   const {data,error}=await sb.from('stock').select('*').order('categorie').order('nom')
   if(error){console.error(error);return}
   allStock=data||[]
+  await loadSupplierCatalog({silent:true})
   renderAll()
   document.getElementById('ldr').style.display='none'
   const pb=document.getElementById('pageBody')
@@ -770,6 +946,8 @@ function renderAll(){
   updateKPIs()
   renderFilters()
   renderTable()
+  updateStockViewCounters()
+  renderSupplierCatalog()
 }
 
 function updateKPIs(){
@@ -853,6 +1031,545 @@ function renderTable(){
       </td>
     </tr>`
   }).join('')
+}
+
+
+
+// ─── MODULE CATALOGUE FOURNISSEURS / FONEDAY ───
+function esc(v){
+  return String(v??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))
+}
+function escAttr(v){return esc(v).replace(/'/g,'&#39;')}
+function jsArg(v){return JSON.stringify(String(v??''))}
+function norm(v){
+  return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()
+}
+function first(obj,keys,fb=null){
+  for(const k of keys){
+    if(obj&&Object.prototype.hasOwnProperty.call(obj,k)&&obj[k]!==null&&obj[k]!==undefined&&obj[k]!=='')return obj[k]
+  }
+  return fb
+}
+function firstNumber(obj,keys,fb=null){
+  const v=first(obj,keys,null)
+  if(v===null||v===undefined||v==='')return fb
+  const n=Number(String(v).replace(',','.'))
+  return Number.isFinite(n)?n:fb
+}
+function firstBool(obj,keys,fb=false){
+  const v=first(obj,keys,null)
+  if(v===null||v===undefined||v==='')return fb
+  if(typeof v==='boolean')return v
+  if(typeof v==='number')return v===1
+  return ['true','1','yes','oui','on'].includes(norm(v))
+}
+function fmtMoney(v){
+  const n=Number(v)
+  return Number.isFinite(n)?n.toFixed(2)+'€':'—'
+}
+function fmtDate(v){
+  if(!v)return '—'
+  const d=new Date(v)
+  if(Number.isNaN(d.getTime()))return '—'
+  return d.toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
+}
+function canonicalRepairType(v,name=''){
+  const t=norm((v||'')+' '+(name||''))
+  if(/ecran|screen|display|lcd|oled|incell|tft/.test(t))return 'Écran'
+  if(/batter|battery|akku/.test(t))return 'Batterie'
+  if(/vitre|back glass|rear glass|glass/.test(t))return 'Vitre'
+  if(/connecteur|charging|charge|dock|port/.test(t))return 'Connecteur'
+  if(/camera|caméra/.test(t))return 'Caméra'
+  if(/speaker|haut-parleur|ecouteur|earpiece/.test(t))return 'Haut-parleur'
+  return v||'Autre'
+}
+function extractIphoneModel(text){
+  const s=String(text||'')
+  const m=s.match(/iPhone\s*(SE\s*(?:\(?\d{4}\)?)?|\d{1,2}\s*(?:Pro\s*Max|Pro|Plus|Mini|e)?)/i)
+  if(!m)return ''
+  return 'iPhone '+m[1].replace(/\s+/g,' ').replace(/\bpro\b/i,'Pro').replace(/\bmax\b/i,'Max').replace(/\bplus\b/i,'Plus').replace(/\bmini\b/i,'Mini').trim()
+}
+function inferTechnology(row){
+  const t=norm([first(row,['technology','technologie','tech']),first(row,['quality','quality_tier','qualite']),first(row,['supplier_product_name','nom','name','product_name'])].filter(Boolean).join(' '))
+  if(/service\s*pack/.test(t))return 'Service Pack'
+  if(/original|origine|refurb/.test(t))return /refurb/.test(t)?'Original Refurbished':'Original'
+  if(/soft\s*oled/.test(t))return 'Soft OLED'
+  if(/hard\s*oled/.test(t))return 'Hard OLED'
+  if(/premium\s*oled/.test(t))return 'Premium OLED'
+  if(/oled/.test(t))return 'OLED'
+  if(/incell|in-cell/.test(t))return 'Incell'
+  if(/tft/.test(t))return 'TFT'
+  if(/lcd/.test(t))return 'LCD'
+  return first(row,['technology','technologie','tech'],'—')||'—'
+}
+function statusCanonical(v,row=null){
+  const raw=norm(v)
+  if(/premium|original|origine|service/.test(raw))return 'premium'
+  if(/recommande|recommended|best|soft oled|hard oled|oled|standard/.test(raw))return 'recommandé'
+  if(/econom|eco|compatible|lcd|incell|tft|budget/.test(raw))return 'économique'
+  if(/eviter|avoid|bloque|blocked/.test(raw))return 'à éviter'
+  if(/valider|review|unknown|inconnu/.test(raw))return 'à valider'
+  if(row){
+    const txt=norm([row.exactName,row.qualityTier,row.technology,row.supplierProductName].filter(Boolean).join(' '))
+    if(/service\s*pack|original|origine|refurb|premium/.test(txt))return 'premium'
+    if(/soft\s*oled|hard\s*oled|oled/.test(txt))return 'recommandé'
+    if(/lcd|incell|tft|compatible/.test(txt))return 'économique'
+  }
+  return 'à valider'
+}
+function statusDbValue(canonical){
+  return ({'économique':'economique','recommandé':'recommande','premium':'premium','à valider':'a_valider','à éviter':'a_eviter'})[canonical]||canonical
+}
+function statusLabel(s){return ({'économique':'Économique','recommandé':'Recommandé','premium':'Premium','à valider':'À valider','à éviter':'À éviter'})[s]||s||'À valider'}
+function statusClass(s){return ({'économique':'pill-eco','recommandé':'pill-reco','premium':'pill-premium','à valider':'pill-check','à éviter':'pill-avoid'})[s]||'pill-neutral'}
+function statusDot(s){return ({'économique':'ok','recommandé':'ok','premium':'warn','à valider':'warn','à éviter':'danger'})[s]||'neutral'}
+function qualityLabel(row){
+  const q=first(row.raw||row,['quality_tier','quality','qualite','quality_label'],null)
+  if(q)return String(q)
+  const st=row.status||statusCanonical(null,row)
+  if(st==='premium')return 'Premium / Original'
+  if(st==='recommandé')return row.technology&&row.technology!=='—'?row.technology:'Recommandé'
+  if(st==='économique')return row.technology&&row.technology!=='—'?row.technology:'Compatible'
+  return 'À qualifier'
+}
+function workshopStockFor(item){
+  const m=norm(item.model)
+  const r=norm(item.repairType)
+  if(!m&&!r)return 0
+  return allStock.reduce((sum,p)=>{
+    const pm=norm(p.modele), pc=norm(p.categorie), pn=norm(p.nom)
+    const modelMatch=!m||pm.includes(m)||m.includes(pm)||pn.includes(m)
+    const repairMatch=!r||pc.includes(r)||r.includes(pc)||pn.includes(r)
+    return modelMatch&&repairMatch?sum+Number(p.quantite||0):sum
+  },0)
+}
+function averageMarketFor(row,markets){
+  const direct=firstNumber(row,['market_avg_price','avg_market_price','market_price_avg','market_price','prix_marche_moyen'],null)
+  if(direct!==null)return direct
+  if(!markets||!markets.length)return null
+  const b=norm(row.brand), m=norm(row.model), r=norm(row.repairType), q=norm(row.status)
+  const hits=markets.filter(mp=>{
+    const mb=norm(first(mp,['brand','marque'],'')), mm=norm(first(mp,['model','modele'],'')), mr=norm(canonicalRepairType(first(mp,['repair_type','categorie','category'],''),'')), mq=norm(statusCanonical(first(mp,['quality_tier','status','statut','quality','qualite'],'')))
+    const brandOk=!b||!mb||b===mb
+    const modelOk=!m||!mm||m===mm||m.includes(mm)||mm.includes(m)
+    const repairOk=!r||!mr||r===mr
+    const qualityOk=!q||!mq||q===mq||q==='a valider'||mq==='a valider'
+    return brandOk&&modelOk&&repairOk&&qualityOk
+  })
+  const nums=hits.map(h=>firstNumber(h,['observed_price','price','prix','selling_price','market_price'],null)).filter(n=>n!==null&&n>0)
+  if(!nums.length)return null
+  return nums.reduce((a,b)=>a+b,0)/nums.length
+}
+function normalizeSupplierRow(row,offer=null,markets=[]){
+  const merged={...(row||{}),...(offer||{})}
+  const exactName=String(first(merged,['supplier_product_name','product_name','name','nom','title','designation'],'')||'')
+  const supplierName=String(first(merged,['supplier_name','supplier','fournisseur','vendor'],'Fournisseur')||'Fournisseur')
+  const supplierSku=String(first(merged,['supplier_sku','sku','reference','ref','supplier_reference','reference_fournisseur'],'')||'')
+  const brand=String(first(merged,['brand','marque'], exactName.toLowerCase().includes('iphone')?'Apple':'')||'')
+  const model=String(first(merged,['model','modele','compatible_model'], extractIphoneModel(exactName))||'')
+  const repairType=canonicalRepairType(first(merged,['repair_type','category','categorie','type_reparation'],''), exactName)
+  const purchase=firstNumber(merged,['purchase_price_ht','prix_achat_ht','buying_price_ht','purchase_price','prix_achat','cost_price','price_ht','price'],0)||0
+  const explicitSale=firstNumber(merged,['selling_price','prix_vente','suggested_selling_price','prix_vente_conseille','sale_price'],null)
+  const sale=explicitSale!==null&&explicitSale>0?explicitSale:calcPrixVente(purchase)
+  const supplierStock=firstNumber(merged,['stock_supplier','supplier_stock','stock','stock_fournisseur','quantity_available','available_quantity','qty'],0)||0
+  const tmp={exactName,supplierProductName:exactName,qualityTier:first(merged,['quality_tier','quality','qualite'],''),technology:inferTechnology(merged)}
+  const status=statusCanonical(first(merged,['status','statut','commercial_status','quality_tier','quality','qualite'],''),tmp)
+  const item={
+    supplierItemId:String(first(row,['supplier_item_id','id','item_id','product_id'],'')),
+    repairOfferId:String(offer?first(offer,['id','repair_offer_id','offer_id','id_repair_offer'],''):first(row,['repair_offer_id','offer_id','id_repair_offer'],'')),
+    supplierName,supplierSku,exactName,
+    brand,model,repairType,
+    technology:tmp.technology,
+    qualityTier:first(merged,['quality_tier','quality','qualite','quality_label'],'')||'',
+    purchasePriceHT:purchase,
+    saleSuggested:sale,
+    supplierStock,
+    deliveryEstimate:first(merged,['delivery_estimate','delivery_time','delai_estime','lead_time'],'—')||'—',
+    lastSyncedAt:first(merged,['last_synced_at','synced_at','updated_at','created_at'],null),
+    status,
+    isRecommended:firstBool(merged,['is_recommended','recommended','recommande'],false)||status==='recommandé',
+    displayedOnSite:firstBool(merged,['displayed_on_site','display_on_site','on_site','visible_site'],false),
+    active:firstBool(merged,['active','is_active'],true),
+    marketAvgPrice:null,
+    workshopStock:0,
+    raw:row,
+    offer:offer||null
+  }
+  item.qualityLabel=qualityLabel(item)
+  item.marketAvgPrice=averageMarketFor(item,markets)
+  item.workshopStock=firstNumber(merged,['workshop_stock','stock_atelier','atelier_stock'],null)
+  if(item.workshopStock===null)item.workshopStock=workshopStockFor(item)
+  item.margin=item.saleSuggested-item.purchasePriceHT
+  item.marginPct=item.purchasePriceHT>0?(item.margin/item.purchasePriceHT)*100:null
+  item.marketGap=item.marketAvgPrice?item.saleSuggested-item.marketAvgPrice:null
+  return item
+}
+async function safeSelect(table){
+  const res=await sb.from(table).select('*')
+  if(res.error)throw res.error
+  return res.data||[]
+}
+async function loadSupplierCatalog(opts={}){
+  supplierLoading=true
+  supplierError=''
+  if(!opts.silent)renderSupplierCatalog()
+  try{
+    let sourceRows=[]
+    let sourceMode='view'
+    try{
+      sourceRows=await safeSelect('v_stock_page_items')
+    }catch(viewErr){sourceRows=[]}
+    if(sourceRows.length){
+      supplierCatalog=sourceRows.map(r=>normalizeSupplierRow(r,null,[])).filter(i=>i.active!==false)
+    }else{
+      sourceMode='tables'
+      let items=[]
+      let lastErr=null
+      for(const table of ['supplier_items','foneday_items','foneday_products','supplier_products']){
+        try{items=await safeSelect(table); if(items.length||table==='supplier_items')break}catch(e){lastErr=e}
+      }
+      if(!items.length&&lastErr)throw lastErr
+      const ids=items.map(i=>String(first(i,['id','supplier_item_id','item_id','product_id'],''))).filter(Boolean)
+      let offers=[]
+      try{offers=ids.length?(await sb.from('repair_offers').select('*').in('supplier_item_id',ids)).data||[]:await safeSelect('repair_offers')}catch(e){offers=[]}
+      let markets=[]
+      try{markets=await safeSelect('market_prices')}catch(e){markets=[]}
+      const offersByItem={}
+      offers.forEach(o=>{
+        const k=String(first(o,['supplier_item_id','supplier_item_uuid','item_id'],''))
+        if(k&&!offersByItem[k])offersByItem[k]=o
+      })
+      supplierCatalog=items.map(i=>{
+        const id=String(first(i,['id','supplier_item_id','item_id','product_id'],''))
+        return normalizeSupplierRow(i,offersByItem[id]||null,markets)
+      }).filter(i=>i.active!==false)
+    }
+    supplierCatalog.sort((a,b)=>[a.brand,a.model,a.repairType,a.purchasePriceHT].join('|').localeCompare([b.brand,b.model,b.repairType,b.purchasePriceHT].join('|'),'fr',{numeric:true}))
+    if(!opts.silent)showToast(`Catalogue fournisseur chargé · ${supplierCatalog.length} variante(s)`,'ok')
+  }catch(e){
+    console.warn('Catalogue fournisseurs:',e)
+    supplierCatalog=[]
+    supplierError=e.message||'Impossible de charger le catalogue fournisseur.'
+  }finally{
+    supplierLoading=false
+    updateStockViewCounters()
+    renderSupplierCatalog()
+  }
+}
+function updateStockViewCounters(){
+  const at=document.getElementById('tabAtelierCount')
+  const sp=document.getElementById('tabSupplierCount')
+  const cl=document.getElementById('tabClientCount')
+  if(at)at.textContent=allStock.length||'0'
+  if(sp)sp.textContent=supplierCatalog.length||'0'
+  if(cl)cl.textContent=countSupplierGroups(getFilteredSupplierCatalog(false))||'0'
+}
+function countSupplierGroups(rows){return new Set(rows.map(i=>groupKey(i))).size}
+window.setStockView=function(view){
+  currentStockView=view
+  document.getElementById('tab-atelier').classList.toggle('active',view==='atelier')
+  document.getElementById('tab-fournisseur').classList.toggle('active',view==='fournisseur')
+  document.getElementById('tab-client').classList.toggle('active',view==='client')
+  document.getElementById('atelierView').style.display=view==='atelier'?'contents':'none'
+  document.getElementById('supplierView').style.display=view==='atelier'?'none':'flex'
+  const title=document.getElementById('supplierViewTitle')
+  const sub=document.getElementById('supplierViewSub')
+  if(view==='client'){
+    title.textContent='Options client par réparation'
+    sub.textContent='Vue commerciale : sélection automatique des options économique, recommandée et premium à proposer au client.'
+  }else if(view==='fournisseur'){
+    title.textContent='Catalogue fournisseurs détaillé'
+    sub.textContent='Listing complet dynamique des variantes fournisseurs : qualité, technologie, stock fournisseur, prix d’achat HT, prix conseillé, marge estimée et statut interne.'
+  }
+  renderSupplierCatalog()
+}
+function setSelectValues(id,values,firstLabel){
+  const el=document.getElementById(id)
+  if(!el)return
+  const old=el.value||'Tous'
+  const unique=['Tous',...Array.from(new Set(values.filter(Boolean))).sort((a,b)=>String(a).localeCompare(String(b),'fr',{numeric:true}))]
+  el.innerHTML=unique.map(v=>`<option value="${escAttr(v)}">${v==='Tous'?firstLabel:esc(v)}</option>`).join('')
+  el.value=unique.includes(old)?old:'Tous'
+}
+function renderSupplierFilterOptions(){
+  setSelectValues('supSupplierFilter',supplierCatalog.map(i=>i.supplierName),'Tous fournisseurs')
+  setSelectValues('supRepairFilter',supplierCatalog.map(i=>i.repairType),'Toutes réparations')
+  setSelectValues('supQualityFilter',supplierCatalog.map(i=>i.qualityLabel),'Toutes qualités')
+  setSelectValues('supStatusFilter',supplierCatalog.map(i=>statusLabel(i.status)),'Tous statuts')
+}
+window.setSupplierQuick=function(q){
+  supplierQuick=q
+  document.querySelectorAll('.quick-chip').forEach(b=>b.classList.remove('active'))
+  const btn=document.getElementById('sq-'+q)
+  if(btn)btn.classList.add('active')
+  renderSupplierCatalog()
+}
+function getFilteredSupplierCatalog(applyDomFilters=true){
+  let rows=[...supplierCatalog]
+  if(applyDomFilters){
+    const q=norm(document.getElementById('supplierSearchInput')?.value||'')
+    const sf=document.getElementById('supSupplierFilter')?.value||'Tous'
+    const rf=document.getElementById('supRepairFilter')?.value||'Tous'
+    const qf=document.getElementById('supQualityFilter')?.value||'Tous'
+    const stf=document.getElementById('supStatusFilter')?.value||'Tous'
+    if(q){
+      rows=rows.filter(i=>norm([i.supplierName,i.supplierSku,i.exactName,i.brand,i.model,i.repairType,i.qualityLabel,i.technology].join(' ')).includes(q))
+    }
+    if(sf!=='Tous')rows=rows.filter(i=>i.supplierName===sf)
+    if(rf!=='Tous')rows=rows.filter(i=>i.repairType===rf)
+    if(qf!=='Tous')rows=rows.filter(i=>i.qualityLabel===qf)
+    if(stf!=='Tous')rows=rows.filter(i=>statusLabel(i.status)===stf)
+    if(supplierQuick==='iphone')rows=rows.filter(i=>norm(i.brand).includes('apple')||norm(i.model).includes('iphone')||norm(i.exactName).includes('iphone'))
+    if(supplierQuick==='screen')rows=rows.filter(i=>norm(i.repairType).includes('ecran')||/ecran|screen|display|lcd|oled|incell|tft/.test(norm(i.exactName)))
+    if(supplierQuick==='available')rows=rows.filter(i=>Number(i.supplierStock)>0)
+    if(supplierQuick==='recommended')rows=rows.filter(i=>i.isRecommended||i.status==='recommandé')
+    if(supplierQuick==='review')rows=rows.filter(i=>i.status==='à valider')
+  }
+  return rows
+}
+function groupKey(i){return [i.brand||'—',i.model||'Modèle inconnu',i.repairType||'Pièce'].join('|')}
+function groupSupplierRows(rows){
+  const map=new Map()
+  rows.forEach(i=>{
+    const key=groupKey(i)
+    if(!map.has(key))map.set(key,{key,brand:i.brand||'—',model:i.model||'Modèle inconnu',repairType:i.repairType||'Pièce',items:[]})
+    map.get(key).items.push(i)
+  })
+  const groups=[...map.values()]
+  groups.forEach(g=>g.items.sort((a,b)=>{
+    const os={'premium':1,'recommandé':2,'économique':3,'à valider':4,'à éviter':5}
+    return (os[a.status]||9)-(os[b.status]||9)||a.purchasePriceHT-b.purchasePriceHT
+  }))
+  groups.sort((a,b)=>`${a.brand} ${a.model} ${a.repairType}`.localeCompare(`${b.brand} ${b.model} ${b.repairType}`,'fr',{numeric:true}))
+  return groups
+}
+function pickOptions(items){
+  const pool=(items.filter(i=>i.supplierStock>0).length?items.filter(i=>i.supplierStock>0):items).filter(i=>i.status!=='à éviter')
+  const used=new Set()
+  const pick=(list)=>{
+    const x=list.find(i=>!used.has(i.supplierItemId||i.exactName))||list[0]
+    if(x)used.add(x.supplierItemId||x.exactName)
+    return x
+  }
+  const eco=pick([...pool].sort((a,b)=>a.saleSuggested-b.saleSuggested||a.purchasePriceHT-b.purchasePriceHT))
+  const reco=pick([...pool].sort((a,b)=>{
+    const score=i=>(i.isRecommended?50:0)+(i.status==='recommandé'?40:0)+(i.supplierStock>0?10:0)+(i.margin>0?5:0)-(i.marketGap&&i.marketGap>0?5:0)
+    return score(b)-score(a)||a.saleSuggested-b.saleSuggested
+  }))
+  const premium=pick([...pool].sort((a,b)=>{
+    const score=i=>(i.status==='premium'?60:0)+(/original|premium|service/i.test(i.qualityLabel+' '+i.technology+' '+i.exactName)?30:0)+(i.supplierStock>0?10:0)
+    return score(b)-score(a)||b.purchasePriceHT-a.purchasePriceHT
+  }))
+  return [{role:'Économique',cls:'eco',item:eco},{role:'Recommandé',cls:'reco',item:reco},{role:'Premium',cls:'premium',item:premium}].filter(x=>x.item)
+}
+function renderOptionCard(opt){
+  const i=opt.item
+  const marginCls=i.margin<0?'danger':i.margin<20?'warn':'ok'
+  const stockCls=i.supplierStock<=0?'danger':i.supplierStock<=2?'warn':'ok'
+  return `<div class="option-card ${opt.cls}">
+    <div class="option-role"><strong>${esc(opt.role)}</strong><span class="pill ${statusClass(i.status)}">${statusLabel(i.status)}</span></div>
+    <div class="option-name" title="${escAttr(i.exactName)}">${esc(i.exactName||`${i.repairType} ${i.model}`)}</div>
+    <div class="option-ref">${esc(i.supplierName)}${i.supplierSku?' · Réf. '+esc(i.supplierSku):''}</div>
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-l">Achat HT</div><div class="metric-v">${fmtMoney(i.purchasePriceHT)}</div></div>
+      <div class="metric"><div class="metric-l">Vente conseillée</div><div class="metric-v accent">${fmtMoney(i.saleSuggested)}</div></div>
+      <div class="metric"><div class="metric-l">Marge estimée</div><div class="metric-v ${marginCls}">${fmtMoney(i.margin)}${i.marginPct!==null?` · ${Math.round(i.marginPct)}%`:''}</div></div>
+      <div class="metric"><div class="metric-l">Stock fournisseur</div><div class="metric-v ${stockCls}">${i.supplierStock}</div></div>
+    </div>
+  </div>`
+}
+function renderCatalogRow(i){
+  const stockBadge=i.supplierStock<=0?'<span class="pill pill-avoid">Rupture</span>':i.supplierStock<=2?'<span class="pill pill-check">Faible</span>':`<span class="pill pill-eco">${i.supplierStock}</span>`
+  const siteBadge=i.displayedOnSite?'<span class="pill pill-site">Site</span>':'<span class="pill pill-nosite">Interne</span>'
+  const gap=i.marketGap
+  const gapClass=gap===null?'flat':gap>5?'pos':gap<-5?'neg':'flat'
+  const gapTxt=gap===null?'—':`${gap>0?'+':''}${gap.toFixed(2)}€`
+  const marginCls=i.margin<0?'danger':i.margin<20?'warn':'ok'
+  const st=i.status
+  return `<tr>
+    <td><span class="pill ${statusClass(st)}"><span class="status-dot ${statusDot(st)}"></span>${statusLabel(st)}</span></td>
+    <td><div style="font-weight:600;color:var(--t1);">${esc(i.supplierName)}</div><div class="catalog-sub">${i.supplierSku?esc(i.supplierSku):'Réf. —'}</div></td>
+    <td><div class="catalog-name" title="${escAttr(i.exactName)}">${esc(i.exactName||'—')}</div><div class="catalog-sub">${esc(i.brand||'—')} · ${esc(i.model||'—')} · ${esc(i.repairType||'—')}</div></td>
+    <td><span class="pill pill-neutral">${esc(i.qualityLabel||'—')}</span></td>
+    <td><span class="pill pill-neutral">${esc(i.technology||'—')}</span></td>
+    <td style="text-align:right;color:var(--t1);font-weight:600;">${fmtMoney(i.purchasePriceHT)}</td>
+    <td style="text-align:right;color:var(--a);font-weight:650;">${fmtMoney(i.saleSuggested)}</td>
+    <td style="text-align:right;"><span class="metric-v ${marginCls}">${fmtMoney(i.margin)}${i.marginPct!==null?` · ${Math.round(i.marginPct)}%`:''}</span></td>
+    <td style="text-align:center;">${stockBadge}</td>
+    <td style="text-align:center;color:var(--t2);">${i.workshopStock||0}</td>
+    <td style="color:var(--t2);">${esc(i.deliveryEstimate||'—')}</td>
+    <td style="color:var(--t3);white-space:nowrap;">${fmtDate(i.lastSyncedAt)}</td>
+    <td style="text-align:right;"><span class="market-gap ${gapClass}">${gapTxt}</span><div class="catalog-sub">Marché ${i.marketAvgPrice?fmtMoney(i.marketAvgPrice):'—'}</div></td>
+    <td style="text-align:center;">${siteBadge}</td>
+    <td style="text-align:right;">
+      <div class="mini-actions">
+        <button class="mini-action primary" onclick="createStockFromSupplier(${jsArg(i.supplierItemId)})">+ Atelier</button>
+        ${i.supplierSku?`<button class="mini-action" onclick="copySupplierRef(${jsArg(i.supplierSku)})">Copier</button>`:''}
+        ${i.repairOfferId?`<button class="mini-action" onclick="toggleOfferSite(${jsArg(i.repairOfferId)})">${i.displayedOnSite?'Masquer':'Site'}</button>`:''}
+        <select class="mini-select" ${i.repairOfferId?'':'disabled title="Aucune offre repair_offers liée"'} onchange="updateOfferStatus(${jsArg(i.repairOfferId)},this.value)">
+          ${['économique','recommandé','premium','à valider','à éviter'].map(s=>`<option value="${statusDbValue(s)}" ${s===st?'selected':''}>${statusLabel(s)}</option>`).join('')}
+        </select>
+      </div>
+    </td>
+  </tr>`
+}
+function updateSupplierKPIs(rows,groups){
+  const available=rows.filter(i=>i.supplierStock>0).length
+  const review=rows.filter(i=>i.status==='à valider').length
+  const prices=rows.map(i=>i.saleSuggested).filter(n=>n>0)
+  const margins=rows.map(i=>i.margin).filter(n=>Number.isFinite(n))
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v}
+  set('sk-total',rows.length)
+  set('sk-groups',groups.length)
+  set('sk-available',available)
+  set('sk-review',review)
+  set('sk-minprice',prices.length?fmtMoney(Math.min(...prices)):'—')
+  set('sk-margin',margins.length?fmtMoney(margins.reduce((a,b)=>a+b,0)/margins.length):'—')
+  const cb=document.getElementById('supplierCountBadge')
+  if(cb)cb.textContent=`${rows.length} variante${rows.length>1?'s':''} · ${groups.length} groupe${groups.length>1?'s':''}`
+}
+function renderSupplierCatalog(){
+  const wrap=document.getElementById('supplierGroups')
+  if(!wrap)return
+  renderSupplierFilterOptions()
+  const msg=document.getElementById('supplierMessage')
+  const loader=document.getElementById('supplierLoader')
+  const empty=document.getElementById('supplierEmpty')
+  if(loader)loader.style.display=supplierLoading?'flex':'none'
+  if(msg){msg.style.display='none';msg.className='supplier-message'}
+  if(supplierError&&currentStockView!=='atelier'){
+    msg.textContent=`Catalogue fournisseur non chargé : ${supplierError}`
+    msg.className='supplier-message err'
+    msg.style.display='block'
+  }else if(!supplierCatalog.length&&currentStockView!=='atelier'){
+    msg.textContent='Aucune donnée fournisseur détectée pour le moment. La page reste compatible avec ton stock atelier existant.'
+    msg.className='supplier-message warn'
+    msg.style.display='block'
+  }
+  const rows=getFilteredSupplierCatalog(true)
+  const groups=groupSupplierRows(rows)
+  updateSupplierKPIs(rows,groups)
+  updateStockViewCounters()
+  if(!rows.length){
+    wrap.innerHTML=''
+    if(empty)empty.style.display=supplierLoading?'none':'block'
+    return
+  }
+  if(empty)empty.style.display='none'
+  const detailed=currentStockView!=='client'
+  wrap.innerHTML=groups.map(g=>{
+    const options=pickOptions(g.items)
+    const supplierNames=[...new Set(g.items.map(i=>i.supplierName))].join(', ')
+    const minSale=Math.min(...g.items.map(i=>i.saleSuggested).filter(n=>n>0))
+    const totalSupplierStock=g.items.reduce((a,i)=>a+Number(i.supplierStock||0),0)
+    const totalWorkshopStock=Math.max(...g.items.map(i=>Number(i.workshopStock||0)),0)
+    return `<section class="supplier-group">
+      <div class="sg-head">
+        <div>
+          <div class="sg-title">${esc(g.model)} — ${esc(g.repairType)}</div>
+          <div class="sg-meta"><span>${esc(g.brand)}</span><span>•</span><span>${g.items.length} variante${g.items.length>1?'s':''}</span><span>•</span><span>${esc(supplierNames||'Fournisseur')}</span></div>
+        </div>
+        <div class="sg-right">
+          <span class="sg-pill">Dès ${Number.isFinite(minSale)?fmtMoney(minSale):'—'}</span>
+          <span class="sg-pill">Stock four. ${totalSupplierStock}</span>
+          <span class="sg-pill">Atelier ${totalWorkshopStock}</span>
+        </div>
+      </div>
+      <div class="sg-body">
+        <div class="option-grid">${options.map(renderOptionCard).join('')}</div>
+        ${detailed?`<div class="catalog-table-wrap"><table class="catalog-table"><thead><tr>
+          <th>Statut</th><th>Fournisseur / Réf.</th><th>Nom exact produit</th><th>Qualité</th><th>Techno</th><th style="text-align:right;">Achat HT</th><th style="text-align:right;">Vente conseillée</th><th style="text-align:right;">Marge</th><th style="text-align:center;">Stock four.</th><th style="text-align:center;">Atelier</th><th>Délai</th><th>MàJ</th><th style="text-align:right;">Marché</th><th style="text-align:center;">Site</th><th style="text-align:right;">Actions</th>
+        </tr></thead><tbody>${g.items.map(renderCatalogRow).join('')}</tbody></table></div>`:''}
+      </div>
+    </section>`
+  }).join('')
+}
+window.refreshSupplierCatalog=async function(){
+  await loadSupplierCatalog({silent:false})
+}
+window.syncFonedayCatalog=async function(){
+  try{
+    showToast('Synchronisation Foneday demandée...','ok')
+    const {data,error}=await sb.functions.invoke('sync-foneday-stock',{body:{source:'stock_page'}})
+    if(error)throw error
+    await loadSupplierCatalog({silent:true})
+    showToast('Synchronisation Foneday terminée ✓','ok')
+  }catch(e){
+    showToast('Sync Foneday impossible : '+(e.message||'Edge Function absente ou erreur API'),'err')
+  }
+}
+window.createStockFromSupplier=async function(id){
+  const item=supplierCatalog.find(i=>String(i.supplierItemId)===String(id))
+  if(!item){showToast('Variante fournisseur introuvable','err');return}
+  const payload={
+    nom:item.exactName||`${item.repairType} ${item.model}`,
+    categorie:item.repairType||'Autre',
+    marque:item.brand||null,
+    modele:item.model||null,
+    quantite:0,
+    seuil_alerte:2,
+    prix_achat:Number(item.purchasePriceHT)||0,
+    prix_vente:Number(item.saleSuggested)||0,
+    fournisseur:item.supplierName||null,
+    notes:[item.supplierSku?`Réf fournisseur : ${item.supplierSku}`:null,item.qualityLabel?`Qualité : ${item.qualityLabel}`:null,item.technology?`Technologie : ${item.technology}`:null].filter(Boolean).join(' | ')||null,
+    updated_at:new Date().toISOString()
+  }
+  const {data,error}=await sb.from('stock').insert(payload).select().single()
+  if(error){showToast('Erreur ajout atelier : '+error.message,'err');return}
+  allStock.push(data)
+  renderAll()
+  showToast('Pièce ajoutée au stock atelier ✓','ok')
+}
+window.copySupplierRef=async function(ref){
+  try{await navigator.clipboard.writeText(ref);showToast('Référence copiée ✓','ok')}
+  catch(e){showToast('Référence : '+ref,'ok')}
+}
+window.toggleOfferSite=async function(offerId){
+  const item=supplierCatalog.find(i=>String(i.repairOfferId)===String(offerId))
+  if(!item){showToast('Offre introuvable','err');return}
+  const next=!item.displayedOnSite
+  const {error}=await sb.from('repair_offers').update({displayed_on_site:next,updated_at:new Date().toISOString()}).eq('id',offerId)
+  if(error){showToast('Erreur visibilité site : '+error.message,'err');return}
+  item.displayedOnSite=next
+  renderSupplierCatalog()
+  showToast(next?'Offre affichée sur le site ✓':'Offre masquée du site ✓','ok')
+}
+window.updateOfferStatus=async function(offerId,statusValue){
+  if(!offerId){showToast('Aucune offre liée à cette variante','err');renderSupplierCatalog();return}
+  const {error}=await sb.from('repair_offers').update({status:statusValue,updated_at:new Date().toISOString()}).eq('id',offerId)
+  if(error){showToast('Erreur statut : '+error.message,'err');renderSupplierCatalog();return}
+  const item=supplierCatalog.find(i=>String(i.repairOfferId)===String(offerId))
+  if(item){item.status=statusCanonical(statusValue,item);item.isRecommended=item.status==='recommandé'}
+  renderSupplierCatalog()
+  showToast('Statut mis à jour ✓','ok')
+}
+window.exportSupplierCSV=function(){
+  const rows=getFilteredSupplierCatalog(true)
+  if(!rows.length){showToast('Aucune donnée fournisseur à exporter','err');return}
+  const cols=['supplierName','supplierSku','exactName','brand','model','repairType','qualityLabel','technology','purchasePriceHT','saleSuggested','margin','supplierStock','workshopStock','deliveryEstimate','lastSyncedAt','status','displayedOnSite','marketAvgPrice','marketGap']
+  const csv=[cols.join(','),...rows.map(p=>cols.map(c=>`"${String(p[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const a=document.createElement('a')
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download=`itsoluce_catalogue_fournisseurs_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  showToast('Export fournisseur téléchargé ✓','ok')
+}
+function setupSupplierRealtime(){
+  if(supplierRealtimeReady)return
+  supplierRealtimeReady=true
+  let timer=null
+  const reload=()=>{
+    clearTimeout(timer)
+    timer=setTimeout(async()=>{await loadStock()},700)
+  }
+  try{
+    sb.channel('stock_page_live')
+      .on('postgres_changes',{event:'*',schema:'public',table:'stock'},reload)
+      .on('postgres_changes',{event:'*',schema:'public',table:'supplier_items'},reload)
+      .on('postgres_changes',{event:'*',schema:'public',table:'repair_offers'},reload)
+      .on('postgres_changes',{event:'*',schema:'public',table:'market_prices'},reload)
+      .subscribe()
+  }catch(e){console.warn('Realtime stock:',e)}
 }
 
 window.filterStock=function(){renderTable()}
@@ -945,6 +1662,7 @@ window.exportCSV=function(){
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 
 await loadStock()
+setupSupplierRealtime()
 
 } catch(err) {
   console.error('Erreur stock:', err)
