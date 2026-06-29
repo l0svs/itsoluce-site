@@ -8,6 +8,7 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
@@ -406,6 +407,20 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Prix final (€)</label><input type="number" id="f-final" placeholder="0.00" min="0" step="0.01" oninput="updateMarge()"/></div>
     </div>
     <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations, pièces utilisées..."></textarea></div>
+    <div id="suivi-block" style="display:none;margin-top:8px;padding:14px;background:var(--bg3);border-radius:8px;">
+      <div style="font-size:12px;font-weight:600;color:var(--t1);margin-bottom:4px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--a)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Suivi client</div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:12px;">Le client peut suivre l'avancement de sa réparation via ce lien ou ce QR code.</div>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div id="qrcode" style="width:88px;height:88px;background:#fff;border-radius:8px;padding:6px;flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <input type="text" id="suivi-lien" readonly style="width:100%;padding:7px 9px;background:var(--bg2);border:1px solid var(--ln2);border-radius:5px;color:var(--t2);font-size:11px;font-family:inherit;margin-bottom:8px;"/>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="btn btn-secondary" onclick="copierLienSuivi()" style="flex:1;font-size:11px;padding:6px;">Copier le lien</button>
+            <button type="button" class="btn btn-secondary" onclick="envoyerLienSuivi()" style="flex:1;font-size:11px;padding:6px;" id="btnEnvoiSuivi">Envoyer au client</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="panel-footer">
     <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
@@ -506,6 +521,8 @@ function openPanel(r=null){
   if(csel){csel.value='';}
   // Déverrouiller les champs client (cas nouveau dossier / modification)
   ;['f-client','f-email','f-tel'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}})
+  // Bloc suivi client (seulement pour dossiers existants avec token)
+  if(window.afficherSuivi)window.afficherSuivi(r)
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   document.getElementById('f-client').focus()
@@ -918,6 +935,57 @@ window.deleteRep=async function(id,nom){
   showToast(`Dossier "${nom}" supprimé`,'ok')
 }
 
+// ─── SUIVI CLIENT (QR + lien) ───
+let _suiviRep=null
+window.afficherSuivi=function(r){
+  const block=document.getElementById('suivi-block')
+  if(!block)return
+  // Afficher uniquement pour un dossier existant avec token
+  if(!r||!r.suivi_token){block.style.display='none';_suiviRep=null;return}
+  _suiviRep=r
+  const lien=`https://itsoluce.be/suivi.html?t=${r.suivi_token}`
+  document.getElementById('suivi-lien').value=lien
+  // Générer le QR code
+  const qrDiv=document.getElementById('qrcode')
+  qrDiv.innerHTML=''
+  try{
+    if(window.QRCode){
+      new window.QRCode(qrDiv,{text:lien,width:76,height:76,colorDark:'#000000',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M})
+    }
+  }catch(e){qrDiv.innerHTML='<div style="font-size:10px;color:#999;text-align:center;padding-top:30px;">QR indispo</div>'}
+  // Masquer le bouton envoi si pas d'email
+  const btnEnvoi=document.getElementById('btnEnvoiSuivi')
+  if(btnEnvoi)btnEnvoi.style.display=r.client_email?'block':'none'
+  block.style.display='block'
+}
+window.copierLienSuivi=function(){
+  const lien=document.getElementById('suivi-lien').value
+  navigator.clipboard.writeText(lien).then(()=>showToast('Lien de suivi copié ✓','ok')).catch(()=>showToast('Impossible de copier','err'))
+}
+window.envoyerLienSuivi=async function(){
+  if(!_suiviRep||!_suiviRep.client_email){showToast("Pas d'email client",'err');return}
+  const r=_suiviRep
+  const lien=`https://itsoluce.be/suivi.html?t=${r.suivi_token}`
+  const prenom=(r.client_nom||'').split(' ')[0]||''
+  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'votre appareil'
+  const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques & électroniques<br><a href="mailto:contact@itsoluce.be" style="color:#1d4ed8;text-decoration:none;">contact@itsoluce.be</a><br>+32 474 05 66 59<br><a href="https://itsoluce.be/" style="color:#1d4ed8;text-decoration:none;">https://itsoluce.be/</a></p>`
+  const html=`<p>Bonjour ${prenom},</p><p>Votre ${appareil} est pris en charge par IT Soluce. Vous pouvez suivre l'avancement de sa réparation à tout moment via le lien ci-dessous :</p><p><a href="${lien}" style="color:#1d4ed8;font-weight:600;">Suivre ma réparation →</a></p><p>Vous serez informé dès que votre appareil sera prêt à être récupéré.</p>${signature}`
+  if(!confirm(`Envoyer le lien de suivi à ${r.client_email} ?`))return
+  try{
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:r.client_email,subject:`Suivi de votre réparation — IT Soluce`,html})
+    })
+    const result=await res.json()
+    if(!res.ok)throw new Error(result.error||'Échec')
+    showToast(`Lien de suivi envoyé à ${r.client_email} ✓`,'ok')
+  }catch(err){
+    showToast('Erreur : '+err.message,'err')
+  }
+}
+
 window.saveDossier=async function(){
   const id=document.getElementById('f-id').value
   const nom=document.getElementById('f-client').value.trim()
@@ -983,6 +1051,10 @@ window.saveDossier=async function(){
     pieces:piecesData,
     notes:document.getElementById('f-notes').value.trim()||null,
     updated_at:new Date().toISOString()
+  }
+  // Générer un token de suivi unique à la création (réutilisé si déjà présent)
+  if(!id){
+    payload.suivi_token=(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,12):Math.random().toString(36).slice(2,14))
   }
 
   document.getElementById('saveBtn').textContent='Enregistrement...'
