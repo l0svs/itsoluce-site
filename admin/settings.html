@@ -95,6 +95,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .fl-name{font-size:12px;color:var(--t1);font-weight:500;}
 .fl-desc{font-size:11px;color:var(--t3);margin-top:2px;}
 .field-input{flex-shrink:0;min-width:240px;}
+.grille-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--ln);}
+.grille-row:last-of-type{border-bottom:none;}
+.grille-palier{font-size:11px;color:var(--t2);width:110px;flex-shrink:0;}
+.grille-row input{width:62px;padding:5px 8px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;text-align:right;}
+.grille-row input:focus{border-color:var(--a);}
+.grille-lbl{font-size:11px;color:var(--t3);}
 
 /* INPUTS */
 input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="url"],input[type="password"],select,textarea{
@@ -420,10 +426,13 @@ select option{background:var(--bg3);}
             <div class="field"><div class="field-label"><div class="fl-name">Délai de paiement (jours)</div><div class="fl-desc">Délai affiché sur les factures</div></div><div class="field-input"><input type="number" id="s-delai" placeholder="14" min="0"/></div></div>
           </div>
           <div class="field-group">
-            <div class="fg-head">Formule de prix de vente</div>
-            <div class="field"><div class="field-label"><div class="fl-name">Coefficient sur la pièce</div><div class="fl-desc">Multiplicateur appliqué au prix d'achat (ex : 2)</div></div><div class="field-input"><input type="number" id="s-coef" placeholder="2" min="1" step="0.1" oninput="updateFormulePreview()"/></div></div>
-            <div class="field"><div class="field-label"><div class="fl-name">Montant fixe (€)</div><div class="fl-desc">Main d'œuvre + déplacement ajoutés (ex : 20)</div></div><div class="field-input"><input type="number" id="s-fixe" placeholder="20" min="0" step="1" oninput="updateFormulePreview()"/></div></div>
-            <div class="field"><div class="field-label"><div class="fl-name">Aperçu</div><div class="fl-desc">Exemple sur une pièce à 50€ d'achat</div></div><div class="field-input"><div id="formule-preview" style="font-size:13px;color:var(--a);font-weight:600;padding:8px 0;">50 × 2 + 20 = 120,00 €</div></div></div>
+            <div class="fg-head">Grille de tarification dégressive</div>
+            <div style="padding:12px 16px;font-size:11px;color:var(--t3);line-height:1.5;border-bottom:1px solid var(--ln);">Le prix de vente conseillé est calculé selon le prix d'achat de la pièce : <strong>prix d'achat × coefficient + frais fixes</strong>. Plus la pièce est chère, plus le coefficient diminue — pour rester compétitif sur les appareils récents.</div>
+            <div id="grille-rows"></div>
+            <div style="padding:10px 16px;border-top:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:11px;color:var(--t3);">Exemple : une pièce à <strong id="grille-ex-achat">50</strong>€ → <strong id="grille-ex-vente" style="color:var(--a);">—</strong></span>
+              <button type="button" class="btn btn-secondary" onclick="resetGrille()" style="font-size:11px;padding:5px 10px;">Réinitialiser</button>
+            </div>
           </div>
           <div class="field-group">
             <div class="fg-head">Mentions légales</div>
@@ -585,6 +594,64 @@ function updateFormulePreview(){
   const el=document.getElementById('formule-preview')
   if(el)el.textContent=`50 × ${coef} + ${fixe} = ${ex.toFixed(2).replace('.',',')} €`
 }
+
+// ─── GRILLE DÉGRESSIVE ───
+const GRILLE_DEFAUT=[
+  {min:0,max:30,coef:2.2,fixe:25},
+  {min:30,max:80,coef:1.8,fixe:25},
+  {min:80,max:150,coef:1.45,fixe:35},
+  {min:150,max:250,coef:1.25,fixe:45},
+  {min:250,max:999999,coef:1.15,fixe:55}
+]
+function getGrilleLocal(){
+  try{const s=localStorage.getItem('erp-grille');if(s){const g=JSON.parse(s);if(Array.isArray(g)&&g.length)return g}}catch(e){}
+  return JSON.parse(JSON.stringify(GRILLE_DEFAUT))
+}
+function renderGrille(){
+  const grille=getGrilleLocal()
+  const container=document.getElementById('grille-rows')
+  if(!container)return
+  container.innerHTML=grille.map((p,i)=>{
+    const palierLabel=p.max>=999999?`${p.min}€ et plus`:`${p.min}€ – ${p.max}€`
+    return `<div class="grille-row">
+      <span class="grille-palier">${palierLabel}</span>
+      <span class="grille-lbl">×</span>
+      <input type="number" step="0.05" min="1" value="${p.coef}" data-i="${i}" data-f="coef" oninput="onGrilleInput()"/>
+      <span class="grille-lbl">+</span>
+      <input type="number" step="1" min="0" value="${p.fixe}" data-i="${i}" data-f="fixe" oninput="onGrilleInput()"/>
+      <span class="grille-lbl">€</span>
+    </div>`
+  }).join('')
+  updateGrilleExemple()
+}
+function onGrilleInput(){
+  const grille=getGrilleLocal()
+  document.querySelectorAll('#grille-rows input').forEach(inp=>{
+    const i=Number(inp.dataset.i),f=inp.dataset.f
+    if(grille[i])grille[i][f]=Number(inp.value)||0
+  })
+  localStorage.setItem('erp-grille',JSON.stringify(grille))
+  updateGrilleExemple()
+  if(window.markDirty)window.markDirty()
+}
+function calcVenteGrille(achat){
+  const grille=getGrilleLocal()
+  const p=grille.find(x=>achat>=x.min&&achat<x.max)||grille[grille.length-1]
+  return achat*p.coef+p.fixe
+}
+function updateGrilleExemple(){
+  const el=document.getElementById('grille-ex-vente')
+  if(el)el.textContent=calcVenteGrille(50).toFixed(2).replace('.',',')+' €'
+}
+function resetGrille(){
+  if(!confirm('Réinitialiser la grille aux valeurs par défaut ?'))return
+  localStorage.setItem('erp-grille',JSON.stringify(GRILLE_DEFAUT))
+  renderGrille()
+  if(window.markDirty)window.markDirty()
+  if(window.showToast)window.showToast('Grille réinitialisée','ok')
+}
+// Initialiser au chargement
+renderGrille()
 </script>
 
 
@@ -706,15 +773,10 @@ fill('s-delai','finance_delai_paiement')
 fill('s-tva','finance_mention_tva')
 fill('s-iban','finance_iban')
 // Formule de prix (défaut 2 et 20, sync localStorage)
-const coefVal=cfg['finance_coef']||localStorage.getItem('erp-coef')||'2'
-const fixeVal=cfg['finance_fixe']||localStorage.getItem('erp-fixe')||'20'
-document.getElementById('s-coef').value=coefVal
-document.getElementById('s-fixe').value=fixeVal
-localStorage.setItem('erp-coef',coefVal)
-localStorage.setItem('erp-fixe',fixeVal)
-window.originalValues['s-coef']=coefVal
-window.originalValues['s-fixe']=fixeVal
-if(typeof updateFormulePreview==='function')updateFormulePreview()
+// Grille dégressive : chargée depuis localStorage par renderGrille()
+const grilleSupabase=cfg['finance_grille']
+if(grilleSupabase){try{localStorage.setItem('erp-grille',grilleSupabase)}catch(e){}}
+if(typeof renderGrille==='function')renderGrille()
 fill('s-rayon','intervention_rayon')
 fill('s-km','intervention_frais_km')
 fill('s-four-iphone','fournisseur_default_iphone')
@@ -782,11 +844,9 @@ window.saveSettings=async function(){
   })
   const {error}=await sb.from('settings').upsert(updates,{onConflict:'cle'})
   // Formule de prix de vente (localStorage + Supabase)
-  const coef=document.getElementById('s-coef').value||'2'
-  const fixe=document.getElementById('s-fixe').value||'20'
-  localStorage.setItem('erp-coef',coef)
-  localStorage.setItem('erp-fixe',fixe)
-  await sb.from('settings').upsert([{cle:'finance_coef',valeur:coef},{cle:'finance_fixe',valeur:fixe}],{onConflict:'cle'})
+  // Grille dégressive (localStorage + Supabase)
+  const grilleJson=localStorage.getItem('erp-grille')||'[]'
+  await sb.from('settings').upsert([{cle:'finance_grille',valeur:grilleJson}],{onConflict:'cle'})
   if(error){showToast('Erreur : '+error.message,'err')}
   else{
     window.dirty=false

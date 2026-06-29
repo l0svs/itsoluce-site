@@ -570,26 +570,39 @@ function calcPort(){
   document.getElementById('cr-final').textContent=prixFinal.toFixed(2)+' €'
 }
 
-// ─── CALCUL PRIX DE VENTE PARAMÉTRABLE ───
-function getFormule(){
-  const coef=Number(localStorage.getItem('erp-coef'))||2
-  const fixe=Number(localStorage.getItem('erp-fixe'))||20
-  return {coef,fixe}
+// ─── CALCUL PRIX DE VENTE — GRILLE DÉGRESSIVE ───
+const GRILLE_DEFAUT=[
+  {min:0,max:30,coef:2.2,fixe:25},
+  {min:30,max:80,coef:1.8,fixe:25},
+  {min:80,max:150,coef:1.45,fixe:35},
+  {min:150,max:250,coef:1.25,fixe:45},
+  {min:250,max:999999,coef:1.15,fixe:55}
+]
+function getGrille(){
+  try{
+    const stored=localStorage.getItem('erp-grille')
+    if(stored){const g=JSON.parse(stored);if(Array.isArray(g)&&g.length)return g}
+  }catch(e){}
+  return GRILLE_DEFAUT
+}
+function getPalier(achat){
+  const grille=getGrille()
+  return grille.find(p=>achat>=p.min&&achat<p.max)||grille[grille.length-1]
 }
 function calcPrixVente(achat){
-  const {coef,fixe}=getFormule()
-  return achat>0 ? (achat*coef+fixe) : 0
+  if(achat<=0)return 0
+  const p=getPalier(achat)
+  return achat*p.coef+p.fixe
 }
 function onAchatChange(){
   const achat=Number(document.getElementById('f-achat').value)||0
   const helper=document.getElementById('prix-helper')
-  const {coef,fixe}=getFormule()
-  document.getElementById('formule-rappel').textContent=`Formule : achat × ${coef} + ${fixe}€`
   if(achat<=0){helper.style.display='none';return}
+  const p=getPalier(achat)
+  document.getElementById('formule-rappel').textContent=`Palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
   helper.style.display='block'
   const suggere=calcPrixVente(achat)
   document.getElementById('prix-suggere').textContent=suggere.toFixed(2)+' €'
-  // Si le champ vente est vide, on pré-remplit automatiquement
   const venteInput=document.getElementById('f-vente')
   if(!venteInput.value||Number(venteInput.value)===0){
     venteInput.value=suggere.toFixed(2)
