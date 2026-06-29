@@ -230,6 +230,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-search-big input{width:100%;padding:13px 16px 13px 46px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:12px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
 .cat-search-big input:focus{border-color:var(--a);}
 .cat-hint{font-size:12px;color:var(--t3);margin-top:10px;}
+.cat-filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--ln);}
+.cat-filter{padding:6px 14px;border-radius:8px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;font-family:inherit;display:flex;align-items:center;gap:6px;}
+.cat-filter:hover{border-color:var(--a);color:var(--a);}
+.cat-filter.on{background:var(--a);color:#fff;border-color:var(--a);}
+.cat-filter .cat-filter-n{font-size:10px;opacity:.7;}
 .cat-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
 .cat-chip{padding:6px 13px;border-radius:99px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);font-size:12px;cursor:pointer;transition:all .12s;}
 .cat-chip:hover{border-color:var(--a);color:var(--a);}
@@ -357,6 +362,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <span class="cat-chip" onclick="catSet('iPad Air')">iPad Air</span>
         </div>
         <div class="cat-hint"><span class="cat-sync-info" id="sync-info"></span> · <span id="cat-total">—</span> pièces dans le catalogue</div>
+        <div class="cat-filters" id="cat-filters" style="display:none;"></div>
       </div>
       <div class="cat-results" id="cat-results"></div>
     </div>
@@ -625,11 +631,17 @@ async function loadSyncInfo(){
 
 function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
+let _resultatsActuels=[]
+let _filtreActif='all'
+let _qActuel=''
+
 async function rechercher(){
   const q=document.getElementById('catSearch').value.trim()
   const results=document.getElementById('cat-results')
+  const filtersBar=document.getElementById('cat-filters')
   if(q.length<2){
     results.innerHTML=welcomeHtml()
+    filtersBar.style.display='none'
     return
   }
   results.innerHTML='<div class="cat-loading">Recherche en cours…</div>'
@@ -638,17 +650,48 @@ async function rechercher(){
     .select('*')
     .or(`suitable_for.ilike.%${q}%,title.ilike.%${q}%`)
     .order('category')
-    .limit(300)
-  if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';return}
+    .limit(500)
+  if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
   if(!data||data.length===0){
     results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(q)}"</div><div>Essayez un autre modèle (ex : iPhone 13, Galaxy S23, iPad Air).</div></div>`
+    filtersBar.style.display='none'
     return
   }
-  renderResults(data,q)
+  _resultatsActuels=data
+  _qActuel=q
+  _filtreActif='all'
+  renderFiltres()
+  renderResults()
 }
 
-function renderResults(data,q){
+function renderFiltres(){
+  const bar=document.getElementById('cat-filters')
+  // Compter par catégorie
+  const compte={}
+  _resultatsActuels.forEach(p=>{
+    const c=p.category||'Autre'
+    compte[c]=(compte[c]||0)+1
+  })
+  const cats=Object.keys(compte).sort()
+  let html=`<button class="cat-filter ${_filtreActif==='all'?'on':''}" onclick="setFiltre('all')">Tout <span class="cat-filter-n">${_resultatsActuels.length}</span></button>`
+  cats.forEach(c=>{
+    html+=`<button class="cat-filter ${_filtreActif===c?'on':''}" onclick="setFiltre('${escapeJs(c)}')">${escapeHtml(c)} <span class="cat-filter-n">${compte[c]}</span></button>`
+  })
+  bar.innerHTML=html
+  bar.style.display='flex'
+}
+
+window.setFiltre=function(cat){
+  _filtreActif=cat
+  renderFiltres()
+  renderResults()
+}
+
+function renderResults(){
   const results=document.getElementById('cat-results')
+  const q=_qActuel
+  // Filtrer selon la catégorie active
+  const data=_filtreActif==='all'?_resultatsActuels:_resultatsActuels.filter(p=>(p.category||'Autre')===_filtreActif)
   // Grouper par catégorie (Display, Battery...)
   const groupes={}
   data.forEach(p=>{
@@ -656,7 +699,7 @@ function renderResults(data,q){
     if(!groupes[cat])groupes[cat]=[]
     groupes[cat].push(p)
   })
-  let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} trouvée${data.length>1?'s':''} pour "${escapeHtml(q)}"</div>`
+  let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
   // Pour chaque catégorie, trier par niveau puis prix
   Object.keys(groupes).sort().forEach(cat=>{
     const items=groupes[cat].sort((a,b)=>{
