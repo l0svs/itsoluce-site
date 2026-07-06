@@ -261,6 +261,127 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   .content{padding-left:14px !important;padding-right:14px !important;}
 }
 
+
+/* ═══════════ APP iOS (MOBILE ≤640px) ═══════════ */
+@media(max-width:640px){
+  :root{
+    --ios-blur:saturate(180%) blur(20px);
+    --ios-radius:16px;
+    --ios-bar-h:56px;
+  }
+  body{-webkit-font-smoothing:antialiased;}
+  * {-webkit-tap-highlight-color:transparent;}
+
+  /* Topbar iOS : translucide floue, fine */
+  .topbar{
+    position:sticky !important;top:0;z-index:250;
+    height:48px !important;padding:0 12px !important;
+    background:color-mix(in srgb, var(--bg2) 78%, transparent) !important;
+    -webkit-backdrop-filter:var(--ios-blur);backdrop-filter:var(--ios-blur);
+    border-bottom:0.5px solid var(--ln) !important;
+  }
+  .mobile-menu-btn{border:none !important;background:transparent !important;width:34px;height:34px;}
+  .mobile-menu-btn svg{width:24px;height:24px;stroke-width:1.75;}
+
+  /* Contenu : fond gris iOS + scroll fluide */
+  .content{
+    background:var(--bg) !important;
+    -webkit-overflow-scrolling:touch;
+    padding:0 !important;padding-bottom:calc(var(--ios-bar-h) + env(safe-area-inset-bottom) + 12px) !important;
+  }
+  #pageBody{padding:0 !important;}
+
+  /* Grand titre iOS (Large Title) */
+  .page-head,.dash-hello{
+    padding:8px 18px 12px !important;background:transparent !important;
+    flex-direction:column !important;align-items:flex-start !important;
+  }
+  .page-head h1,.dash-hello h1{
+    font-size:30px !important;font-weight:700 !important;letter-spacing:-0.5px !important;
+    line-height:1.1 !important;margin:0 !important;
+  }
+  .page-head p,.dash-hello p{font-size:14px !important;color:var(--t3) !important;margin-top:2px !important;}
+
+  /* Cartes iOS : coins très arrondis, ombre douce, pas de bordure dure */
+  .card,.dash-card,.pf-card,.cat-opt,.rl-row,.kpi,[class*="-card"]{
+    border-radius:var(--ios-radius) !important;
+    border:none !important;
+    background:var(--bg2) !important;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04) !important;
+  }
+
+  /* Sections en "grouped list" iOS avec marge latérale */
+  .dash-kpis,.dash-grid,.cat-results,.cards-grid,.list-grid{
+    padding-left:16px !important;padding-right:16px !important;
+  }
+
+  /* KPI iOS */
+  .kpi-strip{padding:0 16px !important;}
+  .kpi{padding:14px !important;border-radius:var(--ios-radius) !important;}
+  .kpi-val{font-size:22px !important;font-weight:700 !important;letter-spacing:-0.5px !important;}
+
+  /* Boutons iOS : arrondis, pleins, effet pression */
+  .btn,button.btn{
+    border-radius:12px !important;font-weight:600 !important;
+    min-height:44px !important;font-size:15px !important;
+    transition:transform .12s ease,opacity .12s ease !important;
+  }
+  .btn:active,button.btn:active,.mbb-item:active,.cat-opt:active,.card:active{
+    transform:scale(0.97) !important;opacity:0.85 !important;
+  }
+  .btn-primary{background:var(--a) !important;color:#fff !important;}
+
+  /* Barre du bas iOS : translucide floue */
+  .mobile-bottombar{
+    height:calc(var(--ios-bar-h) + env(safe-area-inset-bottom)) !important;
+    background:color-mix(in srgb, var(--bg2) 80%, transparent) !important;
+    -webkit-backdrop-filter:var(--ios-blur) !important;backdrop-filter:var(--ios-blur) !important;
+    border-top:0.5px solid var(--ln) !important;
+    padding-bottom:env(safe-area-inset-bottom) !important;
+  }
+  .mobile-bottombar-inner{height:var(--ios-bar-h) !important;}
+  .mbb-item{gap:2px !important;font-size:10px !important;font-weight:500 !important;transition:transform .1s;}
+  .mbb-item svg{width:26px !important;height:26px !important;stroke-width:1.6 !important;}
+  .mbb-item.active{color:var(--a) !important;}
+
+  /* Menu latéral iOS : slide + coins arrondis à droite */
+  .mobile-nav{border-radius:0 20px 20px 0 !important;padding-top:env(safe-area-inset-top) !important;}
+  .mobile-nav .nl{border-radius:10px !important;margin:2px 10px !important;padding:11px 14px !important;font-size:15px !important;}
+  .mobile-nav .nl:active{background:var(--bg3) !important;transform:scale(0.98);}
+
+  /* Champs de saisie iOS */
+  input,select,textarea{border-radius:11px !important;font-size:16px !important;}
+
+  /* Panneau plein écran qui slide du bas (style iOS sheet) */
+  .panel{
+    width:100% !important;max-width:100% !important;
+    border-radius:16px 16px 0 0 !important;
+    top:auto !important;bottom:0 !important;height:92% !important;
+  }
+
+  /* Segments / filtres style iOS (pilule) */
+  .seg,.cat-filters{gap:6px !important;}
+  .seg button,.cat-filter{border-radius:9px !important;}
+
+  /* Listes : lignes façon iOS avec séparateurs fins */
+  .drow,.rl-row{border-radius:var(--ios-radius) !important;margin-bottom:8px !important;}
+}
+
+
+/* ═══ TRANSITIONS DE PAGE STYLE iOS (mobile) ═══ */
+@media(max-width:640px){
+  @keyframes ios-slide-in{from{transform:translateX(100%);}to{transform:translateX(0);}}
+  @keyframes ios-slide-out{from{transform:translateX(0);}to{transform:translateX(-25%);opacity:0.6;}}
+  @keyframes ios-fade-in{from{opacity:0;}to{opacity:1;}}
+  @keyframes ios-fade-out{from{opacity:1;}to{opacity:0;}}
+  /* Aller : la nouvelle page glisse depuis la droite */
+  ::view-transition-new(root){animation:ios-slide-in .32s cubic-bezier(0.32,0.72,0,1);}
+  ::view-transition-old(root){animation:ios-slide-out .32s cubic-bezier(0.32,0.72,0,1);}
+  /* Retour : fondu */
+  html.back-nav::view-transition-new(root){animation:ios-fade-in .25s ease;}
+  html.back-nav::view-transition-old(root){animation:ios-fade-out .25s ease;}
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1460,6 +1581,58 @@ function closeMobileNav(){
 (function(){
   const path=location.pathname.split('/').pop().replace('.html','');
   document.querySelectorAll('.mbb-item').forEach(a=>{if(a.dataset.page===path)a.classList.add('active');});
+})();
+</script>
+
+<script>
+(function(){
+  if(window.innerWidth>640)return;
+  // Effet pression tactile sur les éléments interactifs
+  document.addEventListener('touchstart',function(e){
+    const t=e.target.closest('.btn,.mbb-item,.cat-opt,.drow,.nl,.kpi');
+    if(t){t.style.transition='transform .1s';t.style.transform='scale(0.97)';}
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    document.querySelectorAll('.btn,.mbb-item,.cat-opt,.drow,.nl,.kpi').forEach(el=>{el.style.transform='';});
+  },{passive:true});
+})();
+</script>
+
+<script>
+(function(){
+  if(window.innerWidth>640)return;
+  if(!document.startViewTransition)return; // navigateur non compatible -> navigation normale
+
+  // Ordre des pages pour déterminer aller/retour (profondeur)
+  const DEPTH={dashboard:0,reparations:1,stock:1,catalogue:1,clients:1,fournisseurs:1,devis:1,factures:1,garanties:1,charges:1,planning:1,taches:1,marketing:1,performance:1,relances:1,settings:1};
+  function pageName(url){try{return (new URL(url,location.href)).pathname.split('/').pop().replace('.html','')||'dashboard';}catch(e){return '';}}
+  const current=pageName(location.href);
+
+  document.addEventListener('click',function(e){
+    const a=e.target.closest('a[href]');
+    if(!a)return;
+    const href=a.getAttribute('href');
+    // Ignorer liens externes, ancres, target _blank, mailto/tel
+    if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('mailto')||href.startsWith('tel')||a.target==='_blank')return;
+    if(!href.includes('.html'))return;
+    const dest=pageName(href);
+    // Déterminer si c'est un retour (destination moins profonde)
+    const isBack=(DEPTH[dest]??1)<(DEPTH[current]??1);
+    e.preventDefault();
+    if(isBack)document.documentElement.classList.add('back-nav');
+    // Mémoriser le sens pour la page suivante
+    try{sessionStorage.setItem('nav-back',isBack?'1':'0');}catch(e){}
+    document.startViewTransition(()=>{window.location.href=href;});
+  });
+
+  // Au chargement : si on venait d'un "retour", appliquer le fondu à l'entrée
+  try{
+    if(sessionStorage.getItem('nav-back')==='1'){
+      document.documentElement.classList.add('back-nav');
+      sessionStorage.removeItem('nav-back');
+      setTimeout(()=>document.documentElement.classList.remove('back-nav'),400);
+    }
+  }catch(e){}
 })();
 </script>
 
