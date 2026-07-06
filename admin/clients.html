@@ -220,6 +220,20 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 /* ═══════════ APP iOS (MOBILE ≤640px) ═══════════ */
 @media(max-width:640px){
+  /* ANTI-DÉBORDEMENT : tout tient dans la largeur écran */
+  html,body{overflow-x:hidden !important;max-width:100vw !important;}
+  .content,#pageBody,.page-head,.card,.dash-card,[class*="-card"],.drow,.rl-row{max-width:100% !important;}
+  /* Neutraliser les largeurs fixes desktop (sauf calendrier + petites icônes) */
+  [style*="width:300px"],[style*="width:320px"],[style*="width:340px"],[style*="width:360px"],
+  [style*="width:260px"],[style*="width:200px"],[style*="width:130px"],[style*="width:100px"],
+  [style*="width:1000px"],[style*="width:1100px"],[style*="width:1600px"]{
+    width:100% !important;max-width:100% !important;
+  }
+  /* Autoriser le retour à la ligne (sauf badges/statuts courts) */
+  .row-t,.row-s,.drow-t,.drow-s,.rl-name,td,th,.cell,.cat-opt-title{white-space:normal !important;word-break:break-word !important;}
+  /* Grilles internes -> 1 colonne, jamais de débordement */
+  .fg-row,.form-row,.two-col,.grid-2{grid-template-columns:1fr !important;display:flex !important;flex-direction:column !important;}
+
   :root{
     --ios-blur:saturate(180%) blur(20px);
     --ios-radius:16px;
