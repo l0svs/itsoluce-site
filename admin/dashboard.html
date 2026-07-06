@@ -560,7 +560,7 @@ const kpis=[
 document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="dk"><div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div></div>`).join('')
 
 // ─── PRÉPARATION DES LISTES ───
-const STATUT_REP={recu:'Reçu',diagnostic:'Diagnostic',attente:'En attente',encours:'En cours',pret:'Prêt',rendu:'Rendu',annule:'Annulé'}
+const STATUT_REP={attente_reception:"En attente de réception de l'appareil",recu:'Reçu',attente:'En attente',encours:'En cours',pret:'Prêt',rendu:'Rendu',annule:'Annulé'}
 
 // RDV à venir (futurs, non terminés, triés)
 const rdvAvenir=rdvs.filter(r=>!r.termine&&new Date(r.date_debut)>=today).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut)).slice(0,6)

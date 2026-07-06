@@ -99,7 +99,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .statut{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;transition:opacity .12s;}
 .statut:hover{opacity:.8;}
 .s-recu{background:rgba(139,139,160,0.15);color:#8b8ba0;}
-.s-diagnostic{background:rgba(59,130,246,0.15);color:#3b82f6;}
+.s-attente_reception{background:rgba(168,85,247,0.15);color:#a855f7;}
 .s-attente{background:rgba(251,191,36,0.15);color:#fbbf24;}
 .s-encours{background:rgba(251,146,60,0.15);color:#fb923c;}
 .s-pret{background:rgba(52,211,153,0.15);color:#34d399;}
@@ -326,8 +326,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 <!-- STATUS MENU -->
 <div class="status-menu" id="statusMenu">
+  <button class="sm-item" onclick="changeStatut('attente_reception')"><span class="statut s-attente_reception" style="pointer-events:none;">En attente de réception de l'appareil</span></button>
   <button class="sm-item" onclick="changeStatut('recu')"><span class="statut s-recu" style="pointer-events:none;">Reçu</span></button>
-  <button class="sm-item" onclick="changeStatut('diagnostic')"><span class="statut s-diagnostic" style="pointer-events:none;">En diagnostic</span></button>
   <button class="sm-item" onclick="changeStatut('attente')"><span class="statut s-attente" style="pointer-events:none;">Attente pièce</span></button>
   <button class="sm-item" onclick="changeStatut('encours')"><span class="statut s-encours" style="pointer-events:none;">En cours</span></button>
   <button class="sm-item" onclick="changeStatut('pret')"><span class="statut s-pret" style="pointer-events:none;">Prêt à récupérer</span></button>
@@ -394,8 +394,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg">
       <label>Statut</label>
       <select id="f-statut">
+        <option value="attente_reception">En attente de réception de l'appareil</option>
         <option value="recu">Reçu</option>
-        <option value="diagnostic">En diagnostic</option>
         <option value="attente">Attente pièce</option>
         <option value="encours">En cours de réparation</option>
         <option value="pret">Prêt à récupérer</option>
@@ -463,8 +463,8 @@ function showToast(msg,type='ok'){
 }
 
 const STATUTS={
+  attente_reception:{label:"En attente de réception de l'appareil",cls:'s-attente_reception'},
   recu:{label:'Reçu',cls:'s-recu'},
-  diagnostic:{label:'En diagnostic',cls:'s-diagnostic'},
   attente:{label:'Attente pièce',cls:'s-attente'},
   encours:{label:'En cours',cls:'s-encours'},
   pret:{label:'Prêt',cls:'s-pret'},
@@ -504,7 +504,7 @@ function openPanel(r=null){
   document.getElementById('f-panne').value=r?.panne_description||''
   // Vider la liste de pièces
   const _pl=document.getElementById('piecesList');if(_pl)_pl.innerHTML=''
-  document.getElementById('f-statut').value=r?.statut||'recu'
+  document.getElementById('f-statut').value=r?.statut||'attente_reception'
   document.getElementById('f-devis').value=r?.prix_devis||''
   document.getElementById('f-final').value=r?.prix_final||''
   document.getElementById('f-notes').value=r?.notes||''
@@ -813,9 +813,9 @@ function updateKPIs(){
 }
 
 function renderFilters(){
-  const all=['Tous','Actifs','recu','diagnostic','attente','encours','pret','rendu','annule']
-  const labels={'Tous':'Tous','Actifs':'Actifs','recu':'Reçu','diagnostic':'En diagnostic','attente':'Attente pièce','encours':'En cours','pret':'Prêt','rendu':'Rendu','annule':'Annulé'}
-  const colors={'Actifs':'#3b82f6','recu':'#8b8ba0','diagnostic':'#3b82f6','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','annule':'#f87171'}
+  const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','annule']
+  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"En attente de réception de l'appareil",'recu':'Reçu','attente':'Attente pièce','encours':'En cours','pret':'Prêt','rendu':'Rendu','annule':'Annulé'}
+  const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','annule':'#f87171'}
   document.getElementById('filterBtns').innerHTML=all.map(s=>{
     const isActive=activeFilter===s
     const color=colors[s]
