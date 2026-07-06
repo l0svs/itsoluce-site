@@ -207,6 +207,37 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   .btn,button.btn{min-height:40px;}
 }
 
+
+/* ═══ OPTIMISATION MOBILE UNIVERSELLE ERP ═══ */
+@media(max-width:640px){
+  /* Grilles fixes -> 1 colonne */
+  .cards-grid,.list-grid,[class*="-grid"]{grid-template-columns:1fr !important;}
+  /* KPI / stats -> 2 colonnes */
+  .kpi-strip{flex-wrap:wrap !important;gap:8px !important;}
+  .kpi{flex:1 1 calc(50% - 4px) !important;min-width:0 !important;}
+  .pf-kpis{grid-template-columns:repeat(2,1fr) !important;}
+  /* Formulaires empilés */
+  .fg-row{grid-template-columns:1fr !important;flex-direction:column !important;}
+  /* Panneau latéral en plein écran */
+  .panel{width:100% !important;max-width:100% !important;}
+  /* Tableaux -> scroll horizontal fluide */
+  .lignes-table,.tbl,table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;}
+  /* Calendrier (planning/marketing) reste en grille 7 mais compact */
+  .cal-grid{grid-template-columns:repeat(7,1fr) !important;font-size:9px !important;}
+  .cal-grid .cal-cell,.cal-grid > div{min-height:44px !important;padding:2px !important;}
+  /* Cartes performance pleine largeur */
+  .pf-card{width:100% !important;}
+  /* Modales adaptées */
+  .calc-box,.modal-box,.dp-box{max-width:94% !important;margin:0 8px;}
+  /* Page-head compact */
+  .page-head{flex-wrap:wrap !important;gap:8px !important;}
+  .page-head h1{font-size:19px !important;}
+  /* Toolbar / filtres scrollables */
+  .toolbar,.filters,.seg{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  /* Réduire paddings de contenu */
+  .content{padding-left:14px !important;padding-right:14px !important;}
+}
+
 </style>
 </head>
 <body>
