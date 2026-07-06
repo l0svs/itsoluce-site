@@ -328,8 +328,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="status-menu" id="statusMenu">
   <button class="sm-item" onclick="changeStatut('attente_reception')"><span class="statut s-attente_reception" style="pointer-events:none;">En attente de réception de l'appareil</span></button>
   <button class="sm-item" onclick="changeStatut('recu')"><span class="statut s-recu" style="pointer-events:none;">Reçu</span></button>
-  <button class="sm-item" onclick="changeStatut('attente')"><span class="statut s-attente" style="pointer-events:none;">Attente pièce</span></button>
-  <button class="sm-item" onclick="changeStatut('encours')"><span class="statut s-encours" style="pointer-events:none;">En cours</span></button>
+  <button class="sm-item" onclick="changeStatut('attente')"><span class="statut s-attente" style="pointer-events:none;">Attente de pièce</span></button>
+  <button class="sm-item" onclick="changeStatut('encours')"><span class="statut s-encours" style="pointer-events:none;">En réparation</span></button>
   <button class="sm-item" onclick="changeStatut('pret')"><span class="statut s-pret" style="pointer-events:none;">Prêt à récupérer</span></button>
   <button class="sm-item" onclick="changeStatut('rendu')"><span class="statut s-rendu" style="pointer-events:none;">Rendu</span></button>
   <button class="sm-item" onclick="changeStatut('annule')"><span class="statut s-annule" style="pointer-events:none;">Annulé</span></button>
@@ -396,8 +396,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <select id="f-statut">
         <option value="attente_reception">En attente de réception de l'appareil</option>
         <option value="recu">Reçu</option>
-        <option value="attente">Attente pièce</option>
-        <option value="encours">En cours de réparation</option>
+        <option value="attente">Attente de pièce</option>
+        <option value="encours">En réparation</option>
         <option value="pret">Prêt à récupérer</option>
         <option value="rendu">Rendu</option>
         <option value="annule">Annulé</option>
@@ -465,9 +465,9 @@ function showToast(msg,type='ok'){
 const STATUTS={
   attente_reception:{label:"En attente de réception de l'appareil",cls:'s-attente_reception'},
   recu:{label:'Reçu',cls:'s-recu'},
-  attente:{label:'Attente pièce',cls:'s-attente'},
-  encours:{label:'En cours',cls:'s-encours'},
-  pret:{label:'Prêt',cls:'s-pret'},
+  attente:{label:'Attente de pièce',cls:'s-attente'},
+  encours:{label:'En réparation',cls:'s-encours'},
+  pret:{label:'Prêt à récupérer',cls:'s-pret'},
   rendu:{label:'Rendu',cls:'s-rendu'},
   annule:{label:'Annulé',cls:'s-annule'}
 }
@@ -814,7 +814,7 @@ function updateKPIs(){
 
 function renderFilters(){
   const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','annule']
-  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"En attente de réception de l'appareil",'recu':'Reçu','attente':'Attente pièce','encours':'En cours','pret':'Prêt','rendu':'Rendu','annule':'Annulé'}
+  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"En attente de réception de l'appareil",'recu':'Reçu','attente':'Attente de pièce','encours':'En réparation','pret':'Prêt à récupérer','rendu':'Rendu','annule':'Annulé'}
   const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','annule':'#f87171'}
   document.getElementById('filterBtns').innerHTML=all.map(s=>{
     const isActive=activeFilter===s
