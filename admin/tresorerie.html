@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Stock</title>
+<title>IT Soluce ERP — Trésorerie</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,188 +11,118 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-:root{
-  --a:#3b82f6;--ad:rgba(59,130,246,0.12);
-  --bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;
-  --ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);
-  --t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;
-  --ok:#34d399;--w:#fbbf24;--d:#f87171;
-  --sw:220px;--th:48px;
-}
+:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
 [data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
-
-/* TOPBAR */
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
 .logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}
 .logo-sep{width:1px;height:14px;background:var(--ln2);}
 .logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
 .tb-div{width:1px;height:18px;background:var(--ln2);flex-shrink:0;}
-.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;flex-shrink:0;}
+.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
 .tb-crumb{font-size:12px;color:var(--t3);flex:1;display:flex;align-items:center;gap:6px;}
-.tb-crumb a{color:var(--t3);text-decoration:none;transition:color .1s;}
-.tb-crumb a:hover{color:var(--a);}
+.tb-crumb a{color:var(--t3);text-decoration:none;}.tb-crumb a:hover{color:var(--a);}
 .tb-crumb span{color:var(--t2);}
 .tb-r{display:flex;align-items:center;gap:8px;margin-left:auto;}
 .mstrip{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;padding:3px;gap:1px;}
 .mbtn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;background:none;cursor:pointer;border-radius:4px;color:var(--t3);transition:all .12s;}
-.mbtn:hover{color:var(--t1);background:var(--bg4);}
-.mbtn.on{background:var(--ad);color:var(--a);}
+.mbtn:hover{color:var(--t1);background:var(--bg4);}.mbtn.on{background:var(--ad);color:var(--a);}
 .mbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
 .upill{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 4px;border:1px solid var(--ln2);border-radius:99px;background:var(--bg3);font-size:12px;color:var(--t2);}
 .uav{width:22px;height:22px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
 .bout{padding:5px 10px;border:1px solid var(--ln2);border-radius:5px;background:none;color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;}
 .bout:hover{color:var(--d);border-color:var(--d);}
-
-/* LAYOUT */
 .layout{display:flex;flex:1;overflow:hidden;}
-
-/* SIDEBAR */
 .sidebar{width:var(--sw);background:var(--bg2);border-right:1px solid var(--ln);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 0;}
-.ng{padding:14px 10px 4px;}
-.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
+.ng{padding:14px 10px 4px;}.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
 .nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
-.nl:hover{background:var(--bg3);color:var(--t1);}
-.nl.active{background:var(--ad);color:var(--a);}
-.nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}
-.nl.active svg{opacity:1;}
+.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);}
+.nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
-.nc.w{background:rgba(251,191,36,.15);color:var(--w);}
 .nhr{height:1px;background:var(--ln);margin:8px 10px;}
 .sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
-
-/* CONTENU PRINCIPAL */
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
-
-/* PAGE HEADER */
 .page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
 .ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
 .ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
 .btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.btn-primary{background:var(--a);color:#fff;}
-.btn-primary:hover{opacity:.85;}
-.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}
-.btn-secondary:hover{color:var(--t1);}
+.btn-primary{background:var(--a);color:#fff;}.btn-primary:hover{opacity:.85;}
+.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}.btn-secondary:hover{color:var(--t1);}
 .btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
-.btn-danger:hover{background:rgba(248,113,113,.2);}
-
-/* KPI STRIP */
 .kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
 .kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
 .kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
 .kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
 .kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
-
-/* TOOLBAR */
 .toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
 .search-wrap{position:relative;flex:1;max-width:320px;}
 .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
 .search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.search-input:focus{border-color:var(--a);}
-.search-input::placeholder{color:var(--t3);}
-.filter-btn{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;}
-.filter-btn:hover{color:var(--t1);border-color:var(--ln2);}
-.filter-btn.active{background:var(--ad);color:var(--a);border-color:var(--a);}
-.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
-.count-badge{font-size:11px;color:var(--t3);}
-
-/* TABLE */
+.search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
 .table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.table{width:100%;border-collapse:collapse;border-spacing:0;}
+.table{width:100%;border-collapse:collapse;}
 .table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table th:first-child{padding-left:0;}
-.table td{padding:9px 12px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table td:first-child{padding-left:0;}
+.table td{padding:10px 12px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
 .table tr:hover td{background:var(--bg2);}
 .table tr:last-child td{border-bottom:none;}
-
-/* BADGE STOCK */
-.stock-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:3px;}
-.sb-ok{background:rgba(52,211,153,.12);color:var(--ok);}
-.sb-w{background:rgba(251,191,36,.12);color:var(--w);}
-.sb-d{background:rgba(248,113,113,.12);color:var(--d);}
-
-/* AJUSTEUR QUANTITÉ */
-.qty-ctrl{display:flex;align-items:center;gap:4px;}
-.qty-btn{width:22px;height:22px;border-radius:4px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);font-size:14px;line-height:1;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;font-family:inherit;}
-.qty-btn:hover{background:var(--bg4);color:var(--t1);}
-.qty-val{min-width:28px;text-align:center;font-size:13px;font-weight:500;color:var(--t1);}
-
-/* ACTIONS */
-.actions{display:flex;align-items:center;gap:4px;opacity:0;}
+.cli-av{width:32px;height:32px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.tag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--t2);}
+.tag-ok{background:rgba(52,211,153,.12);color:var(--ok);}
+.actions{display:flex;align-items:center;gap:3px;opacity:0;}
 .table tr:hover .actions{opacity:1;}
 .act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
-.act-btn:hover{background:var(--bg3);color:var(--t1);}
-.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.act-btn:hover{background:var(--bg3);color:var(--t1);}.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
 .act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-
-/* CATEGORIE TAG */
-.cat-tag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--t2);white-space:nowrap;}
-
-/* PANNEAU LATÉRAL */
 .panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
 .panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;right:0;top:0;bottom:0;width:420px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;overflow:hidden;}
+.panel{position:fixed;right:0;top:0;bottom:0;width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}
 .panel.open{transform:translateX(0);}
 .panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .panel-title{font-size:14px;font-weight:600;color:var(--t1);}
-.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .12s;}
+.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
 .panel-close:hover{background:var(--bg4);color:var(--t1);}
 .panel-body{flex:1;overflow-y:auto;padding:20px;}
 .panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
-
-/* FORM */
-.fg{margin-bottom:14px;}
-.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:5px;}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
 .fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}
-.fg textarea{resize:vertical;min-height:64px;}
-.fg select option{background:var(--bg3);}
+.fg textarea{resize:vertical;min-height:60px;}
 .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;padding-top:6px;margin-bottom:2px;border-top:1px solid var(--ln);padding-top:14px;}
-
-/* EMPTY STATE */
-.empty{padding:60px 24px;text-align:center;color:var(--t3);}
+.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
+.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
+/* FICHE CLIENT */
+.detail-panel{position:fixed;right:0;top:var(--th);bottom:0;width:360px;background:var(--bg2);border-left:1px solid var(--ln);z-index:150;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;overflow:hidden;}
+.detail-panel.open{transform:translateX(0);}
+.panel-overlay2{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:149;opacity:0;pointer-events:none;transition:opacity .2s;}
+.panel-overlay2.open{opacity:1;pointer-events:all;}
+.dp-head{padding:16px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;}
+.dp-body{flex:1;overflow-y:auto;padding:16px;}
+.dp-av{width:48px;height:48px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;margin:0 auto 12px;}
+.dp-name{font-size:15px;font-weight:600;color:var(--t1);text-align:center;}
+.dp-sub{font-size:12px;color:var(--t3);text-align:center;margin-top:3px;}
+.dp-stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0;}
+.dp-s{background:var(--bg3);border-radius:6px;padding:10px;text-align:center;}
+.dp-sl{font-size:10px;color:var(--t3);margin-bottom:4px;}
+.dp-sv{font-size:18px;font-weight:600;color:var(--t1);}
+.dp-field{padding:8px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:8px;}
+.dp-field:last-child{border-bottom:none;}
+.dp-fl{font-size:11px;color:var(--t3);width:80px;flex-shrink:0;}
+.dp-fv{font-size:12px;color:var(--t1);}
+.dp-hist-item{padding:8px 0;border-bottom:1px solid var(--ln);}
+.dp-hist-item:last-child{border-bottom:none;}
+.empty{padding:60px 24px;text-align:center;}
 .empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
 .empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}
 .empty-sub{font-size:12px;color:var(--t3);}
-
-/* TOAST */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}
-.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
-
-/* LOADER */
+.toast.show{transform:translateY(0);opacity:1;}.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
 .loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
 .spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.kpi-strip{flex-wrap:wrap;}.kpi{flex:1 1 calc(50% - 5px);}}
-/* CALCULATEUR FRAIS DE PORT */
-.calc-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
-.calc-modal.open{opacity:1;pointer-events:all;}
-.calc-box{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);}
-.calc-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;}
-.calc-title{font-size:14px;font-weight:600;color:var(--t1);}
-.calc-close{width:28px;height:28px;border:none;background:none;color:var(--t3);cursor:pointer;font-size:18px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
-.calc-close:hover{background:var(--bg4);color:var(--t1);}
-.calc-body{padding:20px;}
-.calc-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.calc-row label{font-size:12px;font-weight:500;color:var(--t2);width:180px;flex-shrink:0;}
-.calc-row input{flex:1;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:7px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
-.calc-row input:focus{border-color:var(--a);}
-.calc-result{background:var(--bg3);border:1px solid var(--ln);border-radius:9px;padding:14px 16px;margin-top:6px;}
-.calc-result-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
-.calc-result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--ln);}
-.calc-result-row:last-child{border-bottom:none;padding-top:8px;margin-top:4px;}
-.calc-result-label{font-size:12px;color:var(--t2);}
-.calc-result-val{font-size:13px;font-weight:600;color:var(--t1);}
-.calc-result-val.highlight{color:var(--a);font-size:15px;}
-.calc-info{font-size:11px;color:var(--t3);margin-top:12px;padding:10px;background:var(--bg4);border-radius:7px;line-height:1.5;}
-.calc-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;}
+@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.detail-panel{width:100%;right:0;}}
 
 /* NOTIFICATIONS */
 .notif-wrap{position:relative;}
@@ -450,23 +380,60 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   html.back-nav::view-transition-old(root){animation:ios-fade-out .25s ease;}
 }
 
+
+.tr-scroll{flex:1;overflow-y:auto;padding:16px 24px 40px;}
+.tr-hero{background:linear-gradient(135deg,rgba(0,82,204,0.12),rgba(59,130,246,0.05));border:1px solid rgba(0,82,204,0.25);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px;}
+.tr-hero-label{font-size:13px;color:var(--t3);font-weight:500;}
+.tr-hero-big{font-size:42px;font-weight:800;letter-spacing:-1.5px;margin:6px 0;}
+.tr-hero-big.pos{color:#059669;}.tr-hero-big.neg{color:#dc2626;}
+.tr-hero-sub{font-size:12px;color:var(--t3);}
+.tr-breakdown{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:16px 18px;margin-bottom:20px;}
+.tr-bd-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--ln);font-size:13px;color:var(--t2);}
+.tr-bd-item:last-child{border-bottom:none;}
+.tr-bd-item strong{color:var(--t1);font-size:14px;}
+.tr-bd-item strong.pos{color:#059669;}.tr-bd-item strong.neg{color:#dc2626;}
+.tr-bd-item.total{border-top:2px solid var(--ln2);margin-top:4px;padding-top:12px;}
+.tr-bd-item.total span{font-weight:700;color:var(--t1);}.tr-bd-item.total strong{font-size:17px;}
+.tr-section-title{font-size:14px;font-weight:600;color:var(--t1);margin:8px 0 14px;display:flex;align-items:center;justify-content:space-between;}
+.tr-pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+.tr-pocket{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:16px;}
+.tr-pocket-head{display:flex;justify-content:space-between;align-items:center;}
+.tr-pocket-nom{font-size:13px;font-weight:600;color:var(--t1);}
+.tr-pocket-edit{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 4px;}
+.tr-pocket-solde{font-size:24px;font-weight:700;color:var(--t1);margin:8px 0 4px;letter-spacing:-0.5px;}
+.tr-pocket-obj{font-size:11px;color:var(--t3);}
+.tr-pocket-bar{height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;margin:6px 0 10px;}
+.tr-pocket-bar>div{height:100%;border-radius:99px;}
+.tr-pocket-actions{display:flex;gap:6px;margin-top:10px;}
+.tr-pocket-actions button{flex:1;font-size:11px;font-weight:600;padding:7px;border-radius:8px;background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);cursor:pointer;font-family:inherit;}
+.tr-pocket-actions button:hover{border-color:var(--a);color:var(--a);}
+.tr-pocket-empty{grid-column:1/-1;font-size:13px;color:var(--t3);padding:20px;text-align:center;background:var(--bg2);border:1px dashed var(--ln2);border-radius:12px;}
+.tr-mvts{display:flex;flex-direction:column;gap:6px;}
+.tr-mvt{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg2);border:1px solid var(--ln);border-radius:11px;}
+.tr-mvt-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
+.tr-mvt-ico.in{background:rgba(5,150,105,0.15);color:#059669;}
+.tr-mvt-ico.out{background:rgba(220,38,38,0.12);color:#dc2626;}
+.tr-mvt-main{flex:1;}
+.tr-mvt-lib{font-size:13px;font-weight:600;color:var(--t1);}
+.tr-mvt-meta{font-size:11px;color:var(--t3);margin-top:1px;}
+.tr-mvt-mnt{font-size:14px;font-weight:700;white-space:nowrap;}
+.tr-mvt-mnt.pos{color:#059669;}.tr-mvt-mnt.neg{color:#dc2626;}
+.fin-add-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;background:var(--a);color:#fff;border:none;cursor:pointer;font-family:inherit;}
+.btn-danger{background:rgba(248,113,113,0.12);color:#dc2626;border:1px solid rgba(248,113,113,0.3);}
 </style>
 </head>
 <body>
-
-<!-- TOPBAR -->
 <header class="topbar">
   <button class="mobile-menu-btn" onclick="openMobileNav()" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 
   <a href="/admin/dashboard.html" class="logo"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" alt="IT Soluce" style="height:30px;width:auto;display:block;border-radius:6px;"/></a>
-  <div class="tb-div"></div>
-  <span class="tb-badge">ERP</span>
+  <div class="tb-div"></div><span class="tb-badge">ERP</span>
   <button onclick="history.length>1?history.back():location.href='/admin/dashboard.html'" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t2)'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Retour</button>
   <div class="tb-crumb">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Stock</span>
+    <span>Clients</span>
   </div>
   <div class="tb-r">
     <div class="mstrip">
@@ -479,9 +446,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="bout" onclick="doLogout()">Quitter</button>
   </div>
 </header>
-
 <div class="layout">
-  <!-- SIDEBAR -->
   <aside class="sidebar">
       <div class="ng">
       <div class="ngl">Vue d'ensemble</div>
@@ -491,7 +456,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="ng">
       <div class="ngl">Inventaire</div>
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
-      <a href="/admin/stock.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
       <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
       </div>
       <div class="nhr"></div>
@@ -514,7 +479,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="nhr"></div>
       <div class="ng">
       <div class="ngl">Comptabilité</div>
-      <a href="/admin/finance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a><a href="/admin/depenses.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Dépenses</a><a href="/admin/tresorerie.html" class="nl"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Trésorerie</a>
+      <a href="/admin/finance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a><a href="/admin/depenses.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Dépenses</a><a href="/admin/tresorerie.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Trésorerie</a>
       </div>
       <div class="nhr"></div>
       <div class="ng">
@@ -532,376 +497,126 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="sf">IT Soluce ERP · v1.0</div>
       </aside>
 
-  <!-- CONTENU -->
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
-
-    <!-- PAGE (cachée jusqu'au chargement) -->
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-
-      <!-- HEADER -->
       <div class="page-head">
-        <div class="ph-left">
-          <h1>Stock</h1>
-          <p id="ph-sub">— pièces référencées</p>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-secondary" onclick="openCalc()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
-            Frais de port
-          </button>
-          <button class="btn btn-secondary" onclick="exportCSV()">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exporter
-          </button>
-          <button class="btn btn-primary" onclick="openPanel()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Ajouter une pièce
-          </button>
+        <div class="ph-left"><h1>Trésorerie</h1><p>Ton argent en temps réel : solde, mouvements et pockets</p></div>
+        <div class="ph-right" style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="openMvt('entree')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button>
+          <button class="btn btn-secondary" onclick="openMvt('sortie')"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>Retirer / Salaire</button>
         </div>
       </div>
 
-      <!-- KPIs -->
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Références</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">pièces référencées</div></div>
-        <div class="kpi"><div class="kpi-label">Alertes</div><div class="kpi-val" id="k-alertes" style="color:var(--w)">—</div><div class="kpi-sub">sous le seuil</div></div>
-        <div class="kpi"><div class="kpi-label">Ruptures</div><div class="kpi-val" id="k-ruptures" style="color:var(--d)">—</div><div class="kpi-sub">stock à zéro</div></div>
-        <div class="kpi"><div class="kpi-label">Valeur totale</div><div class="kpi-val" id="k-valeur">—</div><div class="kpi-sub">coût d'achat</div></div>
-      </div>
-
-      <!-- TOOLBAR -->
-      <div class="toolbar">
-        <div class="search-wrap">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" id="searchInput" placeholder="Rechercher une pièce..." oninput="filterStock()"/>
+      <div class="tr-scroll">
+        <!-- SOLDE PRINCIPAL -->
+        <div class="tr-hero">
+          <div class="tr-hero-label">Solde principal disponible</div>
+          <div class="tr-hero-big" id="tr-solde">—</div>
+          <div class="tr-hero-sub" id="tr-total-sub"></div>
         </div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-        <div class="toolbar-right">
-          <span class="count-badge" id="countBadge"></span>
-        </div>
-      </div>
 
-      <!-- TABLE -->
-      <div class="table-wrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th style="width:32px;"></th>
-              <th>Pièce</th>
-              <th>Catégorie</th>
-              <th>Marque / Modèle</th>
-              <th>Fournisseur</th>
-              <th style="text-align:center;">Stock</th>
-              <th style="text-align:right;">Prix achat</th>
-              <th style="text-align:right;">Prix vente</th>
-              <th style="width:80px;"></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;">
-          <div class="empty-ico">📦</div>
-          <div class="empty-title">Aucune pièce trouvée</div>
-          <div class="empty-sub">Essaie un autre terme de recherche ou <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">ajoute une pièce</button></div>
-        </div>
-      </div>
+        <!-- DÉCOMPOSITION -->
+        <div class="tr-breakdown" id="tr-breakdown"></div>
 
-    </div><!-- end pageBody -->
-  </div><!-- end content -->
-</div><!-- end layout -->
+        <!-- POCKETS -->
+        <div class="tr-section-title">Mes pockets <button class="fin-add-btn" onclick="openPocket()">+ Nouveau pocket</button></div>
+        <div class="tr-pockets" id="tr-pockets"></div>
 
-<!-- PANNEAU AJOUT / MODIFICATION -->
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-<div class="panel" id="panel">
-  <div class="panel-head">
-    <span class="panel-title" id="panelTitle">Ajouter une pièce</span>
-    <button class="panel-close" onclick="closePanel()">×</button>
-  </div>
-  <div class="panel-body">
-    <input type="hidden" id="f-id"/>
-
-    <div class="fg-sep" style="border-top:none;padding-top:0;">Identification</div>
-
-    <div class="fg">
-      <label>Nom de la pièce *</label>
-      <input type="text" id="f-nom" placeholder="ex : Écran LCD iPhone 12"/>
-    </div>
-    <div class="fg-row">
-      <div class="fg">
-        <label>Catégorie *</label>
-        <select id="f-cat">
-          <option value="">Choisir...</option>
-          <option>Écran</option>
-          <option>Batterie</option>
-          <option>Vitre</option>
-          <option>Connecteur</option>
-          <option>Caméra</option>
-          <option>Haut-parleur</option>
-          <option>Composant PC</option>
-          <option>Outillage</option>
-          <option>Consommable</option>
-          <option>Autre</option>
-        </select>
+        <!-- MOUVEMENTS -->
+        <div class="tr-section-title">Mouvements récents</div>
+        <div class="tr-mvts" id="tr-mvts"></div>
       </div>
-      <div class="fg">
-        <label>Marque</label>
-        <input type="text" id="f-marque" placeholder="ex : Apple"/>
-      </div>
-    </div>
-    <div class="fg">
-      <label>Modèle compatible</label>
-      <input type="text" id="f-modele" placeholder="ex : iPhone 12, 12 Pro"/>
-    </div>
-
-    <div class="fg-sep">Stock & Prix</div>
-
-    <div class="fg-row">
-      <div class="fg">
-        <label>Quantité en stock *</label>
-        <input type="number" id="f-qty" placeholder="0" min="0"/>
-      </div>
-      <div class="fg">
-        <label>Seuil d'alerte</label>
-        <input type="number" id="f-seuil" placeholder="2" min="0"/>
-      </div>
-    </div>
-    <div class="fg-row">
-      <div class="fg">
-        <label>Prix d'achat (€)</label>
-        <input type="number" id="f-achat" placeholder="0.00" min="0" step="0.01" oninput="onAchatChange()"/>
-      </div>
-      <div class="fg">
-        <label>Prix de vente (€)</label>
-        <input type="number" id="f-vente" placeholder="0.00" min="0" step="0.01" oninput="updateMargeStock()"/>
-      </div>
-    </div>
-    <div id="prix-helper" style="display:none;margin:-6px 0 14px;padding:10px 12px;background:var(--bg3);border-radius:7px;font-size:12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
-        <span style="color:var(--t2);">Prix de vente suggéré : <strong id="prix-suggere" style="color:var(--a);">—</strong></span>
-        <button type="button" onclick="appliquerPrixSuggere()" style="padding:3px 10px;border:1px solid var(--a);border-radius:5px;background:var(--ad);color:var(--a);font-size:11px;font-family:inherit;cursor:pointer;">Appliquer</button>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <span style="color:var(--t3);" id="formule-rappel">Formule : achat × 2 + 20€</span>
-        <span style="color:var(--t2);">Marge : <strong id="marge-affichee" style="color:var(--ok);">—</strong></span>
-      </div>
-    </div>
-
-    <div class="fg-sep">Fournisseur & Notes</div>
-
-    <div class="fg">
-      <label>Fournisseur</label>
-      <select id="f-four">
-        <option value="">Choisir...</option>
-        <option>Charleroi Mobile Parts</option>
-        <option>Brussels Tech Supply</option>
-        <option>AliExpress Store</option>
-        <option>Temu</option>
-        <option>Alibaba</option>
-        <option>Autre</option>
-      </select>
-    </div>
-    <div class="fg">
-      <label>Notes</label>
-      <textarea id="f-notes" placeholder="Informations complémentaires..."></textarea>
     </div>
   </div>
-  <div class="panel-footer">
-    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="savePiece()" style="flex:2;" id="saveBtn">Enregistrer</button>
-  </div>
-</div>
 
-<!-- CALCULATEUR FRAIS DE PORT -->
-<div class="calc-modal" id="calcModal" onclick="closeCalcOutside(event)">
-  <div class="calc-box">
-    <div class="calc-head">
-      <span class="calc-title">🚚 Calculateur frais de port — Alibaba</span>
-      <button class="calc-close" onclick="closeCalc()">×</button>
+  <!-- PANEL MOUVEMENT -->
+  <div class="panel-overlay" id="mvtOverlay" onclick="closeMvt()"></div>
+  <div class="panel" id="mvtPanel">
+    <div class="panel-head"><span id="mvtTitle">Mouvement</span><button onclick="closeMvt()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;">&times;</button></div>
+    <div class="panel-body">
+      <input type="hidden" id="m-id"/>
+      <input type="hidden" id="m-type"/>
+      <div class="fg"><label>Libellé *</label><input type="text" id="m-libelle" placeholder="Ex : Salaire juillet, Apport personnel..."/></div>
+      <div class="fg"><label>Montant (€) *</label><input type="number" step="0.01" id="m-montant" placeholder="0.00"/></div>
+      <div class="fg"><label>Catégorie</label><select id="m-cat">
+        <option value="salaire">Salaire (que je me verse)</option>
+        <option value="apport">Apport de capital</option>
+        <option value="retrait">Retrait personnel</option>
+        <option value="depot">Dépôt / Ajout</option>
+        <option value="autre">Autre</option>
+      </select></div>
+      <div class="fg"><label>Date</label><input type="date" id="m-date"/></div>
+      <div class="fg"><label>Notes</label><textarea id="m-notes" rows="2" placeholder="Optionnel"></textarea></div>
     </div>
-    <div class="calc-body">
-      <div class="calc-row">
-        <label>Nombre de pièces commandées</label>
-        <input type="number" id="c-nb" placeholder="ex : 10" min="1" step="1" oninput="calcPort()"/>
-      </div>
-      <div class="calc-row">
-        <label>Prix total des pièces (€)</label>
-        <input type="number" id="c-total" placeholder="ex : 200.00" min="0" step="0.01" oninput="calcPort()"/>
-      </div>
-      <div class="calc-row">
-        <label>Frais de livraison Alibaba (€)</label>
-        <input type="number" id="c-port" placeholder="ex : 30.00" min="0" step="0.01" oninput="calcPort()"/>
-      </div>
-      <div class="calc-row">
-        <label>Frais de douane / TVA import (€)</label>
-        <input type="number" id="c-douane" placeholder="ex : 0.00" min="0" step="0.01" oninput="calcPort()"/>
-      </div>
-      <div class="calc-result" id="calcResult" style="display:none;">
-        <div class="calc-result-title">Résultat</div>
-        <div class="calc-result-row"><span class="calc-result-label">Coût total commande</span><span class="calc-result-val" id="cr-total">—</span></div>
-        <div class="calc-result-row"><span class="calc-result-label">Frais à répartir (port + douane)</span><span class="calc-result-val" id="cr-frais">—</span></div>
-        <div class="calc-result-row"><span class="calc-result-label">Frais par pièce</span><span class="calc-result-val" id="cr-parpiece">—</span></div>
-        <div class="calc-result-row"><span class="calc-result-label" style="font-weight:600;color:var(--t1);">Prix d'achat réel par pièce</span><span class="calc-result-val highlight" id="cr-final">—</span></div>
-      </div>
-      <div class="calc-info">💡 C'est le <strong>prix d'achat réel par pièce</strong> que tu dois saisir dans ton stock. Il inclut ta part des frais de livraison et de douane, ce qui te donnera une marge correcte lors de tes réparations.</div>
-    </div>
-    <div class="calc-footer">
-      <button class="btn btn-secondary" onclick="resetCalc()" style="flex:1;">Réinitialiser</button>
-      <button class="btn btn-primary" onclick="closeCalc()" style="flex:1;">Fermer</button>
+    <div class="panel-footer">
+      <button class="btn btn-danger" id="m-delBtn" onclick="deleteMvt()" style="display:none;">Supprimer</button>
+      <button class="btn btn-secondary" onclick="closeMvt()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="saveMvt()" style="flex:2;">Enregistrer</button>
     </div>
   </div>
-</div>
 
+  <!-- PANEL POCKET -->
+  <div class="panel-overlay" id="pocketOverlay" onclick="closePocket()"></div>
+  <div class="panel" id="pocketPanel">
+    <div class="panel-head"><span id="pocketTitle">Nouveau pocket</span><button onclick="closePocket()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;">&times;</button></div>
+    <div class="panel-body">
+      <input type="hidden" id="p-id"/>
+      <div class="fg"><label>Nom du pocket *</label><input type="text" id="p-nom" placeholder="Ex : Provision impôts, Réinvestissement..."/></div>
+      <div class="fg"><label>Objectif (€) — optionnel</label><input type="number" step="0.01" id="p-objectif" placeholder="Ex : 1000"/></div>
+      <div class="fg"><label>Couleur</label><select id="p-couleur">
+        <option value="#0052CC">Bleu</option>
+        <option value="#8b5cf6">Violet</option>
+        <option value="#10b981">Vert</option>
+        <option value="#f59e0b">Orange</option>
+        <option value="#ec4899">Rose</option>
+        <option value="#ef4444">Rouge</option>
+      </select></div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-danger" id="p-delBtn" onclick="deletePocket()" style="display:none;">Supprimer</button>
+      <button class="btn btn-secondary" onclick="closePocket()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="savePocket()" style="flex:2;">Enregistrer</button>
+    </div>
+  </div>
+
+  
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){
-  const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
-  document.documentElement.setAttribute('data-mode',e)
-  const lv=e==='light'
-  const v=(a,b)=>lv?a:b
-  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
-  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
-  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
-  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
-  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
-  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
-  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
-  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
-  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
+const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
+const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
+if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
+function showToast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='ok'?'ok':'err');setTimeout(()=>t.className='toast',3000);}
+function openPanel(c=null){
+  document.getElementById('panelTitle').textContent=c?'Modifier le client':'Nouveau client';
+  document.getElementById('saveBtn').textContent=c?'Mettre à jour':'Enregistrer';
+  document.getElementById('f-id').value=c?.id||'';
+  const parts=c?.nom?.split(' ')||[];
+  document.getElementById('f-prenom').value=c?parts[0]||'':'';
+  document.getElementById('f-nom').value=c?parts.slice(1).join(' ')||'':'';
+  document.getElementById('f-email').value=c?.email||'';
+  document.getElementById('f-tel').value=c?.telephone||'';
+  document.getElementById('f-adresse').value=c?.adresse||'';
+  document.getElementById('f-type').value=c?.type||'particulier';
+  document.getElementById('f-notes').value=c?.notes||'';
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('f-prenom').focus();
 }
-function setMode(m){
-  localStorage.setItem('erp-m',m)
-  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m))
-  applyMode(m)
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('open')
+  document.getElementById('overlay2').classList.remove('open')
 }
-const sm=localStorage.getItem('erp-m')||'auto'
-document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
-applyMode(sm)
-setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
-
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d')
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd)}
-
-function showToast(msg,type='ok'){
-  const t=document.getElementById('toast')
-  t.textContent=msg
-  t.className='toast show '+(type==='ok'?'ok':'err')
-  setTimeout(()=>t.className='toast',3000)
-}
-
-// ─── CALCULATEUR FRAIS DE PORT ───
-function openCalc(){document.getElementById('calcModal').classList.add('open');}
-function closeCalc(){document.getElementById('calcModal').classList.remove('open');}
-function closeCalcOutside(e){if(e.target===document.getElementById('calcModal'))closeCalc();}
-function resetCalc(){
-  ['c-nb','c-total','c-port','c-douane'].forEach(id=>{document.getElementById(id).value=''})
-  document.getElementById('calcResult').style.display='none'
-}
-function calcPort(){
-  const nb=Number(document.getElementById('c-nb').value)||0
-  const total=Number(document.getElementById('c-total').value)||0
-  const port=Number(document.getElementById('c-port').value)||0
-  const douane=Number(document.getElementById('c-douane').value)||0
-  if(nb<=0||total<=0){document.getElementById('calcResult').style.display='none';return}
-  const frais=port+douane
-  const coutTotal=total+frais
-  const fraisParPiece=frais/nb
-  const prixParPiece=total/nb
-  const prixFinal=prixParPiece+fraisParPiece
-  document.getElementById('calcResult').style.display='block'
-  document.getElementById('cr-total').textContent=coutTotal.toFixed(2)+' €'
-  document.getElementById('cr-frais').textContent=frais.toFixed(2)+' €'
-  document.getElementById('cr-parpiece').textContent=fraisParPiece.toFixed(2)+' €'
-  document.getElementById('cr-final').textContent=prixFinal.toFixed(2)+' €'
-}
-
-// ─── CALCUL PRIX DE VENTE — GRILLE DÉGRESSIVE ───
-const GRILLE_DEFAUT=[
-  {min:0,max:30,coef:2.2,fixe:25},
-  {min:30,max:80,coef:1.8,fixe:25},
-  {min:80,max:150,coef:1.45,fixe:35},
-  {min:150,max:250,coef:1.25,fixe:45},
-  {min:250,max:999999,coef:1.15,fixe:55}
-]
-function getGrille(){
-  try{
-    const stored=localStorage.getItem('erp-grille')
-    if(stored){const g=JSON.parse(stored);if(Array.isArray(g)&&g.length)return g}
-  }catch(e){}
-  return GRILLE_DEFAUT
-}
-function getPalier(achat){
-  const grille=getGrille()
-  return grille.find(p=>achat>=p.min&&achat<p.max)||grille[grille.length-1]
-}
-function calcPrixVente(achat){
-  if(achat<=0)return 0
-  const p=getPalier(achat)
-  return achat*p.coef+p.fixe
-}
-function onAchatChange(){
-  const achat=Number(document.getElementById('f-achat').value)||0
-  const helper=document.getElementById('prix-helper')
-  if(achat<=0){helper.style.display='none';return}
-  const p=getPalier(achat)
-  document.getElementById('formule-rappel').textContent=`Palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
-  helper.style.display='block'
-  const suggere=calcPrixVente(achat)
-  document.getElementById('prix-suggere').textContent=suggere.toFixed(2)+' €'
-  const venteInput=document.getElementById('f-vente')
-  if(!venteInput.value||Number(venteInput.value)===0){
-    venteInput.value=suggere.toFixed(2)
-  }
-  updateMargeStock()
-}
-function appliquerPrixSuggere(){
-  const achat=Number(document.getElementById('f-achat').value)||0
-  if(achat<=0)return
-  document.getElementById('f-vente').value=calcPrixVente(achat).toFixed(2)
-  updateMargeStock()
-}
-function updateMargeStock(){
-  const achat=Number(document.getElementById('f-achat').value)||0
-  const vente=Number(document.getElementById('f-vente').value)||0
-  const el=document.getElementById('marge-affichee')
-  if(!el)return
-  if(achat<=0||vente<=0){el.textContent='—';return}
-  const marge=vente-achat
-  const pct=achat>0?Math.round((marge/achat)*100):0
-  el.textContent=`${marge.toFixed(2)} € (${pct}%)`
-  el.style.color=marge>0?'var(--ok)':'var(--d)'
-}
-
-function openPanel(piece=null){
-  document.getElementById('panelTitle').textContent=piece?'Modifier la pièce':'Ajouter une pièce'
-  document.getElementById('saveBtn').textContent=piece?'Mettre à jour':'Enregistrer'
-  document.getElementById('f-id').value=piece?.id||''
-  document.getElementById('f-nom').value=piece?.nom||''
-  document.getElementById('f-cat').value=piece?.categorie||''
-  document.getElementById('f-marque').value=piece?.marque||''
-  document.getElementById('f-modele').value=piece?.modele||''
-  document.getElementById('f-qty').value=piece?.quantite??''
-  document.getElementById('f-seuil').value=piece?.seuil_alerte??2
-  document.getElementById('f-achat').value=piece?.prix_achat||''
-  document.getElementById('f-vente').value=piece?.prix_vente||''
-  document.getElementById('f-four').value=piece?.fournisseur||''
-  document.getElementById('f-notes').value=piece?.notes||''
-  // Rafraîchir le helper prix de vente / marge
-  if(typeof onAchatChange==='function')onAchatChange()
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-nom').focus()
-}
-
-function closePanel(){
-  document.getElementById('overlay').classList.remove('open')
-  document.getElementById('panel').classList.remove('open')
-}
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()})
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closeDetail();}});
 </script>
 
 <script type="module">
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
@@ -977,242 +692,221 @@ window.markAllRead=async function(){
 
 loadNotifs();
 
-function showError(msg){
-  document.getElementById('ldr').style.display='none'
-  document.getElementById('mainContent').innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;">
-      <div style="font-size:28px;">⚠️</div>
-      <div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
-      <div style="font-size:12px;color:var(--t3);max-width:360px;text-align:center;">${msg}</div>
-      <button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;margin-top:4px;">Réessayer</button>
-    </div>`
-}
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
 try {
 
-// Auth
-const {data:{session}}=await sb.auth.getSession()
-if(!session){window.location.href='/admin/login.html'; throw new Error('no session')}
-document.getElementById('uEmail').textContent=session.user.email
-document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
+const EUR=n=>Number(n||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'
+let _pockets=[], _mvts=[], _derived=[]
 
-// State
-let allStock=[]
-let activeFilter='Tous'
+async function load(){
+  const [repsR,facturesR,chargesR,depensesR,settingsR,mvtR,pocketR]=await Promise.all([
+    sb.from('reparations').select('*'),
+    sb.from('factures').select('*'),
+    sb.from('charges').select('*'),
+    sb.from('depenses').select('*'),
+    sb.from('settings').select('*').eq('cle','capital_depart'),
+    sb.from('mouvements').select('*').order('date',{ascending:false}),
+    sb.from('pockets').select('*').order('created_at',{ascending:true})
+  ])
+  const reps=repsR.data||[], factures=facturesR.data||[], charges=chargesR.data||[], depenses=depensesR.data||[]
+  _mvts=mvtR.data||[]
+  _pockets=pocketR.data||[]
+  const capitalDepart=Number((settingsR.data&&settingsR.data[0])?settingsR.data[0].valeur:0)||0
 
-// Charger le stock
-async function loadStock(){
-  const {data,error}=await sb.from('stock').select('*').order('categorie').order('nom')
-  if(error){console.error(error);return}
-  allStock=data||[]
-  renderAll()
+  // ── ACTIVITÉ (auto) ──
+  const facturesPayees=factures.filter(f=>['payee','payée'].includes((f.statut||'').toLowerCase()))
+  const caFactures=facturesPayees.reduce((a,f)=>a+Number(f.total||0),0)
+  const repsTerminees=reps.filter(r=>['pret','rendu'].includes(r.statut))
+  const caReps=repsTerminees.reduce((a,r)=>a+Number(r.prix_final||0),0)
+  const caTotal=caFactures>0?caFactures:caReps
+  const coutPieces=repsTerminees.reduce((a,r)=>a+Number(r.cout_pieces||0),0)
+  const totalDepenses=depenses.reduce((a,x)=>a+Number(x.montant||0),0)
+  // charges prorata année
+  let chargesMensuel=0
+  charges.filter(c=>c.actif!==false).forEach(c=>{const m=Number(c.montant||0);const f=(c.frequence||'mensuelle').toLowerCase();if(f==='annuelle')chargesMensuel+=m/12;else if(f==='trimestrielle')chargesMensuel+=m/3;else if(f==='ponctuelle')chargesMensuel+=0;else chargesMensuel+=m})
+  const chargesAnnee=chargesMensuel*(new Date().getMonth()+1)
+
+  // ── MOUVEMENTS MANUELS ──
+  const mvtEntrees=_mvts.filter(m=>m.type==='entree').reduce((a,m)=>a+Number(m.montant||0),0)
+  const mvtSorties=_mvts.filter(m=>m.type==='sortie').reduce((a,m)=>a+Number(m.montant||0),0)
+
+  // ── TRÉSORERIE ──
+  const activiteNet=caTotal-coutPieces-totalDepenses-chargesAnnee
+  const tresorerieTotal=capitalDepart+activiteNet+mvtEntrees-mvtSorties
+  const argentPockets=_pockets.reduce((a,p)=>a+Number(p.solde||0),0)
+  const soldePrincipal=tresorerieTotal-argentPockets
+
+  // ── HISTORIQUE UNIFIÉ (auto + manuel) ──
+  _derived=[]
+  facturesPayees.forEach(f=>_derived.push({date:f.date||f.created_at,type:'entree',libelle:'Facture '+(f.numero||''),montant:Number(f.total||0),auto:true,cat:'Réparation'}))
+  if(caFactures===0)repsTerminees.forEach(r=>{if(r.prix_final)_derived.push({date:r.date_fin||r.created_at,type:'entree',libelle:(r.appareil||'Réparation'),montant:Number(r.prix_final||0),auto:true,cat:'Réparation'})})
+  depenses.forEach(d=>_derived.push({date:d.date,type:'sortie',libelle:d.libelle,montant:Number(d.montant||0),auto:true,cat:'Dépense'}))
+
+  render({capitalDepart,activiteNet,caTotal,coutPieces,totalDepenses,chargesAnnee,mvtEntrees,mvtSorties,tresorerieTotal,argentPockets,soldePrincipal})
   document.getElementById('ldr').style.display='none'
-  const pb=document.getElementById('pageBody')
-  pb.style.display='flex'
+  document.getElementById('pageBody').style.display='flex'
 }
 
-function renderAll(){
-  updateKPIs()
-  renderFilters()
-  renderTable()
-}
+function render(d){
+  document.getElementById('tr-solde').textContent=EUR(d.soldePrincipal)
+  document.getElementById('tr-solde').className='tr-hero-big '+(d.soldePrincipal>=0?'pos':'neg')
+  document.getElementById('tr-total-sub').textContent=`Trésorerie totale : ${EUR(d.tresorerieTotal)} · dont ${EUR(d.argentPockets)} en pockets`
 
-function updateKPIs(){
-  const total=allStock.length
-  const alertes=allStock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte)&&Number(p.quantite)>0).length
-  const ruptures=allStock.filter(p=>Number(p.quantite)===0).length
-  const valeur=allStock.reduce((a,p)=>a+(Number(p.quantite)*Number(p.prix_achat)),0)
-  document.getElementById('k-total').textContent=total
-  document.getElementById('k-alertes').textContent=alertes
-  document.getElementById('k-ruptures').textContent=ruptures
-  document.getElementById('k-valeur').textContent=valeur.toFixed(0)+'€'
-  document.getElementById('ph-sub').textContent=`${total} pièce${total>1?'s':''} référencée${total>1?'s':''}`
-  const nb=document.getElementById('nb-stock')
-  const tot=alertes+ruptures
-  if(nb){nb.textContent=tot||'✓';nb.className=tot>0?'nc w':'nc'}
-}
+  document.getElementById('tr-breakdown').innerHTML=`
+    <div class="tr-bd-item"><span>Capital de départ</span><strong>${EUR(d.capitalDepart)}</strong></div>
+    <div class="tr-bd-item"><span>Activité (réparations − pièces − dépenses − charges)</span><strong class="${d.activiteNet>=0?'pos':'neg'}">${d.activiteNet>=0?'+':''}${EUR(d.activiteNet)}</strong></div>
+    <div class="tr-bd-item"><span>Apports / ajouts manuels</span><strong class="pos">+${EUR(d.mvtEntrees)}</strong></div>
+    <div class="tr-bd-item"><span>Salaires / retraits</span><strong class="neg">−${EUR(d.mvtSorties)}</strong></div>
+    <div class="tr-bd-item total"><span>Trésorerie totale</span><strong>${EUR(d.tresorerieTotal)}</strong></div>
+  `
 
-function renderFilters(){
-  const cats=['Tous',...new Set(allStock.map(p=>p.categorie).filter(Boolean))]
-  const wrap=document.getElementById('filterBtns')
-  wrap.innerHTML=cats.map(c=>`<button class="filter-btn ${activeFilter===c?'active':''}" onclick="setFilter('${c}')">${c}</button>`).join('')
-}
-
-function setFilter(cat){
-  window.setFilter=setFilter
-  activeFilter=cat
-  renderFilters()
-  renderTable()
-}
-window.setFilter=setFilter
-
-function getFiltered(){
-  const q=document.getElementById('searchInput').value.toLowerCase().trim()
-  return allStock.filter(p=>{
-    const matchCat=activeFilter==='Tous'||p.categorie===activeFilter
-    const matchSearch=!q||[p.nom,p.categorie,p.marque,p.modele,p.fournisseur].some(v=>v&&v.toLowerCase().includes(q))
-    return matchCat&&matchSearch
-  })
-}
-
-function renderTable(){
-  const rows=getFiltered()
-  const tbody=document.getElementById('tableBody')
-  const empty=document.getElementById('emptyState')
-  document.getElementById('countBadge').textContent=rows.length+' résultat'+(rows.length>1?'s':'')
-  if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  tbody.innerHTML=rows.map(p=>{
-    const qty=Number(p.quantite)
-    const seuil=Number(p.seuil_alerte)
-    const badgeClass=qty===0?'sb-d':qty<=seuil?'sb-w':'sb-ok'
-    const badgeText=qty===0?'Rupture':qty<=seuil?'Faible':'OK'
-    return`<tr data-id="${p.id}">
-      <td><div class="dot" style="width:6px;height:6px;border-radius:50%;background:${qty===0?'var(--d)':qty<=seuil?'var(--w)':'var(--ok)'};"></div></td>
-      <td style="max-width:200px;">
-        <div style="font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.nom}</div>
-        ${p.notes?`<div style="font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${p.notes}</div>`:''}
-      </td>
-      <td><span class="cat-tag">${p.categorie||'—'}</span></td>
-      <td style="color:var(--t2);">${[p.marque,p.modele].filter(Boolean).join(' · ')||'—'}</td>
-      <td style="color:var(--t2);">${p.fournisseur||'—'}</td>
-      <td style="text-align:center;">
-        <div class="qty-ctrl" style="justify-content:center;">
-          <button class="qty-btn" onclick="adjustQty(${p.id},-1)">−</button>
-          <span class="qty-val">${qty}</span>
-          <button class="qty-btn" onclick="adjustQty(${p.id},+1)">+</button>
+  // POCKETS
+  const pk=document.getElementById('tr-pockets')
+  if(_pockets.length===0){
+    pk.innerHTML='<div class="tr-pocket-empty">Aucun pocket. Crée-en un pour mettre de l\'argent de côté (provision impôts, réinvestissement...).</div>'
+  } else {
+    pk.innerHTML=_pockets.map(p=>{
+      const solde=Number(p.solde||0), obj=Number(p.objectif||0)
+      const pct=obj>0?Math.min(100,Math.round(solde/obj*100)):0
+      return `<div class="tr-pocket" style="border-top:3px solid ${p.couleur||'#0052CC'};">
+        <div class="tr-pocket-head"><span class="tr-pocket-nom">${p.nom}</span><button class="tr-pocket-edit" onclick="openPocket('${p.id}')">⋯</button></div>
+        <div class="tr-pocket-solde">${EUR(solde)}</div>
+        ${obj>0?`<div class="tr-pocket-obj">Objectif : ${EUR(obj)} (${pct}%)</div><div class="tr-pocket-bar"><div style="width:${pct}%;background:${p.couleur||'#0052CC'};"></div></div>`:''}
+        <div class="tr-pocket-actions">
+          <button onclick="pocketMove('${p.id}','in')">+ Alimenter</button>
+          <button onclick="pocketMove('${p.id}','out')">− Retirer</button>
         </div>
-        <div style="margin-top:3px;text-align:center;"><span class="stock-badge ${badgeClass}">${badgeText}</span></div>
-      </td>
-      <td style="text-align:right;color:var(--t2);">${p.prix_achat?Number(p.prix_achat).toFixed(2)+'€':'—'}</td>
-      <td style="text-align:right;color:var(--t2);">${p.prix_vente?Number(p.prix_vente).toFixed(2)+'€':'—'}</td>
-      <td>
-        <div class="actions">
-          <button class="act-btn" onclick="editPiece(${p.id})" title="Modifier">
-            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="act-btn del" onclick="deletePiece(${p.id},'${p.nom.replace(/'/g,"\\'")}' )" title="Supprimer">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          </button>
-        </div>
-      </td>
-    </tr>`
+      </div>`
+    }).join('')
+  }
+
+  // MOUVEMENTS (auto + manuel fusionnés, triés par date)
+  const all=[..._derived, ..._mvts.map(m=>({date:m.date,type:m.type,libelle:m.libelle,montant:Number(m.montant||0),auto:false,cat:m.categorie,id:m.id}))]
+  all.sort((a,b)=>new Date(b.date)-new Date(a.date))
+  const mv=document.getElementById('tr-mvts')
+  if(all.length===0){mv.innerHTML='<div class="tr-pocket-empty">Aucun mouvement pour le moment.</div>';return}
+  mv.innerHTML=all.slice(0,40).map(m=>{
+    const dt=new Date(m.date).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
+    const entree=m.type==='entree'
+    const clickable=m.auto?'':`onclick="openMvt(null,'${m.id}')" style="cursor:pointer;"`
+    return `<div class="tr-mvt" ${clickable}>
+      <div class="tr-mvt-ico ${entree?'in':'out'}">${entree?'↓':'↑'}</div>
+      <div class="tr-mvt-main"><div class="tr-mvt-lib">${m.libelle||''}</div><div class="tr-mvt-meta">${dt} · ${m.cat||''}${m.auto?' · auto':''}</div></div>
+      <div class="tr-mvt-mnt ${entree?'pos':'neg'}">${entree?'+':'−'}${EUR(m.montant)}</div>
+    </div>`
   }).join('')
 }
 
-window.filterStock=function(){renderTable()}
-
-window.editPiece=function(id){
-  const p=allStock.find(p=>p.id===id)
-  if(p)openPanel(p)
-}
-
-window.adjustQty=async function(id,delta){
-  const p=allStock.find(p=>p.id===id)
-  if(!p)return
-  const newQty=Math.max(0,Number(p.quantite)+delta)
-  const {error}=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',id)
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  p.quantite=newQty
-  renderAll()
-  showToast(delta>0?`+1 ajouté · ${p.nom}`:`-1 retiré · ${p.nom}`,'ok')
-}
-
-window.deletePiece=async function(id,nom){
-  if(!confirm(`Supprimer "${nom}" du stock ?`))return
-  const {error}=await sb.from('stock').delete().eq('id',id)
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  allStock=allStock.filter(p=>p.id!==id)
-  renderAll()
-  showToast(`"${nom}" supprimé`,'ok')
-}
-
-window.savePiece=async function(){
-  const id=document.getElementById('f-id').value
-  const nom=document.getElementById('f-nom').value.trim()
-  const cat=document.getElementById('f-cat').value
-  if(!nom){showToast('Le nom est requis','err');return}
-  if(!cat){showToast('La catégorie est requise','err');return}
-  const qty=document.getElementById('f-qty').value
-  if(qty===''||isNaN(Number(qty))){showToast('La quantité est requise','err');return}
-
-  const payload={
-    nom,
-    categorie:cat,
-    marque:document.getElementById('f-marque').value.trim()||null,
-    modele:document.getElementById('f-modele').value.trim()||null,
-    quantite:Number(qty),
-    seuil_alerte:Number(document.getElementById('f-seuil').value)||2,
-    prix_achat:Number(document.getElementById('f-achat').value)||0,
-    prix_vente:Number(document.getElementById('f-vente').value)||0,
-    fournisseur:document.getElementById('f-four').value||null,
-    notes:document.getElementById('f-notes').value.trim()||null,
-    updated_at:new Date().toISOString()
-  }
-
-  document.getElementById('saveBtn').textContent='Enregistrement...'
-  document.getElementById('saveBtn').disabled=true
-
-  let error
+// ── MOUVEMENTS MANUELS ──
+window.openMvt=function(type,id){
+  const o=document.getElementById('mvtOverlay'),p=document.getElementById('mvtPanel'),del=document.getElementById('m-delBtn')
   if(id){
-    const res=await sb.from('stock').update(payload).eq('id',id)
-    error=res.error
-    if(!error){
-      const idx=allStock.findIndex(p=>p.id===Number(id))
-      if(idx>=0)allStock[idx]={...allStock[idx],...payload,id:Number(id)}
-    }
+    const m=_mvts.find(x=>String(x.id)===String(id));if(!m)return
+    document.getElementById('mvtTitle').textContent='Modifier le mouvement'
+    document.getElementById('m-id').value=m.id
+    document.getElementById('m-type').value=m.type
+    document.getElementById('m-libelle').value=m.libelle||''
+    document.getElementById('m-montant').value=m.montant||''
+    document.getElementById('m-cat').value=m.categorie||'autre'
+    document.getElementById('m-date').value=(m.date||'').slice(0,10)
+    document.getElementById('m-notes').value=m.notes||''
+    del.style.display='block'
   } else {
-    const res=await sb.from('stock').insert(payload).select().single()
-    error=res.error
-    if(!error&&res.data)allStock.push(res.data)
+    document.getElementById('mvtTitle').textContent=type==='entree'?'Ajouter de l\'argent':'Retrait / Salaire'
+    document.getElementById('m-id').value=''
+    document.getElementById('m-type').value=type
+    document.getElementById('m-libelle').value=''
+    document.getElementById('m-montant').value=''
+    document.getElementById('m-cat').value=type==='entree'?'apport':'salaire'
+    document.getElementById('m-date').value=new Date().toISOString().slice(0,10)
+    document.getElementById('m-notes').value=''
+    del.style.display='none'
   }
-
-  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
-  document.getElementById('saveBtn').disabled=false
-
+  o.classList.add('open');p.classList.add('open')
+}
+window.closeMvt=function(){document.getElementById('mvtPanel').classList.remove('open');document.getElementById('mvtOverlay').classList.remove('open')}
+window.saveMvt=async function(){
+  const libelle=document.getElementById('m-libelle').value.trim()
+  const montant=parseFloat(document.getElementById('m-montant').value)
+  if(!libelle){showToast('Le libellé est obligatoire','err');return}
+  if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
+  const data={type:document.getElementById('m-type').value,categorie:document.getElementById('m-cat').value,libelle,montant,date:document.getElementById('m-date').value||new Date().toISOString().slice(0,10),notes:document.getElementById('m-notes').value.trim()||null}
+  const id=document.getElementById('m-id').value
+  let error
+  if(id){({error}=await sb.from('mouvements').update(data).eq('id',id))}else{({error}=await sb.from('mouvements').insert(data))}
   if(error){showToast('Erreur : '+error.message,'err');return}
-  closePanel()
-  renderAll()
-  showToast(id?`"${nom}" mis à jour ✓`:`"${nom}" ajouté ✓`,'ok')
+  showToast('Mouvement enregistré ✓','ok');closeMvt();await load()
+}
+window.deleteMvt=async function(){
+  const id=document.getElementById('m-id').value;if(!id)return
+  if(!confirm('Supprimer ce mouvement ?'))return
+  const {error}=await sb.from('mouvements').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Mouvement supprimé ✓','ok');closeMvt();await load()
 }
 
-window.exportCSV=function(){
-  if(!allStock.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['id','nom','categorie','marque','modele','quantite','seuil_alerte','prix_achat','prix_vente','fournisseur','notes']
-  const csv=[cols.join(','),...allStock.map(p=>cols.map(c=>`"${String(p[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
-  const a=document.createElement('a')
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
-  a.download=`itsoluce_stock_${new Date().toISOString().slice(0,10)}.csv`
-  a.click()
-  showToast('Export téléchargé ✓','ok')
+// ── POCKETS ──
+window.openPocket=function(id){
+  const o=document.getElementById('pocketOverlay'),p=document.getElementById('pocketPanel'),del=document.getElementById('p-delBtn')
+  if(id){
+    const pk=_pockets.find(x=>String(x.id)===String(id));if(!pk)return
+    document.getElementById('pocketTitle').textContent='Modifier le pocket'
+    document.getElementById('p-id').value=pk.id
+    document.getElementById('p-nom').value=pk.nom||''
+    document.getElementById('p-objectif').value=pk.objectif||''
+    document.getElementById('p-couleur').value=pk.couleur||'#0052CC'
+    del.style.display='block'
+  } else {
+    document.getElementById('pocketTitle').textContent='Nouveau pocket'
+    document.getElementById('p-id').value=''
+    document.getElementById('p-nom').value=''
+    document.getElementById('p-objectif').value=''
+    document.getElementById('p-couleur').value='#0052CC'
+    del.style.display='none'
+  }
+  o.classList.add('open');p.classList.add('open')
+}
+window.closePocket=function(){document.getElementById('pocketPanel').classList.remove('open');document.getElementById('pocketOverlay').classList.remove('open')}
+window.savePocket=async function(){
+  const nom=document.getElementById('p-nom').value.trim()
+  if(!nom){showToast('Le nom est obligatoire','err');return}
+  const objectif=parseFloat(document.getElementById('p-objectif').value)
+  const data={nom,objectif:isNaN(objectif)?null:objectif,couleur:document.getElementById('p-couleur').value}
+  const id=document.getElementById('p-id').value
+  let error
+  if(id){({error}=await sb.from('pockets').update(data).eq('id',id))}else{({error}=await sb.from('pockets').insert({...data,solde:0}))}
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Pocket enregistré ✓','ok');closePocket();await load()
+}
+window.deletePocket=async function(){
+  const id=document.getElementById('p-id').value;if(!id)return
+  if(!confirm('Supprimer ce pocket ? L\'argent qu\'il contient reviendra au solde principal.'))return
+  const {error}=await sb.from('pockets').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Pocket supprimé ✓','ok');closePocket();await load()
+}
+window.pocketMove=async function(id,sens){
+  const pk=_pockets.find(x=>String(x.id)===String(id));if(!pk)return
+  const saisie=prompt(sens==='in'?`Combien alimenter dans "${pk.nom}" ? (€)`:`Combien retirer de "${pk.nom}" ? (€)`)
+  if(saisie===null)return
+  const montant=parseFloat(saisie)
+  if(isNaN(montant)||montant<=0){showToast('Montant invalide','err');return}
+  const nouveauSolde=sens==='in'?Number(pk.solde||0)+montant:Number(pk.solde||0)-montant
+  if(nouveauSolde<0){showToast('Le pocket ne peut pas être négatif','err');return}
+  const {error}=await sb.from('pockets').update({solde:nouveauSolde}).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast(sens==='in'?'Pocket alimenté ✓':'Retrait du pocket ✓','ok');await load()
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+await load()
 
-await loadStock()
-
-// Pré-remplissage depuis le catalogue Foneday
-if(new URLSearchParams(location.search).get('prefill')==='1'){
-  try{
-    const pf=JSON.parse(localStorage.getItem('erp-prefill-stock')||'null')
-    if(pf){
-      openPanel()
-      setTimeout(()=>{
-        const set=(id,v)=>{const el=document.getElementById(id);if(el&&v!=null)el.value=v}
-        set('f-nom',pf.nom);set('f-categorie',pf.categorie);set('f-marque',(pf.marque||'').trim())
-        set('f-modele',pf.modele);set('f-achat',pf.prix_achat);set('f-vente',pf.prix_vente)
-        set('f-four',pf.fournisseur);set('f-notes',pf.notes)
-        if(typeof onAchatChange==='function')onAchatChange()
-        localStorage.removeItem('erp-prefill-stock')
-      },300)
-    }
-  }catch(e){console.warn('prefill',e)}
+} catch(err){
+  console.error(err)
+  showError(err.message||'Erreur inattendue')
 }
 
-} catch(err) {
-  console.error('Erreur stock:', err)
-  showError(err.message||'Une erreur inattendue est survenue.')
-}
 </script>
 
 <script>
