@@ -499,6 +499,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .fin-btn-cancel{flex:1;padding:10px;border-radius:10px;background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
 .fin-btn-save{flex:2;padding:10px;border-radius:10px;background:var(--a);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
 @media(max-width:640px){.fin-panel{width:100vw;max-width:100vw;}}
+
+/* TRÉSORERIE */
+.fin-treso{display:grid;grid-template-columns:1fr 1.4fr;gap:20px;align-items:center;}
+.fin-treso-main{text-align:center;padding:10px;}
+.fin-treso-label{font-size:12px;color:var(--t3);font-weight:500;}
+.fin-treso-big{font-size:36px;font-weight:800;letter-spacing:-1px;margin-top:6px;}
+.fin-treso-big.pos{color:#059669;}
+.fin-treso-big.neg{color:#dc2626;}
+.fin-treso-flow{display:flex;flex-direction:column;gap:6px;}
+.fin-treso-item{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--t2);padding:6px 0;border-bottom:1px solid var(--ln);}
+.fin-treso-item:last-child{border-bottom:none;}
+.fin-treso-item strong{color:var(--t1);}
+@media(max-width:640px){.fin-treso{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -589,6 +602,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
       <div class="fin-hero" id="fin-hero"></div>
 
+      <div class="fin-section" id="fin-treso-section">
+        <div class="fin-section-title">Trésorerie <button class="fin-add-btn" onclick="editCapital()">Modifier le capital de départ</button></div>
+        <div class="fin-treso" id="fin-treso"></div>
+      </div>
+
       <div class="fin-section">
         <div class="fin-section-title">Du chiffre d'affaires au bénéfice réel</div>
         <div class="fin-waterfall" id="fin-waterfall"></div>
@@ -613,6 +631,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fin-section">
         <div class="fin-section-title">Charges fixes <button class="fin-add-btn" onclick="openCharge()">+ Ajouter une charge</button></div>
         <div id="fin-charges-list"></div>
+      </div>
+
+      <div class="fin-section">
+        <div class="fin-section-title">Dépenses par catégorie <a href="/admin/depenses.html" class="fin-add-btn" style="text-decoration:none;display:inline-block;">Gérer les dépenses →</a></div>
+        <div class="fin-breakdown" id="fin-depenses-list"></div>
       </div>
 
     </div>
@@ -740,15 +763,19 @@ const EUR0=n=>Math.round(Number(n||0)).toLocaleString('fr-BE')+' €'
 
 async function loadFinance(){
   // Récupérer toutes les données nécessaires
-  const [repsR, facturesR, chargesR] = await Promise.all([
+  const [repsR, facturesR, chargesR, depensesR, settingsR] = await Promise.all([
     sb.from('reparations').select('*'),
     sb.from('factures').select('*'),
-    sb.from('charges').select('*')
+    sb.from('charges').select('*'),
+    sb.from('depenses').select('*'),
+    sb.from('settings').select('*').eq('cle','capital_depart')
   ])
   const reps = repsR.data||[]
   const factures = facturesR.data||[]
   const charges = chargesR.data||[]
   window._allCharges = charges
+  const depenses = depensesR.data||[]
+  const capitalDepart = Number((settingsR.data&&settingsR.data[0])?settingsR.data[0].valeur:0)||0
 
   // ── CHARGES ──
   const chargesActives = charges.filter(c=>c.actif!==false)
@@ -812,7 +839,19 @@ async function loadFinance(){
     parMois.push({nom:moisNoms[d.getMonth()],ca:caM,benefice:benM})
   }
 
-  render({chargesMensuel,chargesAnnuel,chargesActives,caTotal,coutPieces,beneficeReel,margeReparations,nbRepsTerm,panierMoyen,margeMoyenneParRep,repsPourRentable,parMois,moisEcoulesAnnee})
+  // ── DÉPENSES (hors pièces réparations) ──
+  const totalDepenses=depenses.reduce((a,x)=>a+Number(x.montant||0),0)
+  const depConso=depenses.filter(x=>x.categorie==='consommable').reduce((a,x)=>a+Number(x.montant||0),0)
+  const depMateriel=depenses.filter(x=>x.categorie==='materiel').reduce((a,x)=>a+Number(x.montant||0),0)
+  const depStock=depenses.filter(x=>x.categorie==='stock').reduce((a,x)=>a+Number(x.montant||0),0)
+  const depFrais=depenses.filter(x=>x.categorie==='frais').reduce((a,x)=>a+Number(x.montant||0),0)
+  const depAutre=depenses.filter(x=>x.categorie==='autre').reduce((a,x)=>a+Number(x.montant||0),0)
+
+  // ── TRÉSORERIE = capital + encaissé − tout ce qui sort ──
+  const totalDecaisse=coutPieces+chargesAnnee+totalDepenses
+  const tresorerie=capitalDepart+caTotal-totalDecaisse
+
+  render({chargesMensuel,chargesAnnuel,chargesActives,caTotal,coutPieces,beneficeReel,margeReparations,nbRepsTerm,panierMoyen,margeMoyenneParRep,repsPourRentable,parMois,moisEcoulesAnnee,totalDepenses,depConso,depMateriel,depStock,depFrais,depAutre,capitalDepart,tresorerie,totalDecaisse})
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
@@ -867,6 +906,38 @@ function render(d){
     const bc=m.benefice>=0?'pos':'neg'
     return `<div class="fin-month"><div class="fin-month-name">${m.nom}</div><div class="fin-month-ca">${EUR0(m.ca)}</div><div class="fin-month-ben ${bc}">${m.benefice>=0?'+':''}${EUR0(m.benefice)}</div></div>`
   }).join('')
+
+  // TRÉSORERIE
+  const tresClass=d.tresorerie>=0?'pos':'neg'
+  document.getElementById('fin-treso').innerHTML=`
+    <div class="fin-treso-main">
+      <div class="fin-treso-label">Trésorerie actuelle estimée</div>
+      <div class="fin-treso-big ${tresClass}">${EUR(d.tresorerie)}</div>
+    </div>
+    <div class="fin-treso-flow">
+      <div class="fin-treso-item"><span>Capital de départ</span><strong>${EUR(d.capitalDepart)}</strong></div>
+      <div class="fin-treso-item"><span>+ Revenus encaissés</span><strong style="color:#059669;">+${EUR(d.caTotal)}</strong></div>
+      <div class="fin-treso-item"><span>− Pièces réparations</span><strong style="color:#dc2626;">−${EUR(d.coutPieces)}</strong></div>
+      <div class="fin-treso-item"><span>− Dépenses (matériel, conso...)</span><strong style="color:#dc2626;">−${EUR(d.totalDepenses)}</strong></div>
+      <div class="fin-treso-item"><span>− Charges fixes (${d.moisEcoulesAnnee} mois)</span><strong style="color:#dc2626;">−${EUR(d.chargesMensuel*d.moisEcoulesAnnee)}</strong></div>
+    </div>
+  `
+
+  // DÉPENSES par catégorie
+  const depData=[
+    {label:'Consommables',val:d.depConso,col:'#3b82f6'},
+    {label:'Matériel / Investissement',val:d.depMateriel,col:'#8b5cf6'},
+    {label:'Achat de stock',val:d.depStock,col:'#f59e0b'},
+    {label:'Frais divers',val:d.depFrais,col:'#10b981'},
+    {label:'Autre',val:d.depAutre,col:'#6b7280'}
+  ].filter(x=>x.val>0)
+  const depEl=document.getElementById('fin-depenses-list')
+  if(depEl){
+    depEl.innerHTML=d.totalDepenses===0
+      ? '<p class="fin-info-line">Aucune dépense enregistrée. Va dans la page Dépenses pour en ajouter (consommables, matériel...).</p>'
+      : depData.map(x=>`<div class="fin-bd-row"><span class="fin-bd-label"><span class="fin-bd-dot" style="background:${x.col};"></span>${x.label}</span><span class="fin-bd-val">${EUR(x.val)}</span></div>`).join('')
+        +`<div class="fin-bd-row total"><span class="fin-bd-label">Total dépenses</span><span class="fin-bd-val">${EUR(d.totalDepenses)}</span></div>`
+  }
 
   // Charges interactives
   const freqLabel={mensuelle:'/mois',trimestrielle:'/trim.',annuelle:'/an',ponctuelle:'ponctuel'}
@@ -958,6 +1029,19 @@ window.deleteCharge=async function(){
 window.toggleCharge=async function(id,actif){
   const {error}=await sb.from('charges').update({actif}).eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
+  await loadFinance()
+}
+
+window.editCapital=async function(){
+  const {data}=await sb.from('settings').select('*').eq('cle','capital_depart')
+  const actuel=Number((data&&data[0])?data[0].valeur:0)||0
+  const saisie=prompt('Capital de départ investi dans l\'activité (€) :\n\nMontant que tu as injecté au démarrage (matériel initial, trésorerie de lancement...).',actuel)
+  if(saisie===null)return
+  const montant=parseFloat(saisie)
+  if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
+  const {error}=await sb.from('settings').upsert({cle:'capital_depart',valeur:String(montant)},{onConflict:'cle'})
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Capital mis à jour ✓','ok')
   await loadFinance()
 }
 
