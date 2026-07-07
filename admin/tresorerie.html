@@ -418,6 +418,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tr-mvt-meta{font-size:11px;color:var(--t3);margin-top:1px;}
 .tr-mvt-mnt{font-size:14px;font-weight:700;white-space:nowrap;}
 .tr-mvt-mnt.pos{color:#059669;}.tr-mvt-mnt.neg{color:#dc2626;}
+.tr-provisions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.tr-prov-card{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:16px;}
+.tr-prov-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--t1);margin-bottom:10px;}
+.tr-prov-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.tr-prov-line{font-size:12px;color:var(--t2);margin-bottom:4px;}
+.tr-prov-line strong{color:var(--t1);}
+.tr-prov-note{color:var(--t3);font-size:11px;}
+.tr-prov-btn{margin-top:10px;width:100%;padding:9px;border-radius:9px;background:var(--a);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.tr-prov-btn:hover{opacity:0.9;}
+.tr-prov-ok{margin-top:10px;font-size:12px;font-weight:600;color:#059669;text-align:center;padding:8px;background:rgba(5,150,105,0.1);border-radius:9px;}
+@media(max-width:640px){.tr-provisions{grid-template-columns:1fr;}}
 .fin-add-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;background:var(--a);color:#fff;border:none;cursor:pointer;font-family:inherit;}
 .btn-danger{background:rgba(248,113,113,0.12);color:#dc2626;border:1px solid rgba(248,113,113,0.3);}
 </style>
@@ -519,6 +530,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
         <!-- DÉCOMPOSITION -->
         <div class="tr-breakdown" id="tr-breakdown"></div>
+
+        <!-- ASSISTANT PROVISIONS -->
+        <div class="tr-section-title">Assistant provisions <button class="fin-add-btn" style="background:var(--bg3);color:var(--t2);" onclick="editProvisionPct()">Régler le %</button></div>
+        <div class="tr-provisions" id="tr-provisions"></div>
 
         <!-- POCKETS -->
         <div class="tr-section-title">Mes pockets <button class="fin-add-btn" onclick="openPocket()">+ Nouveau pocket</button></div>
@@ -706,14 +721,17 @@ async function load(){
     sb.from('factures').select('*'),
     sb.from('charges').select('*'),
     sb.from('depenses').select('*'),
-    sb.from('settings').select('*').eq('cle','capital_depart'),
+    sb.from('settings').select('*'),
     sb.from('mouvements').select('*').order('date',{ascending:false}),
     sb.from('pockets').select('*').order('created_at',{ascending:true})
   ])
   const reps=repsR.data||[], factures=facturesR.data||[], charges=chargesR.data||[], depenses=depensesR.data||[]
   _mvts=mvtR.data||[]
   _pockets=pocketR.data||[]
-  const capitalDepart=Number((settingsR.data&&settingsR.data[0])?settingsR.data[0].valeur:0)||0
+  const settings=settingsR.data||[]
+  const getSetting=(cle,def)=>{const s=settings.find(x=>x.cle===cle);return s?s.valeur:def}
+  const capitalDepart=Number(getSetting('capital_depart',0))||0
+  const provisionPct=Number(getSetting('provision_pct',35))||35
 
   // ── ACTIVITÉ (auto) ──
   const facturesPayees=factures.filter(f=>['payee','payée'].includes((f.statut||'').toLowerCase()))
@@ -747,7 +765,18 @@ async function load(){
   facturesPayees.forEach(f=>_derived.push({date:f.date||f.created_at,type:'entree',libelle:'Facture '+(f.numero||''),montant:Number(f.total||0),auto:true,cat:'Réparation'}))
   depenses.forEach(d=>_derived.push({date:d.date,type:'sortie',libelle:d.libelle,montant:Number(d.montant||0),auto:true,cat:'Dépense'}))
 
-  render({capitalDepart,activiteNet,caTotal,coutPieces,totalDepenses,chargesAnnee,mvtEntrees,mvtSorties,tresorerieTotal,argentPockets,soldePrincipal})
+  // ── PROVISIONS RECOMMANDÉES (semi-auto) ──
+  const benefice=Math.max(0,activiteNet) // base de provision impôts/cotisations
+  const provImpotsReco=benefice*(provisionPct/100)
+  const provChargesReco=chargesMensuel*3 // 3 mois de charges d'avance
+  const pocketImpots=_pockets.find(p=>/imp[oô]t/i.test(p.nom||''))
+  const pocketCharges=_pockets.find(p=>/charge/i.test(p.nom||''))
+  const provisions={provisionPct,provImpotsReco,provChargesReco,
+    pocketImpots:pocketImpots||null,pocketCharges:pocketCharges||null,
+    manqueImpots:pocketImpots?Math.max(0,provImpotsReco-Number(pocketImpots.solde||0)):provImpotsReco,
+    manqueCharges:pocketCharges?Math.max(0,provChargesReco-Number(pocketCharges.solde||0)):provChargesReco}
+
+  render({capitalDepart,activiteNet,caTotal,coutPieces,totalDepenses,chargesAnnee,mvtEntrees,mvtSorties,tresorerieTotal,argentPockets,soldePrincipal,provisions})
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
@@ -755,6 +784,25 @@ async function load(){
 function render(d){
   document.getElementById('tr-solde').textContent=EUR(d.soldePrincipal)
   document.getElementById('tr-solde').className='tr-hero-big '+(d.soldePrincipal>=0?'pos':'neg')
+
+  // ASSISTANT PROVISIONS
+  const pv=d.provisions
+  const provEl=document.getElementById('tr-provisions')
+  if(provEl){
+    provEl.innerHTML=`
+      <div class="tr-prov-card">
+        <div class="tr-prov-head"><span class="tr-prov-dot" style="background:#ef4444;"></span>Provision impôts &amp; cotisations</div>
+        <div class="tr-prov-line">Recommandé : <strong>${EUR(pv.provImpotsReco)}</strong> <span class="tr-prov-note">(${pv.provisionPct}% de ton bénéfice)</span></div>
+        <div class="tr-prov-line">Actuellement de côté : <strong>${EUR(pv.pocketImpots?pv.pocketImpots.solde:0)}</strong></div>
+        ${pv.manqueImpots>0.5?`<button class="tr-prov-btn" onclick="alimenterProvision('impots',${pv.manqueImpots})">Mettre ${EUR(pv.manqueImpots)} de côté →</button>`:`<div class="tr-prov-ok">✓ Provision à jour</div>`}
+      </div>
+      <div class="tr-prov-card">
+        <div class="tr-prov-head"><span class="tr-prov-dot" style="background:#f59e0b;"></span>Provision charges fixes</div>
+        <div class="tr-prov-line">Recommandé : <strong>${EUR(pv.provChargesReco)}</strong> <span class="tr-prov-note">(3 mois de charges)</span></div>
+        <div class="tr-prov-line">Actuellement de côté : <strong>${EUR(pv.pocketCharges?pv.pocketCharges.solde:0)}</strong></div>
+        ${pv.manqueCharges>0.5?`<button class="tr-prov-btn" onclick="alimenterProvision('charges',${pv.manqueCharges})">Mettre ${EUR(pv.manqueCharges)} de côté →</button>`:`<div class="tr-prov-ok">✓ Provision à jour</div>`}
+      </div>`
+  }
   document.getElementById('tr-total-sub').textContent=`Trésorerie totale : ${EUR(d.tresorerieTotal)} · dont ${EUR(d.argentPockets)} en pockets`
 
   document.getElementById('tr-breakdown').innerHTML=`
@@ -901,6 +949,27 @@ window.pocketMove=async function(id,sens){
   const {error}=await sb.from('pockets').update({solde:nouveauSolde}).eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   showToast(sens==='in'?'Pocket alimenté ✓':'Retrait du pocket ✓','ok');await load()
+}
+
+window.alimenterProvision=async function(type,montant){
+  const pk=_pockets.find(p=>type==='impots'?/imp[oô]t/i.test(p.nom||''):/charge/i.test(p.nom||''))
+  if(!pk){showToast('Pocket introuvable — crée-le d\'abord','err');return}
+  if(!confirm(`Mettre ${montant.toFixed(2)} € de côté dans "${pk.nom}" ?`))return
+  const nouveauSolde=Number(pk.solde||0)+montant
+  const {error}=await sb.from('pockets').update({solde:nouveauSolde}).eq('id',pk.id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Provision alimentée ✓','ok');await load()
+}
+window.editProvisionPct=async function(){
+  const {data}=await sb.from('settings').select('*').eq('cle','provision_pct')
+  const actuel=Number((data&&data[0])?data[0].valeur:35)||35
+  const saisie=prompt('Pourcentage de ton bénéfice à mettre de côté pour les impôts et cotisations (%) :\n\nConseil : 30 à 40% est prudent. Confirme le taux exact avec ton comptable / UCM.',actuel)
+  if(saisie===null)return
+  const pct=parseFloat(saisie)
+  if(isNaN(pct)||pct<0||pct>100){showToast('Pourcentage invalide','err');return}
+  const {error}=await sb.from('settings').upsert({cle:'provision_pct',valeur:String(pct)},{onConflict:'cle'})
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Taux mis à jour ✓','ok');await load()
 }
 
 window.editCapital=async function(){
