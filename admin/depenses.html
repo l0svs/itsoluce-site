@@ -381,7 +381,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 }
 
 
-.dep-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.dep-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:16px 24px 0;flex-shrink:0;}
 .dep-filter{padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;background:var(--bg2);color:var(--t2);border:1px solid var(--ln);cursor:pointer;font-family:inherit;}
 .dep-filter.on{background:var(--a);color:#fff;border-color:var(--a);}
 .dep-table{width:100%;border-collapse:collapse;}
@@ -468,7 +468,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
-    <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow-y:auto;">
+    <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
         <div class="ph-left"><h1>Dépenses</h1><p>Consommables, matériel, frais — hors pièces liées aux réparations</p></div>
         <div class="ph-right"><button class="btn btn-primary" onclick="openDep()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvelle dépense</button></div>
