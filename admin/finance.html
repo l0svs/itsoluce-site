@@ -463,6 +463,42 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .fin-info-line{font-size:12px;color:var(--t3);line-height:1.6;}
 .fin-two{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 @media(max-width:900px){.fin-hero{grid-template-columns:repeat(2,1fr);}.fin-two{grid-template-columns:1fr;}.fin-months{grid-template-columns:repeat(3,1fr);}}
+
+/* GESTION CHARGES */
+.fin-add-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;background:var(--a);color:#fff;border:none;cursor:pointer;font-family:inherit;}
+.fin-add-btn:hover{opacity:0.9;}
+.fin-charge-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--ln);border-radius:12px;margin-bottom:8px;background:var(--bg2);transition:border-color .12s;}
+.fin-charge-row:hover{border-color:var(--a);}
+.fin-charge-row.inactive{opacity:0.5;}
+.fin-charge-main{flex:1;cursor:pointer;}
+.fin-charge-lib{font-size:14px;font-weight:600;color:var(--t1);}
+.fin-charge-meta{font-size:11px;color:var(--t3);margin-top:2px;}
+.fin-charge-mnt{font-size:15px;font-weight:700;color:var(--t1);white-space:nowrap;}
+.fin-charge-freq{font-size:10px;color:var(--t3);font-weight:400;}
+.fin-switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;}
+.fin-switch input{opacity:0;width:0;height:0;}
+.fin-slider{position:absolute;cursor:pointer;inset:0;background:var(--ln2);border-radius:24px;transition:.2s;}
+.fin-slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+.fin-switch input:checked+.fin-slider{background:var(--a);}
+.fin-switch input:checked+.fin-slider:before{transform:translateX(18px);}
+.fin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;}
+.fin-overlay.open{display:block;}
+.fin-panel{position:fixed;right:0;top:0;bottom:0;width:420px;max-width:90vw;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}
+.fin-panel.open{transform:translateX(0);}
+.fin-panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:600;color:var(--t1);flex-shrink:0;}
+.fin-panel-close{background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;}
+.fin-panel-body{flex:1;overflow-y:auto;padding:20px;}
+.fin-field{margin-bottom:16px;}
+.fin-field label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;}
+.fin-field input,.fin-field select,.fin-field textarea{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--ln2);border-radius:10px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;}
+.fin-field input:focus,.fin-field select:focus,.fin-field textarea:focus{border-color:var(--a);}
+.fin-field-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;}
+.fin-field-row label{font-size:13px;font-weight:600;color:var(--t2);}
+.fin-panel-foot{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.fin-btn-del{padding:10px 14px;border-radius:10px;background:rgba(248,113,113,0.12);color:#dc2626;border:1px solid rgba(248,113,113,0.3);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.fin-btn-cancel{flex:1;padding:10px;border-radius:10px;background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.fin-btn-save{flex:2;padding:10px;border-radius:10px;background:var(--a);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+@media(max-width:640px){.fin-panel{width:100vw;max-width:100vw;}}
 </style>
 </head>
 <body>
@@ -575,10 +611,36 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       </div>
 
       <div class="fin-section">
-        <div class="fin-section-title">Détail des charges fixes</div>
-        <div class="fin-breakdown" id="fin-charges-list"></div>
+        <div class="fin-section-title">Charges fixes <button class="fin-add-btn" onclick="openCharge()">+ Ajouter une charge</button></div>
+        <div id="fin-charges-list"></div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- PANNEAU CHARGE -->
+  <div class="fin-overlay" id="chargeOverlay" onclick="closeCharge()"></div>
+  <div class="fin-panel" id="chargePanel">
+    <div class="fin-panel-head">
+      <span id="chargePanelTitle">Nouvelle charge</span>
+      <button class="fin-panel-close" onclick="closeCharge()">&times;</button>
+    </div>
+    <div class="fin-panel-body">
+      <input type="hidden" id="c-id"/>
+      <div class="fin-field"><label>Libellé</label><input type="text" id="c-libelle" placeholder="Ex : Assurance RC Pro"/></div>
+      <div class="fin-field"><label>Montant (€)</label><input type="number" step="0.01" id="c-montant" placeholder="0.00"/></div>
+      <div class="fin-field"><label>Fréquence</label><select id="c-freq"><option value="mensuelle">Mensuelle</option><option value="trimestrielle">Trimestrielle</option><option value="annuelle">Annuelle</option><option value="ponctuelle">Ponctuelle</option></select></div>
+      <div class="fin-field"><label>Catégorie</label><input type="text" id="c-cat" placeholder="Ex : Assurance, Logiciel, Cotisation..."/></div>
+      <div class="fin-field"><label>Notes</label><textarea id="c-notes" rows="2" placeholder="Optionnel"></textarea></div>
+      <div class="fin-field-row">
+        <label>Charge active</label>
+        <label class="fin-switch"><input type="checkbox" id="c-actif" checked/><span class="fin-slider"></span></label>
+      </div>
+    </div>
+    <div class="fin-panel-foot">
+      <button class="fin-btn-del" id="c-delBtn" onclick="deleteCharge()" style="display:none;">Supprimer</button>
+      <button class="fin-btn-cancel" onclick="closeCharge()">Annuler</button>
+      <button class="fin-btn-save" onclick="saveCharge()">Enregistrer</button>
     </div>
   </div>
 
@@ -686,6 +748,7 @@ async function loadFinance(){
   const reps = repsR.data||[]
   const factures = facturesR.data||[]
   const charges = chargesR.data||[]
+  window._allCharges = charges
 
   // ── CHARGES ──
   const chargesActives = charges.filter(c=>c.actif!==false)
@@ -805,10 +868,97 @@ function render(d){
     return `<div class="fin-month"><div class="fin-month-name">${m.nom}</div><div class="fin-month-ca">${EUR0(m.ca)}</div><div class="fin-month-ben ${bc}">${m.benefice>=0?'+':''}${EUR0(m.benefice)}</div></div>`
   }).join('')
 
-  // Charges détaillées
-  document.getElementById('fin-charges-list').innerHTML=d.chargesActives.length===0
-    ? '<p class="fin-info-line">Aucune charge active enregistrée.</p>'
-    : d.chargesActives.map(c=>`<div class="fin-bd-row"><span class="fin-bd-label">${(c.libelle||c.nom||'Charge')}</span><span class="fin-bd-val">${EUR(c.montant)} <span style="color:var(--t3);font-weight:400;font-size:11px;">/${(c.frequence||'mensuelle')}</span></span></div>`).join('')
+  // Charges interactives
+  const freqLabel={mensuelle:'/mois',trimestrielle:'/trim.',annuelle:'/an',ponctuelle:'ponctuel'}
+  document.getElementById('fin-charges-list').innerHTML=d.chargesActives.length===0 && (window._allCharges||[]).length===0
+    ? '<p class="fin-info-line">Aucune charge enregistrée. Clique sur « Ajouter une charge » pour commencer.</p>'
+    : (window._allCharges||[]).map(c=>{
+        const actif=c.actif!==false
+        return `<div class="fin-charge-row ${actif?'':'inactive'}">
+          <div class="fin-charge-main" onclick="openCharge('${c.id}')">
+            <div class="fin-charge-lib">${(c.libelle||'Charge')}</div>
+            <div class="fin-charge-meta">${c.categorie?c.categorie+' · ':''}${actif?'Active':'Inactive'}</div>
+          </div>
+          <div class="fin-charge-mnt">${EUR(c.montant)} <span class="fin-charge-freq">${freqLabel[c.frequence]||''}</span></div>
+          <label class="fin-switch"><input type="checkbox" ${actif?'checked':''} onchange="toggleCharge('${c.id}',this.checked)"/><span class="fin-slider"></span></label>
+        </div>`
+      }).join('')
+}
+
+// ═══ GESTION DES CHARGES (CRUD) ═══
+window.openCharge=function(id){
+  const panel=document.getElementById('chargePanel')
+  const overlay=document.getElementById('chargeOverlay')
+  const delBtn=document.getElementById('c-delBtn')
+  if(id){
+    const c=(window._allCharges||[]).find(x=>String(x.id)===String(id))
+    if(!c)return
+    document.getElementById('chargePanelTitle').textContent='Modifier la charge'
+    document.getElementById('c-id').value=c.id
+    document.getElementById('c-libelle').value=c.libelle||''
+    document.getElementById('c-montant').value=c.montant||''
+    document.getElementById('c-freq').value=c.frequence||'mensuelle'
+    document.getElementById('c-cat').value=c.categorie||''
+    document.getElementById('c-notes').value=c.notes||''
+    document.getElementById('c-actif').checked=c.actif!==false
+    delBtn.style.display='block'
+  } else {
+    document.getElementById('chargePanelTitle').textContent='Nouvelle charge'
+    document.getElementById('c-id').value=''
+    document.getElementById('c-libelle').value=''
+    document.getElementById('c-montant').value=''
+    document.getElementById('c-freq').value='mensuelle'
+    document.getElementById('c-cat').value=''
+    document.getElementById('c-notes').value=''
+    document.getElementById('c-actif').checked=true
+    delBtn.style.display='none'
+  }
+  overlay.classList.add('open')
+  panel.classList.add('open')
+}
+window.closeCharge=function(){
+  document.getElementById('chargePanel').classList.remove('open')
+  document.getElementById('chargeOverlay').classList.remove('open')
+}
+window.saveCharge=async function(){
+  const libelle=document.getElementById('c-libelle').value.trim()
+  const montant=parseFloat(document.getElementById('c-montant').value)
+  if(!libelle){showToast('Le libellé est obligatoire','err');return}
+  if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
+  const data={
+    libelle,
+    montant,
+    frequence:document.getElementById('c-freq').value,
+    categorie:document.getElementById('c-cat').value.trim()||null,
+    notes:document.getElementById('c-notes').value.trim()||null,
+    actif:document.getElementById('c-actif').checked
+  }
+  const id=document.getElementById('c-id').value
+  let error
+  if(id){
+    ({error}=await sb.from('charges').update(data).eq('id',id))
+  } else {
+    ({error}=await sb.from('charges').insert(data))
+  }
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast(id?'Charge modifiée ✓':'Charge ajoutée ✓','ok')
+  closeCharge()
+  await loadFinance()
+}
+window.deleteCharge=async function(){
+  const id=document.getElementById('c-id').value
+  if(!id)return
+  if(!confirm('Supprimer définitivement cette charge ?'))return
+  const {error}=await sb.from('charges').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Charge supprimée ✓','ok')
+  closeCharge()
+  await loadFinance()
+}
+window.toggleCharge=async function(id,actif){
+  const {error}=await sb.from('charges').update({actif}).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  await loadFinance()
 }
 
 await loadFinance()
@@ -912,5 +1062,13 @@ function closeMobileNav(){
 </script>
 
 
+<script>
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
+const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
+const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
+if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
+</script>
 </body>
 </html>
