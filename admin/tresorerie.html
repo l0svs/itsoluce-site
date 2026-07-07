@@ -720,7 +720,7 @@ async function load(){
   const caFactures=facturesPayees.reduce((a,f)=>a+Number(f.total||0),0)
   const repsTerminees=reps.filter(r=>['pret','rendu'].includes(r.statut))
   const caReps=repsTerminees.reduce((a,r)=>a+Number(r.prix_final||0),0)
-  const caTotal=caFactures>0?caFactures:caReps
+  const caTotal=caFactures  // CA basé uniquement sur les factures payées
   const coutPieces=repsTerminees.reduce((a,r)=>a+Number(r.cout_pieces||0),0)
   const totalDepenses=depenses.reduce((a,x)=>a+Number(x.montant||0),0)
   // charges prorata année
@@ -741,7 +741,6 @@ async function load(){
   // ── HISTORIQUE UNIFIÉ (auto + manuel) ──
   _derived=[]
   facturesPayees.forEach(f=>_derived.push({date:f.date||f.created_at,type:'entree',libelle:'Facture '+(f.numero||''),montant:Number(f.total||0),auto:true,cat:'Réparation'}))
-  if(caFactures===0)repsTerminees.forEach(r=>{if(r.prix_final)_derived.push({date:r.date_fin||r.created_at,type:'entree',libelle:(r.appareil||'Réparation'),montant:Number(r.prix_final||0),auto:true,cat:'Réparation'})})
   depenses.forEach(d=>_derived.push({date:d.date,type:'sortie',libelle:d.libelle,montant:Number(d.montant||0),auto:true,cat:'Dépense'}))
 
   render({capitalDepart,activiteNet,caTotal,coutPieces,totalDepenses,chargesAnnee,mvtEntrees,mvtSorties,tresorerieTotal,argentPockets,soldePrincipal})

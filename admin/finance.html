@@ -800,7 +800,7 @@ async function loadFinance(){
   const caFactures=facturesPayees.reduce((a,f)=>a+Number(f.total||0),0)
   const repsTerminees=reps.filter(r=>['pret','rendu'].includes(r.statut))
   const caReps=repsTerminees.reduce((a,r)=>a+Number(r.prix_final||0),0)
-  const caTotal=caFactures>0?caFactures:caReps
+  const caTotal=caFactures  // CA basé uniquement sur les factures payées
 
   // ── COÛT DES PIÈCES ──
   const coutPieces=repsTerminees.reduce((a,r)=>a+Number(r.cout_pieces||0),0)
