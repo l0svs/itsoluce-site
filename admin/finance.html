@@ -602,9 +602,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
       <div class="fin-hero" id="fin-hero"></div>
 
-      <div class="fin-section" id="fin-treso-section">
-        <div class="fin-section-title">Trésorerie <button class="fin-add-btn" onclick="editCapital()">Modifier le capital de départ</button></div>
-        <div class="fin-treso" id="fin-treso"></div>
+      <div class="fin-section" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:13px;color:var(--t3);">Trésorerie disponible</div><div style="font-size:22px;font-weight:700;color:var(--t1);margin-top:2px;" id="fin-treso-mini">—</div></div>
+        <a href="/admin/tresorerie.html" class="fin-add-btn" style="text-decoration:none;">Gérer la trésorerie →</a>
       </div>
 
       <div class="fin-section">
@@ -763,12 +763,14 @@ const EUR0=n=>Math.round(Number(n||0)).toLocaleString('fr-BE')+' €'
 
 async function loadFinance(){
   // Récupérer toutes les données nécessaires
-  const [repsR, facturesR, chargesR, depensesR, settingsR] = await Promise.all([
+  const [repsR, facturesR, chargesR, depensesR, settingsR, mvtR, pocketR] = await Promise.all([
     sb.from('reparations').select('*'),
     sb.from('factures').select('*'),
     sb.from('charges').select('*'),
     sb.from('depenses').select('*'),
-    sb.from('settings').select('*').eq('cle','capital_depart')
+    sb.from('settings').select('*').eq('cle','capital_depart'),
+    sb.from('mouvements').select('*'),
+    sb.from('pockets').select('*')
   ])
   const reps = repsR.data||[]
   const factures = facturesR.data||[]
@@ -776,6 +778,8 @@ async function loadFinance(){
   window._allCharges = charges
   const depenses = depensesR.data||[]
   const capitalDepart = Number((settingsR.data&&settingsR.data[0])?settingsR.data[0].valeur:0)||0
+  const mvts = mvtR.data||[]
+  const pockets = pocketR.data||[]
 
   // ── CHARGES ──
   const chargesActives = charges.filter(c=>c.actif!==false)
@@ -847,9 +851,12 @@ async function loadFinance(){
   const depFrais=depenses.filter(x=>x.categorie==='frais').reduce((a,x)=>a+Number(x.montant||0),0)
   const depAutre=depenses.filter(x=>x.categorie==='autre').reduce((a,x)=>a+Number(x.montant||0),0)
 
-  // ── TRÉSORERIE = capital + encaissé − tout ce qui sort ──
+  // ── TRÉSORERIE (même formule que la page Trésorerie) ──
+  const mvtEntrees=mvts.filter(m=>m.type==='entree').reduce((a,m)=>a+Number(m.montant||0),0)
+  const mvtSorties=mvts.filter(m=>m.type==='sortie').reduce((a,m)=>a+Number(m.montant||0),0)
+  const argentPockets=pockets.reduce((a,p)=>a+Number(p.solde||0),0)
   const totalDecaisse=coutPieces+chargesAnnee+totalDepenses
-  const tresorerie=capitalDepart+caTotal-totalDecaisse
+  const tresorerie=capitalDepart+caTotal-totalDecaisse+mvtEntrees-mvtSorties-argentPockets
 
   render({chargesMensuel,chargesAnnuel,chargesActives,caTotal,coutPieces,beneficeReel,margeReparations,nbRepsTerm,panierMoyen,margeMoyenneParRep,repsPourRentable,parMois,moisEcoulesAnnee,totalDepenses,depConso,depMateriel,depStock,depFrais,depAutre,capitalDepart,tresorerie,totalDecaisse})
   document.getElementById('ldr').style.display='none'
@@ -907,21 +914,9 @@ function render(d){
     return `<div class="fin-month"><div class="fin-month-name">${m.nom}</div><div class="fin-month-ca">${EUR0(m.ca)}</div><div class="fin-month-ben ${bc}">${m.benefice>=0?'+':''}${EUR0(m.benefice)}</div></div>`
   }).join('')
 
-  // TRÉSORERIE
-  const tresClass=d.tresorerie>=0?'pos':'neg'
-  document.getElementById('fin-treso').innerHTML=`
-    <div class="fin-treso-main">
-      <div class="fin-treso-label">Trésorerie actuelle estimée</div>
-      <div class="fin-treso-big ${tresClass}">${EUR(d.tresorerie)}</div>
-    </div>
-    <div class="fin-treso-flow">
-      <div class="fin-treso-item"><span>Capital de départ</span><strong>${EUR(d.capitalDepart)}</strong></div>
-      <div class="fin-treso-item"><span>+ Revenus encaissés</span><strong style="color:#059669;">+${EUR(d.caTotal)}</strong></div>
-      <div class="fin-treso-item"><span>− Pièces réparations</span><strong style="color:#dc2626;">−${EUR(d.coutPieces)}</strong></div>
-      <div class="fin-treso-item"><span>− Dépenses (matériel, conso...)</span><strong style="color:#dc2626;">−${EUR(d.totalDepenses)}</strong></div>
-      <div class="fin-treso-item"><span>− Charges fixes (${d.moisEcoulesAnnee} mois)</span><strong style="color:#dc2626;">−${EUR(d.chargesMensuel*d.moisEcoulesAnnee)}</strong></div>
-    </div>
-  `
+  // TRÉSORERIE (mini, cohérent avec la page Trésorerie)
+  const miniEl=document.getElementById("fin-treso-mini")
+  if(miniEl)miniEl.textContent=EUR(d.tresorerie)
 
   // DÉPENSES par catégorie
   const depData=[
@@ -1032,19 +1027,7 @@ window.toggleCharge=async function(id,actif){
   await loadFinance()
 }
 
-window.editCapital=async function(){
-  const {data}=await sb.from('settings').select('*').eq('cle','capital_depart')
-  const actuel=Number((data&&data[0])?data[0].valeur:0)||0
-  const saisie=prompt('Capital de départ investi dans l\'activité (€) :\n\nMontant que tu as injecté au démarrage (matériel initial, trésorerie de lancement...).',actuel)
-  if(saisie===null)return
-  const montant=parseFloat(saisie)
-  if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
-  const {error}=await sb.from('settings').upsert({cle:'capital_depart',valeur:String(montant)},{onConflict:'cle'})
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  showToast('Capital mis à jour ✓','ok')
-  await loadFinance()
-}
-
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadFinance()})
 await loadFinance()
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}

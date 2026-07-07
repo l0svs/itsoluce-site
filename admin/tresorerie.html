@@ -514,6 +514,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="tr-hero-label">Solde principal disponible</div>
           <div class="tr-hero-big" id="tr-solde">—</div>
           <div class="tr-hero-sub" id="tr-total-sub"></div>
+          <button class="fin-add-btn" style="margin-top:12px;background:rgba(255,255,255,0.15);" onclick="editCapital()">Définir le capital de départ</button>
         </div>
 
         <!-- DÉCOMPOSITION -->
@@ -898,6 +899,20 @@ window.pocketMove=async function(id,sens){
   if(error){showToast('Erreur : '+error.message,'err');return}
   showToast(sens==='in'?'Pocket alimenté ✓':'Retrait du pocket ✓','ok');await load()
 }
+
+window.editCapital=async function(){
+  const {data}=await sb.from('settings').select('*').eq('cle','capital_depart')
+  const actuel=Number((data&&data[0])?data[0].valeur:0)||0
+  const saisie=prompt('Capital de départ investi dans l\'activité (€) :\n\nCe que tu as injecté au démarrage (trésorerie de lancement, matériel initial...).',actuel)
+  if(saisie===null)return
+  const montant=parseFloat(saisie)
+  if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
+  const {error}=await sb.from('settings').upsert({cle:'capital_depart',valeur:String(montant)},{onConflict:'cle'})
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Capital mis à jour ✓','ok');await load()
+}
+
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()})
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 await load()

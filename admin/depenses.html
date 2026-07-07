@@ -757,6 +757,7 @@ window.deleteDep=async function(){
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()})
 await load()
 
 } catch(err){
