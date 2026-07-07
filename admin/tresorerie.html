@@ -429,6 +429,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tr-prov-btn:hover{opacity:0.9;}
 .tr-prov-ok{margin-top:10px;font-size:12px;font-weight:600;color:#059669;text-align:center;padding:8px;background:rgba(5,150,105,0.1);border-radius:9px;}
 @media(max-width:640px){.tr-provisions{grid-template-columns:1fr;}}
+.tr-calc{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:18px;margin-bottom:24px;}
+.tr-calc-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.tr-calc-field label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;}
+.tr-calc-field input{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--ln2);border-radius:10px;color:var(--t1);font-size:15px;font-family:inherit;outline:none;}
+.tr-calc-field input:focus{border-color:var(--a);}
+.tr-calc-result{border-top:1px solid var(--ln);padding-top:14px;}
+.tr-calc-empty{font-size:13px;color:var(--t3);text-align:center;padding:10px;}
+.tr-calc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px;color:var(--t2);}
+.tr-calc-row strong{color:var(--t1);font-size:14px;}
+.tr-calc-row.sep{border-top:1px solid var(--ln);margin-top:4px;}
+.tr-calc-row.total{border-top:2px solid var(--ln2);margin-top:4px;padding-top:12px;}
+.tr-calc-row.total span{font-weight:700;color:var(--t1);}.tr-calc-row.total strong{font-size:18px;}
+.tr-calc-hint{margin-top:12px;padding:12px;background:var(--bg3);border-radius:10px;font-size:12px;color:var(--t2);line-height:1.6;}
+.tr-calc-hint strong{color:var(--t1);}
+@media(max-width:640px){.tr-calc-inputs{grid-template-columns:1fr;}}
 .fin-add-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;background:var(--a);color:#fff;border:none;cursor:pointer;font-family:inherit;}
 .btn-danger{background:rgba(248,113,113,0.12);color:#dc2626;border:1px solid rgba(248,113,113,0.3);}
 </style>
@@ -530,6 +545,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
         <!-- DÉCOMPOSITION -->
         <div class="tr-breakdown" id="tr-breakdown"></div>
+
+        <!-- CALCULATEUR DE RÉPARTITION -->
+        <div class="tr-section-title">Calculateur — que faire d'un paiement reçu ?</div>
+        <div class="tr-calc">
+          <div class="tr-calc-inputs">
+            <div class="tr-calc-field"><label>Montant reçu du client (€)</label><input type="number" step="0.01" id="calc-recu" placeholder="Ex : 55.51" oninput="calcRepartition()"/></div>
+            <div class="tr-calc-field"><label>Coût de la pièce (€)</label><input type="number" step="0.01" id="calc-piece" placeholder="Ex : 14" oninput="calcRepartition()"/></div>
+          </div>
+          <div class="tr-calc-result" id="calc-result">
+            <div class="tr-calc-empty">Entre un montant reçu pour voir la répartition exacte.</div>
+          </div>
+        </div>
 
         <!-- ASSISTANT PROVISIONS -->
         <div class="tr-section-title">Assistant provisions <button class="fin-add-btn" style="background:var(--bg3);color:var(--t2);" onclick="editProvisionPct()">Régler le %</button></div>
@@ -732,6 +759,7 @@ async function load(){
   const getSetting=(cle,def)=>{const s=settings.find(x=>x.cle===cle);return s?s.valeur:def}
   const capitalDepart=Number(getSetting('capital_depart',0))||0
   const provisionPct=Number(getSetting('provision_pct',35))||35
+  window._provisionPct=provisionPct
 
   // ── ACTIVITÉ (auto) ──
   const facturesPayees=factures.filter(f=>['payee','payée'].includes((f.statut||'').toLowerCase()))
@@ -970,6 +998,25 @@ window.editProvisionPct=async function(){
   const {error}=await sb.from('settings').upsert({cle:'provision_pct',valeur:String(pct)},{onConflict:'cle'})
   if(error){showToast('Erreur : '+error.message,'err');return}
   showToast('Taux mis à jour ✓','ok');await load()
+}
+
+window.calcRepartition=function(){
+  const recu=parseFloat(document.getElementById('calc-recu').value)||0
+  const piece=parseFloat(document.getElementById('calc-piece').value)||0
+  const res=document.getElementById('calc-result')
+  if(recu<=0){res.innerHTML='<div class="tr-calc-empty">Entre un montant reçu pour voir la répartition exacte.</div>';return}
+  const pct=(window._provisionPct||35)
+  const benefice=recu-piece
+  const provImpots=Math.max(0,benefice)*(pct/100)
+  const netDispo=benefice-provImpots
+  res.innerHTML=`
+    <div class="tr-calc-row"><span>Montant reçu</span><strong>${EUR(recu)}</strong></div>
+    <div class="tr-calc-row"><span>− Coût de la pièce (ton avance, tu la récupères)</span><strong style="color:var(--t2);">−${EUR(piece)}</strong></div>
+    <div class="tr-calc-row sep"><span>= Bénéfice brut</span><strong>${EUR(benefice)}</strong></div>
+    <div class="tr-calc-row"><span>− Provision impôts &amp; cotisations (${pct}%)</span><strong style="color:#ef4444;">−${EUR(provImpots)}</strong></div>
+    <div class="tr-calc-row total"><span>= Ce qu'il te reste vraiment</span><strong style="color:#059669;">${EUR(netDispo)}</strong></div>
+    <div class="tr-calc-hint">Concrètement : garde <strong>${EUR(piece)}</strong> pour racheter une pièce, mets <strong>${EUR(provImpots)}</strong> dans ta provision impôts, et <strong>${EUR(netDispo)}</strong> est ton vrai gain disponible.</div>
+  `
 }
 
 window.editCapital=async function(){
