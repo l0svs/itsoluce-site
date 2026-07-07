@@ -726,7 +726,11 @@ async function load(){
   // charges prorata année
   let chargesMensuel=0
   charges.filter(c=>c.actif!==false).forEach(c=>{const m=Number(c.montant||0);const f=(c.frequence||'mensuelle').toLowerCase();if(f==='annuelle')chargesMensuel+=m/12;else if(f==='trimestrielle')chargesMensuel+=m/3;else if(f==='ponctuelle')chargesMensuel+=0;else chargesMensuel+=m})
-  const chargesAnnee=chargesMensuel*(new Date().getMonth()+1)
+  const DEBUT_ACTIVITE=new Date(2026,4,1)
+  const maintenant=new Date()
+  let moisEcoules=(maintenant.getFullYear()-DEBUT_ACTIVITE.getFullYear())*12+(maintenant.getMonth()-DEBUT_ACTIVITE.getMonth())+1
+  if(moisEcoules<0)moisEcoules=0
+  const chargesAnnee=chargesMensuel*moisEcoules
 
   // ── MOUVEMENTS MANUELS ──
   const mvtEntrees=_mvts.filter(m=>m.type==='entree').reduce((a,m)=>a+Number(m.montant||0),0)

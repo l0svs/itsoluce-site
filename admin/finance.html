@@ -805,8 +805,12 @@ async function loadFinance(){
   // ── COÛT DES PIÈCES ──
   const coutPieces=repsTerminees.reduce((a,r)=>a+Number(r.cout_pieces||0),0)
 
-  // ── BÉNÉFICE RÉEL = CA − pièces − charges (année en cours) ──
-  const moisEcoulesAnnee=new Date().getMonth()+1 // janvier=1
+  // ── BÉNÉFICE RÉEL = CA − pièces − charges (depuis le début d'activité) ──
+  // Début d'activité : mai 2026. On compte les mois écoulés depuis (inclus le mois en cours).
+  const DEBUT_ACTIVITE=new Date(2026,4,1) // mai 2026 (mois 4 = mai, 0-indexé)
+  const maintenant=new Date()
+  let moisEcoulesAnnee=(maintenant.getFullYear()-DEBUT_ACTIVITE.getFullYear())*12+(maintenant.getMonth()-DEBUT_ACTIVITE.getMonth())+1
+  if(moisEcoulesAnnee<0)moisEcoulesAnnee=0
   const chargesAnnee=chargesMensuel*moisEcoulesAnnee
   const beneficeReel=caTotal-coutPieces-chargesAnnee
   const margeReparations=caTotal-coutPieces // marge avant charges
