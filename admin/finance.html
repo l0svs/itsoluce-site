@@ -448,7 +448,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .fin-wf-bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;transition:height .4s;}
 .fin-wf-label{font-size:10px;color:var(--t3);margin-top:6px;text-align:center;line-height:1.2;}
 .fin-wf-val{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:4px;}
-.fin-months{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.fin-months{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;}
 .fin-month{text-align:center;padding:10px 4px;border-radius:10px;background:var(--bg3);}
 .fin-month-name{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:0.4px;}
 .fin-month-ca{font-size:14px;font-weight:700;color:var(--t1);margin-top:4px;}
@@ -624,7 +624,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       </div>
 
       <div class="fin-section">
-        <div class="fin-section-title">Évolution — 6 derniers mois <span style="font-size:11px;color:var(--t3);font-weight:400;">CA et bénéfice</span></div>
+        <div class="fin-section-title">Évolution depuis le lancement <span style="font-size:11px;color:var(--t3);font-weight:400;">CA et bénéfice par mois</span></div>
         <div class="fin-months" id="fin-months"></div>
       </div>
 
@@ -827,21 +827,23 @@ async function loadFinance(){
   const moisNoms=['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc']
   const now=new Date()
   const parMois=[]
-  for(let i=5;i>=0;i--){
+  // On part du début d'activité (mai 2026) et on affiche jusqu'au mois courant,
+  // en gardant au maximum les 6 derniers mois d'activité.
+  const debut=new Date(2026,4,1) // mai 2026
+  const totalMoisActivite=(now.getFullYear()-debut.getFullYear())*12+(now.getMonth()-debut.getMonth())+1
+  const nbAafficher=Math.max(1,Math.min(6,totalMoisActivite))
+  for(let i=nbAafficher-1;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1)
-    const key=d.getFullYear()+'-'+d.getMonth()
-    // CA du mois (factures payées ce mois, sinon réps terminées ce mois)
+    // CA du mois = factures payées ce mois uniquement
     let caM=0, coutM=0
     facturesPayees.forEach(f=>{
       const fd=new Date(f.date||f.created_at)
       if(fd.getFullYear()===d.getFullYear()&&fd.getMonth()===d.getMonth())caM+=Number(f.total||0)
     })
+    // Coût des pièces des réparations terminées ce mois
     repsTerminees.forEach(r=>{
       const rd=new Date(r.date_fin||r.created_at)
-      if(rd.getFullYear()===d.getFullYear()&&rd.getMonth()===d.getMonth()){
-        if(caM===0||caFactures===0)caM+=Number(r.prix_final||0)
-        coutM+=Number(r.cout_pieces||0)
-      }
+      if(rd.getFullYear()===d.getFullYear()&&rd.getMonth()===d.getMonth())coutM+=Number(r.cout_pieces||0)
     })
     const benM=caM-coutM-chargesMensuel
     parMois.push({nom:moisNoms[d.getMonth()],ca:caM,benefice:benM})
