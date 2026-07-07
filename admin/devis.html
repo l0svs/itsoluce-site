@@ -268,6 +268,48 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 /* ═══════════ APP iOS (MOBILE ≤640px) ═══════════ */
 @media(max-width:640px){
+  
+  /* PANEL MOBILE : plein écran, footer boutons toujours visible */
+  .panel{
+    width:100vw !important;max-width:100vw !important;
+    left:0 !important;right:0 !important;top:0 !important;bottom:0 !important;
+    height:100dvh !important;max-height:100dvh !important;
+    border-left:none !important;border-radius:0 !important;
+    z-index:500 !important;
+    display:flex !important;flex-direction:column !important;
+  }
+  .panel-head{
+    flex-shrink:0 !important;
+    padding-top:calc(14px + env(safe-area-inset-top)) !important;
+  }
+  .panel-body{
+    flex:1 1 auto !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch !important;
+    padding-bottom:16px !important;
+  }
+  .panel-footer{
+    flex-shrink:0 !important;position:sticky !important;bottom:0 !important;
+    background:var(--bg2) !important;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom)) !important;
+    box-shadow:0 -2px 12px rgba(0,0,0,0.08) !important;z-index:2 !important;
+  }
+  .panel-footer .btn{min-height:48px !important;}
+  /* Quand un panel est ouvert, masquer la barre du bas (évite le chevauchement) */
+  body:has(.panel.open) .mobile-bottombar{display:none !important;}
+
+  /* ANTI-DÉBORDEMENT : tout tient dans la largeur écran */
+  html,body{overflow-x:hidden !important;max-width:100vw !important;}
+  .content,#pageBody,.page-head,.card,.dash-card,[class*="-card"],.drow,.rl-row{max-width:100% !important;}
+  /* Neutraliser les largeurs fixes desktop (sauf calendrier + petites icônes) */
+  [style*="width:300px"],[style*="width:320px"],[style*="width:340px"],[style*="width:360px"],
+  [style*="width:260px"],[style*="width:200px"],[style*="width:130px"],[style*="width:100px"],
+  [style*="width:1000px"],[style*="width:1100px"],[style*="width:1600px"]{
+    width:100% !important;max-width:100% !important;
+  }
+  /* Autoriser le retour à la ligne (sauf badges/statuts courts) */
+  .row-t,.row-s,.drow-t,.drow-s,.rl-name,td,th,.cell,.cat-opt-title{white-space:normal !important;word-break:break-word !important;}
+  /* Grilles internes -> 1 colonne, jamais de débordement */
+  .fg-row,.form-row,.two-col,.grid-2{grid-template-columns:1fr !important;display:flex !important;flex-direction:column !important;}
+
   :root{
     --ios-blur:saturate(180%) blur(20px);
     --ios-radius:16px;
@@ -420,40 +462,55 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 </header>
 <div class="layout">
   <aside class="sidebar">
-    <div class="ng"><div class="ngl">Vue d'ensemble</div><a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a></div>
-    <div class="nhr"></div>
-    <div class="ng">
-      <div class="ngl">Opérations</div>
-      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock</a>
+      <div class="ng">
+      <div class="ngl">Vue d'ensemble</div>
+      <a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
+      <div class="ngl">Clients</div>
+      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc">0</span></a>
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
+      <div class="ngl">Réparations</div>
+      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
+      <div class="ngl">Inventaire</div>
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
-      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations</a>
-      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
-      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
-      <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs</a>
-    </div>
-    <div class="nhr"></div>
-    <div class="ng">
-      <div class="ngl">Finance</div>
-      <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges</a>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
+      <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
+      <div class="ngl">Facturation</div>
       <a href="/admin/devis.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
+      <div class="ngl">Finance</div>
+      <a href="/admin/charges.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Charges<span class="nc" id="nb-charges">—</span></a>
       <a href="/admin/performance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Performance</a>
-    </div>
-    <div class="nhr"></div>
-    <div class="ng">
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
       <div class="ngl">Communication</div>
-      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
       <a href="/admin/relances.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Relances</a>
-    </div>
-    <div class="nhr"></div>
-    <div class="ng">
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      </div>
+      <div class="nhr"></div>
+      <div class="ng">
       <div class="ngl">Gestion</div>
       <a href="/admin/taches.html" class="nl"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</a>
       <a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
-    </div>
-    <div class="sf">IT Soluce ERP · v1.0</div>
-</aside>
+      </div>
+      <div class="sf">IT Soluce ERP · v1.0</div>
+      </aside>
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
