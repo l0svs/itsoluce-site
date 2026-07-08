@@ -436,6 +436,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .f-head-row{display:flex;align-items:baseline;justify-content:space-between;}
 .f-head-note{font-size:12px;color:var(--t3);font-weight:400;}
 .f-mini-btn{font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;background:var(--a);color:#fff;border:none;cursor:pointer;font-family:inherit;}
+.f-mini-alt{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}
+.f-mini-alt:hover{border-color:var(--a);color:var(--a);}
+.rep-line{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px;color:var(--t2);}
+.rep-line strong{color:var(--t1);}
+.rep-line.sep{border-top:1px solid var(--ln);margin-top:2px;}
+.rep-line.total{border-top:2px solid var(--ln2);margin-top:4px;padding-top:11px;}
+.rep-line.total span{font-weight:700;color:var(--t1);}.rep-line.total strong{font-size:16px;}
+.rep-warn{font-size:10px;color:#f59e0b;font-style:italic;margin-left:6px;}
 .f-aside-btn{align-self:flex-start;margin-top:8px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;background:#f59e0b;color:#fff;border:none;cursor:pointer;font-family:inherit;}
 .f-pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:26px;}
 .f-pocket{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:14px 15px;}
@@ -554,7 +562,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="f-aside" id="f-aside"></div>
 
         <!-- POCKETS -->
-        <div class="f-block-head f-head-row"><span>Mon argent mis de côté</span><button class="f-mini-btn" onclick="openPocket()">+ Nouveau pocket</button></div>
+        <div class="f-block-head f-head-row"><span>Mon argent mis de côté</span><span style="display:flex;gap:8px;"><button class="f-mini-btn f-mini-alt" onclick="openRepartition()">Répartir un encaissement</button><button class="f-mini-btn" onclick="openPocket()">+ Nouveau pocket</button></span></div>
         <div class="f-pockets" id="f-pockets"></div>
 
         <!-- CHARGES -->
@@ -646,6 +654,23 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <button class="btn btn-danger" id="c-delBtn" onclick="deleteCharge()" style="display:none;">Supprimer</button>
       <button class="btn btn-secondary" onclick="closeCharge()" style="flex:1;">Annuler</button>
       <button class="btn btn-primary" onclick="saveCharge()" style="flex:2;">Enregistrer</button>
+    </div>
+  </div>
+
+  <!-- PANEL RÉPARTITION -->
+  <div class="panel-overlay" id="repOverlay" onclick="closeRepartition()"></div>
+  <div class="panel" id="repPanel">
+    <div class="panel-head"><span>Répartir un encaissement</span><button onclick="closeRepartition()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;">&times;</button></div>
+    <div class="panel-body">
+      <p style="font-size:12px;color:var(--t2);margin:0 0 14px;line-height:1.5;">Entre ce que tu viens d'encaisser. Le calcul te dira exactement combien mettre dans chaque pocket, et tu pourras tout répartir en un clic.</p>
+      <div class="fg"><label>Montant encaissé (€) *</label><input type="number" step="0.01" id="rep-recu" placeholder="Ex : 55.51" oninput="calcRepartition()"/></div>
+      <div class="fg"><label>Coût de la pièce (€)</label><input type="number" step="0.01" id="rep-piece" placeholder="Ex : 14" oninput="calcRepartition()"/></div>
+      <div id="rep-result"></div>
+      <button onclick="editPourcentages()" style="margin-top:12px;background:none;border:none;color:var(--a);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:0;">Régler mes pourcentages (impôts, réinvestissement)</button>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary" onclick="closeRepartition()" style="flex:1;">Fermer</button>
+      <button class="btn btn-primary" id="rep-apply" onclick="appliquerRepartition()" style="flex:2;display:none;">Tout répartir</button>
     </div>
   </div>
 
@@ -785,6 +810,7 @@ async function load(){
   _pockets=pocketsR.data||[]
   const settings=settingsR.data||[]
   _provPct=Number((settings.find(s=>s.cle==='provision_pct')||{}).valeur||35)||35
+  window._reinvestPct=Number((settings.find(s=>s.cle==='reinvest_pct')||{}).valeur||10)||10
   render()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
@@ -809,6 +835,11 @@ function render(){
   const encaisse=all.filter(x=>x.sens==='entree').reduce((a,x)=>a+x.montant,0)
   const depense=all.filter(x=>x.sens==='sortie').reduce((a,x)=>a+x.montant,0)
   const solde=encaisse-depense
+
+  // Nombre d'encaissements ce mois-ci (dynamique) pour répartir les charges
+  const now=new Date()
+  const nbEncMois=all.filter(x=>{const d=new Date(x.date);return x.sens==='entree'&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
+  window._nbRepaMois=Math.max(1,nbEncMois)
 
   document.getElementById('f-encaisse').textContent=EUR(encaisse)
   document.getElementById('f-encaisse').className='f3-val pos'
@@ -868,6 +899,7 @@ function render(){
   })
   const totEl=document.getElementById('f-charges-tot')
   if(totEl)totEl.textContent=chargesMensuel>0?`· ${EUR(chargesMensuel)}/mois`:''
+  window._chargesMensuel=chargesMensuel
   const chEl=document.getElementById('f-charges')
   if(chEl){
     chEl.innerHTML=_charges.length===0
@@ -1110,6 +1142,80 @@ window.deleteCharge=async function(){
   const {error}=await sb.from('charges').delete().eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   showToast('Charge supprimée ✓','ok');closeCharge();await load()
+}
+
+// ── RÉPARTITION D'UN ENCAISSEMENT ──
+let _repartition=null
+window.openRepartition=function(){
+  document.getElementById('rep-recu').value=''
+  document.getElementById('rep-piece').value=''
+  document.getElementById('rep-result').innerHTML=''
+  document.getElementById('rep-apply').style.display='none'
+  document.getElementById('repOverlay').classList.add('open')
+  document.getElementById('repPanel').classList.add('open')
+}
+window.closeRepartition=function(){document.getElementById('repPanel').classList.remove('open');document.getElementById('repOverlay').classList.remove('open')}
+window.calcRepartition=function(){
+  const recu=parseFloat(document.getElementById('rep-recu').value)||0
+  const piece=parseFloat(document.getElementById('rep-piece').value)||0
+  const res=document.getElementById('rep-result')
+  const applyBtn=document.getElementById('rep-apply')
+  if(recu<=0){res.innerHTML='';applyBtn.style.display='none';_repartition=null;return}
+  const nbRepa=window._nbRepaMois||1
+  const chMens=window._chargesMensuel||0
+  const reinvestPct=window._reinvestPct||10
+  const benefice=recu-piece
+  const provImpots=Math.max(0,benefice)*(_provPct/100)
+  const partCharges=chMens/nbRepa
+  const reinvest=Math.max(0,benefice)*(reinvestPct/100)
+  const salaire=Math.max(0,benefice-provImpots-partCharges-reinvest)
+  const pkImpots=_pockets.find(p=>/imp[oô]t/i.test(p.nom||''))
+  const pkCharges=_pockets.find(p=>/charge/i.test(p.nom||''))
+  const pkReinvest=_pockets.find(p=>/r[ée]invest|stock/i.test(p.nom||''))
+  const pkSalaire=_pockets.find(p=>/salaire/i.test(p.nom||''))
+  _repartition={
+    lignes:[
+      {pk:pkImpots,montant:provImpots},
+      {pk:pkCharges,montant:partCharges},
+      {pk:pkReinvest,montant:reinvest},
+      {pk:pkSalaire,montant:salaire}
+    ]
+  }
+  const warn=pk=>pk?'':'<em class="rep-warn">pas de pocket</em>'
+  res.innerHTML=`
+    <div class="rep-line"><span>Reçu</span><strong>${EUR(recu)}</strong></div>
+    <div class="rep-line"><span>− Pièce (à récupérer pour racheter)</span><strong>−${EUR(piece)}</strong></div>
+    <div class="rep-line sep"><span>= Bénéfice</span><strong>${EUR(benefice)}</strong></div>
+    <div class="rep-line"><span>→ Impôts (${_provPct}%)</span><strong style="color:#ef4444;">${EUR(provImpots)}</strong>${warn(pkImpots)}</div>
+    <div class="rep-line"><span>→ Charges (${EUR(chMens)}/mois ÷ ${nbRepa} ce mois)</span><strong style="color:#f59e0b;">${EUR(partCharges)}</strong>${warn(pkCharges)}</div>
+    <div class="rep-line"><span>→ Réinvestissement / stock (${reinvestPct}%)</span><strong style="color:#8b5cf6;">${EUR(reinvest)}</strong>${warn(pkReinvest)}</div>
+    <div class="rep-line total"><span>→ Salaire (ce qu'il te reste)</span><strong style="color:#059669;">${EUR(salaire)}</strong>${warn(pkSalaire)}</div>`
+  applyBtn.style.display=(pkImpots||pkCharges||pkReinvest||pkSalaire)?'block':'none'
+}
+window.appliquerRepartition=async function(){
+  if(!_repartition){return}
+  const ops=[]
+  _repartition.lignes.forEach(l=>{
+    if(l.pk&&l.montant>0.005)ops.push(sb.from('pockets').update({solde:Number(l.pk.solde||0)+l.montant}).eq('id',l.pk.id))
+  })
+  if(ops.length===0){showToast('Aucun pocket à alimenter','err');return}
+  const results=await Promise.all(ops)
+  const err=results.find(r=>r.error)
+  if(err){showToast('Erreur : '+err.error.message,'err');return}
+  showToast('Réparti dans tes pockets ✓','ok');closeRepartition();await load()
+}
+window.editPourcentages=async function(){
+  const {data}=await sb.from('settings').select('*')
+  const cur=c=>{const s=(data||[]).find(x=>x.cle===c);return s?s.valeur:null}
+  const p1=prompt('% de ton bénéfice pour les IMPÔTS et cotisations :',cur('provision_pct')||35)
+  if(p1===null)return
+  const p2=prompt('% de ton bénéfice pour le RÉINVESTISSEMENT / stock :',cur('reinvest_pct')||10)
+  if(p2===null)return
+  const v1=parseFloat(p1), v2=parseFloat(p2)
+  if(isNaN(v1)||v1<0||v1>100||isNaN(v2)||v2<0||v2>100){showToast('Pourcentage invalide','err');return}
+  const {error}=await sb.from('settings').upsert([{cle:'provision_pct',valeur:String(v1)},{cle:'reinvest_pct',valeur:String(v2)}],{onConflict:'cle'})
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Pourcentages mis à jour ✓','ok');calcRepartition();await load()
 }
 
 window.exportCSV=function(){
