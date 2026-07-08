@@ -389,6 +389,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .f3-val{font-size:28px;font-weight:700;letter-spacing:-0.6px;margin:6px 0 3px;color:var(--t1);}
 .f3-val.pos{color:#059669;}.f3-val.neg{color:#dc2626;}
 .f3-sub{font-size:11px;color:var(--t3);}
+.f-detail{font-size:12px;color:var(--t3);text-align:center;margin:-8px 0 16px;line-height:1.6;}
+.f-detail strong{font-size:13px;}
+.f-detail .pos{color:#059669;}.f-detail .neg{color:#dc2626;}
+.f-treso-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:12px 16px;margin-bottom:22px;}
+.f-treso-lbl{font-size:12px;color:var(--t3);font-weight:500;}
+.f-treso-amt{font-size:18px;font-weight:700;color:var(--t1);}
+.f-treso-sub{font-size:11px;color:var(--t3);margin-left:auto;}
 .f-aside{display:flex;align-items:flex-start;gap:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px 18px;margin-bottom:26px;}
 .f-aside-ico{width:26px;height:26px;border-radius:50%;background:#f59e0b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;}
 .f-aside-txt{display:flex;flex-direction:column;gap:3px;}
@@ -554,10 +561,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fscroll">
         <!-- 3 CHIFFRES -->
         <div class="f3">
-          <div class="f3-card"><div class="f3-label">Encaissé</div><div class="f3-val" id="f-encaisse">—</div><div class="f3-sub">payé par tes clients</div></div>
-          <div class="f3-card"><div class="f3-label">Dépensé</div><div class="f3-val" id="f-depense">—</div><div class="f3-sub">pièces, charges, achats</div></div>
-          <div class="f3-card hl"><div class="f3-label">Il te reste</div><div class="f3-val" id="f-solde">—</div><div class="f3-sub" id="f-solde-sub">ton argent réel</div></div>
+          <div class="f3-card"><div class="f3-label">Recettes</div><div class="f3-val" id="f-encaisse">—</div><div class="f3-sub">chiffre d'affaires encaissé</div></div>
+          <div class="f3-card"><div class="f3-label">Dépenses</div><div class="f3-val" id="f-depense">—</div><div class="f3-sub">charges + amortissements</div></div>
+          <div class="f3-card hl"><div class="f3-label">Bénéfice</div><div class="f3-val" id="f-solde">—</div><div class="f3-sub">ton résultat réel</div></div>
         </div>
+        <div class="f-detail" id="f-detail"></div>
+        <div class="f-treso-line" id="f-treso-line"></div>
 
         <!-- À METTRE DE CÔTÉ -->
         <div class="f-aside" id="f-aside"></div>
@@ -602,7 +611,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       </div>
       <div class="fg"><label>Description *</label><input type="text" id="m-libelle" placeholder="Ex : Écran iPhone 13, Facture Accountable..."/></div>
       <div class="fg"><label>Montant (€) *</label><input type="number" step="0.01" id="m-montant" placeholder="0.00"/></div>
-      <div class="fg"><label>Catégorie</label><select id="m-cat"></select></div>
+      <div class="fg"><label>Catégorie</label><select id="m-cat" onchange="onCatChange()"></select></div>
+      <div class="fg" id="fg-duree" style="display:none;"><label>Durée d'amortissement (années)</label><input type="number" id="m-duree" value="3" min="1" step="1"/><span style="font-size:11px;color:var(--t3);display:block;margin-top:4px;">Le coût sera étalé sur cette durée dans le bénéfice (défaut : 3 ans).</span></div>
       <div class="fg"><label>Date</label><input type="date" id="m-date"/></div>
       <div class="fg"><label>Note (optionnel)</label><input type="text" id="m-notes" placeholder=""/></div>
     </div>
@@ -808,9 +818,17 @@ function showError(msg){document.getElementById('ldr').style.display='none';docu
 try {
 
 const EUR=n=>Number(n||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'
-const CATS_SORTIE={piece:'Pièce',charge:'Charge fixe',materiel:'Matériel',salaire:'Salaire',autre:'Autre'}
-const CATS_ENTREE={encaissement:'Encaissement',apport:'Apport',autre:'Autre'}
-const CATCOL={encaissement:'#059669',piece:'#3b82f6',charge:'#f59e0b',materiel:'#8b5cf6',salaire:'#ec4899',apport:'#0ea5e9',autre:'#6b7280'}
+const CATS_SORTIE={piece:'Pièce',materiel:'Petit matériel / outillage',charge:'Charge fixe / abonnement',service:'Service',investissement:'Investissement (amortissable)',prelevement:'Prélèvement / salaire',interne:'Virement interne'}
+const CATS_ENTREE={recette:'Recette / encaissement',apport:'Apport personnel',interne:'Virement interne'}
+// Nature comptable → effet sur CA / bénéfice / trésorerie
+// recette: CA+ bénéfice+ | charge: bénéfice- | investissement: bénéfice- (amorti) | apport: neutre | prelevement: neutre bénéfice | interne: neutre total
+function nature(cat,sens){
+  const m={recette:'recette',encaissement:'recette',apport:'apport',interne:'interne',
+    piece:'charge',materiel:'charge',charge:'charge',service:'charge',
+    investissement:'investissement',prelevement:'prelevement',salaire:'prelevement'}
+  return m[cat]||(sens==='entree'?'recette':'charge')
+}
+const CATCOL={recette:'#059669',encaissement:'#059669',piece:'#3b82f6',charge:'#f59e0b',materiel:'#8b5cf6',service:'#0ea5e9',investissement:'#a855f7',prelevement:'#ec4899',apport:'#14b8a6',interne:'#94a3b8',autre:'#6b7280'}
 let _mvts=[], _factures=[], _provPct=35, _mvtType='sortie', _charges=[], _pockets=[]
 
 async function load(){
@@ -842,39 +860,57 @@ function tousLesMouvements(){
   const manuel=_mvts.map(m=>({
     key:'m'+m.id, id:m.id, date:m.date, libelle:m.libelle||'',
     categorie:m.categorie||'autre', montant:Number(m.montant||0),
-    sens:m.type==='entree'?'entree':'sortie', auto:false, notes:m.notes
+    sens:m.type==='entree'?'entree':'sortie', auto:false, notes:m.notes, duree:m.duree_amort
   }))
   return [...auto,...manuel].sort((a,b)=>new Date(b.date)-new Date(a.date))
 }
 
 function render(){
   const all=tousLesMouvements()
-  const encaisse=all.filter(x=>x.sens==='entree').reduce((a,x)=>a+x.montant,0)
-  const depense=all.filter(x=>x.sens==='sortie').reduce((a,x)=>a+x.montant,0)
-  const solde=encaisse-depense
+  const currentYear=new Date().getFullYear()
+  // Classer chaque mouvement par nature comptable
+  all.forEach(x=>{x.nat=nature(x.categorie,x.sens)})
 
+  // ── COMPTABILITÉ ──
+  const recettes=all.filter(x=>x.nat==='recette').reduce((a,x)=>a+x.montant,0)
+  const charges=all.filter(x=>x.nat==='charge').reduce((a,x)=>a+x.montant,0)
+  const apports=all.filter(x=>x.nat==='apport').reduce((a,x)=>a+x.montant,0)
+  const prelevements=all.filter(x=>x.nat==='prelevement').reduce((a,x)=>a+x.montant,0)
+  const investisTotal=all.filter(x=>x.nat==='investissement').reduce((a,x)=>a+x.montant,0)
+  // Amortissements de l'année : fraction annuelle des investissements encore amortis
+  let amortAnnee=0
+  all.filter(x=>x.nat==='investissement').forEach(x=>{
+    const py=new Date(x.date).getFullYear()
+    const duree=Number(x.duree||3)||3
+    if(currentYear>=py&&currentYear<=py+duree-1)amortAnnee+=x.montant/duree
+  })
+  // BÉNÉFICE = recettes − charges − amortissements de l'année (apports/prélèvements/internes exclus)
+  const benefice=recettes-charges-amortAnnee
+  // TRÉSORERIE (cash réel) = recettes + apports − charges − investissements(plein) − prélèvements
+  const solde=recettes+apports-charges-investisTotal-prelevements
 
-  document.getElementById('f-encaisse').textContent=EUR(encaisse)
+  document.getElementById('f-encaisse').textContent=EUR(recettes)
   document.getElementById('f-encaisse').className='f3-val pos'
-  document.getElementById('f-depense').textContent=EUR(depense)
+  const depTot=charges+amortAnnee
+  document.getElementById('f-depense').textContent=EUR(depTot)
   document.getElementById('f-depense').className='f3-val neg'
   const soldeEl=document.getElementById('f-solde')
-  soldeEl.textContent=EUR(solde)
-  soldeEl.className='f3-val '+(solde>=0?'pos':'neg')
+  soldeEl.textContent=EUR(benefice)
+  soldeEl.className='f3-val '+(benefice>=0?'pos':'neg')
 
-  // Répartition du solde : mis de côté (pockets) vs disponible
+  // Détail du résultat + trésorerie
+  const detEl=document.getElementById('f-detail')
+  if(detEl)detEl.innerHTML=`Recettes ${EUR(recettes)} − Charges ${EUR(charges)}${amortAnnee>0?` − Amortissements ${EUR(amortAnnee)}`:''} = <strong class="${benefice>=0?'pos':'neg'}">Bénéfice ${EUR(benefice)}</strong>`
+
+
+  // Trésorerie réelle (cash) : mis de côté (pockets) vs disponible
   const misDeCote=_pockets.reduce((a,p)=>a+Number(p.solde||0),0)
   const disponible=solde-misDeCote
-  document.getElementById('f-solde-sub').innerHTML=misDeCote>0
-    ? `dont ${EUR(misDeCote)} mis de côté · <strong>${EUR(disponible)} dispo</strong>`
-    : 'ton argent réel'
+  const tlEl=document.getElementById('f-treso-line')
+  if(tlEl)tlEl.innerHTML=`<span class="f-treso-lbl">Trésorerie disponible</span><span class="f-treso-amt">${EUR(solde)}</span>${misDeCote>0?`<span class="f-treso-sub">dont ${EUR(misDeCote)} mis de côté · ${EUR(disponible)} libre</span>`:''}`
 
-  // À mettre de côté (impôts sur le bénéfice) — calcul automatique
-  const pieces=all.filter(x=>x.categorie==='piece').reduce((a,x)=>a+x.montant,0)
-  const chargesP=all.filter(x=>x.categorie==='charge').reduce((a,x)=>a+x.montant,0)
-  const benefice=encaisse-pieces-chargesP
+  // À mettre de côté pour les impôts (calcul automatique sur le bénéfice)
   const provImpots=Math.max(0,benefice)*(_provPct/100)
-  // pocket de provision impôts (repéré par son nom)
   const pkImpots=_pockets.find(p=>/imp[oô]t/i.test(p.nom||''))
   const dejaImpots=pkImpots?Number(pkImpots.solde||0):0
   const manqueImpots=Math.max(0,provImpots-dejaImpots)
@@ -931,10 +967,11 @@ function render(){
   const moisNoms=['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc']
   const parMois={}
   all.forEach(x=>{
+    if(x.nat!=='recette'&&x.nat!=='charge')return // exclut apports/prélèvements/internes/investissements
     const d=new Date(x.date)
     const key=d.getFullYear()+'-'+String(d.getMonth()).padStart(2,'0')
     if(!parMois[key])parMois[key]={annee:d.getFullYear(),mois:d.getMonth(),rec:0,dep:0}
-    if(x.sens==='entree')parMois[key].rec+=x.montant; else parMois[key].dep+=x.montant
+    if(x.nat==='recette')parMois[key].rec+=x.montant; else parMois[key].dep+=x.montant
   })
   const moisTries=Object.values(parMois).sort((a,b)=>(b.annee-a.annee)||(b.mois-a.mois)).slice(0,12)
   const moisEl=document.getElementById('f-months')
@@ -951,11 +988,11 @@ function render(){
         }).join('')
   }
 
-  // RÉPARTITION PAR CATÉGORIE
+  // RÉPARTITION PAR CATÉGORIE (uniquement les vraies dépenses : charges + investissements)
   const parCat={}
-  all.forEach(x=>{
-    const k=x.sens+'|'+x.categorie
-    if(!parCat[k])parCat[k]={sens:x.sens,cat:x.categorie,total:0}
+  all.filter(x=>x.nat==='charge'||x.nat==='investissement').forEach(x=>{
+    const k=x.categorie
+    if(!parCat[k])parCat[k]={cat:x.categorie,total:0}
     parCat[k].total+=x.montant
   })
   const catLbl=c=>(CATS_SORTIE[c]||CATS_ENTREE[c]||c)
@@ -964,12 +1001,12 @@ function render(){
   const catsEl=document.getElementById('f-cats')
   if(catsEl){
     catsEl.innerHTML=catsTri.length===0
-      ? '<div class="f-empty-sm">Aucune donnée pour l\'instant.</div>'
+      ? '<div class="f-empty-sm">Aucune dépense pour l\'instant.</div>'
       : catsTri.map(c=>{
           const col=CATCOL[c.cat]||'#6b7280'
           const pct=Math.round(c.total/maxCat*100)
           return `<div class="f-cat">
-            <div class="f-cat-top"><span class="f-cat-nom">${catLbl(c.cat)} <span class="f-cat-sens">${c.sens==='entree'?'recette':'dépense'}</span></span><span class="f-cat-val">${EUR(c.total)}</span></div>
+            <div class="f-cat-top"><span class="f-cat-nom">${catLbl(c.cat)}</span><span class="f-cat-val">${EUR(c.total)}</span></div>
             <div class="f-cat-bar"><div style="width:${pct}%;background:${col};"></div></div>
           </div>`
         }).join('')
@@ -1006,6 +1043,11 @@ window.setMvtType=function(type){
   const sel=document.getElementById('m-cat')
   const cats=type==='entree'?CATS_ENTREE:CATS_SORTIE
   sel.innerHTML=Object.entries(cats).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')
+  onCatChange()
+}
+window.onCatChange=function(){
+  const cat=document.getElementById('m-cat').value
+  document.getElementById('fg-duree').style.display=(cat==='investissement')?'block':'none'
 }
 window.openMvt=function(type,id){
   const o=document.getElementById('mvtOverlay'),p=document.getElementById('mvtPanel'),del=document.getElementById('m-delBtn')
@@ -1017,6 +1059,8 @@ window.openMvt=function(type,id){
     document.getElementById('m-libelle').value=m.libelle||''
     document.getElementById('m-montant').value=m.montant||''
     document.getElementById('m-cat').value=m.categorie||'autre'
+    document.getElementById('m-duree').value=m.duree_amort||3
+    onCatChange()
     document.getElementById('m-date').value=(m.date||'').slice(0,10)
     document.getElementById('m-notes').value=m.notes||''
     del.style.display='block'
@@ -1038,7 +1082,8 @@ window.saveMvt=async function(){
   const montant=parseFloat(document.getElementById('m-montant').value)
   if(!libelle){showToast('La description est obligatoire','err');return}
   if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
-  const data={type:_mvtType,categorie:document.getElementById('m-cat').value,libelle,montant,date:document.getElementById('m-date').value||new Date().toISOString().slice(0,10),notes:document.getElementById('m-notes').value.trim()||null}
+  const cat=document.getElementById('m-cat').value
+  const data={type:_mvtType,categorie:cat,libelle,montant,date:document.getElementById('m-date').value||new Date().toISOString().slice(0,10),notes:document.getElementById('m-notes').value.trim()||null,duree_amort:cat==='investissement'?(parseInt(document.getElementById('m-duree').value)||3):null}
   const id=document.getElementById('m-id').value
   let error
   if(id){({error}=await sb.from('mouvements').update(data).eq('id',id))}else{({error}=await sb.from('mouvements').insert(data))}
