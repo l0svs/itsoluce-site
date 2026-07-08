@@ -488,11 +488,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       </div>
       <div class="nhr"></div>
       <div class="ng">
-      <div class="ngl">Comptabilité</div>
-      <a href="/admin/finance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
-      </div>
-      <div class="nhr"></div>
-      <div class="ng">
       <div class="ngl">Communication</div>
       <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
       <a href="/admin/relances.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Relances</a>
@@ -1131,6 +1126,7 @@ function renderTable(){
       <td style="text-align:right;font-weight:600;">${Number(f.total||0).toFixed(2).replace('.',',')} €</td>
       <td><div class="actions" style="opacity:1;justify-content:flex-end;">
         <button class="act-btn" onclick="previewFacture(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="act-btn" onclick="exportPdfDirect(${f.id})" title="Télécharger le PDF"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg></button>
         <button class="act-btn" onclick="editFacture(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="act-btn del" onclick="deleteFacture(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div></td>
@@ -1360,6 +1356,19 @@ function buildTemplateHTML(f,forPdf){
       <div style="margin-top:10px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
     </div>
   </div>`
+}
+
+window.exportPdfDirect=async function(id){
+  const f=allFactures.find(x=>x.id===id)
+  if(!f)return
+  currentPdfDoc=f
+  showToast('Génération du PDF...','ok')
+  try{
+    const pdf=await genererPDFBlob()
+    pdf.save(`Facture_${f.numero||id}.pdf`)
+  }catch(e){
+    showToast('Erreur PDF : '+(e.message||e),'err')
+  }
 }
 
 window.previewFacture=function(id){
