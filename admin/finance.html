@@ -444,6 +444,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .rep-line.total{border-top:2px solid var(--ln2);margin-top:4px;padding-top:11px;}
 .rep-line.total span{font-weight:700;color:var(--t1);}.rep-line.total strong{font-size:16px;}
 .rep-warn{font-size:10px;color:#f59e0b;font-style:italic;margin-left:6px;}
+.rep-sub{font-size:10px;color:var(--t3);font-weight:400;display:block;}
 .f-aside-btn{align-self:flex-start;margin-top:8px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;background:#f59e0b;color:#fff;border:none;cursor:pointer;font-family:inherit;}
 .f-pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:26px;}
 .f-pocket{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:14px 15px;}
@@ -836,10 +837,6 @@ function render(){
   const depense=all.filter(x=>x.sens==='sortie').reduce((a,x)=>a+x.montant,0)
   const solde=encaisse-depense
 
-  // Nombre d'encaissements ce mois-ci (dynamique) pour répartir les charges
-  const now=new Date()
-  const nbEncMois=all.filter(x=>{const d=new Date(x.date);return x.sens==='entree'&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
-  window._nbRepaMois=Math.max(1,nbEncMois)
 
   document.getElementById('f-encaisse').textContent=EUR(encaisse)
   document.getElementById('f-encaisse').className='f3-val pos'
@@ -1161,18 +1158,22 @@ window.calcRepartition=function(){
   const res=document.getElementById('rep-result')
   const applyBtn=document.getElementById('rep-apply')
   if(recu<=0){res.innerHTML='';applyBtn.style.display='none';_repartition=null;return}
-  const nbRepa=window._nbRepaMois||1
   const chMens=window._chargesMensuel||0
   const reinvestPct=window._reinvestPct||10
   const benefice=recu-piece
-  const provImpots=Math.max(0,benefice)*(_provPct/100)
-  const partCharges=chMens/nbRepa
-  const reinvest=Math.max(0,benefice)*(reinvestPct/100)
-  const salaire=Math.max(0,benefice-provImpots-partCharges-reinvest)
   const pkImpots=_pockets.find(p=>/imp[oô]t/i.test(p.nom||''))
   const pkCharges=_pockets.find(p=>/charge/i.test(p.nom||''))
   const pkReinvest=_pockets.find(p=>/r[ée]invest|stock/i.test(p.nom||''))
   const pkSalaire=_pockets.find(p=>/salaire/i.test(p.nom||''))
+  // Répartition en cascade sur le bénéfice (jamais plus que disponible)
+  let reste=Math.max(0,benefice)
+  const provImpots=Math.min(reste,Math.max(0,benefice)*(_provPct/100)); reste-=provImpots
+  const soldeCharges=pkCharges?Number(pkCharges.solde||0):0
+  const chargesManque=Math.max(0,chMens-soldeCharges)
+  const partCharges=pkCharges?Math.min(reste,chargesManque):0; reste-=partCharges
+  const reinvest=Math.min(reste,Math.max(0,benefice)*(reinvestPct/100)); reste-=reinvest
+  const salaire=reste
+  const chargesNote=!pkCharges?'':(chargesManque<=0.005?'déjà couvertes ce mois ✓':`pour couvrir le mois (${EUR(chMens)})`)
   _repartition={
     lignes:[
       {pk:pkImpots,montant:provImpots},
@@ -1187,7 +1188,7 @@ window.calcRepartition=function(){
     <div class="rep-line"><span>− Pièce (à récupérer pour racheter)</span><strong>−${EUR(piece)}</strong></div>
     <div class="rep-line sep"><span>= Bénéfice</span><strong>${EUR(benefice)}</strong></div>
     <div class="rep-line"><span>→ Impôts (${_provPct}%)</span><strong style="color:#ef4444;">${EUR(provImpots)}</strong>${warn(pkImpots)}</div>
-    <div class="rep-line"><span>→ Charges (${EUR(chMens)}/mois ÷ ${nbRepa} ce mois)</span><strong style="color:#f59e0b;">${EUR(partCharges)}</strong>${warn(pkCharges)}</div>
+    <div class="rep-line"><span>→ Charges <span class="rep-sub">${chargesNote}</span></span><strong style="color:#f59e0b;">${EUR(partCharges)}</strong>${warn(pkCharges)}</div>
     <div class="rep-line"><span>→ Réinvestissement / stock (${reinvestPct}%)</span><strong style="color:#8b5cf6;">${EUR(reinvest)}</strong>${warn(pkReinvest)}</div>
     <div class="rep-line total"><span>→ Salaire (ce qu'il te reste)</span><strong style="color:#059669;">${EUR(salaire)}</strong>${warn(pkSalaire)}</div>`
   applyBtn.style.display=(pkImpots||pkCharges||pkReinvest||pkSalaire)?'block':'none'
