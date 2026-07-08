@@ -791,11 +791,11 @@ const repsActives=reps.filter(r=>!['rendu','annule'].includes(r.statut))
 // KPIs
 const kpis=[
   {label:'CA encaissé ce mois',val:caMonth.toFixed(0)+' €',sub:facturesPayees.length+' facture(s) payée(s)',color:'#10b981'},
-  {label:'Bénéfice net ce mois',val:beneficeNet.toFixed(0)+' €',sub:`marge ${margeMonth.toFixed(0)}€ − charges ${chargesMensuelles.toFixed(0)}€`,color:beneficeNet>=0?'#3b82f6':'#ef4444'},
+  {label:'Bénéfice net ce mois',val:beneficeNet.toFixed(0)+' €',sub:`marge ${margeMonth.toFixed(0)}€ − charges ${chargesMensuelles.toFixed(0)}€`,color:beneficeNet>=0?'#3b82f6':'#ef4444',link:'/admin/performance.html'},
   {label:'À encaisser',val:montantImpaye.toFixed(0)+' €',sub:facturesImpayees.length+' facture(s) en attente',color:'#f59e0b'},
   {label:'Réparations actives',val:repsActives.length,sub:'en cours de traitement',color:'#8b5cf6'}
 ]
-document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="dk"><div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div></div>`).join('')
+document.getElementById('kpis').innerHTML=kpis.map(k=>{const inner=`<div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div>`;return k.link?`<a href="${k.link}" class="dk" style="text-decoration:none;cursor:pointer;">${inner}</a>`:`<div class="dk">${inner}</div>`}).join('')
 
 // ─── PRÉPARATION DES LISTES ───
 const STATUT_REP={attente_reception:"En attente de réception de l'appareil",recu:'Reçu',attente:'Attente de pièce',encours:'En réparation',pret:'Prêt à récupérer',rendu:'Rendu',annule:'Annulé'}
@@ -923,7 +923,6 @@ function setBadge(id,val){const el=document.getElementById(id);if(el)el.textCont
 setBadge('nb-alert',alerts.length||'')
 setBadge('nb-rep',repsActives.length)
 setBadge('nb-four','')
-setBadge('nb-charges',charges.filter(c=>c.actif!==false).length)
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 
