@@ -595,8 +595,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg-sep">Détails</div>
     <div class="fg-row">
       <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission"/></div>
-      <div class="fg"><label>Statut</label><select id="f-statut"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
+      <div class="fg"><label>Statut</label><select id="f-statut" onchange="onStatutChange()"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
     </div>
+    <div class="fg" id="fg-date-paiement" style="display:none;"><label>Date de paiement (encaissement)</label><input type="date" id="f-date-paiement"/></div>
     <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option><option value="mixte">Mixte (carte + espèces)</option></select></div>
     <div class="fg" id="especes-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
       <label>Montant donné par le client (€)</label>
@@ -748,6 +749,10 @@ function calcTotaux(){
 }
 
 // Affiche/masque les zones selon le mode de paiement
+function onStatutChange(){
+  const st=document.getElementById('f-statut').value;
+  document.getElementById('fg-date-paiement').style.display=(st==='payee')?'block':'none';
+}
 function onPaiementChange(){
   const mode=document.getElementById('f-paiement').value;
   const boxEsp=document.getElementById('especes-box');
@@ -828,6 +833,8 @@ function openPanel(f){
   document.getElementById('f-acompte-type').value=f?(f.acompte_type||'euro'):'euro';
   document.getElementById('f-remise-type').value='euro';
   document.getElementById('f-statut').value=f?f.statut:'brouillon';
+  document.getElementById('f-date-paiement').value=f&&f.date_paiement?f.date_paiement.slice(0,10):new Date().toISOString().slice(0,10);
+  onStatutChange();
   document.getElementById('f-paiement').value=f?(f.mode_paiement||''):'';
   document.getElementById('f-montant-donne').value=f?(f.montant_donne||''):'';
   document.getElementById('f-mixte-carte').value=f?(f.montant_carte||''):'';
@@ -1179,6 +1186,7 @@ window.saveFacture=async function(){
     reparation_numero:repLink?repLink.numero:null,
     date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
     statut:document.getElementById('f-statut').value,
+    date_paiement:document.getElementById('f-statut').value==='payee'?(document.getElementById('f-date-paiement').value||new Date().toISOString().slice(0,10)):null,
     mode_paiement:document.getElementById('f-paiement').value||null,
     lignes:lignes,
     total:total,
