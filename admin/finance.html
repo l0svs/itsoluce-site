@@ -414,6 +414,49 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .m-tog-btn.on{background:var(--a);color:#fff;border-color:var(--a);}
 .btn-danger{background:rgba(248,113,113,0.12);color:#dc2626;border:1px solid rgba(248,113,113,0.3);}
 @media(max-width:640px){.f3{grid-template-columns:1fr;gap:10px;}.f-row-date{width:70px;}}
+.f-block-head{font-size:15px;font-weight:700;color:var(--t1);margin:8px 0 12px;}
+.f-months{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:26px;}
+.f-month{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:13px 15px;}
+.f-month-nom{font-size:12px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+.f-month-detail{font-size:11px;margin:6px 0 4px;display:flex;gap:8px;}
+.f-month-res{font-size:18px;font-weight:700;letter-spacing:-0.4px;}
+.f-month-res.pos,.f-month-detail .pos{color:#059669;}
+.f-month-res.neg,.f-month-detail .neg{color:#dc2626;}
+.f-cats{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+.f-cat{}
+.f-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.f-cat-nom{font-size:13px;font-weight:600;color:var(--t1);}
+.f-cat-sens{font-size:11px;color:var(--t3);font-weight:400;margin-left:4px;}
+.f-cat-val{font-size:14px;font-weight:700;color:var(--t1);}
+.f-cat-bar{height:8px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.f-cat-bar>div{height:100%;border-radius:99px;transition:width .4s;}
+.f-export-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);cursor:pointer;font-family:inherit;}
+.f-export-btn:hover{border-color:var(--a);color:var(--a);}
+.f-empty-sm{font-size:12px;color:var(--t3);padding:14px;text-align:center;background:var(--bg2);border:1px dashed var(--ln2);border-radius:10px;}
+.f-head-row{display:flex;align-items:baseline;justify-content:space-between;}
+.f-head-note{font-size:12px;color:var(--t3);font-weight:400;}
+.f-mini-btn{font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;background:var(--a);color:#fff;border:none;cursor:pointer;font-family:inherit;}
+.f-aside-btn{align-self:flex-start;margin-top:8px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;background:#f59e0b;color:#fff;border:none;cursor:pointer;font-family:inherit;}
+.f-pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:26px;}
+.f-pocket{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:14px 15px;}
+.f-pocket-top{display:flex;justify-content:space-between;align-items:center;}
+.f-pocket-nom{font-size:12px;font-weight:600;color:var(--t1);}
+.f-pocket-edit{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 4px;}
+.f-pocket-sol{font-size:22px;font-weight:700;color:var(--t1);margin:6px 0 3px;letter-spacing:-0.5px;}
+.f-pocket-obj{font-size:11px;color:var(--t3);}
+.f-pocket-bar{height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;margin:5px 0 8px;}
+.f-pocket-bar>div{height:100%;border-radius:99px;}
+.f-pocket-act{display:flex;gap:6px;margin-top:10px;}
+.f-pocket-act button{flex:1;font-size:11px;font-weight:600;padding:7px;border-radius:8px;background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);cursor:pointer;font-family:inherit;}
+.f-pocket-act button:hover{border-color:var(--a);color:var(--a);}
+.f-charges{display:flex;flex-direction:column;gap:8px;margin-bottom:26px;}
+.f-charge{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border:1px solid var(--ln);border-radius:11px;cursor:pointer;}
+.f-charge:hover{background:var(--bg3);}
+.f-charge.off{opacity:0.5;}
+.f-charge-main{display:flex;align-items:baseline;gap:8px;}
+.f-charge-lib{font-size:14px;font-weight:500;color:var(--t1);}
+.f-charge-freq{font-size:11px;color:var(--t3);}
+.f-charge-mnt{font-size:14px;font-weight:700;color:var(--t1);}
 </style>
 </head>
 <body>
@@ -504,16 +547,32 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="f3">
           <div class="f3-card"><div class="f3-label">Encaissé</div><div class="f3-val" id="f-encaisse">—</div><div class="f3-sub">payé par tes clients</div></div>
           <div class="f3-card"><div class="f3-label">Dépensé</div><div class="f3-val" id="f-depense">—</div><div class="f3-sub">pièces, charges, achats</div></div>
-          <div class="f3-card hl"><div class="f3-label">Il te reste</div><div class="f3-val" id="f-solde">—</div><div class="f3-sub">ton argent réel</div></div>
+          <div class="f3-card hl"><div class="f3-label">Il te reste</div><div class="f3-val" id="f-solde">—</div><div class="f3-sub" id="f-solde-sub">ton argent réel</div></div>
         </div>
 
         <!-- À METTRE DE CÔTÉ -->
         <div class="f-aside" id="f-aside"></div>
 
+        <!-- POCKETS -->
+        <div class="f-block-head f-head-row"><span>Mon argent mis de côté</span><button class="f-mini-btn" onclick="openPocket()">+ Nouveau pocket</button></div>
+        <div class="f-pockets" id="f-pockets"></div>
+
+        <!-- CHARGES -->
+        <div class="f-block-head f-head-row"><span>Charges fixes <span id="f-charges-tot" class="f-head-note"></span></span><button class="f-mini-btn" onclick="openCharge()">+ Ajouter</button></div>
+        <div class="f-charges" id="f-charges"></div>
+
+        <!-- VUE PAR MOIS -->
+        <div class="f-block-head">Résultat par mois</div>
+        <div class="f-months" id="f-months"></div>
+
+        <!-- RÉPARTITION PAR CATÉGORIE -->
+        <div class="f-block-head">Où va ton argent</div>
+        <div class="f-cats" id="f-cats"></div>
+
         <!-- LIVRE DE CAISSE -->
         <div class="f-ledger-head">
           <span>Livre de caisse</span>
-          <span class="f-ledger-hint">Tes factures payées apparaissent automatiquement</span>
+          <button class="f-export-btn" onclick="exportCSV()">Exporter (CSV)</button>
         </div>
         <div class="f-ledger" id="f-ledger"></div>
       </div>
@@ -542,6 +601,51 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <button class="btn btn-danger" id="m-delBtn" onclick="deleteMvt()" style="display:none;">Supprimer</button>
       <button class="btn btn-secondary" onclick="closeMvt()" style="flex:1;">Annuler</button>
       <button class="btn btn-primary" onclick="saveMvt()" style="flex:2;">Enregistrer</button>
+    </div>
+  </div>
+
+  <!-- PANEL POCKET -->
+  <div class="panel-overlay" id="pocketOverlay" onclick="closePocket()"></div>
+  <div class="panel" id="pocketPanel">
+    <div class="panel-head"><span id="pocketTitle">Nouveau pocket</span><button onclick="closePocket()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;">&times;</button></div>
+    <div class="panel-body">
+      <input type="hidden" id="p-id"/>
+      <div class="fg"><label>Nom du pocket *</label><input type="text" id="p-nom" placeholder="Ex : Provision impôts, Réinvestissement..."/></div>
+      <div class="fg"><label>Objectif (€) — optionnel</label><input type="number" step="0.01" id="p-objectif" placeholder="Ex : 500"/></div>
+      <div class="fg"><label>Couleur</label><select id="p-couleur">
+        <option value="#ef4444">Rouge</option>
+        <option value="#f59e0b">Orange</option>
+        <option value="#0052CC">Bleu</option>
+        <option value="#8b5cf6">Violet</option>
+        <option value="#059669">Vert</option>
+      </select></div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-danger" id="p-delBtn" onclick="deletePocket()" style="display:none;">Supprimer</button>
+      <button class="btn btn-secondary" onclick="closePocket()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="savePocket()" style="flex:2;">Enregistrer</button>
+    </div>
+  </div>
+
+  <!-- PANEL CHARGE -->
+  <div class="panel-overlay" id="chargeOverlay" onclick="closeCharge()"></div>
+  <div class="panel" id="chargePanel">
+    <div class="panel-head"><span id="chargeTitle">Nouvelle charge</span><button onclick="closeCharge()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;">&times;</button></div>
+    <div class="panel-body">
+      <input type="hidden" id="c-id"/>
+      <div class="fg"><label>Libellé *</label><input type="text" id="c-libelle" placeholder="Ex : Accountable, UCM, Domaine OVH..."/></div>
+      <div class="fg"><label>Montant (€) *</label><input type="number" step="0.01" id="c-montant" placeholder="0.00"/></div>
+      <div class="fg"><label>Fréquence</label><select id="c-freq">
+        <option value="mensuelle">Mensuelle</option>
+        <option value="trimestrielle">Trimestrielle</option>
+        <option value="annuelle">Annuelle</option>
+      </select></div>
+      <div class="fg"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="c-actif" checked style="width:auto;"/> Charge active</label></div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-danger" id="c-delBtn" onclick="deleteCharge()" style="display:none;">Supprimer</button>
+      <button class="btn btn-secondary" onclick="closeCharge()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="saveCharge()" style="flex:2;">Enregistrer</button>
     </div>
   </div>
 
@@ -665,16 +769,20 @@ const EUR=n=>Number(n||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximu
 const CATS_SORTIE={piece:'Pièce',charge:'Charge fixe',materiel:'Matériel',salaire:'Salaire',autre:'Autre'}
 const CATS_ENTREE={encaissement:'Encaissement',apport:'Apport',autre:'Autre'}
 const CATCOL={encaissement:'#059669',piece:'#3b82f6',charge:'#f59e0b',materiel:'#8b5cf6',salaire:'#ec4899',apport:'#0ea5e9',autre:'#6b7280'}
-let _mvts=[], _factures=[], _provPct=35, _mvtType='sortie'
+let _mvts=[], _factures=[], _provPct=35, _mvtType='sortie', _charges=[], _pockets=[]
 
 async function load(){
-  const [facturesR, mvtR, settingsR]=await Promise.all([
+  const [facturesR, mvtR, settingsR, chargesR, pocketsR]=await Promise.all([
     sb.from('factures').select('*'),
     sb.from('mouvements').select('*').order('date',{ascending:false}),
-    sb.from('settings').select('*')
+    sb.from('settings').select('*'),
+    sb.from('charges').select('*').order('montant',{ascending:false}),
+    sb.from('pockets').select('*').order('created_at',{ascending:true})
   ])
   _factures=(facturesR.data||[]).filter(f=>['payee','payée'].includes((f.statut||'').toLowerCase()))
   _mvts=mvtR.data||[]
+  _charges=chargesR.data||[]
+  _pockets=pocketsR.data||[]
   const settings=settingsR.data||[]
   _provPct=Number((settings.find(s=>s.cle==='provision_pct')||{}).valeur||35)||35
   render()
@@ -710,17 +818,117 @@ function render(){
   soldeEl.textContent=EUR(solde)
   soldeEl.className='f3-val '+(solde>=0?'pos':'neg')
 
-  // À mettre de côté (impôts sur le bénéfice)
+  // Répartition du solde : mis de côté (pockets) vs disponible
+  const misDeCote=_pockets.reduce((a,p)=>a+Number(p.solde||0),0)
+  const disponible=solde-misDeCote
+  document.getElementById('f-solde-sub').innerHTML=misDeCote>0
+    ? `dont ${EUR(misDeCote)} mis de côté · <strong>${EUR(disponible)} dispo</strong>`
+    : 'ton argent réel'
+
+  // À mettre de côté (impôts sur le bénéfice) — calcul automatique
   const pieces=all.filter(x=>x.categorie==='piece').reduce((a,x)=>a+x.montant,0)
   const chargesP=all.filter(x=>x.categorie==='charge').reduce((a,x)=>a+x.montant,0)
   const benefice=encaisse-pieces-chargesP
   const provImpots=Math.max(0,benefice)*(_provPct/100)
+  // pocket de provision impôts (repéré par son nom)
+  const pkImpots=_pockets.find(p=>/imp[oô]t/i.test(p.nom||''))
+  const dejaImpots=pkImpots?Number(pkImpots.solde||0):0
+  const manqueImpots=Math.max(0,provImpots-dejaImpots)
   document.getElementById('f-aside').innerHTML=`
     <div class="f-aside-ico">!</div>
     <div class="f-aside-txt">
       <strong>À mettre de côté pour les impôts : ${EUR(provImpots)}</strong>
-      <span>Sur ton bénéfice de ${EUR(benefice)}, garde ${_provPct}% pour tes impôts et cotisations. Ne touche pas à cette part.</span>
+      <span>Sur ton bénéfice de ${EUR(benefice)}, garde ${_provPct}% pour tes impôts et cotisations.${pkImpots?(manqueImpots>0.5?` Il manque ${EUR(manqueImpots)} dans ta provision.`:' Ta provision est à jour.'):' Crée un pocket « Provision impôts » pour le suivre.'}</span>
+      ${pkImpots&&manqueImpots>0.5?`<button class="f-aside-btn" onclick="alimenterProvision(${manqueImpots})">Mettre ${EUR(manqueImpots)} de côté →</button>`:''}
     </div>`
+
+  // POCKETS
+  const pkEl=document.getElementById('f-pockets')
+  if(pkEl){
+    pkEl.innerHTML=_pockets.length===0
+      ? '<div class="f-empty-sm">Aucun pocket. Crée-en un pour mettre de l\'argent de côté (provision impôts, réinvestissement...).</div>'
+      : _pockets.map(p=>{
+          const sol=Number(p.solde||0), obj=Number(p.objectif||0)
+          const pct=obj>0?Math.min(100,Math.round(sol/obj*100)):0
+          const col=p.couleur||'#0052CC'
+          return `<div class="f-pocket" style="border-left:3px solid ${col};">
+            <div class="f-pocket-top"><span class="f-pocket-nom">${p.nom}</span><button class="f-pocket-edit" onclick="openPocket('${p.id}')">⋯</button></div>
+            <div class="f-pocket-sol">${EUR(sol)}</div>
+            ${obj>0?`<div class="f-pocket-obj">sur ${EUR(obj)} · ${pct}%</div><div class="f-pocket-bar"><div style="width:${pct}%;background:${col};"></div></div>`:''}
+            <div class="f-pocket-act"><button onclick="pocketMove('${p.id}','in')">+ Ajouter</button><button onclick="pocketMove('${p.id}','out')">− Retirer</button></div>
+          </div>`
+        }).join('')
+  }
+
+  // CHARGES
+  let chargesMensuel=0
+  _charges.filter(c=>c.actif!==false).forEach(c=>{
+    const m=Number(c.montant||0), f=(c.frequence||'mensuelle').toLowerCase()
+    if(f==='annuelle')chargesMensuel+=m/12; else if(f==='trimestrielle')chargesMensuel+=m/3; else chargesMensuel+=m
+  })
+  const totEl=document.getElementById('f-charges-tot')
+  if(totEl)totEl.textContent=chargesMensuel>0?`· ${EUR(chargesMensuel)}/mois`:''
+  const chEl=document.getElementById('f-charges')
+  if(chEl){
+    chEl.innerHTML=_charges.length===0
+      ? '<div class="f-empty-sm">Aucune charge. Ajoute tes frais récurrents (Accountable, UCM, domaine...).</div>'
+      : _charges.map(c=>{
+          const actif=c.actif!==false
+          const freqLbl={mensuelle:'/mois',trimestrielle:'/trim',annuelle:'/an'}[(c.frequence||'mensuelle').toLowerCase()]||''
+          return `<div class="f-charge ${actif?'':'off'}" onclick="openCharge('${c.id}')">
+            <div class="f-charge-main"><span class="f-charge-lib">${c.libelle||''}</span><span class="f-charge-freq">${freqLbl}</span></div>
+            <span class="f-charge-mnt">${EUR(c.montant)}</span>
+          </div>`
+        }).join('')
+  }
+
+  // VUE PAR MOIS
+  const moisNoms=['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc']
+  const parMois={}
+  all.forEach(x=>{
+    const d=new Date(x.date)
+    const key=d.getFullYear()+'-'+String(d.getMonth()).padStart(2,'0')
+    if(!parMois[key])parMois[key]={annee:d.getFullYear(),mois:d.getMonth(),rec:0,dep:0}
+    if(x.sens==='entree')parMois[key].rec+=x.montant; else parMois[key].dep+=x.montant
+  })
+  const moisTries=Object.values(parMois).sort((a,b)=>(b.annee-a.annee)||(b.mois-a.mois)).slice(0,12)
+  const moisEl=document.getElementById('f-months')
+  if(moisEl){
+    moisEl.innerHTML=moisTries.length===0
+      ? '<div class="f-empty-sm">Aucune donnée. Les mois apparaîtront au fil de ton activité.</div>'
+      : moisTries.map(m=>{
+          const res=m.rec-m.dep
+          return `<div class="f-month">
+            <div class="f-month-nom">${moisNoms[m.mois]} ${m.annee}</div>
+            <div class="f-month-detail"><span class="pos">+${EUR(m.rec)}</span> <span class="neg">−${EUR(m.dep)}</span></div>
+            <div class="f-month-res ${res>=0?'pos':'neg'}">${res>=0?'+':''}${EUR(res)}</div>
+          </div>`
+        }).join('')
+  }
+
+  // RÉPARTITION PAR CATÉGORIE
+  const parCat={}
+  all.forEach(x=>{
+    const k=x.sens+'|'+x.categorie
+    if(!parCat[k])parCat[k]={sens:x.sens,cat:x.categorie,total:0}
+    parCat[k].total+=x.montant
+  })
+  const catLbl=c=>(CATS_SORTIE[c]||CATS_ENTREE[c]||c)
+  const catsTri=Object.values(parCat).sort((a,b)=>b.total-a.total)
+  const maxCat=Math.max(...catsTri.map(c=>c.total),1)
+  const catsEl=document.getElementById('f-cats')
+  if(catsEl){
+    catsEl.innerHTML=catsTri.length===0
+      ? '<div class="f-empty-sm">Aucune donnée pour l\'instant.</div>'
+      : catsTri.map(c=>{
+          const col=CATCOL[c.cat]||'#6b7280'
+          const pct=Math.round(c.total/maxCat*100)
+          return `<div class="f-cat">
+            <div class="f-cat-top"><span class="f-cat-nom">${catLbl(c.cat)} <span class="f-cat-sens">${c.sens==='entree'?'recette':'dépense'}</span></span><span class="f-cat-val">${EUR(c.total)}</span></div>
+            <div class="f-cat-bar"><div style="width:${pct}%;background:${col};"></div></div>
+          </div>`
+        }).join('')
+  }
 
   // Livre de caisse
   const led=document.getElementById('f-ledger')
@@ -799,6 +1007,136 @@ window.deleteMvt=async function(){
   if(error){showToast('Erreur : '+error.message,'err');return}
   showToast('Supprimé ✓','ok');closeMvt();await load()
 }
+// ── POCKETS ──
+window.openPocket=function(id){
+  const o=document.getElementById('pocketOverlay'),p=document.getElementById('pocketPanel'),del=document.getElementById('p-delBtn')
+  if(id){
+    const pk=_pockets.find(x=>String(x.id)===String(id));if(!pk)return
+    document.getElementById('pocketTitle').textContent='Modifier le pocket'
+    document.getElementById('p-id').value=pk.id
+    document.getElementById('p-nom').value=pk.nom||''
+    document.getElementById('p-objectif').value=pk.objectif||''
+    document.getElementById('p-couleur').value=pk.couleur||'#ef4444'
+    del.style.display='block'
+  } else {
+    document.getElementById('pocketTitle').textContent='Nouveau pocket'
+    document.getElementById('p-id').value=''
+    document.getElementById('p-nom').value=''
+    document.getElementById('p-objectif').value=''
+    document.getElementById('p-couleur').value='#ef4444'
+    del.style.display='none'
+  }
+  o.classList.add('open');p.classList.add('open')
+}
+window.closePocket=function(){document.getElementById('pocketPanel').classList.remove('open');document.getElementById('pocketOverlay').classList.remove('open')}
+window.savePocket=async function(){
+  const nom=document.getElementById('p-nom').value.trim()
+  if(!nom){showToast('Le nom est obligatoire','err');return}
+  const objectif=parseFloat(document.getElementById('p-objectif').value)
+  const data={nom,objectif:isNaN(objectif)?null:objectif,couleur:document.getElementById('p-couleur').value}
+  const id=document.getElementById('p-id').value
+  let error
+  if(id){({error}=await sb.from('pockets').update(data).eq('id',id))}else{({error}=await sb.from('pockets').insert({...data,solde:0}))}
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Pocket enregistré ✓','ok');closePocket();await load()
+}
+window.deletePocket=async function(){
+  const id=document.getElementById('p-id').value;if(!id)return
+  if(!confirm('Supprimer ce pocket ?'))return
+  const {error}=await sb.from('pockets').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Pocket supprimé ✓','ok');closePocket();await load()
+}
+window.pocketMove=async function(id,sens){
+  const pk=_pockets.find(x=>String(x.id)===String(id));if(!pk)return
+  const saisie=prompt(sens==='in'?`Combien ajouter dans "${pk.nom}" ? (€)`:`Combien retirer de "${pk.nom}" ? (€)`)
+  if(saisie===null)return
+  const montant=parseFloat(saisie)
+  if(isNaN(montant)||montant<=0){showToast('Montant invalide','err');return}
+  const nouveau=sens==='in'?Number(pk.solde||0)+montant:Number(pk.solde||0)-montant
+  if(nouveau<0){showToast('Le pocket ne peut pas être négatif','err');return}
+  const {error}=await sb.from('pockets').update({solde:nouveau}).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Pocket mis à jour ✓','ok');await load()
+}
+window.alimenterProvision=async function(montant){
+  const pk=_pockets.find(p=>/imp[oô]t/i.test(p.nom||''))
+  if(!pk){showToast('Crée d\'abord un pocket « Provision impôts »','err');return}
+  if(!confirm(`Mettre ${montant.toFixed(2)} € de côté dans "${pk.nom}" ?`))return
+  const {error}=await sb.from('pockets').update({solde:Number(pk.solde||0)+montant}).eq('id',pk.id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Provision alimentée ✓','ok');await load()
+}
+
+// ── CHARGES ──
+window.openCharge=function(id){
+  const o=document.getElementById('chargeOverlay'),p=document.getElementById('chargePanel'),del=document.getElementById('c-delBtn')
+  if(id){
+    const c=_charges.find(x=>String(x.id)===String(id));if(!c)return
+    document.getElementById('chargeTitle').textContent='Modifier la charge'
+    document.getElementById('c-id').value=c.id
+    document.getElementById('c-libelle').value=c.libelle||''
+    document.getElementById('c-montant').value=c.montant||''
+    document.getElementById('c-freq').value=(c.frequence||'mensuelle').toLowerCase()
+    document.getElementById('c-actif').checked=c.actif!==false
+    del.style.display='block'
+  } else {
+    document.getElementById('chargeTitle').textContent='Nouvelle charge'
+    document.getElementById('c-id').value=''
+    document.getElementById('c-libelle').value=''
+    document.getElementById('c-montant').value=''
+    document.getElementById('c-freq').value='mensuelle'
+    document.getElementById('c-actif').checked=true
+    del.style.display='none'
+  }
+  o.classList.add('open');p.classList.add('open')
+}
+window.closeCharge=function(){document.getElementById('chargePanel').classList.remove('open');document.getElementById('chargeOverlay').classList.remove('open')}
+window.saveCharge=async function(){
+  const libelle=document.getElementById('c-libelle').value.trim()
+  const montant=parseFloat(document.getElementById('c-montant').value)
+  if(!libelle){showToast('Le libellé est obligatoire','err');return}
+  if(isNaN(montant)||montant<0){showToast('Montant invalide','err');return}
+  const data={libelle,montant,frequence:document.getElementById('c-freq').value,actif:document.getElementById('c-actif').checked}
+  const id=document.getElementById('c-id').value
+  let error
+  if(id){({error}=await sb.from('charges').update(data).eq('id',id))}else{({error}=await sb.from('charges').insert(data))}
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Charge enregistrée ✓','ok');closeCharge();await load()
+}
+window.deleteCharge=async function(){
+  const id=document.getElementById('c-id').value;if(!id)return
+  if(!confirm('Supprimer cette charge ?'))return
+  const {error}=await sb.from('charges').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Charge supprimée ✓','ok');closeCharge();await load()
+}
+
+window.exportCSV=function(){
+  const all=tousLesMouvements()
+  if(all.length===0){showToast('Aucun mouvement à exporter','err');return}
+  const catLbl=c=>(CATS_SORTIE[c]||CATS_ENTREE[c]||c)
+  const lignes=[['Date','Description','Catégorie','Type','Montant (EUR)']]
+  all.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(x=>{
+    lignes.push([
+      new Date(x.date).toLocaleDateString('fr-BE'),
+      (x.libelle||'').replace(/"/g,'""'),
+      catLbl(x.categorie),
+      x.sens==='entree'?'Recette':'Dépense',
+      (x.sens==='entree'?'':'-')+Number(x.montant||0).toFixed(2)
+    ])
+  })
+  const csv=lignes.map(l=>l.map(c=>`"${c}"`).join(';')).join('\r\n')
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a')
+  a.href=url
+  a.download='finances-itsoluce-'+new Date().toISOString().slice(0,10)+'.csv'
+  document.body.appendChild(a);a.click();document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+  showToast('Export téléchargé ✓','ok')
+}
+
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()})
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
