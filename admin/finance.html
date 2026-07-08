@@ -675,6 +675,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
+  <!-- PANEL DATE PAIEMENT FACTURE -->
+  <div class="panel-overlay" id="fpOverlay" onclick="closeFacturePaiement()"></div>
+  <div class="panel" id="fpPanel">
+    <div class="panel-head"><span>Date de paiement</span><button onclick="closeFacturePaiement()" style="background:var(--bg3);border:none;width:30px;height:30px;border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;">&times;</button></div>
+    <div class="panel-body">
+      <input type="hidden" id="fp-id"/>
+      <p style="font-size:13px;color:var(--t2);margin:0 0 14px;line-height:1.5;" id="fp-info"></p>
+      <div class="fg"><label>Date où tu as reçu le paiement</label><input type="date" id="fp-date"/></div>
+      <p style="font-size:12px;color:var(--t3);margin:10px 0 0;line-height:1.5;">Cette date détermine dans quel mois l'encaissement est compté. Pour changer le montant ou le reste, va dans la page Factures.</p>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary" onclick="closeFacturePaiement()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="saveFacturePaiement()" style="flex:2;">Enregistrer</button>
+    </div>
+  </div>
+
   
 <div class="toast" id="toast"></div>
 
@@ -819,7 +835,7 @@ async function load(){
 
 function tousLesMouvements(){
   const auto=_factures.map(f=>({
-    key:'f'+f.id, date:f.date_paiement||f.date||f.date_emission||f.created_at,
+    key:'f'+f.id, factureId:f.id, date:f.date_paiement||f.date||f.date_emission||f.created_at,
     libelle:'Facture '+(f.numero||'')+(f.client_nom?(' — '+f.client_nom):''),
     categorie:'encaissement', montant:Number(f.total||0), sens:'entree', auto:true
   }))
@@ -970,7 +986,7 @@ function render(){
     const dt=new Date(x.date).toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
     const col=CATCOL[x.categorie]||'#6b7280'
     const entree=x.sens==='entree'
-    const click=x.auto?'':`onclick="openMvt(null,'${x.id}')" style="cursor:pointer;"`
+    const click=x.auto?`onclick="openFacturePaiement('${x.factureId}')" style="cursor:pointer;"`:`onclick="openMvt(null,'${x.id}')" style="cursor:pointer;"`
     return `<div class="f-row" ${click}>
       <div class="f-row-date">${dt}</div>
       <div class="f-row-main">
@@ -1217,6 +1233,26 @@ window.editPourcentages=async function(){
   const {error}=await sb.from('settings').upsert([{cle:'provision_pct',valeur:String(v1)},{cle:'reinvest_pct',valeur:String(v2)}],{onConflict:'cle'})
   if(error){showToast('Erreur : '+error.message,'err');return}
   showToast('Pourcentages mis à jour ✓','ok');calcRepartition();await load()
+}
+
+// ── DATE DE PAIEMENT D'UNE FACTURE (depuis le livre de caisse) ──
+window.openFacturePaiement=function(factureId){
+  const f=_factures.find(x=>String(x.id)===String(factureId));if(!f)return
+  document.getElementById('fp-id').value=f.id
+  document.getElementById('fp-info').textContent='Facture '+(f.numero||'')+(f.client_nom?(' — '+f.client_nom):'')+' · '+EUR(Number(f.total||0))
+  const d=f.date_paiement||f.date||f.date_emission||f.created_at
+  document.getElementById('fp-date').value=d?String(d).slice(0,10):new Date().toISOString().slice(0,10)
+  document.getElementById('fpOverlay').classList.add('open')
+  document.getElementById('fpPanel').classList.add('open')
+}
+window.closeFacturePaiement=function(){document.getElementById('fpPanel').classList.remove('open');document.getElementById('fpOverlay').classList.remove('open')}
+window.saveFacturePaiement=async function(){
+  const id=document.getElementById('fp-id').value
+  const date=document.getElementById('fp-date').value
+  if(!id||!date){showToast('Date invalide','err');return}
+  const {error}=await sb.from('factures').update({date_paiement:date}).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  showToast('Date de paiement mise à jour ✓','ok');closeFacturePaiement();await load()
 }
 
 window.exportCSV=function(){
