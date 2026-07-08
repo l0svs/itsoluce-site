@@ -819,7 +819,7 @@ async function load(){
 
 function tousLesMouvements(){
   const auto=_factures.map(f=>({
-    key:'f'+f.id, date:f.date||f.created_at,
+    key:'f'+f.id, date:f.date_paiement||f.date||f.date_emission||f.created_at,
     libelle:'Facture '+(f.numero||'')+(f.client_nom?(' — '+f.client_nom):''),
     categorie:'encaissement', montant:Number(f.total||0), sens:'entree', auto:true
   }))
