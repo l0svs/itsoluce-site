@@ -661,7 +661,6 @@ function showError(msg){document.getElementById('ldr').style.display='none';docu
 try {
 
 const EUR=n=>Number(n||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'
-const EUR0=n=>Math.round(Number(n||0)).toLocaleString('fr-BE')+' €'
 let _charges=[]
 
 async function load(){
@@ -696,10 +695,10 @@ async function load(){
 
   // ── KPIs ──
   const kpis=[
-    {label:'CA encaissé ce mois',val:EUR0(caMois),sub:now.toLocaleDateString('fr-BE',{month:'long',year:'numeric'}),col:'#059669'},
-    {label:'CA encaissé total',val:EUR0(caTotal),sub:nbPayees+' facture(s) payée(s)',col:'#0052CC'},
-    {label:'Panier moyen',val:EUR0(panierMoyen),sub:'par facture payée',col:'#8b5cf6'},
-    {label:'Charges fixes',val:EUR0(chargesMensuel)+'/mois',sub:_charges.filter(c=>c.actif!==false).length+' charge(s) active(s)',col:'#f59e0b'}
+    {label:'CA encaissé ce mois',val:EUR(caMois),sub:now.toLocaleDateString('fr-BE',{month:'long',year:'numeric'}),col:'#059669'},
+    {label:'CA encaissé total',val:EUR(caTotal),sub:nbPayees+' facture(s) payée(s)',col:'#0052CC'},
+    {label:'Panier moyen',val:EUR(panierMoyen),sub:'par facture payée',col:'#8b5cf6'},
+    {label:'Charges fixes',val:EUR(chargesMensuel)+'/mois',sub:_charges.filter(c=>c.actif!==false).length+' charge(s) active(s)',col:'#f59e0b'}
   ]
   document.getElementById('pf-kpis').innerHTML=kpis.map(k=>`
     <div class="pf-kpi" style="border-top:3px solid ${k.col};">
@@ -723,7 +722,7 @@ async function load(){
   document.getElementById('pf-chart').innerHTML=bars.map(b=>{
     const h=Math.round(b.ca/maxCa*100)
     return `<div class="pf-bar-col">
-      <div class="pf-bar-val">${b.ca>0?EUR0(b.ca):''}</div>
+      <div class="pf-bar-val">${b.ca>0?EUR(b.ca):''}</div>
       <div class="pf-bar-wrap"><div class="pf-bar" style="height:${h}%;"></div></div>
       <div class="pf-bar-lbl">${b.nom}</div>
     </div>`
@@ -735,7 +734,7 @@ async function load(){
   document.getElementById('pf-seuil').innerHTML=`
     <div class="pf-seuil-txt">
       <span>Pour couvrir tes charges, il te faut <strong>${EUR(chargesMensuel)}</strong> de CA par mois.</span>
-      <span class="${atteint?'pf-ok':'pf-warn'}">${atteint?`✓ Atteint ce mois (${EUR0(caMois)} encaissés)`:`Ce mois : ${EUR0(caMois)} / ${EUR0(chargesMensuel)} (${pct}%)`}</span>
+      <span class="${atteint?'pf-ok':'pf-warn'}">${atteint?`✓ Atteint ce mois (${EUR(caMois)} encaissés)`:`Ce mois : ${EUR(caMois)} / ${EUR(chargesMensuel)} (${pct}%)`}</span>
     </div>
     <div class="pf-seuil-bar"><div style="width:${pct}%;background:${atteint?'#059669':'#f59e0b'};"></div></div>`
 

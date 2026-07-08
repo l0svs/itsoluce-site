@@ -1083,9 +1083,9 @@ function updateKPIs(){
     if(f.statut!=='envoyee'||!f.date_echeance)return false
     return new Date(f.date_echeance)<now
   }).reduce((a,f)=>a+Number(f.total||0),0)
-  document.getElementById('k-paye').textContent=paye.toFixed(0)+'€'
-  document.getElementById('k-attente').textContent=attente.toFixed(0)+'€'
-  document.getElementById('k-retard').textContent=retard.toFixed(0)+'€'
+  document.getElementById('k-paye').textContent=paye.toFixed(2)+'€'
+  document.getElementById('k-attente').textContent=attente.toFixed(2)+'€'
+  document.getElementById('k-retard').textContent=retard.toFixed(2)+'€'
   document.getElementById('k-total').textContent=allFactures.length
   document.getElementById('ph-sub').textContent=`${allFactures.length} facture${allFactures.length>1?'s':''}`
 }

@@ -719,7 +719,7 @@ function renderAll(){
   const now=new Date()
   const newCli=allClients.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
   document.getElementById('k-total').textContent=total
-  document.getElementById('k-ca').textContent=ca.toFixed(0)+'€'
+  document.getElementById('k-ca').textContent=ca.toFixed(2)+'€'
   document.getElementById('k-moy').textContent=moy
   document.getElementById('k-new').textContent=newCli
   document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`;
@@ -737,7 +737,7 @@ window.renderTable=function(){
   tbody.innerHTML=rows.map(c=>{
     const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
     const repsCount=c.reps_count||c.reps?.length||0
-    const ca=(c.ca||0).toFixed(0)
+    const ca=(c.ca||0).toFixed(2)
     const last=c.last_rep||c.created_at
     const date=last?new Date(last).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'-'
     return`<tr style="cursor:pointer;" onclick="showDetail(${c.id})">
@@ -774,7 +774,7 @@ window.showDetail=function(id){
     <div class="dp-sub">${c.numero?`<span style="font-family:monospace;color:var(--a);font-weight:600;">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
     <div class="dp-stat">
       <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${reps.length}</div></div>
-      <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(0)}€</div></div>
+      <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(2)}€</div></div>
     </div>
     <div style="margin-top:8px;">
       <div class="dp-field"><div class="dp-fl">Email</div><div class="dp-fv">${c.email||'—'}</div></div>
@@ -787,7 +787,7 @@ window.showDetail=function(id){
       <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Historique réparations</div>
       ${reps.map(r=>`<div class="dp-hist-item">
         <div style="font-size:12px;color:var(--t1);">${r.statut||'—'}</div>
-        <div style="font-size:11px;color:var(--t3);">${new Date(r.created_at).toLocaleDateString('fr-BE')} · ${Number(r.prix_final||0).toFixed(0)}€</div>
+        <div style="font-size:11px;color:var(--t3);">${new Date(r.created_at).toLocaleDateString('fr-BE')} · ${Number(r.prix_final||0).toFixed(2)}€</div>
       </div>`).join('')}
     </div>`:''}
     <div style="margin-top:16px;display:flex;gap:8px;">

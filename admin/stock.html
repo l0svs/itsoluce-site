@@ -1021,7 +1021,7 @@ function updateKPIs(){
   document.getElementById('k-total').textContent=total
   document.getElementById('k-alertes').textContent=alertes
   document.getElementById('k-ruptures').textContent=ruptures
-  document.getElementById('k-valeur').textContent=valeur.toFixed(0)+'€'
+  document.getElementById('k-valeur').textContent=valeur.toFixed(2)+'€'
   document.getElementById('ph-sub').textContent=`${total} pièce${total>1?'s':''} référencée${total>1?'s':''}`
   const nb=document.getElementById('nb-stock')
   const tot=alertes+ruptures

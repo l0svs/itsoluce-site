@@ -790,9 +790,9 @@ const repsActives=reps.filter(r=>!['rendu','annule'].includes(r.statut))
 
 // KPIs
 const kpis=[
-  {label:'CA encaissé ce mois',val:caMonth.toFixed(0)+' €',sub:facturesPayees.length+' facture(s) payée(s)',color:'#10b981'},
-  {label:'Bénéfice net ce mois',val:beneficeNet.toFixed(0)+' €',sub:`marge ${margeMonth.toFixed(0)}€ − charges ${chargesMensuelles.toFixed(0)}€`,color:beneficeNet>=0?'#3b82f6':'#ef4444',link:'/admin/performance.html'},
-  {label:'À encaisser',val:montantImpaye.toFixed(0)+' €',sub:facturesImpayees.length+' facture(s) en attente',color:'#f59e0b'},
+  {label:'CA encaissé ce mois',val:caMonth.toFixed(2)+' €',sub:facturesPayees.length+' facture(s) payée(s)',color:'#10b981'},
+  {label:'Bénéfice net ce mois',val:beneficeNet.toFixed(2)+' €',sub:`marge ${margeMonth.toFixed(2)}€ − charges ${chargesMensuelles.toFixed(2)}€`,color:beneficeNet>=0?'#3b82f6':'#ef4444',link:'/admin/performance.html'},
+  {label:'À encaisser',val:montantImpaye.toFixed(2)+' €',sub:facturesImpayees.length+' facture(s) en attente',color:'#f59e0b'},
   {label:'Réparations actives',val:repsActives.length,sub:'en cours de traitement',color:'#8b5cf6'}
 ]
 document.getElementById('kpis').innerHTML=kpis.map(k=>{const inner=`<div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div>`;return k.link?`<a href="${k.link}" class="dk" style="text-decoration:none;cursor:pointer;">${inner}</a>`:`<div class="dk">${inner}</div>`}).join('')
@@ -863,7 +863,7 @@ if(facturesImpayees.length===0)cardFac=emptyCard('✓','Aucune facture en attent
 else cardFac=facturesImpayees.sort((a,b)=>new Date(a.date_emission)-new Date(b.date_emission)).slice(0,6).map(f=>{
   const retard=f.date_echeance&&new Date(f.date_echeance)<today
   const dStr=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${f.client_nom||'—'} <span class="dnum">${f.numero}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${Number(f.total||0).toFixed(0)} €</div></div></a>`
+  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${f.client_nom||'—'} <span class="dnum">${f.numero}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${Number(f.total||0).toFixed(2)} €</div></div></a>`
 }).join('')
 
 // CARTE : Devis en attente
@@ -871,7 +871,7 @@ let cardDevis=''
 if(devisAttente.length===0)cardDevis=emptyCard('📄','Aucun devis en attente')
 else cardDevis=devisAttente.map(d=>{
   const dStr=new Date(d.date_emission||d.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${d.client_nom||'—'} <span class="dnum">${d.numero}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(0)} €</div></div></a>`
+  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${d.client_nom||'—'} <span class="dnum">${d.numero}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(2)} €</div></div></a>`
 }).join('')
 
 // ─── ASSEMBLAGE DE LA GRILLE ───
@@ -883,7 +883,7 @@ grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg 
 grid+='</div>'
 // Colonne droite : Factures + Devis + Tâches
 grid+='<div style="display:flex;flex-direction:column;gap:14px;">'
-grid+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${montantImpaye.toFixed(0)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
+grid+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${montantImpaye.toFixed(2)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
 grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis en attente</div><a href="/admin/devis.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardDevis}</div></div>`
 grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches urgentes</div><a href="/admin/taches.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardTaches}</div></div>`
 grid+='</div>'

@@ -995,8 +995,8 @@ function updateKPIs(){
   const nbEnvoyes=allDevis.filter(f=>['envoye','accepte','refuse'].includes(f.statut)).length
   const nbAcceptes=allDevis.filter(f=>f.statut==='accepte').length
   const taux=nbEnvoyes>0?Math.round((nbAcceptes/nbEnvoyes)*100):0
-  document.getElementById('k-paye').textContent=accepteMois.toFixed(0)+'€'
-  document.getElementById('k-attente').textContent=attente.toFixed(0)+'€'
+  document.getElementById('k-paye').textContent=accepteMois.toFixed(2)+'€'
+  document.getElementById('k-attente').textContent=attente.toFixed(2)+'€'
   document.getElementById('k-retard').textContent=taux+'%'
   document.getElementById('k-total').textContent=allDevis.length
   document.getElementById('ph-sub').textContent=`${allDevis.length} devis`

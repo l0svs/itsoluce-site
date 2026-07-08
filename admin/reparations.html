@@ -1042,9 +1042,9 @@ function updateKPIs(){
   const marge=ca-coutPieces
   const margePct=ca>0?((marge/ca)*100).toFixed(0):0
   document.getElementById('k-actifs').textContent=actifs
-  document.getElementById('k-ca').textContent=ca.toFixed(0)+'€'
-  document.getElementById('k-cout').textContent=coutPieces.toFixed(0)+'€'
-  document.getElementById('k-marge').textContent=marge.toFixed(0)+'€'
+  document.getElementById('k-ca').textContent=ca.toFixed(2)+'€'
+  document.getElementById('k-cout').textContent=coutPieces.toFixed(2)+'€'
+  document.getElementById('k-marge').textContent=marge.toFixed(2)+'€'
   document.getElementById('k-marge').style.color=marge>=0?'var(--ok)':'var(--d)'
   document.getElementById('k-marge-pct').textContent=ca>0?`${margePct}% en moyenne`:'—'
   document.getElementById('ph-sub').textContent=`${allReps.length} dossier${allReps.length>1?'s':''}`
@@ -1103,9 +1103,9 @@ function renderTable(){
         <button class="statut ${st.cls}" onclick="openStatusMenu(${r.id},this)">${st.label} ▾</button>
       </td>
       <td style="color:var(--t3);white-space:nowrap;">${date}</td>
-      <td style="text-align:right;color:var(--t2);">${r.cout_pieces?Number(r.cout_pieces).toFixed(0)+'€':'—'}</td>
-      <td style="text-align:right;font-weight:500;">${r.prix_final?Number(r.prix_final).toFixed(0)+'€':'—'}</td>
-      <td style="text-align:right;font-weight:500;color:${(Number(r.prix_final||0)-Number(r.cout_pieces||0))>=0?'var(--ok)':'var(--d)'};">${r.prix_final?((Number(r.prix_final||0)-Number(r.cout_pieces||0)).toFixed(0)+'€'):'—'}</td>
+      <td style="text-align:right;color:var(--t2);">${r.cout_pieces?Number(r.cout_pieces).toFixed(2)+'€':'—'}</td>
+      <td style="text-align:right;font-weight:500;">${r.prix_final?Number(r.prix_final).toFixed(2)+'€':'—'}</td>
+      <td style="text-align:right;font-weight:500;color:${(Number(r.prix_final||0)-Number(r.cout_pieces||0))>=0?'var(--ok)':'var(--d)'};">${r.prix_final?((Number(r.prix_final||0)-Number(r.cout_pieces||0)).toFixed(2)+'€'):'—'}</td>
       <td>
         <div class="actions">
           <button class="act-btn" onclick="editRep(${r.id})" title="Modifier">
