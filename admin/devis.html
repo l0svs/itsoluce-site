@@ -627,7 +627,7 @@ function showToast(msg,type){const t=document.getElementById('toast');t.textCont
 function fillPrestaSelect(){
   const sel=document.getElementById('presta-select')
   if(!sel)return
-  const actifs=allServices.filter(s=>s.actif!==false)
+  const actifs=(window.allServices||[]).filter(s=>s.actif!==false)
   if(actifs.length===0){sel.innerHTML='<option value="">Aucune prestation</option>';return}
   sel.innerHTML='<option value="">+ Ajouter une prestation…</option>'+actifs.map(s=>{
     const prix=Number(s.prix||0)
@@ -638,7 +638,7 @@ function fillPrestaSelect(){
 window.ajouterPresta=function(sel){
   const id=sel.value
   if(!id)return
-  const s=allServices.find(x=>String(x.id)===String(id))
+  const s=(window.allServices||[]).find(x=>String(x.id)===String(id))
   if(s){
     const desc=s.detail?`${s.nom} (${s.detail})`:s.nom
     addLigne(s.nom,1,Number(s.prix||0),'');
@@ -938,7 +938,7 @@ let allDevis=[]
 let allReps=[]
 let allClients=[]
 let allStock=[]
-let allServices=[]
+window.allServices=[]
 window.getStock=()=>allStock
 let activeFilter='Tous'
 let currentPdfDoc=null
@@ -961,7 +961,7 @@ async function load(){
     sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom'),
     sb.from('services').select('*').order('ordre',{ascending:true})
   ])
-  allServices=(rServices&&rServices.data)||[]
+  window.allServices=(rServices&&rServices.data)||[]
   fillPrestaSelect()
   if(rDev.error){showError(rDev.error.message);return}
   allDevis=rDev.data||[]
