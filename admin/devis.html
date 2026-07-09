@@ -570,7 +570,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <thead><tr><th style="width:46%;">Description</th><th style="width:14%;">Qté</th><th style="width:22%;">Prix unit. €</th><th style="width:14%;">Total</th><th style="width:36px;"></th></tr></thead>
       <tbody id="lignesBody"></tbody>
     </table>
-    <button class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <button class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
+      <select id="presta-select" onchange="ajouterPresta(this)" style="flex:1;min-width:200px;padding:8px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;color:var(--t2);font-family:inherit;font-size:13px;cursor:pointer;"><option value="">+ Ajouter une prestation…</option></select>
+    </div>
 
     <div class="totaux-box">
       <div class="tot-row"><span>Sous-total</span><span id="t-soustotal">0,00 €</span></div>
@@ -621,6 +624,29 @@ if(sa){document.documentElement.style.setProperty('--a',sa);document.documentEle
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3500);}
 
 // ─── LIGNES DYNAMIQUES ───
+function fillPrestaSelect(){
+  const sel=document.getElementById('presta-select')
+  if(!sel)return
+  const actifs=allServices.filter(s=>s.actif!==false)
+  if(actifs.length===0){sel.innerHTML='<option value="">Aucune prestation</option>';return}
+  sel.innerHTML='<option value="">+ Ajouter une prestation…</option>'+actifs.map(s=>{
+    const prix=Number(s.prix||0)
+    const lbl=`${s.nom} — ${prix.toFixed(2)} €${s.unite||''}`
+    return `<option value="${s.id}">${lbl.replace(/"/g,'&quot;')}</option>`
+  }).join('')
+}
+window.ajouterPresta=function(sel){
+  const id=sel.value
+  if(!id)return
+  const s=allServices.find(x=>String(x.id)===String(id))
+  if(s){
+    const desc=s.detail?`${s.nom} (${s.detail})`:s.nom
+    addLigne(s.nom,1,Number(s.prix||0),'');
+    if(typeof calcTotaux==='function')calcTotaux()
+  }
+  sel.value=''
+}
+
 function addLigne(desc,qte,prix,stockId){
   desc=desc||''; qte=qte||1; prix=prix||0; stockId=stockId||'';
   const tb=document.getElementById('lignesBody');
@@ -912,6 +938,7 @@ let allDevis=[]
 let allReps=[]
 let allClients=[]
 let allStock=[]
+let allServices=[]
 window.getStock=()=>allStock
 let activeFilter='Tous'
 let currentPdfDoc=null
@@ -927,12 +954,15 @@ async function nextNumero(cle, format){
 }
 
 async function load(){
-  const [rDev,rRep,rCli,rStock]=await Promise.all([
+  const [rDev,rRep,rCli,rStock,rServices]=await Promise.all([
     sb.from('devis').select('*').order('created_at',{ascending:false}),
     sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,marque,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom')
+    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom'),
+    sb.from('services').select('*').order('ordre',{ascending:true})
   ])
+  allServices=(rServices&&rServices.data)||[]
+  fillPrestaSelect()
   if(rDev.error){showError(rDev.error.message);return}
   allDevis=rDev.data||[]
   allReps=rRep.data||[]
