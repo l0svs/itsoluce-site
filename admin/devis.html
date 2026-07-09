@@ -602,6 +602,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
     <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
     <button class="btn btn-secondary" onclick="convertirEnFacture()" id="convertBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Convertir en facture</button>
+    <button class="btn btn-secondary" onclick="convertirEnReparation()" id="convertRepBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Convertir en réparation</button>
     <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
   <div class="pdf-modal" id="pdfModal"></div>
@@ -920,6 +921,7 @@ async function nextNumero(cle, format){
   await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
   if(format==='facture'){const an=new Date().getFullYear();return `${an}-${String(nouvelle).padStart(4,'0')}`}
   if(format==='devis'){return `DEV-${String(nouvelle).padStart(4,'0')}`}
+  if(format==='reparation'){return `REP-${String(nouvelle).padStart(4,'0')}`}
   return `${String(nouvelle).padStart(4,'0')}`
 }
 
@@ -1348,6 +1350,56 @@ window.sendPdf=async function(){
     showToast('Erreur envoi : '+err.message,'err')
   }
 }
+
+window.convertirEnReparation=async function(){
+  const d=currentPdfDoc
+  if(!d)return
+  if(d.converti_reparation_id){showToast('Ce devis a déjà été converti en réparation','err');return}
+  if(!confirm(`Convertir le devis ${d.numero} en réparation ?\n\nUne nouvelle réparation sera créée avec les infos client et le montant du devis. Tu pourras compléter l'appareil et les pièces ensuite.`))return
+  const btn=document.getElementById('convertRepBtn')
+  const htmlBtn=btn.innerHTML
+  btn.disabled=true;btn.textContent='Conversion...'
+  try{
+    const numRep=await nextNumero('reparation','reparation')
+    // Construire la description de la panne à partir des lignes du devis
+    const lignes=d.lignes||[]
+    const descLignes=lignes.filter(l=>l.description).map(l=>`• ${l.description}`).join('\n')
+    const panne=[descLignes,d.notes||''].filter(Boolean).join('\n\n')||'À compléter'
+    const token=(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,12):Math.random().toString(36).slice(2,14))
+    const repPayload={
+      numero:numRep,
+      client_id:d.client_id||null,
+      client_nom:d.client_nom,
+      client_email:d.client_email||null,
+      client_telephone:d.client_telephone||null,
+      appareil:'',
+      marque:null,
+      modele:null,
+      panne_description:panne,
+      statut:'attente_reception',
+      prix_devis:d.total||0,
+      prix_final:0,
+      piece_id:null,
+      cout_pieces:0,
+      pieces:[],
+      notes:`Créé depuis le devis ${d.numero}`,
+      suivi_token:token,
+      updated_at:new Date().toISOString()
+    }
+    const resRep=await sb.from('reparations').insert(repPayload).select().single()
+    if(resRep.error)throw new Error(resRep.error.message)
+    await sb.from('devis').update({statut:'accepte',converti_reparation_id:resRep.data.id,reparation_numero:numRep,updated_at:new Date().toISOString()}).eq('id',d.id)
+    const i=allDevis.findIndex(x=>x.id===d.id)
+    if(i>=0){allDevis[i].statut='accepte';allDevis[i].converti_reparation_id=resRep.data.id;allDevis[i].reparation_numero=numRep}
+    btn.disabled=false;btn.innerHTML=htmlBtn
+    closePdf();renderAll()
+    showToast(`Réparation ${numRep} créée depuis le devis ${d.numero} ✓ — Complète l'appareil dans Réparations`,'ok')
+  }catch(err){
+    btn.disabled=false;btn.innerHTML=htmlBtn
+    showToast('Erreur conversion : '+err.message,'err')
+  }
+}
+
 
 window.convertirEnFacture=async function(){
   const d=currentPdfDoc
