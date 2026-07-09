@@ -669,6 +669,7 @@ const GRILLE_DEFAUT=[
   {min:150,max:250,coef:1.25,fixe:45},
   {min:250,max:999999,coef:1.15,fixe:55}
 ]
+const FRAIS_LIVRAISON=6.50 // frais de livraison Foneday, ajoutés au coût de chaque pièce
 function getGrille(){
   try{
     const stored=localStorage.getItem('erp-grille')
@@ -682,15 +683,17 @@ function getPalier(achat){
 }
 function calcPrixVente(achat){
   if(achat<=0)return 0
-  const p=getPalier(achat)
-  return achat*p.coef+p.fixe
+  const cout=achat+FRAIS_LIVRAISON
+  const p=getPalier(cout)
+  return cout*p.coef+p.fixe
 }
 function onAchatChange(){
   const achat=Number(document.getElementById('f-achat').value)||0
   const helper=document.getElementById('prix-helper')
   if(achat<=0){helper.style.display='none';return}
-  const p=getPalier(achat)
-  document.getElementById('formule-rappel').textContent=`Palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
+  const cout=achat+FRAIS_LIVRAISON
+  const p=getPalier(cout)
+  document.getElementById('formule-rappel').textContent=`Achat ${achat.toFixed(2)}€ + livraison ${FRAIS_LIVRAISON.toFixed(2)}€ → palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
   helper.style.display='block'
   const suggere=calcPrixVente(achat)
   document.getElementById('prix-suggere').textContent=suggere.toFixed(2)+' €'
@@ -712,8 +715,9 @@ function updateMargeStock(){
   const el=document.getElementById('marge-affichee')
   if(!el)return
   if(achat<=0||vente<=0){el.textContent='—';return}
-  const marge=vente-achat
-  const pct=achat>0?Math.round((marge/achat)*100):0
+  const cout=achat+FRAIS_LIVRAISON
+  const marge=vente-cout
+  const pct=cout>0?Math.round((marge/cout)*100):0
   el.textContent=`${marge.toFixed(2)} € (${pct}%)`
   el.style.color=marge>0?'var(--ok)':'var(--d)'
 }
@@ -940,8 +944,9 @@ function renderResults(){
     html+=`<div class="cat-piece-group"><div class="cat-piece-head"><span class="cat-cat-badge">${escapeHtml(cat)}</span> ${items.length} option${items.length>1?'s':''}</div><div class="cat-options">`
     items.forEach(p=>{
       const achat=Number(p.prix_achat)||0
-      const vente=Number(p.prix_vente_calcule)||0
-      const marge=vente-achat
+      const vente=calcPrixVente(achat)
+      const cout=achat+FRAIS_LIVRAISON
+      const marge=vente-cout
       const niv=p.niveau||'a_valider'
       html+=`<div class="cat-opt">
         <div class="cat-opt-head">
@@ -952,7 +957,8 @@ function renderResults(){
           <div class="cat-opt-title">${escapeHtml(p.title||'')}</div>
           <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')}</div>
           <div class="cat-prices">
-            <div class="cat-price-row"><span class="lbl">Prix d'achat HT</span><span class="val">${achat.toFixed(2)} €</span></div>
+            <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
+            <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${FRAIS_LIVRAISON.toFixed(2)} €</span></div>
             <div class="cat-price-row vente"><span class="lbl">Prix de vente conseillé</span><span class="val">${vente.toFixed(2)} €</span></div>
             <div class="cat-price-row marge"><span class="lbl">Marge estimée</span><span class="val">+${marge.toFixed(2)} €</span></div>
           </div>
@@ -984,7 +990,7 @@ window.ajouterAuStock=async function(sku){
     marque:(data.model_brand||'').replace('For ',''),
     modele:data.suitable_for,
     prix_achat:data.prix_achat,
-    prix_vente:data.prix_vente_calcule,
+    prix_vente:calcPrixVente(Number(data.prix_achat)||0).toFixed(2),
     fournisseur:'Foneday',
     notes:'Réf. Foneday : '+data.sku+' — '+(data.quality||'')
   }
