@@ -799,7 +799,7 @@ function openPanel(f){
   // Sélecteurs
   if(window.fillRepSelect)window.fillRepSelect();
   if(window.fillClientSelect)window.fillClientSelect();
-  document.getElementById('f-rep').value='';
+  const frep=document.getElementById('f-rep');if(frep)frep.value='';
   document.getElementById('f-client-select').value='';
   ['f-client','f-email','f-tel','f-adresse'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}});
   calcTotaux();
