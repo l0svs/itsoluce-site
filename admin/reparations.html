@@ -178,8 +178,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .ni-stock{background:rgba(251,191,36,.15);}
 .pieces-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
 .piece-row{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--ln);border-radius:7px;padding:8px 10px;}
-.piece-row select{flex:2;min-width:0;padding:6px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;}
-.piece-row input{width:72px;flex-shrink:0;padding:6px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;text-align:right;}
+.piece-row select{flex:2;min-width:0;padding:9px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;}
+.piece-row input{width:80px;flex-shrink:0;padding:9px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;text-align:right;font-weight:500;}
+.piece-row select:focus,.piece-row input:focus{border-color:var(--a);box-shadow:0 0 0 2px rgba(0,82,204,0.15);}
 .piece-row .piece-del{width:26px;height:26px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;}
 .piece-row .piece-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
 .piece-row .piece-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
@@ -900,7 +901,7 @@ window.addPieceLigne=function addPieceLigne(pieceId='',qte=1,cout=''){
   div.dataset.idx=idx
   div.innerHTML=`
     <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(pieceId)}</select>
-    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:52px;" onchange="recalcCout()" oninput="recalcCout()"/>
+    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:64px;" onchange="recalcCout()" oninput="recalcCout()"/>
     <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" onchange="recalcCout()" oninput="recalcCout()"/>
     <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
   `
