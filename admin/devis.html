@@ -547,12 +547,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <input type="hidden" id="f-id"/>
     <input type="hidden" id="f-numero"/>
 
-    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Depuis une réparation (optionnel)</div>
-    <div class="fg">
-      <label>Pré-remplir depuis une réparation</label>
-      <select id="f-rep" onchange="onRepSelect()"><option value="">— Aucune (saisie manuelle) —</option></select>
-    </div>
-
     <div class="fg-sep">Client</div>
     <div class="fg">
       <label>Client existant ou nouveau</label>
@@ -605,7 +599,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="pdf-actions">
     <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
     <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
-    <button class="btn btn-secondary" onclick="convertirEnFacture()" id="convertBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Convertir en facture</button>
     <button class="btn btn-secondary" onclick="convertirEnReparation()" id="convertRepBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Convertir en réparation</button>
     <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
@@ -685,9 +678,11 @@ function onStockPick(sel){
   const tr=sel.closest('tr');
   const opt=sel.options[sel.selectedIndex];
   if(sel.value){
-    // Remplir description + prix depuis l'article du stock
-    tr.querySelector('.l-desc').value=opt.dataset.nom||'';
-    tr.querySelector('.l-prix').value=opt.dataset.prix||0;
+    // Lier la pièce sans écraser ce que l'utilisateur a déjà saisi
+    const descEl=tr.querySelector('.l-desc');
+    const prixEl=tr.querySelector('.l-prix');
+    if(!descEl.value.trim())descEl.value=opt.dataset.nom||'';
+    if(!prixEl.value||Number(prixEl.value)===0)prixEl.value=opt.dataset.prix||0;
     tr.dataset.stockId=sel.value;
     tr.querySelector('.l-stock-tag').style.display='inline';
   } else {
@@ -1134,12 +1129,6 @@ window.saveDevis=async function(){
   }
 
   // Déterminer s'il faut décrémenter le stock (création uniquement, articles liés, pas déjà fait)
-  const ancienne = id ? allDevis.find(f=>f.id===Number(id)) : null
-  const dejaDecremente = ancienne && ancienne.stock_decremente === true
-  const lignesStock = lignes.filter(l=>l.stock_id)
-  const doitDecrementer = !id && lignesStock.length>0 && !dejaDecremente
-  if(doitDecrementer) payload.stock_decremente = true
-
   let error
   if(id){
     const res=await sb.from('devis').update(payload).eq('id',id)
@@ -1154,18 +1143,6 @@ window.saveDevis=async function(){
   document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
   document.getElementById('saveBtn').disabled=false
   if(error){showToast('Erreur : '+error.message,'err');return}
-
-  // Décrémentation du stock pour les lignes liées à un article
-  if(doitDecrementer){
-    for(const l of lignesStock){
-      const art=allStock.find(s=>s.id===l.stock_id)
-      if(art){
-        const newQte=Math.max(0,Number(art.quantite||0)-Number(l.quantite||1))
-        await sb.from('stock').update({quantite:newQte}).eq('id',l.stock_id)
-        art.quantite=newQte
-      }
-    }
-  }
 
   window._repLink=null
   closePanel()
@@ -1458,11 +1435,21 @@ window.convertirEnFacture=async function(){
       total:d.total||0,
       remise:d.remise||0,
       notes:d.notes||null,
-      stock_decremente:false,
+      stock_decremente:true,
       updated_at:new Date().toISOString()
     }
     const resFac=await sb.from('factures').insert(facturePayload).select().single()
     if(resFac.error)throw new Error(resFac.error.message)
+    // Décrémenter le stock (la facture = la vente réelle), une seule fois
+    const lignesStock=(d.lignes||[]).filter(l=>l.stock_id)
+    for(const l of lignesStock){
+      const art=allStock.find(s=>String(s.id)===String(l.stock_id))
+      if(art){
+        const newQte=Math.max(0,Number(art.quantite||0)-Number(l.quantite||1))
+        await sb.from('stock').update({quantite:newQte}).eq('id',l.stock_id)
+        art.quantite=newQte
+      }
+    }
     // Marquer le devis comme accepté + converti
     await sb.from('devis').update({statut:'accepte',converti_facture_id:resFac.data.id,updated_at:new Date().toISOString()}).eq('id',d.id)
     const i=allDevis.findIndex(x=>x.id===d.id)
