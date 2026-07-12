@@ -678,9 +678,11 @@ function onStockPick(sel){
   const tr=sel.closest('tr');
   const opt=sel.options[sel.selectedIndex];
   if(sel.value){
-    // Remplir description + prix depuis l'article du stock
-    tr.querySelector('.l-desc').value=opt.dataset.nom||'';
-    tr.querySelector('.l-prix').value=opt.dataset.prix||0;
+    // Lier la pièce sans écraser ce que l'utilisateur a déjà saisi
+    const descEl=tr.querySelector('.l-desc');
+    const prixEl=tr.querySelector('.l-prix');
+    if(!descEl.value.trim())descEl.value=opt.dataset.nom||'';
+    if(!prixEl.value||Number(prixEl.value)===0)prixEl.value=opt.dataset.prix||0;
     tr.dataset.stockId=sel.value;
     tr.querySelector('.l-stock-tag').style.display='inline';
   } else {
