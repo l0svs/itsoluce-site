@@ -666,6 +666,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   </div>
   <div class="panel-footer">
     <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
+    <button class="btn btn-secondary" id="factureBtn" onclick="creerFacture()" style="flex:1.4;display:none;background:#fff;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Créer une facture</button>
     <button class="btn btn-primary" onclick="saveDossier()" style="flex:2;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
@@ -736,6 +737,8 @@ function openPanel(r=null){
   document.getElementById('panelTitle').textContent=r?'Modifier le dossier':'Nouveau dossier'
   document.getElementById('saveBtn').textContent=r?'Mettre à jour':'Enregistrer'
   document.getElementById('f-id').value=r?.id||''
+  const fBtn=document.getElementById('factureBtn')
+  if(fBtn)fBtn.style.display=r?'inline-flex':'none'
   document.getElementById('f-client').value=r?.client_nom||''
   document.getElementById('f-email').value=r?.client_email||''
   document.getElementById('f-tel').value=r?.client_telephone||''
@@ -1126,6 +1129,54 @@ window.renderTable=renderTable
 window.editRep=function(id){
   const r=allReps.find(r=>r.id===id)
   if(r)openPanel(r)
+}
+
+window.creerFacture=async function(){
+  const id=document.getElementById('f-id').value
+  if(!id){showToast("Enregistre d'abord la réparation",'err');return}
+  const r=allReps.find(x=>String(x.id)===String(id))
+  if(!r){showToast('Réparation introuvable','err');return}
+  if(r.converti_facture_id){showToast('Une facture a déjà été créée pour cette réparation','err');return}
+  const prix=Number(r.prix_final||r.prix_devis||0)
+  if(!confirm(`Créer une facture pour la réparation ${r.numero} ?\n\nMontant : ${prix.toFixed(2)} €\n\nLa facture sera créée en brouillon, tu pourras la compléter dans Factures.`))return
+  const fBtn=document.getElementById('factureBtn')
+  fBtn.disabled=true
+  try{
+    // Numéro de facture (format année-séquence, comme partout)
+    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
+    const seq=(cpt?.valeur||0)+1
+    await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
+    const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
+    const app=[r.appareil,[r.marque,r.modele].filter(Boolean).join(' ')].filter(Boolean).join(' ').trim()
+    const desc=`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
+    const facturePayload={
+      numero:numFacture,
+      reparation_id:r.id,
+      reparation_numero:r.numero,
+      client_id:r.client_id||null,
+      client_nom:r.client_nom,
+      client_email:r.client_email||null,
+      client_telephone:r.client_telephone||null,
+      client_adresse:r.client_adresse||null,
+      date_emission:new Date().toISOString().slice(0,10),
+      statut:'brouillon',
+      lignes:[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''}],
+      total:prix,
+      remise:0,
+      notes:null,
+      stock_decremente:true,
+      updated_at:new Date().toISOString()
+    }
+    const res=await sb.from('factures').insert(facturePayload).select().single()
+    if(res.error)throw new Error(res.error.message)
+    await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
+    r.converti_facture_id=res.data.id
+    fBtn.disabled=false
+    showToast(`Facture ${numFacture} créée ✓ — À compléter dans Factures`,'ok')
+  }catch(e){
+    fBtn.disabled=false
+    showToast('Erreur : '+(e.message||e),'err')
+  }
 }
 
 window.changeStatut=async function(statut){
