@@ -182,8 +182,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .lignes-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
 .lignes-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:6px 8px;border-bottom:1px solid var(--ln);}
 .lignes-table td{padding:4px;}
-.lignes-table input{width:100%;padding:7px 8px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;}
-.lignes-table input:focus{border-color:var(--a);}
+.lignes-table input{width:100%;padding:9px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;}
+.lignes-table input:focus{border-color:var(--a);box-shadow:0 0 0 2px rgba(0,82,204,0.15);}
+.lignes-table input.l-total{font-weight:700;background:var(--bg4);color:var(--t1);cursor:default;text-align:right;}
+.lignes-table input.l-qte,.lignes-table input.l-prix{text-align:right;font-weight:500;}
 .ligne-del{width:28px;height:28px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;}
 .ligne-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
 .ligne-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
@@ -655,7 +657,7 @@ function addLigne(desc,qte,prix,stockId){
     </td>
     <td><input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()"/></td>
     <td><input type="number" class="l-prix" value="${prix}" min="0" step="0.01" oninput="calcTotaux()"/></td>
-    <td><input type="text" class="l-total" value="0,00" disabled style="opacity:.7;border:none;background:none;"/></td>
+    <td><input type="text" class="l-total" value="0,00" readonly/></td>
     <td><button class="ligne-del" onclick="this.closest('tr').remove();calcTotaux()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td>`;
   tb.appendChild(tr);
   // Remplir le sélecteur stock de cette ligne
