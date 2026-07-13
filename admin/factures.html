@@ -1054,8 +1054,12 @@ function renderAll(){updateKPIs();renderFilters();renderTable()}
 
 function updateKPIs(){
   const now=new Date()
-  const moisFac=allFactures.filter(f=>{const d=new Date(f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
-  const paye=moisFac.filter(f=>f.statut==='payee').reduce((a,f)=>a+Number(f.total||0),0)
+  // CA encaissé du mois = factures payées dont la DATE DE PAIEMENT tombe ce mois-ci
+  const paye=allFactures.filter(f=>{
+    if(f.statut!=='payee')return false
+    const d=new Date(f.date_paiement||f.date_emission||f.created_at)
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()
+  }).reduce((a,f)=>a+Number(f.total||0),0)
   const attente=allFactures.filter(f=>f.statut==='envoyee').reduce((a,f)=>a+Number(f.total||0),0)
   const retard=allFactures.filter(f=>{
     if(f.statut!=='envoyee'||!f.date_echeance)return false
