@@ -540,6 +540,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   </div>
   <div class="panel-footer">
     <button class="btn btn-secondary" id="delBtn" onclick="deleteRdv()" style="display:none;">Supprimer</button>
+    <button class="btn btn-secondary" id="rappelBtn" onclick="envoyerRappel()" style="display:none;"></button>
     <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
     <button class="btn btn-primary" onclick="saveRdv()" style="flex:2;" id="saveBtn">Enregistrer</button>
   </div>
@@ -755,7 +756,8 @@ function renderWeek(){
         const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
         const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
         const col={domicile:'#3b82f6',depot:'#8b5cf6',retrait:'#10b981',autre:'#6b7280'}[e.type]
-        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-bar" style="background:${col};"></div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${e.titre}</div>${sub?`<div class="week-evt-sub">${sub}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
+        const rappelIco=e.rappel_envoye_le?'<span title="Rappel envoyé" style="margin-left:6px;color:var(--ok,#10b981);">✓</span>':''
+        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-bar" style="background:${col};"></div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${e.titre}${rappelIco}</div>${sub?`<div class="week-evt-sub">${sub}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
       }).join('')
     }
     html+=`<div class="week-day"><div class="week-day-head ${isToday?'today':''}"><span>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}</span><button onclick="openPanelDate('${dateStr}')" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:18px;line-height:1;">+</button></div><div class="week-day-body">${body}</div></div>`
@@ -842,8 +844,66 @@ window.editRdv=function(id){
   document.getElementById('f-notes').value=r.notes||''
   document.getElementById('f-termine').value=String(r.termine||false)
   if(r.termine){const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb');t.style.background='var(--ok)';t.style.borderColor='var(--ok)';th.style.transform='translateX(14px)'}
+  // Bouton rappel
+  const rappelBtn=document.getElementById('rappelBtn')
+  const client=allClients.find(c=>c.id===r.client_id)
+  if(client&&client.email){
+    rappelBtn.style.display='block'
+    if(r.rappel_envoye_le){
+      const dEnv=new Date(r.rappel_envoye_le).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
+      rappelBtn.textContent=`Rappel envoyé le ${dEnv}`
+      rappelBtn.disabled=true
+      rappelBtn.style.opacity='0.6'
+    } else {
+      rappelBtn.textContent='Envoyer le rappel'
+      rappelBtn.disabled=false
+      rappelBtn.style.opacity='1'
+    }
+  } else {
+    rappelBtn.style.display='none'
+  }
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
+}
+
+window.envoyerRappel=async function(){
+  const id=document.getElementById('f-id').value
+  const r=allRdv.find(x=>x.id===Number(id))
+  if(!r)return
+  const client=allClients.find(c=>c.id===r.client_id)
+  if(!client||!client.email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
+  const btn=document.getElementById('rappelBtn')
+  btn.disabled=true
+  btn.textContent='Envoi en cours...'
+  try{
+    const prenom=(client.nom||'').split(' ')[0]||''
+    const dRdv=new Date(r.date_debut)
+    const dateLbl=dRdv.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long'})
+    const heureLbl=dRdv.toTimeString().slice(0,5)
+    const lieuLigne=r.lieu?`<p>Lieu : ${r.lieu}</p>`:''
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><p style="color:#555;font-size:13px;line-height:1.6;">IT Soluce<br>Réparations informatiques &amp; électroniques<br><a href="mailto:contact@itsoluce.be" style="color:#1d4ed8;text-decoration:none;">contact@itsoluce.be</a><br>+32 474 05 66 59<br><a href="https://itsoluce.be/" style="color:#1d4ed8;text-decoration:none;">https://itsoluce.be/</a></p>`
+    const html=`<p>Bonjour ${prenom},</p><p>Je vous confirme notre rendez-vous prévu <strong>${dateLbl}</strong> à <strong>${heureLbl}</strong>.</p>${lieuLigne}<p>N'hésitez pas à me recontacter si vous avez un empêchement.</p>${signature}`
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-reminder`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:client.email,subject:`Rappel de rendez-vous — IT Soluce`,html:html})
+    })
+    const result=await res.json()
+    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
+    const now=new Date().toISOString()
+    await sb.from('rendezvous').update({rappel_envoye_le:now}).eq('id',r.id)
+    const i=allRdv.findIndex(x=>x.id===r.id)
+    if(i>=0)allRdv[i].rappel_envoye_le=now
+    const dEnv=new Date(now).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
+    btn.textContent=`Rappel envoyé le ${dEnv}`
+    btn.style.opacity='0.6'
+    showToast('Rappel envoyé ✓','ok')
+  }catch(err){
+    btn.disabled=false
+    btn.textContent='Envoyer le rappel'
+    showToast('Erreur : '+err.message,'err')
+  }
 }
 
 window.saveRdv=async function(){
