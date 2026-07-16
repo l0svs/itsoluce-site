@@ -731,7 +731,7 @@ function openPanel(r=null){
   window.loadPiecesData(r?.pieces||[])
   // Compat ancien dossier (piece_id seul)
   if((!r?.pieces||r.pieces.length===0)&&r?.piece_id){
-    window.addPieceLigne(r.piece_id,1,r.cout_pieces||0)
+    window.addPieceLigne(`stock-${r.piece_id}`,1,r.cout_pieces||0)
   }
   updateMarge()
   // Remplir le sélecteur de clients existants + réinitialiser sur "Nouveau client"
@@ -860,20 +860,24 @@ document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 
 let allReps=[]
 let allStockPieces=[]
+let allServices=[]
 
 // ─── MULTI-PIÈCES ───
-window.buildPieceOptions=function buildPieceOptions(selectedId){
+window.buildPieceOptions=function buildPieceOptions(selectedValue){
+  const stockOpts=allStockPieces.map(p=>`<option value="stock-${p.id}" data-kind="stock" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${selectedValue===`stock-${p.id}`?'selected':''}>${p.nom} (stock: ${p.quantite})</option>`).join('')
+  const svcOpts=allServices.map(s=>`<option value="svc-${s.id}" data-kind="service" data-vente="${s.prix||0}" ${selectedValue===`svc-${s.id}`?'selected':''}>${s.nom}</option>`).join('')
   return '<option value="">— Aucune —</option>'+
-    allStockPieces.map(p=>`<option value="${p.id}" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${String(p.id)===String(selectedId)?'selected':''} >${p.nom} (stock: ${p.quantite})</option>`).join('')
+    (stockOpts?`<optgroup label="Pièces (stock)">${stockOpts}</optgroup>`:'')+
+    (svcOpts?`<optgroup label="Prestations / Services">${svcOpts}</optgroup>`:'')
 }
-window.addPieceLigne=function addPieceLigne(pieceId='',qte=1,cout=''){
+window.addPieceLigne=function addPieceLigne(selectedValue='',qte=1,cout=''){
   const list=document.getElementById('piecesList')
   const idx=list.children.length
   const div=document.createElement('div')
   div.className='piece-row'
   div.dataset.idx=idx
   div.innerHTML=`
-    <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(pieceId)}</select>
+    <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(selectedValue)}</select>
     <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:64px;" onchange="recalcCout()" oninput="recalcCout()"/>
     <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" onchange="recalcCout()" oninput="recalcCout()"/>
     <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
@@ -884,11 +888,15 @@ window.addPieceLigne=function addPieceLigne(pieceId='',qte=1,cout=''){
 window.onPieceLigneChange=function onPieceLigneChange(sel){
   const row=sel.closest('.piece-row')
   const opt=sel.options[sel.selectedIndex]
-  if(opt&&opt.dataset.achat){
-    const coutInput=row.querySelectorAll('input')[1]
-    coutInput.value=opt.dataset.achat
-    // Suggérer prix vente si f-final vide
-    const final=document.getElementById('f-final')
+  const coutInput=row.querySelectorAll('input')[1]
+  const final=document.getElementById('f-final')
+  if(opt&&opt.dataset.kind==='stock'){
+    coutInput.value=opt.dataset.achat||0
+    coutInput.disabled=false
+    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
+  } else if(opt&&opt.dataset.kind==='service'){
+    // Une prestation n'a pas de coût de pièce associé
+    coutInput.value=0
     if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
   }
   recalcCout()
@@ -914,7 +922,13 @@ window.getPiecesData=function getPiecesData(){
     const sel=row.querySelector('select')
     const inputs=row.querySelectorAll('input')
     if(!sel.value)return
-    pieces.push({stock_id:Number(sel.value),nom:sel.options[sel.selectedIndex].text.split(' (')[0],qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+    const [kind,rawId]=sel.value.split('-')
+    const nom=sel.options[sel.selectedIndex].text.split(' (')[0]
+    if(kind==='stock'){
+      pieces.push({stock_id:Number(rawId),service_id:null,nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+    } else if(kind==='svc'){
+      pieces.push({stock_id:null,service_id:Number(rawId),nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+    }
   })
   return pieces
 }
@@ -922,7 +936,10 @@ window.loadPiecesData=function loadPiecesData(pieces){
   const list=document.getElementById('piecesList')
   list.innerHTML=''
   if(!pieces||pieces.length===0)return
-  pieces.forEach(p=>addPieceLigne(p.stock_id,p.qte,p.cout))
+  pieces.forEach(p=>{
+    const val=p.service_id?`svc-${p.service_id}`:(p.stock_id?`stock-${p.stock_id}`:'')
+    addPieceLigne(val,p.qte,p.cout)
+  })
 }
 
 let allClientsRep=[]
@@ -981,15 +998,17 @@ async function nextNumero(cle, prefix){
 window.nextNumero=nextNumero
 
 async function loadReps(){
-  const [rRep,rStock,rCli]=await Promise.all([
+  const [rRep,rStock,rCli,rSvc]=await Promise.all([
     sb.from('reparations').select('*').order('created_at',{ascending:false}),
     sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom'),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom')
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
+    sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true})
   ])
   if(rRep.error){console.error(rRep.error);return}
   allReps=rRep.data||[]
   allStockPieces=rStock.data||[]
   allClientsRep=rCli.data||[]
+  allServices=rSvc.data||[]
 
   // Attribution rétroactive des numéros aux dossiers existants sans numéro
   const sansNumero=allReps.filter(r=>!r.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
