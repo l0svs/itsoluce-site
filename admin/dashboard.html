@@ -764,10 +764,9 @@ const repsActives=reps.filter(r=>!['rendu','annule'].includes(r.statut))
 
 // KPIs
 const kpis=[
-  {label:'CA encaissé ce mois',val:caMonth.toFixed(2)+' €',sub:facturesPayees.length+' facture(s) payée(s)',color:'#10b981'},
-  {label:'Bénéfice net ce mois',val:beneficeNet.toFixed(2)+' €',sub:`marge ${margeMonth.toFixed(2)}€ − charges ${chargesMensuelles.toFixed(2)}€`,color:beneficeNet>=0?'#3b82f6':'#ef4444',link:'/admin/performance.html'},
-  {label:'À encaisser',val:montantImpaye.toFixed(2)+' €',sub:facturesImpayees.length+' facture(s) en attente',color:'#f59e0b'},
-  {label:'Réparations actives',val:repsActives.length,sub:'en cours de traitement',color:'#8b5cf6'}
+  {label:'Réparations actives',val:repsActives.length,sub:'en cours de traitement',color:'#8b5cf6'},
+  {label:'Factures en attente',val:facturesImpayees.length,sub:'à encaisser',color:'#f59e0b'},
+  {label:'Factures en retard',val:facturesRetard.length,sub:'échéance dépassée',color:'#ef4444'}
 ]
 document.getElementById('kpis').innerHTML=kpis.map(k=>{const inner=`<div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div>`;return k.link?`<a href="${k.link}" class="dk" style="text-decoration:none;cursor:pointer;">${inner}</a>`:`<div class="dk">${inner}</div>`}).join('')
 

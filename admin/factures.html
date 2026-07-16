@@ -489,7 +489,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         </div>
       </div>
       <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">CA encaissé (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--ok)">—</div><div class="kpi-sub">factures payées</div></div>
+        <div class="kpi"><div class="kpi-label">Factures payées (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--ok)">—</div><div class="kpi-sub">ce mois-ci</div></div>
         <div class="kpi"><div class="kpi-label">En attente</div><div class="kpi-val" id="k-attente" style="color:var(--w)">—</div><div class="kpi-sub">envoyées, non payées</div></div>
         <div class="kpi"><div class="kpi-label">En retard</div><div class="kpi-val" id="k-retard" style="color:var(--d)">—</div><div class="kpi-sub">échéance dépassée</div></div>
         <div class="kpi"><div class="kpi-label">Total factures</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
@@ -1054,20 +1054,19 @@ function renderAll(){updateKPIs();renderFilters();renderTable()}
 
 function updateKPIs(){
   const now=new Date()
-  // CA encaissé du mois = factures payées dont la DATE DE PAIEMENT tombe ce mois-ci
   const paye=allFactures.filter(f=>{
     if(f.statut!=='payee')return false
     const d=new Date(f.date_paiement||f.date_emission||f.created_at)
     return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()
-  }).reduce((a,f)=>a+Number(f.total||0),0)
-  const attente=allFactures.filter(f=>f.statut==='envoyee').reduce((a,f)=>a+Number(f.total||0),0)
+  }).length
+  const attente=allFactures.filter(f=>f.statut==='envoyee').length
   const retard=allFactures.filter(f=>{
     if(f.statut!=='envoyee'||!f.date_echeance)return false
     return new Date(f.date_echeance)<now
-  }).reduce((a,f)=>a+Number(f.total||0),0)
-  document.getElementById('k-paye').textContent=paye.toFixed(2)+'€'
-  document.getElementById('k-attente').textContent=attente.toFixed(2)+'€'
-  document.getElementById('k-retard').textContent=retard.toFixed(2)+'€'
+  }).length
+  document.getElementById('k-paye').textContent=paye
+  document.getElementById('k-attente').textContent=attente
+  document.getElementById('k-retard').textContent=retard
   document.getElementById('k-total').textContent=allFactures.length
   document.getElementById('ph-sub').textContent=`${allFactures.length} facture${allFactures.length>1?'s':''}`
 }

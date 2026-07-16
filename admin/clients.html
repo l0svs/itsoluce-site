@@ -439,7 +439,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       </div>
       <div class="kpi-strip">
         <div class="kpi"><div class="kpi-label">Total clients</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">enregistrés</div></div>
-        <div class="kpi"><div class="kpi-label">CA généré</div><div class="kpi-val" id="k-ca">—</div><div class="kpi-sub">toutes réparations</div></div>
         <div class="kpi"><div class="kpi-label">Réparations / client</div><div class="kpi-val" id="k-moy">—</div><div class="kpi-sub">en moyenne</div></div>
         <div class="kpi"><div class="kpi-label">Nouveau ce mois</div><div class="kpi-val" id="k-new">—</div><div class="kpi-sub">clients</div></div>
       </div>
@@ -688,12 +687,10 @@ async function load(){
 
 function renderAll(){
   const total=allClients.length
-  const ca=allClients.reduce((a,c)=>a+(c.ca||0),0)
   const moy=total>0?(allClients.reduce((a,c)=>a+(c.reps_count||c.reps?.length||0),0)/total).toFixed(1):0
   const now=new Date()
   const newCli=allClients.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
   document.getElementById('k-total').textContent=total
-  document.getElementById('k-ca').textContent=ca.toFixed(2)+'€'
   document.getElementById('k-moy').textContent=moy
   document.getElementById('k-new').textContent=newCli
   document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`;

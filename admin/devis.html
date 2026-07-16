@@ -493,7 +493,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         </div>
       </div>
       <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Devis acceptés (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--ok)">—</div><div class="kpi-sub">montant accepté</div></div>
+        <div class="kpi"><div class="kpi-label">Devis acceptés (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--ok)">—</div><div class="kpi-sub">nombre accepté</div></div>
         <div class="kpi"><div class="kpi-label">En attente</div><div class="kpi-val" id="k-attente" style="color:var(--w)">—</div><div class="kpi-sub">envoyés, sans réponse</div></div>
         <div class="kpi"><div class="kpi-label">Taux d'acceptation</div><div class="kpi-val" id="k-retard" style="color:var(--a)">—</div><div class="kpi-sub">devis acceptés / envoyés</div></div>
         <div class="kpi"><div class="kpi-label">Total devis</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
@@ -993,13 +993,13 @@ function renderAll(){updateKPIs();renderFilters();renderTable()}
 function updateKPIs(){
   const now=new Date()
   const moisDev=allDevis.filter(f=>{const d=new Date(f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
-  const accepteMois=moisDev.filter(f=>f.statut==='accepte').reduce((a,f)=>a+Number(f.total||0),0)
-  const attente=allDevis.filter(f=>f.statut==='envoye').reduce((a,f)=>a+Number(f.total||0),0)
+  const accepteMois=moisDev.filter(f=>f.statut==='accepte').length
+  const attente=allDevis.filter(f=>f.statut==='envoye').length
   const nbEnvoyes=allDevis.filter(f=>['envoye','accepte','refuse'].includes(f.statut)).length
   const nbAcceptes=allDevis.filter(f=>f.statut==='accepte').length
   const taux=nbEnvoyes>0?Math.round((nbAcceptes/nbEnvoyes)*100):0
-  document.getElementById('k-paye').textContent=accepteMois.toFixed(2)+'€'
-  document.getElementById('k-attente').textContent=attente.toFixed(2)+'€'
+  document.getElementById('k-paye').textContent=accepteMois
+  document.getElementById('k-attente').textContent=attente
   document.getElementById('k-retard').textContent=taux+'%'
   document.getElementById('k-total').textContent=allDevis.length
   document.getElementById('ph-sub').textContent=`${allDevis.length} devis`
