@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Suivi de votre réparation — IT Soluce</title>
+<meta name="description" content="Suivez en temps réel l'état d'avancement de votre réparation smartphone, PC, tablette ou console chez IT Soluce à Tubize.">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/favicon_io/favicon.ico">
+<style>
+  :root{
+    --accent:#0052CC;
+    --text:#1d1d1f;
+    --text2:#6e6e73;
+    --border:#d2d2d7;
+    --bg:#ffffff;
+    --bg2:#f5f5f7;
+    --ok:#10b981;
+    --warn:#f59e0b;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--text);
+    background:var(--bg2);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header.nav{
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+    padding:16px 24px;
+  }
+  header.nav .nav__inner{
+    max-width:720px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  header.nav .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:var(--text);
+    font-weight:600;
+    font-size:15px;
+  }
+  header.nav .logo img{
+    width:32px;height:32px;border-radius:7px;display:block;
+  }
+  header.nav a.back{
+    font-size:13px;
+    color:var(--text2);
+    text-decoration:none;
+  }
+  header.nav a.back:hover{color:var(--accent);}
+
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:48px 20px 80px;
+  }
+
+  .state{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:40px 32px;
+    text-align:center;
+  }
+  .state .icon{
+    width:56px;height:56px;
+    margin:0 auto 20px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+    background:var(--bg2);
+  }
+  .state h1{font-size:20px;font-weight:600;margin-bottom:10px;}
+  .state p{font-size:14px;color:var(--text2);line-height:1.6;}
+  .state .contact-row{
+    margin-top:24px;
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .state .contact-row a{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    border:1px solid var(--border);
+    color:var(--text);
+  }
+  .state .contact-row a.primary{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+
+  .result-card{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .result-head{
+    padding:28px 28px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  .result-head .label{
+    font-size:11px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:var(--text2);
+    margin-bottom:6px;
+  }
+  .result-head .numero{
+    font-size:22px;
+    font-weight:600;
+  }
+  .result-head .appareil{
+    font-size:14px;
+    color:var(--text2);
+    margin-top:4px;
+  }
+  .result-head .panne{
+    font-size:13px;
+    color:var(--text2);
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--bg2);
+    font-style:italic;
+  }
+
+  .timeline{
+    padding:32px 28px 36px;
+  }
+  .tl-step{
+    display:flex;
+    gap:16px;
+    position:relative;
+    padding-bottom:28px;
+  }
+  .tl-step:last-child{padding-bottom:0;}
+  .tl-step:not(:last-child)::before{
+    content:'';
+    position:absolute;
+    left:13px;
+    top:28px;
+    bottom:0;
+    width:2px;
+    background:var(--border);
+  }
+  .tl-step.done:not(:last-child)::before{background:var(--ok);}
+  .tl-dot{
+    width:28px;height:28px;
+    border-radius:50%;
+    background:var(--bg2);
+    border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    z-index:1;
+  }
+  .tl-step.done .tl-dot{
+    background:var(--ok);
+    border-color:var(--ok);
+  }
+  .tl-step.current .tl-dot{
+    background:var(--accent);
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(0,82,204,.15);
+  }
+  .tl-step.current .tl-dot .pulse{
+    width:8px;height:8px;border-radius:50%;background:#fff;
+  }
+  .tl-content{padding-top:3px;}
+  .tl-title{font-size:14px;font-weight:600;color:var(--text2);}
+  .tl-step.done .tl-title,.tl-step.current .tl-title{color:var(--text);}
+  .tl-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+
+  .alert-banner{
+    margin:20px 28px 0;
+    padding:14px 16px;
+    border-radius:10px;
+    font-size:13px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .alert-banner.warn{background:#fff7ed;color:#9a3412;}
+  .alert-banner.danger{background:#fef2f2;color:#991b1b;}
+
+  .result-footer{
+    padding:20px 28px 28px;
+    text-align:center;
+  }
+  .result-footer p{font-size:12px;color:var(--text2);margin-bottom:14px;}
+
+  footer.site-footer{
+    text-align:center;
+    padding:32px 20px;
+    font-size:12px;
+    color:var(--text2);
+  }
+  footer.site-footer a{color:var(--accent);text-decoration:none;}
+
+  @media(max-width:480px){
+    main{padding:32px 14px 60px;}
+    .state{padding:32px 20px;}
+    .result-head,.timeline,.result-footer{padding-left:20px;padding-right:20px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav__inner">
+    <a href="/" class="logo">
+      <img src="/favicon_io/android-chrome-512x512.png" alt="IT Soluce">
+      IT Soluce
+    </a>
+    <a href="/" class="back">← Retour au site</a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="state" id="loading">
+    <div class="icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></circle>
+      </svg>
+    </div>
+    <h1>Recherche de votre dossier…</h1>
+    <p>Un instant, nous récupérons les informations de votre réparation.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  IT Soluce — Réparations informatiques &amp; électroniques<br>
+  <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a> · <a href="tel:+32474056659">+32 474 05 66 59</a>
+</footer>
+
+<script>
+const SB_URL='https://esltsiutcjcwdbhkkvms.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo';
+
+const STATUTS_INFO={
+  attente_reception:{step:0,label:"En attente de réception de l'appareil"},
+  recu:{step:1,label:'Appareil reçu'},
+  attente:{step:2,label:'Diagnostic en cours — attente de pièce'},
+  encours:{step:2,label:'En cours de réparation'},
+  pret:{step:3,label:'Prêt à récupérer'},
+  rendu:{step:4,label:'Récupéré'},
+  annule:{step:-1,label:'Dossier annulé'}
+};
+
+const STEPS=[
+  {key:'recu',title:"Réception de l'appareil",sub:'Votre appareil est enregistré chez IT Soluce'},
+  {key:'diag',title:'Diagnostic & réparation',sub:'Analyse de la panne et intervention en cours'},
+  {key:'pret',title:'Prêt à récupérer',sub:'Votre appareil vous attend'},
+  {key:'rendu',title:'Récupéré',sub:'Réparation terminée et remise effectuée'}
+];
+
+function escapeHtml(s){
+  const d=document.createElement('div');
+  d.textContent=s||'';
+  return d.innerHTML;
+}
+
+function renderError(){
+  document.getElementById('main').innerHTML=`
+    <div class="state">
+      <div class="icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h1>Dossier introuvable</h1>
+      <p>Le lien utilisé ne correspond à aucun dossier actif. Vérifiez que vous avez bien cliqué sur le lien reçu par SMS ou email, ou contactez-nous directement.</p>
+      <div class="contact-row">
+        <a href="tel:+32474056659" class="primary">Appeler</a>
+        <a href="https://wa.me/32474056659" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:contact@itsoluce.be">Email</a>
+      </div>
+    </div>
+  `;
+}
+
+function renderResult(rep){
+  const info=STATUTS_INFO[rep.statut]||{step:0,label:rep.statut};
+  const appareilTxt=[rep.marque,rep.modele].filter(Boolean).join(' ')||rep.appareil||'Appareil';
+
+  let alertHtml='';
+  if(rep.statut==='annule'){
+    alertHtml=`<div class="alert-banner danger">Ce dossier a été annulé. Contactez-nous si vous pensez qu'il s'agit d'une erreur.</div>`;
+  } else if(rep.statut==='attente'){
+    alertHtml=`<div class="alert-banner warn">Une pièce est en cours de commande pour finaliser votre réparation.</div>`;
+  }
+
+  let timelineHtml='';
+  if(rep.statut!=='annule'){
+    timelineHtml=STEPS.map((s,i)=>{
+      const done=info.step>i+1;
+      const current=info.step===i+1;
+      const cls=done?'done':(current?'current':'');
+      const dotContent=done
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>'
+        : (current?'<div class="pulse"></div>':'');
+      const subText=current?info.label:s.sub;
+      return `<div class="tl-step ${cls}">
+        <div class="tl-dot">${dotContent}</div>
+        <div class="tl-content">
+          <div class="tl-title">${s.title}</div>
+          <div class="tl-sub">${subText}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const dateRecu=rep.created_at?new Date(rep.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'long',year:'numeric'}):'';
+
+  document.getElementById('main').innerHTML=`
+    <div class="result-card">
+      <div class="result-head">
+        <div class="label">Dossier</div>
+        <div class="numero">${escapeHtml(rep.numero||'—')}</div>
+        <div class="appareil">${escapeHtml(appareilTxt)}${dateRecu?` · reçu le ${dateRecu}`:''}</div>
+        ${rep.panne_description?`<div class="panne">"${escapeHtml(rep.panne_description)}"</div>`:''}
+      </div>
+      ${alertHtml}
+      <div class="timeline">${timelineHtml}</div>
+      <div class="result-footer">
+        <p>Une question sur votre réparation ? Contactez-nous directement.</p>
+        <div class="contact-row">
+          <a href="tel:+32474056659" class="primary">Appeler</a>
+          <a href="https://wa.me/32474056659" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function init(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('t');
+
+  if(!token){
+    renderError();
+    return;
+  }
+
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/rpc/get_suivi_reparation`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':`Bearer ${SB_KEY}`,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({p_token:token})
+    });
+
+    if(!res.ok){throw new Error('Erreur serveur');}
+
+    const data=await res.json();
+    const rep=Array.isArray(data)?data[0]:data;
+
+    if(!rep||!rep.numero){
+      renderError();
+      return;
+    }
+
+    renderResult(rep);
+  }catch(err){
+    renderError();
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
