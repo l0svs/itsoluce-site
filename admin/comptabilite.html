@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Tâches</title>
+<title>IT Soluce ERP — Comptabilité</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,46 +155,24 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* TÂCHES */
-.add-task{display:flex;gap:8px;padding:14px 24px;flex-wrap:wrap;align-items:center;}
-.add-task input[type=text]{flex:1;min-width:200px;padding:9px 12px;background:var(--bg2);border:1px solid var(--ln2);border-radius:7px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
-.add-task input[type=text]:focus{border-color:var(--a);}
-.add-task select,.add-task input[type=date]{padding:8px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:7px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;cursor:pointer;}
-.task-filters{display:flex;gap:6px;padding:0 24px 8px;flex-wrap:wrap;align-items:center;}
-.task-groups{flex:1;overflow-y:auto;padding:8px 24px 24px;}
-.task-group{margin-bottom:18px;}
-.tg-head{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--ln);}
-.tg-count{background:var(--bg4);color:var(--t2);font-size:10px;padding:1px 7px;border-radius:99px;}
-.tg-head.retard{color:var(--d);}
-.tg-head.aujourdhui{color:var(--a);}
-.task-item{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;border-radius:8px;transition:background .1s;cursor:pointer;}
-.task-item:hover{background:var(--bg2);}
-.task-check{width:18px;height:18px;border:2px solid var(--ln2);border-radius:5px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;margin-top:1px;}
-.task-check:hover{border-color:var(--a);}
-.task-check.done{background:var(--ok);border-color:var(--ok);}
-.task-check svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
-.task-check.done svg{opacity:1;}
-.task-main{flex:1;min-width:0;}
-.task-titre{font-size:13px;color:var(--t1);font-weight:500;}
-.task-item.done .task-titre{text-decoration:line-through;color:var(--t3);}
-.task-meta{display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;}
-.task-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:4px;}
-.prio-urgente{background:rgba(248,113,113,.13);color:#dc2626;}
-.prio-importante{background:rgba(251,146,60,.13);color:#ea580c;}
-.prio-normale{background:rgba(139,139,160,.13);color:#8b8ba0;}
-.cat-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;}
-.cat-achat{background:rgba(59,130,246,.13);color:#2563eb;}
-.cat-client{background:rgba(16,185,129,.13);color:#059669;}
-.cat-admin{background:rgba(139,92,246,.13);color:#7c3aed;}
-.cat-marketing{background:rgba(236,72,153,.13);color:#db2777;}
-.cat-perso{background:rgba(107,114,128,.13);color:#6b7280;}
-.task-date{font-size:11px;color:var(--t3);}
-.task-date.retard{color:var(--d);font-weight:500;}
-.task-link{font-size:10px;color:var(--a);font-family:monospace;}
-.task-del{width:24px;height:24px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .12s;flex-shrink:0;}
-.task-item:hover .task-del{opacity:1;}
-.task-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
-.task-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+/* TABLEAU */
+.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.table{width:100%;border-collapse:collapse;}
+.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
+.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
+.table tr:hover td{background:var(--bg2);}
+.table tr:last-child td{border-bottom:none;}
+.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
+.empty{padding:60px 24px;text-align:center;}
+/* GARANTIE BADGES */
+.gar-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;white-space:nowrap;}
+.gar-ok{background:rgba(52,211,153,0.13);color:#16a34a;}
+.gar-expire{background:rgba(248,113,113,0.13);color:#dc2626;}
+.gar-dot{width:7px;height:7px;border-radius:50%;}
+.gar-ok .gar-dot{background:#16a34a;}
+.gar-expire .gar-dot{background:#dc2626;}
+.gar-bar{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:5px;width:120px;}
+.gar-bar-fill{height:100%;border-radius:99px;transition:width .3s;}
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
@@ -423,6 +401,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   html.back-nav::view-transition-old(root){animation:ios-fade-out .25s ease;}
 }
 
+/* ── Comptabilité ── */
+.ct-info{position:relative;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--bg4);color:var(--t3);font-size:10px;cursor:help;margin-left:2px;font-style:normal;}
+.ct-info:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:240px;background:var(--bg4);color:var(--t1);font-size:11px;line-height:1.5;padding:10px 12px;border-radius:8px;border:1px solid var(--ln2);box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:50;white-space:normal;font-weight:400;}
+.ct-info:hover::before{content:'';position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg4);z-index:50;}
+.ct-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.ct-card-head{display:flex;align-items:center;justify-content:between;gap:8px;font-size:13px;font-weight:600;margin-bottom:12px;color:var(--t1);}
+.ct-bar-track{height:10px;border-radius:99px;background:var(--bg4);overflow:hidden;}
+.ct-bar-fill{height:100%;border-radius:99px;background:var(--ok);transition:width .4s ease,background .4s ease;}
+.ct-bar-legend{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:6px;}
+.ct-rate-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.ct-rate-row label{font-size:12px;color:var(--t2);flex-shrink:0;}
+.ct-rate-row input{width:80px;padding:6px 8px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t1);font-family:inherit;font-size:13px;}
+.ct-result{font-size:22px;font-weight:600;color:var(--d);}
+.ct-result-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.ct-detail-row{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);padding:5px 0;}
 </style>
 </head>
 <body>
@@ -436,7 +429,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Tâches</span>
+    <span>Comptabilité</span>
   </div>
   <div class="tb-r">
     <div class="notif-wrap">
@@ -463,10 +456,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
-      <a href="/admin/taches.html" class="nl active"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</a>
+      <a href="/admin/taches.html" class="nl"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches</a>
       <a href="/admin/prestations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations</a>
       <a href="/admin/performance.html" class="nl"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Performance</a>
-      <a href="/admin/comptabilite.html" class="nl"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Comptabilité</a>
+      <a href="/admin/comptabilite.html" class="nl active"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Comptabilité</a>
       <a href="/admin/relances.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>Relances</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/marketing.html" class="nl"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing</a>
@@ -478,53 +471,87 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
-        <div class="ph-left"><h1>Tâches</h1><p id="ph-sub">— tâches</p></div>
+        <div class="ph-left"><h1>Comptabilité</h1><p id="ph-sub">— vue d'ensemble de votre activité</p></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select id="f-annee" onchange="reloadCompta()" style="padding:6px 10px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t1);font-family:inherit;font-size:12px;"></select>
+        </div>
       </div>
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Actives</div><div class="kpi-val" id="k-actives">—</div><div class="kpi-sub">à faire</div></div>
-        <div class="kpi"><div class="kpi-label">En retard</div><div class="kpi-val" id="k-retard" style="color:var(--d)">—</div><div class="kpi-sub">échéance dépassée</div></div>
-        <div class="kpi"><div class="kpi-label">Aujourd'hui</div><div class="kpi-val" id="k-aujourdhui" style="color:var(--a)">—</div><div class="kpi-sub">à traiter</div></div>
-        <div class="kpi"><div class="kpi-label">Terminées (7j)</div><div class="kpi-val" id="k-faites" style="color:var(--ok)">—</div><div class="kpi-sub">cette semaine</div></div>
-      </div>
-      <div class="add-task">
-        <input type="text" id="t-titre" placeholder="Nouvelle tâche... (ex : Commander écran iPhone 12)" onkeydown="if(event.key==='Enter')quickAdd()"/>
-        <select id="t-prio"><option value="normale">Normale</option><option value="importante">Importante</option><option value="urgente">Urgente</option></select>
-        <select id="t-cat"><option value="">Catégorie</option><option value="achat">Achat/Stock</option><option value="client">Client</option><option value="admin">Admin</option><option value="marketing">Marketing</option><option value="perso">Perso</option></select>
-        <input type="date" id="t-date" title="Échéance"/>
-        <button class="btn btn-primary" onclick="quickAdd()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button>
-      </div>
-      <div class="task-filters">
-        <div id="filterPrio" style="display:flex;gap:4px;"></div>
-        <div style="width:1px;height:18px;background:var(--ln2);margin:0 4px;"></div>
-        <div id="filterCat" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-        <label style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;"><input type="checkbox" id="showDone" onchange="render()"/> Afficher les terminées</label>
-      </div>
-      <div class="task-groups" id="taskGroups"></div>
-    </div>
-  </div>
-</div>
 
-<!-- Panneau édition -->
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-<div class="panel" id="panel">
-  <div class="panel-head"><span class="panel-title">Modifier la tâche</span><button class="panel-close" onclick="closePanel()">×</button></div>
-  <div class="panel-body">
-    <input type="hidden" id="e-id"/>
-    <div class="fg"><label>Titre *</label><input type="text" id="e-titre"/></div>
-    <div class="fg-row">
-      <div class="fg"><label>Priorité</label><select id="e-prio"><option value="normale">Normale</option><option value="importante">Importante</option><option value="urgente">Urgente</option></select></div>
-      <div class="fg"><label>Catégorie</label><select id="e-cat"><option value="">—</option><option value="achat">Achat/Stock</option><option value="client">Client</option><option value="admin">Admin</option><option value="marketing">Marketing</option><option value="perso">Perso</option></select></div>
+      <div style="margin:0 20px 16px;padding:12px 14px;background:var(--ad);border:1px solid var(--a);border-radius:8px;font-size:12px;color:var(--t1);line-height:1.5;">
+        ⚠️ Ces chiffres sont calculés automatiquement à titre indicatif. Ils ne remplacent pas une comptabilité officielle. Pour toute décision fiscale, faites toujours valider vos chiffres par un comptable agréé ITAA ou l'UCM.
+      </div>
+
+      <div class="kpi-strip" style="flex-wrap:wrap;">
+        <div class="kpi">
+          <div class="kpi-label">CA (chiffre d'affaires) <span class="ct-info" data-tip="Somme de toutes les factures encaissées (payées par vos clients) sur l'année sélectionnée. Base 'encaissement', pas date d'émission.">ⓘ</span></div>
+          <div class="kpi-val" id="k-ca" style="color:var(--ok)">—</div>
+          <div class="kpi-sub" id="k-ca-sub">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Dépenses professionnelles <span class="ct-info" data-tip="Coût des pièces utilisées dans vos réparations + vos charges fixes (abonnements, assurance, etc.) déclarées dans Paramètres, au prorata des mois écoulés.">ⓘ</span></div>
+          <div class="kpi-val" id="k-dep" style="color:var(--w)">—</div>
+          <div class="kpi-sub" id="k-dep-sub">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Bénéfice net <span class="ct-info" data-tip="CA moins les dépenses professionnelles. C'est ce montant qui sert de base à l'estimation de vos impôts et cotisations sociales ci-dessous.">ⓘ</span></div>
+          <div class="kpi-val" id="k-benef">—</div>
+          <div class="kpi-sub" id="k-benef-sub">—</div>
+        </div>
+      </div>
+
+      <div class="pscroll" style="padding:0 20px 24px;overflow-y:auto;flex:1;">
+
+        <!-- Seuil TVA -->
+        <div class="ct-card">
+          <div class="ct-card-head">
+            <span>Seuil de franchise TVA <span class="ct-info" data-tip="En Belgique, tant que votre CA annuel reste sous 25 000€, vous restez sous le régime de franchise TVA (pas de TVA à facturer ni à déclarer). Une tolérance existe jusqu'à 27 500€ (10%) avant bascule immédiate obligatoire vers le régime normal. Seuil à vérifier avec votre comptable ou l'UCM en cas de doute.">ⓘ</span></span>
+            <span id="ct-tva-pct" style="font-weight:600;">—</span>
+          </div>
+          <div class="ct-bar-track"><div class="ct-bar-fill" id="ct-tva-bar"></div></div>
+          <div class="ct-bar-legend">
+            <span id="ct-tva-txt">—</span>
+            <span style="color:var(--t3);">Seuil : 25 000 € /an</span>
+          </div>
+        </div>
+
+        <!-- Provision impôts -->
+        <div class="ct-card">
+          <div class="ct-card-head">
+            <span>Provision pour impôts <span class="ct-info" data-tip="Estimation du montant à mettre de côté pour vos impôts sur ce bénéfice (impôt des personnes physiques sur revenu complémentaire). Le taux dépend de votre tranche marginale d'imposition : demandez le taux exact à votre comptable ou calculez-le via Tax-on-web.">ⓘ</span></span>
+          </div>
+          <div class="ct-rate-row">
+            <label>Taux estimé</label>
+            <input type="number" id="ct-taux-impot" min="0" max="100" step="0.1" placeholder="ex: 30" onchange="saveTaux('compta_taux_impot',this.value)"/>
+            <span>%</span>
+          </div>
+          <div class="ct-result" id="ct-impot-val">—</div>
+          <div class="ct-result-sub">à mettre de côté sur le bénéfice net de l'année</div>
+        </div>
+
+        <!-- Cotisations sociales -->
+        <div class="ct-card">
+          <div class="ct-card-head">
+            <span>Cotisations sociales <span class="ct-info" data-tip="En tant qu'indépendant complémentaire, des cotisations sociales sont dues si votre revenu net dépasse un certain seuil annuel. Le taux et le seuil exact doivent être confirmés auprès de votre caisse d'assurances sociales ou l'UCM — ne vous basez pas uniquement sur ce chiffre pour payer vos cotisations.">ⓘ</span></span>
+          </div>
+          <div class="ct-rate-row">
+            <label>Taux estimé</label>
+            <input type="number" id="ct-taux-cot" min="0" max="100" step="0.1" placeholder="ex: 20.5" onchange="saveTaux('compta_taux_cotisations',this.value)"/>
+            <span>%</span>
+          </div>
+          <div class="ct-result" id="ct-cot-val">—</div>
+          <div class="ct-result-sub">à mettre de côté sur le bénéfice net de l'année</div>
+        </div>
+
+        <!-- Détail dépenses -->
+        <div class="ct-card">
+          <div class="ct-card-head"><span>Détail des dépenses professionnelles</span></div>
+          <div class="ct-detail-row"><span>Coût des pièces (réparations de l'année)</span><span id="ct-cout-pieces">—</span></div>
+          <div class="ct-detail-row"><span>Charges fixes (au prorata des mois écoulés)</span><span id="ct-charges-fixes">—</span></div>
+          <div class="ct-detail-row" style="font-weight:600;border-top:1px solid var(--ln2);padding-top:8px;margin-top:4px;"><span>Total</span><span id="ct-total-dep">—</span></div>
+        </div>
+
+      </div>
     </div>
-    <div class="fg"><label>Échéance</label><input type="date" id="e-date"/></div>
-    <div class="fg-sep">Lien (optionnel)</div>
-    <div class="fg"><label>Client</label><select id="e-client"><option value="">— Aucun —</option></select></div>
-    <div class="fg"><label>Réparation</label><select id="e-rep"><option value="">— Aucune —</option></select></div>
-    <div class="fg"><label>Notes</label><textarea id="e-notes"></textarea></div>
-  </div>
-  <div class="panel-footer">
-    <button class="btn btn-secondary" onclick="deleteFromPanel()" id="ePanelDel">Supprimer</button>
-    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveEdit()" style="flex:2;">Mettre à jour</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -537,8 +564,6 @@ setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('
 const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
 if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
-function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
 </script>
 <script>
 window.toggleNotifs=function(e){
@@ -636,235 +661,130 @@ loadNotifs();
 
 
 
-let allTaches=[]
-let allClients=[]
-let allReps=[]
-let filterPrio='Toutes'
-let filterCat='Toutes'
-const PRIO_LABEL={urgente:'Urgente',importante:'Importante',normale:'Normale'}
-const CAT_LABEL={achat:'Achat/Stock',client:'Client',admin:'Admin',marketing:'Marketing',perso:'Perso'}
+let allFactures=[]
+let allReparations=[]
+let allCharges=[]
+let settingsMap={}
+let selectedYear=new Date().getFullYear()
+
+function EUR(n){return (Number(n)||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
+
+function populateYearSelect(){
+  const years=new Set([new Date().getFullYear()])
+  allFactures.forEach(f=>{const d=f.date_paiement||f.date_emission||f.created_at;if(d)years.add(new Date(d).getFullYear())})
+  const sorted=[...years].sort((a,b)=>b-a)
+  document.getElementById('f-annee').innerHTML=sorted.map(y=>`<option value="${y}" ${y===selectedYear?'selected':''}>${y}</option>`).join('')
+}
+
+window.reloadCompta=function(){
+  selectedYear=Number(document.getElementById('f-annee').value)
+  computeAndRender()
+}
+
+window.saveTaux=async function(cle,valeur){
+  const v=parseFloat(valeur)||0
+  settingsMap[cle]=String(v)
+  await sb.from('settings').upsert({cle:cle,valeur:String(v)},{onConflict:'cle'})
+  computeAndRender()
+  showToast('Taux enregistré','ok')
+}
+
+function computeAndRender(){
+  const now=new Date()
+  const isCurrentYear=selectedYear===now.getFullYear()
+  const moisEcoules=isCurrentYear?(now.getMonth()+1):12
+
+  // CA encaissé sur l'année sélectionnée (factures payées)
+  const facturesAnnee=allFactures.filter(f=>{
+    if(f.statut!=='payee')return false
+    const d=new Date(f.date_paiement||f.date_emission||f.created_at)
+    return d.getFullYear()===selectedYear
+  })
+  const ca=facturesAnnee.reduce((a,f)=>a+Number(f.total||0),0)
+
+  const facturesMois=facturesAnnee.filter(f=>{
+    const d=new Date(f.date_paiement||f.date_emission||f.created_at)
+    return d.getMonth()===now.getMonth()
+  })
+  const caMois=facturesMois.reduce((a,f)=>a+Number(f.total||0),0)
+
+  // Coût des pièces sur les réparations de l'année
+  const reparationsAnnee=allReparations.filter(r=>{
+    const d=new Date(r.created_at)
+    return d.getFullYear()===selectedYear
+  })
+  const coutPieces=reparationsAnnee.reduce((a,r)=>a+Number(r.cout_pieces||0),0)
+
+  // Charges fixes actives, au prorata des mois écoulés (année en cours) ou 12 mois (année passée)
+  const chargesActives=allCharges.filter(c=>c.actif!==false)
+  const chargesMensuelles=chargesActives.reduce((a,c)=>a+Number(c.montant||0),0)
+  const chargesTotal=chargesMensuelles*moisEcoules
+
+  const depensesTotal=coutPieces+chargesTotal
+  const benefice=ca-depensesTotal
+
+  // KPIs principaux
+  document.getElementById('k-ca').textContent=EUR(ca)
+  document.getElementById('k-ca-sub').textContent=`dont ${EUR(caMois)} ce mois-ci`
+  document.getElementById('k-dep').textContent=EUR(depensesTotal)
+  document.getElementById('k-dep-sub').textContent=`${facturesAnnee.length} facture(s) payée(s) sur ${selectedYear}`
+  document.getElementById('k-benef').textContent=EUR(benefice)
+  document.getElementById('k-benef').style.color=benefice>=0?'var(--ok)':'var(--d)'
+  document.getElementById('k-benef-sub').textContent=benefice>=0?'résultat positif':'résultat négatif'
+
+  // Détail dépenses
+  document.getElementById('ct-cout-pieces').textContent=EUR(coutPieces)
+  document.getElementById('ct-charges-fixes').textContent=`${EUR(chargesTotal)} (${EUR(chargesMensuelles)}/mois × ${moisEcoules})`
+  document.getElementById('ct-total-dep').textContent=EUR(depensesTotal)
+
+  // Seuil TVA (25 000€, tolérance 27 500€)
+  const seuilTva=25000
+  const pctTva=Math.min(100,(ca/seuilTva)*100)
+  const barEl=document.getElementById('ct-tva-bar')
+  barEl.style.width=pctTva+'%'
+  let tvaColor='var(--ok)'
+  if(ca>=seuilTva){tvaColor='var(--d)'}
+  else if(ca>=seuilTva*0.8){tvaColor='var(--w)'}
+  barEl.style.background=tvaColor
+  document.getElementById('ct-tva-pct').textContent=EUR(ca)+' / 25 000 €'
+  document.getElementById('ct-tva-pct').style.color=tvaColor
+  let tvaTxt=''
+  if(ca>=27500){tvaTxt='⚠️ Seuil de tolérance dépassé — bascule immédiate au régime normal de TVA. Contactez votre comptable en urgence.'}
+  else if(ca>=25000){tvaTxt='⚠️ Seuil de 25 000€ dépassé — tolérance de 10% jusqu\'à 27 500€ avant bascule obligatoire.'}
+  else if(pctTva>=80){tvaTxt='Attention, vous approchez du seuil.'}
+  else{tvaTxt='Vous êtes en dessous du seuil de franchise.'}
+  document.getElementById('ct-tva-txt').textContent=tvaTxt
+
+  // Provision impôts et cotisations
+  const tauxImpot=parseFloat(settingsMap['compta_taux_impot'])||0
+  const tauxCot=parseFloat(settingsMap['compta_taux_cotisations'])||0
+  document.getElementById('ct-taux-impot').value=settingsMap['compta_taux_impot']||''
+  document.getElementById('ct-taux-cot').value=settingsMap['compta_taux_cotisations']||''
+  const beneficePositif=Math.max(0,benefice)
+  document.getElementById('ct-impot-val').textContent=EUR(beneficePositif*tauxImpot/100)
+  document.getElementById('ct-cot-val').textContent=EUR(beneficePositif*tauxCot/100)
+
+  document.getElementById('ph-sub').textContent=`Année ${selectedYear} · ${facturesAnnee.length} facture(s) encaissée(s)`
+}
 
 async function load(){
-  const [rT,rC,rR]=await Promise.all([
-    sb.from('taches').select('*').order('created_at',{ascending:false}),
-    sb.from('clients').select('id,numero,nom').order('nom'),
-    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele').order('created_at',{ascending:false})
+  const [rFact,rRep,rCharges,rSettings]=await Promise.all([
+    sb.from('factures').select('total,statut,date_paiement,date_emission,created_at'),
+    sb.from('reparations').select('cout_pieces,created_at'),
+    sb.from('charges').select('montant,actif'),
+    sb.from('settings').select('*').in('cle',['compta_taux_impot','compta_taux_cotisations'])
   ])
-  if(rT.error){showError(rT.error.message);return}
-  allTaches=rT.data||[]
-  allClients=rC.data||[]
-  allReps=rR.data||[]
-  fillSelects()
-  renderFilters()
-  render()
+  if(rFact.error){showError(rFact.error.message);return}
+  allFactures=rFact.data||[]
+  allReparations=rRep.data||[]
+  allCharges=rCharges.data||[]
+  settingsMap={}
+  ;(rSettings.data||[]).forEach(s=>{settingsMap[s.cle]=s.valeur})
+
+  populateYearSelect()
+  computeAndRender()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
-}
-
-function fillSelects(){
-  const cs=document.getElementById('e-client')
-  cs.innerHTML='<option value="">— Aucun —</option>'+allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
-  const rs=document.getElementById('e-rep')
-  rs.innerHTML='<option value="">— Aucune —</option>'+allReps.map(r=>`<option value="${r.id}" data-num="${r.numero||''}">${r.numero||''} · ${r.client_nom}</option>`).join('')
-}
-
-window.quickAdd=async function(){
-  const titre=document.getElementById('t-titre').value.trim()
-  if(!titre){document.getElementById('t-titre').focus();return}
-  const payload={
-    titre,
-    priorite:document.getElementById('t-prio').value,
-    categorie:document.getElementById('t-cat').value||null,
-    due_at:document.getElementById('t-date').value||null,
-    faite:false,
-    updated_at:new Date().toISOString()
-  }
-  const res=await sb.from('taches').insert(payload).select().single()
-  if(res.error){showToast('Erreur : '+res.error.message,'err');return}
-  allTaches.unshift(res.data)
-  document.getElementById('t-titre').value=''
-  document.getElementById('t-date').value=''
-  document.getElementById('t-cat').value=''
-  document.getElementById('t-prio').value='normale'
-  render()
-  showToast('Tâche ajoutée ✓','ok')
-  document.getElementById('t-titre').focus()
-}
-
-window.toggleTask=async function(id,e){
-  if(e)e.stopPropagation()
-  const t=allTaches.find(x=>x.id===id)
-  if(!t)return
-  const nv=!t.faite
-  const {error}=await sb.from('taches').update({faite:nv,updated_at:new Date().toISOString()}).eq('id',id)
-  if(error){showToast('Erreur','err');return}
-  t.faite=nv
-  if(nv)t.date_faite=new Date().toISOString()
-  render()
-}
-
-window.delTask=async function(id,e){
-  if(e)e.stopPropagation()
-  const t=allTaches.find(x=>x.id===id)
-  if(!confirm(`Supprimer la tâche "${t?t.titre:''}" ?`))return
-  const {error}=await sb.from('taches').delete().eq('id',id)
-  if(error){showToast('Erreur','err');return}
-  allTaches=allTaches.filter(x=>x.id!==id)
-  render()
-  showToast('Tâche supprimée','ok')
-}
-
-window.editTask=function(id){
-  const t=allTaches.find(x=>x.id===id)
-  if(!t)return
-  document.getElementById('e-id').value=t.id
-  document.getElementById('e-titre').value=t.titre||''
-  document.getElementById('e-prio').value=t.priorite||'normale'
-  document.getElementById('e-cat').value=t.categorie||''
-  document.getElementById('e-date').value=t.due_at?t.due_at.slice(0,10):''
-  document.getElementById('e-client').value=t.client_id||''
-  document.getElementById('e-rep').value=t.reparation_id||''
-  document.getElementById('e-notes').value=t.notes||''
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-}
-
-window.saveEdit=async function(){
-  const id=document.getElementById('e-id').value
-  const titre=document.getElementById('e-titre').value.trim()
-  if(!titre){showToast('Le titre est requis','err');return}
-  const cs=document.getElementById('e-client'),rs=document.getElementById('e-rep')
-  const payload={
-    titre,
-    priorite:document.getElementById('e-prio').value,
-    categorie:document.getElementById('e-cat').value||null,
-    due_at:document.getElementById('e-date').value||null,
-    client_id:cs.value?Number(cs.value):null,
-    client_nom:cs.value?cs.options[cs.selectedIndex].dataset.nom:null,
-    reparation_id:rs.value?Number(rs.value):null,
-    reparation_numero:rs.value?rs.options[rs.selectedIndex].dataset.num:null,
-    notes:document.getElementById('e-notes').value.trim()||null,
-    updated_at:new Date().toISOString()
-  }
-  const {error}=await sb.from('taches').update(payload).eq('id',id)
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  const i=allTaches.findIndex(t=>t.id===Number(id))
-  if(i>=0)allTaches[i]={...allTaches[i],...payload,id:Number(id)}
-  closePanel()
-  render()
-  showToast('Tâche mise à jour ✓','ok')
-}
-
-window.deleteFromPanel=async function(){
-  const id=document.getElementById('e-id').value
-  if(!id)return
-  const t=allTaches.find(x=>x.id===Number(id))
-  if(!confirm(`Supprimer la tâche "${t?t.titre:''}" ?`))return
-  const {error}=await sb.from('taches').delete().eq('id',id)
-  if(error){showToast('Erreur','err');return}
-  allTaches=allTaches.filter(x=>x.id!==Number(id))
-  closePanel()
-  render()
-  showToast('Tâche supprimée','ok')
-}
-
-function renderFilters(){
-  const prios=['Toutes','urgente','importante','normale']
-  document.getElementById('filterPrio').innerHTML=prios.map(p=>{
-    const a=filterPrio===p
-    const lbl=p==='Toutes'?'Toutes':PRIO_LABEL[p]
-    return`<button class="filter-btn ${a?'active':''}" onclick="setPrio('${p}')">${lbl}</button>`
-  }).join('')
-  const cats=['Toutes','achat','client','admin','marketing','perso']
-  document.getElementById('filterCat').innerHTML=cats.map(c=>{
-    const a=filterCat===c
-    const lbl=c==='Toutes'?'Toutes cat.':CAT_LABEL[c]
-    return`<button class="filter-btn ${a?'active':''}" onclick="setCat('${c}')">${lbl}</button>`
-  }).join('')
-}
-window.setPrio=function(p){filterPrio=p;renderFilters();render()}
-window.setCat=function(c){filterCat=c;renderFilters();render()}
-
-function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
-
-function render(){
-  const showDone=document.getElementById('showDone').checked
-  const today=startOfDay(new Date())
-  const actives=allTaches.filter(t=>!t.faite)
-  // KPIs
-  const enRetard=actives.filter(t=>t.due_at&&startOfDay(t.due_at)<today)
-  const auj=actives.filter(t=>t.due_at&&startOfDay(t.due_at).getTime()===today.getTime())
-  const weekAgo=new Date(today);weekAgo.setDate(weekAgo.getDate()-7)
-  const faites7j=allTaches.filter(t=>t.faite&&t.updated_at&&new Date(t.updated_at)>=weekAgo)
-  document.getElementById('k-actives').textContent=actives.length
-  document.getElementById('k-retard').textContent=enRetard.length
-  document.getElementById('k-aujourdhui').textContent=auj.length
-  document.getElementById('k-faites').textContent=faites7j.length
-  document.getElementById('ph-sub').textContent=`${actives.length} tâche${actives.length>1?'s':''} active${actives.length>1?'s':''}`
-
-  // Filtrer
-  let list=allTaches.filter(t=>{
-    if(!showDone&&t.faite)return false
-    if(filterPrio!=='Toutes'&&t.priorite!==filterPrio)return false
-    if(filterCat!=='Toutes'&&t.categorie!==filterCat)return false
-    return true
-  })
-
-  // Grouper par échéance
-  const groups={retard:[],aujourdhui:[],semaine:[],plustard:[],sansdate:[],faites:[]}
-  const in7=new Date(today);in7.setDate(in7.getDate()+7)
-  list.forEach(t=>{
-    if(t.faite){groups.faites.push(t);return}
-    if(!t.due_at){groups.sansdate.push(t);return}
-    const d=startOfDay(t.due_at)
-    if(d<today)groups.retard.push(t)
-    else if(d.getTime()===today.getTime())groups.aujourdhui.push(t)
-    else if(d<=in7)groups.semaine.push(t)
-    else groups.plustard.push(t)
-  })
-  // Tri par priorité dans chaque groupe
-  const prioRank={urgente:0,importante:1,normale:2}
-  Object.values(groups).forEach(g=>g.sort((a,b)=>(prioRank[a.priorite]??3)-(prioRank[b.priorite]??3)))
-
-  const order=[
-    ['retard','En retard','retard'],
-    ['aujourdhui',"Aujourd'hui",'aujourdhui'],
-    ['semaine','Cette semaine',''],
-    ['plustard','Plus tard',''],
-    ['sansdate','Sans échéance',''],
-  ]
-  if(showDone)order.push(['faites','Terminées',''])
-
-  let html=''
-  order.forEach(([key,label,cls])=>{
-    const g=groups[key]
-    if(g.length===0)return
-    html+=`<div class="task-group"><div class="tg-head ${cls}">${label}<span class="tg-count">${g.length}</span></div>${g.map(renderTask).join('')}</div>`
-  })
-  if(!html)html=`<div style="text-align:center;padding:50px;color:var(--t3);"><div style="font-size:28px;margin-bottom:10px;opacity:.4;">✓</div><div style="font-size:13px;">Aucune tâche ${filterPrio!=='Toutes'||filterCat!=='Toutes'?'pour ce filtre':'en cours'}</div></div>`
-  document.getElementById('taskGroups').innerHTML=html
-}
-
-function renderTask(t){
-  const today=startOfDay(new Date())
-  let dateHtml=''
-  if(t.due_at){
-    const d=startOfDay(t.due_at)
-    const retard=!t.faite&&d<today
-    const dStr=new Date(t.due_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-    dateHtml=`<span class="task-date ${retard?'retard':''}">📅 ${dStr}</span>`
-  }
-  const catHtml=t.categorie?`<span class="cat-tag cat-${t.categorie}">${CAT_LABEL[t.categorie]||t.categorie}</span>`:''
-  const prioHtml=t.priorite&&t.priorite!=='normale'?`<span class="task-tag prio-${t.priorite}">${PRIO_LABEL[t.priorite]}</span>`:''
-  const linkHtml=t.reparation_numero?`<span class="task-link">${t.reparation_numero}</span>`:(t.client_nom?`<span class="task-link">${t.client_nom}</span>`:'')
-  return`<div class="task-item ${t.faite?'done':''}" onclick="editTask(${t.id})">
-    <div class="task-check ${t.faite?'done':''}" onclick="toggleTask(${t.id},event)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-    <div class="task-main">
-      <div class="task-titre">${t.titre}</div>
-      <div class="task-meta">${prioHtml}${catHtml}${dateHtml}${linkHtml}</div>
-    </div>
-    <button class="task-del" onclick="delTask(${t.id},event)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-  </div>`
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
@@ -933,7 +853,7 @@ function closeMobileNav(){
   if(!document.startViewTransition)return; // navigateur non compatible -> navigation normale
 
   // Ordre des pages pour déterminer aller/retour (profondeur)
-  const DEPTH={dashboard:0,reparations:1,stock:1,catalogue:1,clients:1,fournisseurs:1,devis:1,factures:1,garanties:1,charges:1,planning:1,taches:1,marketing:1,performance:1,relances:1,settings:1};
+  const DEPTH={dashboard:0,reparations:1,stock:1,catalogue:1,clients:1,fournisseurs:1,devis:1,factures:1,garanties:1,charges:1,planning:1,taches:1,marketing:1,performance:1,comptabilite:1,relances:1,settings:1};
   function pageName(url){try{return (new URL(url,location.href)).pathname.split('/').pop().replace('.html','')||'dashboard';}catch(e){return '';}}
   const current=pageName(location.href);
 
