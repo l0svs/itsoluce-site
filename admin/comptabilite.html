@@ -547,7 +547,42 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="ct-card-head"><span>Détail des dépenses professionnelles</span></div>
           <div class="ct-detail-row"><span>Coût des pièces (réparations de l'année)</span><span id="ct-cout-pieces">—</span></div>
           <div class="ct-detail-row"><span>Charges fixes (au prorata des mois écoulés)</span><span id="ct-charges-fixes">—</span></div>
+          <div class="ct-detail-row"><span>Dépenses ponctuelles (achats, abonnements...)</span><span id="ct-depenses-ponct">—</span></div>
           <div class="ct-detail-row" style="font-weight:600;border-top:1px solid var(--ln2);padding-top:8px;margin-top:4px;"><span>Total</span><span id="ct-total-dep">—</span></div>
+        </div>
+
+        <!-- Gestion des dépenses ponctuelles -->
+        <div class="ct-card">
+          <div class="ct-card-head" style="justify-content:space-between;">
+            <span>Dépenses ponctuelles <span class="ct-info" data-tip="Achats, abonnements logiciels, frais divers liés à votre activité — tout ce qui n'est ni une pièce de réparation, ni une charge fixe mensuelle.">ⓘ</span></span>
+            <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;" onclick="toggleDepForm()">+ Ajouter</button>
+          </div>
+
+          <div id="dep-form" style="display:none;margin-bottom:16px;padding:14px;background:var(--bg3);border-radius:8px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+              <div><label style="font-size:11px;color:var(--t3);display:block;margin-bottom:4px;">Date</label><input type="date" id="dep-date" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t1);font-family:inherit;font-size:13px;"/></div>
+              <div><label style="font-size:11px;color:var(--t3);display:block;margin-bottom:4px;">Montant €</label><input type="number" step="0.01" min="0" id="dep-montant" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t1);font-family:inherit;font-size:13px;"/></div>
+            </div>
+            <div style="margin-bottom:10px;"><label style="font-size:11px;color:var(--t3);display:block;margin-bottom:4px;">Fournisseur</label><input type="text" id="dep-fournisseur" placeholder="ex: Foneday, OVH..." style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t1);font-family:inherit;font-size:13px;"/></div>
+            <div style="margin-bottom:10px;">
+              <label style="font-size:11px;color:var(--t3);display:block;margin-bottom:4px;">Catégorie</label>
+              <select id="dep-categorie" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t1);font-family:inherit;font-size:13px;">
+                <option value="Matériel professionnel">Matériel professionnel</option>
+                <option value="Logiciel / abonnement">Logiciel / abonnement</option>
+                <option value="Frais administratifs">Frais administratifs</option>
+                <option value="Déplacement">Déplacement</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            <div style="margin-bottom:12px;"><label style="font-size:11px;color:var(--t3);display:block;margin-bottom:4px;">Description (optionnel)</label><input type="text" id="dep-description" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t1);font-family:inherit;font-size:13px;"/></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary" style="font-size:12px;" onclick="toggleDepForm()">Annuler</button>
+              <button class="btn btn-primary" style="font-size:12px;" onclick="saveDepense()">Enregistrer</button>
+            </div>
+          </div>
+
+          <div id="dep-list"></div>
+          <div id="dep-empty" style="display:none;font-size:12px;color:var(--t3);text-align:center;padding:16px 0;">Aucune dépense ponctuelle enregistrée.</div>
         </div>
 
       </div>
@@ -664,6 +699,7 @@ loadNotifs();
 let allFactures=[]
 let allReparations=[]
 let allCharges=[]
+let allDepenses=[]
 let settingsMap={}
 let selectedYear=new Date().getFullYear()
 
@@ -720,7 +756,14 @@ function computeAndRender(){
   const chargesMensuelles=chargesActives.reduce((a,c)=>a+Number(c.montant||0),0)
   const chargesTotal=chargesMensuelles*moisEcoules
 
-  const depensesTotal=coutPieces+chargesTotal
+  // Dépenses ponctuelles de l'année sélectionnée
+  const depensesAnnee=allDepenses.filter(d=>{
+    const dt=new Date(d.date_depense)
+    return dt.getFullYear()===selectedYear
+  })
+  const depensesPonctTotal=depensesAnnee.reduce((a,d)=>a+Number(d.montant||0),0)
+
+  const depensesTotal=coutPieces+chargesTotal+depensesPonctTotal
   const benefice=ca-depensesTotal
 
   // KPIs principaux
@@ -735,6 +778,7 @@ function computeAndRender(){
   // Détail dépenses
   document.getElementById('ct-cout-pieces').textContent=EUR(coutPieces)
   document.getElementById('ct-charges-fixes').textContent=`${EUR(chargesTotal)} (${EUR(chargesMensuelles)}/mois × ${moisEcoules})`
+  document.getElementById('ct-depenses-ponct').textContent=EUR(depensesPonctTotal)
   document.getElementById('ct-total-dep').textContent=EUR(depensesTotal)
 
   // Seuil TVA (25 000€, tolérance 27 500€)
@@ -765,19 +809,95 @@ function computeAndRender(){
   document.getElementById('ct-cot-val').textContent=EUR(beneficePositif*tauxCot/100)
 
   document.getElementById('ph-sub').textContent=`Année ${selectedYear} · ${facturesAnnee.length} facture(s) encaissée(s)`
+
+  renderDepenses(depensesAnnee)
+}
+
+function renderDepenses(depensesAnnee){
+  const list=document.getElementById('dep-list')
+  const empty=document.getElementById('dep-empty')
+  if(depensesAnnee.length===0){
+    list.innerHTML=''
+    empty.style.display='block'
+    empty.textContent=`Aucune dépense ponctuelle enregistrée pour ${selectedYear}.`
+    return
+  }
+  empty.style.display='none'
+  list.innerHTML=depensesAnnee.map(d=>{
+    const dt=new Date(d.date_depense).toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--ln);gap:10px;">
+      <div style="min-width:0;flex:1;">
+        <div style="font-size:13px;font-weight:500;">${escapeHtmlCt(d.fournisseur||'—')}</div>
+        <div style="font-size:11px;color:var(--t3);">${dt} · ${escapeHtmlCt(d.categorie||'—')}${d.description?' · '+escapeHtmlCt(d.description):''}</div>
+      </div>
+      <div style="font-weight:600;white-space:nowrap;">${EUR(d.montant)}</div>
+      <button onclick="deleteDepense(${d.id})" title="Supprimer" style="background:none;border:none;color:var(--t3);cursor:pointer;padding:4px;flex-shrink:0;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      </button>
+    </div>`
+  }).join('')
+}
+
+function escapeHtmlCt(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+
+window.toggleDepForm=function(){
+  const f=document.getElementById('dep-form')
+  const show=f.style.display==='none'
+  f.style.display=show?'block':'none'
+  if(show){
+    document.getElementById('dep-date').value=new Date().toISOString().slice(0,10)
+    document.getElementById('dep-montant').value=''
+    document.getElementById('dep-fournisseur').value=''
+    document.getElementById('dep-description').value=''
+  }
+}
+
+window.saveDepense=async function(){
+  const date=document.getElementById('dep-date').value
+  const montant=parseFloat(document.getElementById('dep-montant').value)
+  const fournisseur=document.getElementById('dep-fournisseur').value.trim()
+  const categorie=document.getElementById('dep-categorie').value
+  const description=document.getElementById('dep-description').value.trim()
+
+  if(!date||!montant||montant<=0||!fournisseur){
+    showToast('Date, montant et fournisseur sont requis','err')
+    return
+  }
+
+  const {error}=await sb.from('depenses').insert({
+    date_depense:date,montant:montant,fournisseur:fournisseur,categorie:categorie,description:description||null
+  })
+  if(error){showToast('Erreur : '+error.message,'err');return}
+
+  showToast('Dépense ajoutée','ok')
+  toggleDepForm()
+  const {data}=await sb.from('depenses').select('*').order('date_depense',{ascending:false})
+  allDepenses=data||[]
+  computeAndRender()
+}
+
+window.deleteDepense=async function(id){
+  if(!confirm('Supprimer cette dépense ?'))return
+  const {error}=await sb.from('depenses').delete().eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  allDepenses=allDepenses.filter(d=>d.id!==id)
+  computeAndRender()
+  showToast('Dépense supprimée','ok')
 }
 
 async function load(){
-  const [rFact,rRep,rCharges,rSettings]=await Promise.all([
+  const [rFact,rRep,rCharges,rSettings,rDep]=await Promise.all([
     sb.from('factures').select('total,statut,date_paiement,date_emission,created_at'),
     sb.from('reparations').select('cout_pieces,created_at'),
     sb.from('charges').select('montant,actif'),
-    sb.from('settings').select('*').in('cle',['compta_taux_impot','compta_taux_cotisations'])
+    sb.from('settings').select('*').in('cle',['compta_taux_impot','compta_taux_cotisations']),
+    sb.from('depenses').select('*').order('date_depense',{ascending:false})
   ])
   if(rFact.error){showError(rFact.error.message);return}
   allFactures=rFact.data||[]
   allReparations=rRep.data||[]
   allCharges=rCharges.data||[]
+  allDepenses=rDep.data||[]
   settingsMap={}
   ;(rSettings.data||[]).forEach(s=>{settingsMap[s.cle]=s.valeur})
 
