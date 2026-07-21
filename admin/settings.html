@@ -1007,20 +1007,26 @@ document.querySelectorAll('input:not([disabled]),select:not([disabled]),textarea
 })
 
 // Charger utilisateurs
-const {data:users}=await sb.auth.admin?.listUsers?.()??{data:null}
+try{
+  await sb.auth.admin?.listUsers?.()
+}catch(e){
+  console.warn('Liste utilisateurs (admin) indisponible côté client :',e)
+}
 const usersList=document.getElementById('users-list')
 // Afficher les utilisateurs connus (depuis la table auth via user_email)
 const knownUsers=[
   {email:'linton@itsoluce.be',role:'Administrateur'},
   {email:'pauline@itsoluce.be',role:'Éditeur'}
 ]
-usersList.innerHTML=knownUsers.map(u=>`
-  <div class="user-row">
-    <div class="u-av">${u.email[0].toUpperCase()}</div>
-    <div class="u-info"><div class="u-name">${u.email}</div><div class="u-email">${u.email===email?'Compte actuel':''}</div></div>
-    <span class="u-role ${u.role==='Éditeur'?'editor':''}">${u.role}</span>
-    ${u.email!==email?`<button class="btn btn-danger" onclick="deleteUser('${u.email}')" style="font-size:11px;padding:4px 10px;">Supprimer</button>`:'<span style="font-size:11px;color:var(--t3);">Vous</span>'}
-  </div>`).join('')
+if(usersList){
+  usersList.innerHTML=knownUsers.map(u=>`
+    <div class="user-row">
+      <div class="u-av">${u.email[0].toUpperCase()}</div>
+      <div class="u-info"><div class="u-name">${u.email}</div><div class="u-email">${u.email===email?'Compte actuel':''}</div></div>
+      <span class="u-role ${u.role==='Éditeur'?'editor':''}">${u.role}</span>
+      ${u.email!==email?`<button class="btn btn-danger" onclick="deleteUser('${u.email}')" style="font-size:11px;padding:4px 10px;">Supprimer</button>`:'<span style="font-size:11px;color:var(--t3);">Vous</span>'}
+    </div>`).join('')
+}
 
 // Sauvegarder
 window.saveSettings=async function(){
