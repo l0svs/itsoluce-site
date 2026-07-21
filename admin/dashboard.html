@@ -618,8 +618,6 @@ function showError(msg){document.getElementById('ldr').style.display='none';docu
 try {
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
-document.getElementById('uEmail').textContent=session.user.email
-document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 // ── SYSTÈME DE NOTIFICATIONS ──
 async function loadNotifs(){
   try {

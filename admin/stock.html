@@ -955,8 +955,6 @@ try {
 // Auth
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html'; throw new Error('no session')}
-document.getElementById('uEmail').textContent=session.user.email
-document.getElementById('uAv').textContent=session.user.email[0].toUpperCase()
 
 // State
 let allStock=[]

@@ -943,8 +943,6 @@ const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html'}
 
 const email=session.user.email
-document.getElementById('uEmail').textContent=email
-document.getElementById('uAv').textContent=email[0].toUpperCase()
 document.getElementById('s-compte-email').value=email
 
 const loginTime=new Date(session.user.last_sign_in_at||Date.now()).toLocaleString('fr-BE')
