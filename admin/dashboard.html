@@ -563,7 +563,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <h1 id="hello">Bonjour Linton</h1>
         <p id="helloDate">—</p>
       </div>
-      <div class="dash-kpis" id="kpis"></div>
       <div class="dash-grid" id="grid"></div>
     </div>
   </div>
@@ -731,16 +730,8 @@ const montantImpaye=facturesImpayees.reduce((a,f)=>a+Number(f.total||0),0)
 // Factures en retard (échéance dépassée)
 const facturesRetard=facturesImpayees.filter(f=>f.date_echeance&&new Date(f.date_echeance)<today)
 
-// Réparations actives
+// Réparations actives (réutilisé par la carte Réparations et le badge menu)
 const repsActives=reps.filter(r=>!['rendu','annule'].includes(r.statut))
-
-// KPIs
-const kpis=[
-  {label:'Réparations actives',val:repsActives.length,sub:'en cours de traitement',color:'#8b5cf6'},
-  {label:'Factures en attente',val:facturesImpayees.length,sub:'à encaisser',color:'#f59e0b'},
-  {label:'Factures en retard',val:facturesRetard.length,sub:'échéance dépassée',color:'#ef4444'}
-]
-document.getElementById('kpis').innerHTML=kpis.map(k=>{const inner=`<div class="dk-accent" style="background:${k.color}"></div><div class="dk-label">${k.label}</div><div class="dk-val" style="color:${k.color}">${k.val}</div><div class="dk-sub">${k.sub}</div>`;return k.link?`<a href="${k.link}" class="dk" style="text-decoration:none;cursor:pointer;">${inner}</a>`:`<div class="dk">${inner}</div>`}).join('')
 
 // ─── PRÉPARATION DES LISTES ───
 const STATUT_REP={attente_reception:"En attente de réception de l'appareil",recu:'Reçu',attente:'Attente de pièce',encours:'En réparation',pret:'Prêt à récupérer',rendu:'Rendu',annule:'Annulé'}
