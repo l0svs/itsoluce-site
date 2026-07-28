@@ -523,6 +523,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
     </div>
     <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+    <div class="fg" style="margin-top:4px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <label style="margin:0;font-size:12px;font-weight:500;color:var(--t2);">Client professionnel</label>
+        <div id="togPro" onclick="toggleClientPro()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div id="togProThumb" style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;"></div></div>
+        <input type="hidden" id="f-is-pro" value="false"/>
+      </div>
+      <div id="pro-fields" style="display:none;flex-direction:column;gap:10px;">
+        <input type="text" id="f-societe" placeholder="Nom de la société"/>
+        <input type="text" id="f-tva-client" placeholder="Numéro TVA client (ex : BE 0123.456.789)"/>
+      </div>
+    </div>
 
     <div class="fg-sep">Lignes de facturation</div>
     <table class="lignes-table">
@@ -747,6 +758,7 @@ function openPanel(f){
   document.getElementById('f-email').value=f?(f.client_email||''):'';
   document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
   document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
+  setClientPro(!!(f&&(f.client_societe||f.client_tva)),f?f.client_societe:'',f?f.client_tva:'');
   document.getElementById('f-remise').value=f?(f.remise||0):0;
   document.getElementById('f-acompte').value=f?(f.acompte||0):0;
   document.getElementById('f-acompte-type').value=f?(f.acompte_type||'euro'):'euro';
@@ -772,6 +784,26 @@ function openPanel(f){
   document.getElementById('panel').classList.add('open');
 }
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
+function toggleClientPro(){
+  const isPro=document.getElementById('f-is-pro').value==='true'
+  const newVal=!isPro
+  document.getElementById('f-is-pro').value=String(newVal)
+  const tog=document.getElementById('togPro'),th=document.getElementById('togProThumb')
+  tog.style.background=newVal?'var(--a)':'var(--bg4)'
+  tog.style.borderColor=newVal?'var(--a)':'var(--ln2)'
+  th.style.transform=newVal?'translateX(14px)':'translateX(0)'
+  document.getElementById('pro-fields').style.display=newVal?'flex':'none'
+}
+function setClientPro(val,societe,tva){
+  document.getElementById('f-is-pro').value=String(!!val)
+  const tog=document.getElementById('togPro'),th=document.getElementById('togProThumb')
+  tog.style.background=val?'var(--a)':'var(--bg4)'
+  tog.style.borderColor=val?'var(--a)':'var(--ln2)'
+  th.style.transform=val?'translateX(14px)':'translateX(0)'
+  document.getElementById('pro-fields').style.display=val?'flex':'none'
+  document.getElementById('f-societe').value=societe||''
+  document.getElementById('f-tva-client').value=tva||''
+}
 function closePdf(){document.getElementById('pdfOverlay').classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closePdf();}});
 </script>
@@ -942,7 +974,7 @@ window.fillClientSelect=function(){
   const sel=document.getElementById('f-client-select')
   if(!sel)return
   sel.innerHTML='<option value="">➕ Nouveau client</option>'+
-    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
+    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}" data-societe="${(c.societe||'').replace(/"/g,'&quot;')}" data-tva="${(c.tva||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
 }
 window.onClientSelect=function(){
   const sel=document.getElementById('f-client-select')
@@ -952,6 +984,8 @@ window.onClientSelect=function(){
     document.getElementById('f-email').value=opt.dataset.email||''
     document.getElementById('f-tel').value=opt.dataset.tel||''
     document.getElementById('f-adresse').value=opt.dataset.adr||''
+    const societe=opt.dataset.societe||'', tva=opt.dataset.tva||''
+    setClientPro(!!(societe||tva),societe,tva)
   }
 }
 window.onRepSelect=function(){
@@ -1067,7 +1101,8 @@ window.saveDevis=async function(){
     if(existant){clientLieId=existant.id}
     else{
       const numCli=await nextNumero('client','client')
-      const newCli={numero:numCli,nom:nom,email:email||null,telephone:document.getElementById('f-tel').value.trim()||null,adresse:document.getElementById('f-adresse').value.trim()||null,type:'particulier',updated_at:new Date().toISOString()}
+      const isPro=document.getElementById('f-is-pro').value==='true'
+      const newCli={numero:numCli,nom:nom,email:email||null,telephone:document.getElementById('f-tel').value.trim()||null,adresse:document.getElementById('f-adresse').value.trim()||null,type:isPro?'entreprise':'particulier',societe:isPro?(document.getElementById('f-societe').value.trim()||null):null,tva:isPro?(document.getElementById('f-tva-client').value.trim()||null):null,updated_at:new Date().toISOString()}
       const rc=await sb.from('clients').insert(newCli).select().single()
       if(!rc.error&&rc.data){clientLieId=rc.data.id;allClients.unshift(rc.data)}
     }
@@ -1079,6 +1114,8 @@ window.saveDevis=async function(){
     client_email:document.getElementById('f-email').value.trim()||null,
     client_telephone:document.getElementById('f-tel').value.trim()||null,
     client_adresse:document.getElementById('f-adresse').value.trim()||null,
+    client_societe:document.getElementById('f-is-pro').value==='true'?(document.getElementById('f-societe').value.trim()||null):null,
+    client_tva:document.getElementById('f-is-pro').value==='true'?(document.getElementById('f-tva-client').value.trim()||null):null,
     reparation_id:repLink?repLink.id:null,
     reparation_numero:repLink?repLink.numero:null,
     date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
@@ -1336,7 +1373,6 @@ window.convertirEnReparation=async function(){
     const lignes=d.lignes||[]
     const descLignes=lignes.filter(l=>l.description).map(l=>`• ${l.description}`).join('\n')
     const panne=[descLignes,d.notes||''].filter(Boolean).join('\n\n')||'À compléter'
-    const token=(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,12):Math.random().toString(36).slice(2,14))
     const repPayload={
       numero:numRep,
       client_id:d.client_id||null,
@@ -1354,7 +1390,6 @@ window.convertirEnReparation=async function(){
       cout_pieces:0,
       pieces:[],
       notes:`Créé depuis le devis ${d.numero}`,
-      suivi_token:token,
       updated_at:new Date().toISOString()
     }
     const resRep=await sb.from('reparations').insert(repPayload).select().single()
@@ -1390,6 +1425,8 @@ window.convertirEnFacture=async function(){
       client_email:d.client_email||null,
       client_telephone:d.client_telephone||null,
       client_adresse:d.client_adresse||null,
+      client_societe:d.client_societe||null,
+      client_tva:d.client_tva||null,
       reparation_id:d.reparation_id||null,
       reparation_numero:d.reparation_numero||null,
       date_emission:new Date().toISOString().slice(0,10),

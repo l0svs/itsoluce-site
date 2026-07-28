@@ -494,14 +494,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         </div>
       </div>
 
-      <!-- KPIs -->
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Références</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">pièces référencées</div></div>
-        <div class="kpi"><div class="kpi-label">Alertes</div><div class="kpi-val" id="k-alertes" style="color:var(--w)">—</div><div class="kpi-sub">sous le seuil</div></div>
-        <div class="kpi"><div class="kpi-label">Ruptures</div><div class="kpi-val" id="k-ruptures" style="color:var(--d)">—</div><div class="kpi-sub">stock à zéro</div></div>
-        <div class="kpi"><div class="kpi-label">Valeur totale</div><div class="kpi-val" id="k-valeur">—</div><div class="kpi-sub">coût d'achat</div></div>
-      </div>
-
       <!-- TOOLBAR -->
       <div class="toolbar">
         <div class="search-wrap">
@@ -886,11 +878,6 @@ function updateKPIs(){
   const total=allStock.length
   const alertes=allStock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte)&&Number(p.quantite)>0).length
   const ruptures=allStock.filter(p=>Number(p.quantite)===0).length
-  const valeur=allStock.reduce((a,p)=>a+(Number(p.quantite)*Number(p.prix_achat)),0)
-  document.getElementById('k-total').textContent=total
-  document.getElementById('k-alertes').textContent=alertes
-  document.getElementById('k-ruptures').textContent=ruptures
-  document.getElementById('k-valeur').textContent=valeur.toFixed(2)+'€'
   document.getElementById('ph-sub').textContent=`${total} pièce${total>1?'s':''} référencée${total>1?'s':''}`
   const nb=document.getElementById('nb-stock')
   const tot=alertes+ruptures

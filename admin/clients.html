@@ -492,10 +492,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
     <div class="fg-sep">Informations complémentaires</div>
     <div class="fg"><label>Type</label>
-      <select id="f-type">
+      <select id="f-type" onchange="onTypeClientChange()">
         <option value="particulier">Particulier</option>
         <option value="entreprise">Entreprise / TPE</option>
       </select>
+    </div>
+    <div id="pro-fields-client" style="display:none;flex-direction:column;gap:10px;">
+      <div class="fg"><label>Société</label><input type="text" id="f-societe" placeholder="Nom de la société"/></div>
+      <div class="fg"><label>Numéro TVA / BCE</label><input type="text" id="f-tva" placeholder="BE 0123.456.789"/></div>
     </div>
     <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Observations sur ce client..."></textarea></div>
   </div>
@@ -525,10 +529,17 @@ function openPanel(c=null){
   document.getElementById('f-tel').value=c?.telephone||'';
   document.getElementById('f-adresse').value=c?.adresse||'';
   document.getElementById('f-type').value=c?.type||'particulier';
+  document.getElementById('f-societe').value=c?.societe||'';
+  document.getElementById('f-tva').value=c?.tva||'';
+  onTypeClientChange();
   document.getElementById('f-notes').value=c?.notes||'';
   document.getElementById('overlay').classList.add('open');
   document.getElementById('panel').classList.add('open');
   document.getElementById('f-prenom').focus();
+}
+window.onTypeClientChange=function(){
+  const isEntreprise=document.getElementById('f-type').value==='entreprise'
+  document.getElementById('pro-fields-client').style.display=isEntreprise?'flex':'none'
 }
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
 function closeDetail(){
@@ -738,6 +749,7 @@ window.showDetail=function(id){
       <div class="dp-field"><div class="dp-fl">Email</div><div class="dp-fv">${c.email||'—'}</div></div>
       <div class="dp-field"><div class="dp-fl">Téléphone</div><div class="dp-fv">${c.telephone||'—'}</div></div>
       <div class="dp-field"><div class="dp-fl">Adresse</div><div class="dp-fv">${c.adresse||'—'}</div></div>
+      ${c.type==='entreprise'&&(c.societe||c.tva)?`<div class="dp-field"><div class="dp-fl">Société</div><div class="dp-fv">${c.societe||'—'}</div></div><div class="dp-field"><div class="dp-fl">N° TVA / BCE</div><div class="dp-fv">${c.tva||'—'}</div></div>`:''}
       ${c.notes?`<div class="dp-field"><div class="dp-fl">Notes</div><div class="dp-fv">${c.notes}</div></div>`:''}
     </div>
     ${reps.length>0?`
@@ -774,6 +786,8 @@ window.saveClient=async function(){
     telephone:document.getElementById('f-tel').value.trim()||null,
     adresse:document.getElementById('f-adresse').value.trim()||null,
     type:document.getElementById('f-type').value,
+    societe:document.getElementById('f-type').value==='entreprise'?(document.getElementById('f-societe').value.trim()||null):null,
+    tva:document.getElementById('f-type').value==='entreprise'?(document.getElementById('f-tva').value.trim()||null):null,
     notes:document.getElementById('f-notes').value.trim()||null,
     updated_at:new Date().toISOString()
   }

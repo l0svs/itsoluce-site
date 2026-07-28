@@ -627,7 +627,6 @@ select option{background:var(--bg3);}
             <div class="fg-head">Tarification</div>
             <div class="field"><div class="field-label"><div class="fl-name">Taux horaire main d'œuvre</div><div class="fl-desc">Utilisé pour le calcul automatique des devis</div></div><div class="field-input"><input type="number" id="s-taux" placeholder="40" min="0" step="5"/></div></div>
             <div class="field"><div class="field-label"><div class="fl-name">Devise</div></div><div class="field-input"><select id="s-devise"><option value="EUR">EUR — Euro (€)</option><option value="USD">USD — Dollar ($)</option></select></div></div>
-            <div class="field"><div class="field-label"><div class="fl-name">Délai de paiement (jours)</div><div class="fl-desc">Délai affiché sur les factures</div></div><div class="field-input"><input type="number" id="s-delai" placeholder="14" min="0"/></div></div>
           </div>
           <div class="field-group">
             <div class="fg-head">Grille de tarification dégressive</div>
@@ -971,7 +970,6 @@ fill('s-site','entreprise_site')
 fill('s-mode','apparence_mode')
 fill('s-taux','finance_taux_horaire')
 fill('s-devise','finance_devise')
-fill('s-delai','finance_delai_paiement')
 fill('s-tva','finance_mention_tva')
 fill('s-iban','finance_iban')
 // Formule de prix (défaut 2 et 20, sync localStorage)
@@ -1031,7 +1029,7 @@ window.saveSettings=async function(){
     ['entreprise_nom','s-nom'],['entreprise_statut','s-statut'],['entreprise_bce','s-bce'],
     ['entreprise_adresse','s-adresse'],['entreprise_email','s-email'],['entreprise_telephone','s-telephone'],
     ['entreprise_site','s-site'],['apparence_mode','s-mode'],
-    ['finance_taux_horaire','s-taux'],['finance_devise','s-devise'],['finance_delai_paiement','s-delai'],
+    ['finance_taux_horaire','s-taux'],['finance_devise','s-devise'],
     ['finance_mention_tva','s-tva'],['finance_iban','s-iban'],['intervention_rayon','s-rayon'],
     ['intervention_frais_km','s-km'],['fournisseur_default_iphone','s-four-iphone'],
     ['fournisseur_default_samsung','s-four-samsung'],['fournisseur_default_outillage','s-four-outillage'],

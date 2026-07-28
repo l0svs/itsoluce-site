@@ -560,7 +560,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="fg"><label>Statut</label><select id="f-statut" onchange="onStatutChange()"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
     </div>
     <div class="fg" id="fg-date-paiement" style="display:none;"><label>Date de paiement (encaissement)</label><input type="date" id="f-date-paiement"/></div>
-    <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte (SumUp)</option><option value="mixte">Mixte (carte + espèces)</option></select></div>
+    <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte</option><option value="mixte">Mixte (carte + espèces)</option></select></div>
     <div class="fg" id="especes-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
       <label>Montant donné par le client (€)</label>
       <input type="number" id="f-montant-donne" min="0" step="0.01" placeholder="Ex : 50.00" oninput="calcRendu()"/>
@@ -1004,7 +1004,7 @@ window.fillClientSelect=function(){
   const sel=document.getElementById('f-client-select')
   if(!sel)return
   sel.innerHTML='<option value="">➕ Nouveau client</option>'+
-    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
+    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}" data-societe="${(c.societe||'').replace(/"/g,'&quot;')}" data-tva="${(c.tva||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
 }
 window.onClientSelect=function(){
   const sel=document.getElementById('f-client-select')
@@ -1014,6 +1014,8 @@ window.onClientSelect=function(){
     document.getElementById('f-email').value=opt.dataset.email||''
     document.getElementById('f-tel').value=opt.dataset.tel||''
     document.getElementById('f-adresse').value=opt.dataset.adr||''
+    const societe=opt.dataset.societe||'', tva=opt.dataset.tva||''
+    setClientPro(!!(societe||tva),societe,tva)
   }
 }
 window.onRepSelect=function(){
