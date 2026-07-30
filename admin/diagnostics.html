@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Planning</title>
+<title>IT Soluce ERP — Diagnostics</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
@@ -155,56 +155,53 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* PLANNING */
-.cal-toolbar{display:flex;align-items:center;gap:12px;padding:12px 24px;flex-wrap:wrap;}
-.cal-nav{display:flex;align-items:center;gap:4px;}
-.cal-navbtn{width:30px;height:30px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
-.cal-navbtn:hover{color:var(--t1);border-color:var(--a);}
-.cal-navbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.cal-title{font-size:15px;font-weight:600;color:var(--t1);min-width:170px;text-transform:capitalize;}
-.cal-today{padding:6px 12px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;}
-.cal-today:hover{color:var(--t1);}
-.cal-switch{display:flex;background:var(--bg3);border:1px solid var(--ln2);border-radius:7px;padding:2px;margin-left:auto;}
-.cal-switch button{padding:5px 14px;border:none;background:none;color:var(--t3);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border-radius:5px;transition:all .12s;}
-.cal-switch button.on{background:var(--a);color:#fff;}
-/* GRILLE MOIS */
-.cal-month{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow:hidden;}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px;}
-.cal-wd{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:6px 0;}
-.cal-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:1px;background:var(--ln);border:1px solid var(--ln);border-radius:8px;overflow:hidden;}
-.cal-cell{background:var(--bg2);padding:5px 6px;min-height:78px;cursor:pointer;transition:background .1s;overflow:hidden;display:flex;flex-direction:column;}
-.cal-cell:hover{background:var(--bg3);}
-.cal-cell.other{background:var(--bg);opacity:.5;}
-.cal-cell.today{background:var(--ad);}
-.cal-daynum{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:3px;}
-.cal-cell.today .cal-daynum{color:var(--a);}
-.cal-evt{font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#fff;font-weight:500;}
-.cal-more{font-size:9px;color:var(--t3);font-weight:500;}
-/* TYPES COULEURS */
-.t-domicile{background:#3b82f6;}
-.t-depot{background:#8b5cf6;}
-.t-retrait{background:#10b981;}
-.t-autre{background:#6b7280;}
-.dot-domicile{background:#3b82f6;}
-.dot-depot{background:#8b5cf6;}
-.dot-retrait{background:#10b981;}
-.dot-autre{background:#6b7280;}
-/* VUE SEMAINE */
-.cal-week{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow-y:auto;}
-.week-day{border:1px solid var(--ln);border-radius:8px;margin-bottom:8px;overflow:hidden;}
-.week-day-head{padding:8px 14px;background:var(--bg3);font-size:12px;font-weight:600;color:var(--t1);display:flex;align-items:center;justify-content:space-between;text-transform:capitalize;}
-.week-day-head.today{background:var(--ad);color:var(--a);}
-.week-day-body{padding:4px;}
-.week-evt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;cursor:pointer;transition:background .1s;}
-.week-evt:hover{background:var(--bg3);}
-.week-evt-time{font-size:12px;font-weight:600;color:var(--t1);min-width:48px;}
-.week-evt-bar{width:3px;height:32px;border-radius:99px;flex-shrink:0;}
-.week-evt-info{flex:1;min-width:0;}
-.week-evt-titre{font-size:12px;font-weight:500;color:var(--t1);}
-.week-evt-sub{font-size:11px;color:var(--t3);margin-top:1px;}
-.week-empty{padding:14px;font-size:12px;color:var(--t3);text-align:center;}
-.type-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;color:#fff;}
-.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+/* TABLEAU PRINCIPAL */
+.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
+.empty{padding:60px 24px;text-align:center;}
+.actions{display:flex;align-items:center;gap:3px;opacity:0;}
+.table tr:hover .actions{opacity:1;}
+.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.table{width:100%;border-collapse:collapse;}
+.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
+.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
+.table tr:hover td{background:var(--bg2);}
+.table tr:last-child td{border-bottom:none;}
+
+/* FACTURES SPÉCIFIQUE */
+.statut-fac{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+.sf-brouillon{background:rgba(139,139,160,0.15);color:#8b8ba0;}
+.sf-envoyee{background:rgba(59,130,246,0.15);color:#3b82f6;}
+.sf-payee{background:rgba(52,211,153,0.15);color:#34d399;}
+.sf-accepte{background:rgba(52,211,153,0.15);color:#34d399;}
+.sf-envoye{background:rgba(59,130,246,0.15);color:#3b82f6;}
+.sf-refuse{background:rgba(248,113,113,0.15);color:#f87171;}
+.sf-expire{background:rgba(251,146,60,0.15);color:#fb923c;}
+.sf-retard{background:rgba(248,113,113,0.15);color:#f87171;}
+.sf-annulee{background:rgba(107,114,128,0.15);color:#6b7280;}
+/* LIGNES DOCUMENT */
+.lignes-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.lignes-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:6px 8px;border-bottom:1px solid var(--ln);}
+.lignes-table td{padding:4px;}
+.lignes-table input{width:100%;padding:9px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;}
+.lignes-table input:focus{border-color:var(--a);box-shadow:0 0 0 2px rgba(0,82,204,0.15);}
+.lignes-table input.l-total{font-weight:700;background:var(--bg4);color:var(--t1);cursor:default;text-align:right;}
+.lignes-table input.l-qte,.lignes-table input.l-prix{text-align:right;font-weight:500;}
+.ligne-del{width:28px;height:28px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.ligne-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
+.ligne-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.add-ligne{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px dashed var(--ln2);border-radius:6px;background:none;color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;}
+.add-ligne:hover{border-color:var(--a);color:var(--a);}
+.add-ligne svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.totaux-box{margin-top:14px;padding:14px;background:var(--bg3);border-radius:8px;}
+.tot-row{display:flex;justify-content:space-between;font-size:13px;color:var(--t2);margin-bottom:6px;}
+.tot-row.final{font-size:17px;font-weight:600;color:var(--t1);border-top:1px solid var(--ln2);padding-top:8px;margin-top:8px;}
+/* APERÇU PDF MODAL */
+.pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:80px 20px 40px;}
+.pdf-overlay.open{display:flex;}
+.pdf-modal{background:#fff;width:210mm;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;transform-origin:top center;}
+@media(max-width:900px){.pdf-modal{transform:scale(.7);}}
+@media(max-width:680px){.pdf-modal{transform:scale(.45);}}
+.pdf-actions{position:fixed;top:20px;right:30px;display:flex;gap:8px;z-index:401;}
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
@@ -434,6 +431,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -446,7 +445,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Planning</span>
+    <span>Diagnostics</span>
   </div>
   <div class="tb-r">
     <div class="notif-wrap">
@@ -462,13 +461,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
       <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc">0</span></a>
-      <a href="/admin/diagnostics.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Diagnostics</a>
+      <a href="/admin/diagnostics.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Diagnostics</a>
       <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
       <a href="/admin/prestations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations</a>
-      <a href="/admin/planning.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
       <a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
       <div class="sf">IT Soluce ERP · v1.0</div>
@@ -477,64 +476,102 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
-        <div class="ph-left"><h1>Planning</h1><p id="ph-sub">— rendez-vous</p></div>
-        <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau rendez-vous</button>
-      </div>
-      <div class="cal-toolbar">
-        <div class="cal-nav">
-          <button class="cal-navbtn" onclick="navCal(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-          <button class="cal-navbtn" onclick="navCal(1)"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
-        </div>
-        <button class="cal-today" onclick="goToday()">Aujourd'hui</button>
-        <div class="cal-title" id="calTitle">—</div>
-        <div style="display:flex;align-items:center;gap:14px;margin-left:8px;flex-wrap:wrap;">
-          <span class="type-pill t-domicile"><span class="dot" style="background:#fff;"></span>Domicile</span>
-          <span class="type-pill t-depot"><span class="dot" style="background:#fff;"></span>Dépôt</span>
-          <span class="type-pill t-retrait"><span class="dot" style="background:#fff;"></span>Retrait</span>
-          <span class="type-pill t-autre"><span class="dot" style="background:#fff;"></span>Autre</span>
-        </div>
-        <div class="cal-switch">
-          <button id="btnMonth" class="on" onclick="setView('month')">Mois</button>
-          <button id="btnWeek" onclick="setView('week')">Semaine</button>
+        <div class="ph-left"><h1>Diagnostics</h1><p id="ph-sub">— diagnostics</p></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau diagnostic</button>
         </div>
       </div>
-      <div class="cal-month" id="viewMonth">
-        <div class="cal-weekdays">
-          <div class="cal-wd">Lun</div><div class="cal-wd">Mar</div><div class="cal-wd">Mer</div><div class="cal-wd">Jeu</div><div class="cal-wd">Ven</div><div class="cal-wd">Sam</div><div class="cal-wd">Dim</div>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
+      <div class="kpi-strip">
+        <div class="kpi"><div class="kpi-label">Diagnostics (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--a)">—</div><div class="kpi-sub">réalisés ce mois-ci</div></div>
+        <div class="kpi"><div class="kpi-label">En attente</div><div class="kpi-val" id="k-attente" style="color:var(--w)">—</div><div class="kpi-sub">nouveau / en cours</div></div>
+        <div class="kpi"><div class="kpi-label">Taux de conversion</div><div class="kpi-val" id="k-retard" style="color:var(--ok)">—</div><div class="kpi-sub">accepté / clôturés</div></div>
+        <div class="kpi"><div class="kpi-label">Total diagnostics</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
       </div>
-      <div class="cal-week" id="viewWeek" style="display:none;"></div>
+      <div class="toolbar">
+        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderTable()"/></div>
+        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr>
+            <th style="width:100px;">N°</th><th>Client</th><th>Appareil</th><th>Verdict</th><th>Statut</th><th style="text-align:right;">Prix estimé</th><th style="width:130px;"></th>
+          </tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🩺</div><div class="empty-title">Aucun diagnostic</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer le premier</button></div></div>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
-  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouveau rendez-vous</span><button class="panel-close" onclick="closePanel()">×</button></div>
+  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouveau diagnostic</span><button class="panel-close" onclick="closePanel()">×</button></div>
   <div class="panel-body">
     <input type="hidden" id="f-id"/>
-    <div class="fg"><label>Titre *</label><input type="text" id="f-titre" placeholder="ex : Remplacement écran iPhone"/></div>
-    <div class="fg"><label>Type</label><select id="f-type"><option value="domicile">Domicile</option><option value="depot">Dépôt</option><option value="retrait">Retrait</option><option value="autre">Autre</option></select></div>
-    <div class="fg-row">
-      <div class="fg"><label>Date *</label><input type="date" id="f-date"/></div>
-      <div class="fg"><label>Heure</label><input type="time" id="f-heure"/></div>
+    <input type="hidden" id="f-numero"/>
+
+    <div class="fg-sep">Client</div>
+    <div class="fg">
+      <label>Client existant ou nouveau</label>
+      <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
     </div>
-    <div class="fg"><label>Durée estimée</label><select id="f-duree"><option value="30">30 minutes</option><option value="60" selected>1 heure</option><option value="90">1h30</option><option value="120">2 heures</option><option value="">Non définie</option></select></div>
-    <div class="fg-sep">Lien (optionnel)</div>
-    <div class="fg"><label>Client</label><select id="f-client" onchange="onClientPick()"><option value="">— Aucun —</option></select></div>
-    <div class="fg"><label>Réparation</label><select id="f-rep"><option value="">— Aucune —</option></select></div>
-    <div class="fg"><label>Lieu / Adresse</label><input type="text" id="f-lieu" placeholder="Adresse de l'intervention"/></div>
-    <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Détails, matériel à prévoir..."></textarea></div>
-    <div class="fg" style="display:flex;align-items:center;gap:10px;"><label style="margin:0;">Rendez-vous terminé</label><div class="cr-tog" id="togTermine" onclick="toggleTermine()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;" id="togTermineThumb"></div></div><input type="hidden" id="f-termine" value="false"/></div>
+    <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+    <div class="fg-row">
+      <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
+      <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
+    </div>
+    <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+
+    <div class="fg-sep">Appareil</div>
+    <div class="fg-row">
+      <div class="fg"><label>Type d'appareil</label><input type="text" id="f-appareil" placeholder="ex : PC portable"/></div>
+      <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Dell"/></div>
+    </div>
+    <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : XPS 15"/></div>
+
+    <div class="fg-sep">Diagnostic</div>
+    <div class="fg"><label>Problème signalé par le client</label><textarea id="f-probleme" placeholder="Ce que le client a décrit..."></textarea></div>
+    <div class="fg"><label>Constat technique</label><textarea id="f-constat" placeholder="Ce que tu as constaté après examen..."></textarea></div>
+    <div class="fg"><label>Verdict</label>
+      <select id="f-verdict">
+        <option value="a_confirmer">À confirmer avec le client</option>
+        <option value="reparable">Réparable</option>
+        <option value="non_reparable">Non réparable</option>
+      </select>
+    </div>
+    <div class="fg"><label>Prix estimé si réparation (€)</label><input type="number" id="f-prix-estime" placeholder="0.00" min="0" step="0.01"/></div>
+
+    <div class="fg-sep">Détails</div>
+    <div class="fg"><label>Date du diagnostic</label><input type="date" id="f-date-emission"/></div>
+    <div class="fg"><label>Statut</label><select id="f-statut">
+      <option value="nouveau">Nouveau</option>
+      <option value="en_cours">En cours</option>
+      <option value="accepte">Accepté (réparation)</option>
+      <option value="refuse">Refusé</option>
+      <option value="sans_suite">Sans suite</option>
+    </select></div>
+
+    <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations complémentaires..."></textarea></div>
   </div>
-  <div class="panel-footer">
-    <button class="btn btn-secondary" id="delBtn" onclick="deleteRdv()" style="display:none;">Supprimer</button>
-    <button class="btn btn-secondary" id="rappelBtn" onclick="envoyerRappel()" style="display:none;"></button>
+  <div class="panel-footer" style="flex-wrap:wrap;">
     <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveRdv()" style="flex:2;" id="saveBtn">Enregistrer</button>
+    <button class="btn btn-primary" onclick="saveDiagnostic()" style="flex:2;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
+
+<!-- APERÇU PDF -->
+<div class="pdf-overlay" id="pdfOverlay">
+  <div class="pdf-actions">
+    <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
+    <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
+    <button class="btn btn-secondary" onclick="convertirEnReparation()" id="convertRepBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Convertir en réparation</button>
+    <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
+  </div>
+  <div class="pdf-modal" id="pdfModal"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -544,10 +581,40 @@ const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn'
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
 const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
 if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
-function toggleTermine(){const i=document.getElementById('f-termine');const on=i.value==='true';i.value=String(!on);const t=document.getElementById('togTermine');const th=document.getElementById('togTermineThumb');t.style.background=!on?'var(--ok)':'var(--bg4)';t.style.borderColor=!on?'var(--ok)':'var(--ln2)';th.style.transform=!on?'translateX(14px)':'translateX(0)';}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3500);}
+
+
+// ─── PANNEAU ───
+function openPanel(f){
+  f=f||null;
+  document.getElementById('panelTitle').textContent=f?'Modifier le diagnostic':'Nouveau diagnostic';
+  document.getElementById('saveBtn').textContent=f?'Mettre à jour':'Enregistrer';
+  document.getElementById('f-id').value=f?f.id:'';
+  document.getElementById('f-numero').value=f?f.numero:'';
+  document.getElementById('f-client').value=f?f.client_nom:'';
+  document.getElementById('f-email').value=f?(f.client_email||''):'';
+  document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
+  document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
+  document.getElementById('f-appareil').value=f?(f.appareil||''):'';
+  document.getElementById('f-marque').value=f?(f.marque||''):'';
+  document.getElementById('f-modele').value=f?(f.modele||''):'';
+  document.getElementById('f-probleme').value=f?(f.probleme_signale||''):'';
+  document.getElementById('f-constat').value=f?(f.constat||''):'';
+  document.getElementById('f-verdict').value=f?(f.verdict||'a_confirmer'):'a_confirmer';
+  document.getElementById('f-prix-estime').value=f?(f.prix_estime||''):'';
+  document.getElementById('f-statut').value=f?f.statut:'nouveau';
+  document.getElementById('f-notes').value=f?(f.notes||''):'';
+  document.getElementById('f-date-emission').value=f?(f.date_emission||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10);
+  // Sélecteur client
+  if(window.fillClientSelect)window.fillClientSelect();
+  document.getElementById('f-client-select').value='';
+  ['f-client','f-email','f-tel','f-adresse'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}});
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
 function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
+function closePdf(){document.getElementById('pdfOverlay').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closePdf();}});
 </script>
 <script>
 window.toggleNotifs=function(e){
@@ -566,6 +633,29 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
+
+// Config entreprise (template)
+const ENTREPRISE={
+  nom:'IT Soluce',
+  adresse:'Chaussée d\'Hondzocht 164',
+  cp_ville:'1480 Tubize',
+  email:'contact@itsoluce.be',
+  tel:'+32 474 05 66 59',
+  site:'www.itsoluce.be',
+  bce:'BE 1027.026.003',
+  iban:'BE02 7320 8265 2640',
+  logo:'https://itsoluce.be/favicon_io/android-chrome-512x512.png',
+  mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
+  conditions:'Paiement comptant à réception de la facture.',
+  cgv:[
+    ['Validité de l\'offre','Le présent devis est valable durant la période indiquée ci-dessus. Passé ce délai, IT Soluce se réserve le droit de réviser les prix, notamment en fonction de la disponibilité et du coût des pièces.'],
+    ['Acceptation','Le devis devient ferme et vaut commande dès réception de l\'accord écrit du client (email, signature ou confirmation explicite). Toute intervention ne débute qu\'après cette acceptation.'],
+    ['Prix et pièces','Les prix sont exprimés en euros, TVA non applicable (art. 56bis du Code de la TVA). Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord.'],
+    ['Garantie','Les réparations réalisées bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre), hors casse, oxydation ou mauvaise utilisation. La garantie légale de conformité reste applicable sur les pièces neuves.'],
+    ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne saurait être tenu responsable d\'une perte de données. Sa responsabilité est limitée au montant de la prestation.'],
+    ['Droit applicable','Le présent devis est soumis au droit belge. En cas de litige, les tribunaux du Brabant wallon sont seuls compétents. Le consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
+  ]
+}
 
 function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
@@ -643,323 +733,414 @@ loadNotifs();
 
 
 
-let allRdv=[]
+let allDiagnostics=[]
 let allClients=[]
-let allReps=[]
-let currentDate=new Date()
-let currentView='month'
-const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
-const JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi']
-const TYPE_LABEL={domicile:'Domicile',depot:'Dépôt',retrait:'Retrait',autre:'Autre'}
+let activeFilter='Tous'
+let currentPdfDoc=null
+
+async function nextNumero(cle, format){
+  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+  const nouvelle=(cpt?.valeur||0)+1
+  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
+  if(format==='facture'){const an=new Date().getFullYear();return `${an}-${String(nouvelle).padStart(4,'0')}`}
+  if(format==='devis'){return `DEV-${String(nouvelle).padStart(4,'0')}`}
+  if(format==='reparation'){return `REP-${String(nouvelle).padStart(4,'0')}`}
+  if(format==='diagnostic'){return `DIAG-${String(nouvelle).padStart(4,'0')}`}
+  return `${String(nouvelle).padStart(4,'0')}`
+}
 
 async function load(){
-  const [rRdv,rCli,rRep]=await Promise.all([
-    sb.from('rendezvous').select('*').order('date_debut',{ascending:true}),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false})
+  const [rDiag,rCli]=await Promise.all([
+    sb.from('diagnostics').select('*').order('created_at',{ascending:false}),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom')
   ])
-  if(rRdv.error){showError(rRdv.error.message);return}
-  allRdv=rRdv.data||[]
+  if(rDiag.error){showError(rDiag.error.message);return}
+  allDiagnostics=rDiag.data||[]
   allClients=rCli.data||[]
-  allReps=rRep.data||[]
-  fillSelects()
-  render()
+  renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
 
-function fillSelects(){
-  const cs=document.getElementById('f-client')
-  cs.innerHTML='<option value="">— Aucun —</option>'+allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
-  const rs=document.getElementById('f-rep')
-  rs.innerHTML='<option value="">— Aucune —</option>'+allReps.map(r=>`<option value="${r.id}" data-num="${r.numero||''}">${r.numero||''} · ${r.client_nom} · ${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||''}</option>`).join('')
+window.fillClientSelect=function(){
+  const sel=document.getElementById('f-client-select')
+  if(!sel)return
+  sel.innerHTML='<option value="">➕ Nouveau client</option>'+
+    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
 }
-
-window.onClientPick=function(){
-  const sel=document.getElementById('f-client')
+window.onClientSelect=function(){
+  const sel=document.getElementById('f-client-select')
   const opt=sel.options[sel.selectedIndex]
-  if(sel.value && opt.dataset.adr && !document.getElementById('f-lieu').value){
-    document.getElementById('f-lieu').value=opt.dataset.adr
+  if(sel.value){
+    document.getElementById('f-client').value=opt.dataset.nom||''
+    document.getElementById('f-email').value=opt.dataset.email||''
+    document.getElementById('f-tel').value=opt.dataset.tel||''
+    document.getElementById('f-adresse').value=opt.dataset.adr||''
   }
 }
 
-function render(){
-  document.getElementById('ph-sub').textContent=`${allRdv.length} rendez-vous`
-  if(currentView==='month')renderMonth()
-  else renderWeek()
-}
+function renderAll(){updateKPIs();renderFilters();renderTable()}
 
-function sameDay(d1,d2){return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
-
-function rdvOfDay(date){
-  return allRdv.filter(r=>sameDay(new Date(r.date_debut),date)).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut))
-}
-
-function renderMonth(){
-  document.getElementById('viewMonth').style.display='flex'
-  document.getElementById('viewWeek').style.display='none'
-  const y=currentDate.getFullYear(),m=currentDate.getMonth()
-  document.getElementById('calTitle').textContent=`${MOIS[m]} ${y}`
-  // Premier lundi de la grille
-  const first=new Date(y,m,1)
-  let startDay=first.getDay()-1; if(startDay<0)startDay=6
-  const gridStart=new Date(y,m,1-startDay)
-  const today=new Date()
-  let html=''
-  for(let i=0;i<42;i++){
-    const d=new Date(gridStart);d.setDate(gridStart.getDate()+i)
-    const other=d.getMonth()!==m
-    const isToday=sameDay(d,today)
-    const evts=rdvOfDay(d)
-    const dateStr=d.toISOString().slice(0,10)
-    let evtHtml=evts.slice(0,3).map(e=>{
-      const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-      return `<div class="cal-evt t-${e.type}" onclick="event.stopPropagation();editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}">${h} ${e.titre}</div>`
-    }).join('')
-    if(evts.length>3)evtHtml+=`<div class="cal-more">+${evts.length-3} autre(s)</div>`
-    html+=`<div class="cal-cell ${other?'other':''} ${isToday?'today':''}" onclick="openPanelDate('${dateStr}')"><div class="cal-daynum">${d.getDate()}</div>${evtHtml}</div>`
-  }
-  document.getElementById('calGrid').innerHTML=html
-}
-
-function renderWeek(){
-  document.getElementById('viewMonth').style.display='none'
-  document.getElementById('viewWeek').style.display='flex'
-  const cur=new Date(currentDate)
-  let dow=cur.getDay()-1; if(dow<0)dow=6
-  const monday=new Date(cur);monday.setDate(cur.getDate()-dow)
-  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6)
-  document.getElementById('calTitle').textContent=`${monday.getDate()} ${MOIS[monday.getMonth()].slice(0,4)}. — ${sunday.getDate()} ${MOIS[sunday.getMonth()].slice(0,4)}. ${sunday.getFullYear()}`
-  const today=new Date()
-  let html=''
-  for(let i=0;i<7;i++){
-    const d=new Date(monday);d.setDate(monday.getDate()+i)
-    const evts=rdvOfDay(d)
-    const isToday=sameDay(d,today)
-    const dateStr=d.toISOString().slice(0,10)
-    let body=''
-    if(evts.length===0){body=`<div class="week-empty">Aucun rendez-vous</div>`}
-    else{
-      body=evts.map(e=>{
-        const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-        const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
-        const col={domicile:'#3b82f6',depot:'#8b5cf6',retrait:'#10b981',autre:'#6b7280'}[e.type]
-        const rappelIco=e.rappel_envoye_le?'<span title="Rappel envoyé" style="margin-left:6px;color:var(--ok,#10b981);">✓</span>':''
-        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-bar" style="background:${col};"></div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${e.titre}${rappelIco}</div>${sub?`<div class="week-evt-sub">${sub}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
-      }).join('')
-    }
-    html+=`<div class="week-day"><div class="week-day-head ${isToday?'today':''}"><span>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}</span><button onclick="openPanelDate('${dateStr}')" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:18px;line-height:1;">+</button></div><div class="week-day-body">${body}</div></div>`
-  }
-  document.getElementById('viewWeek').innerHTML=html
-}
-
-window.setView=function(v){
-  currentView=v
-  document.getElementById('btnMonth').classList.toggle('on',v==='month')
-  document.getElementById('btnWeek').classList.toggle('on',v==='week')
-  render()
-}
-window.navCal=function(dir){
-  if(currentView==='month')currentDate.setMonth(currentDate.getMonth()+dir)
-  else currentDate.setDate(currentDate.getDate()+dir*7)
-  currentDate=new Date(currentDate)
-  render()
-}
-window.goToday=function(){currentDate=new Date();render()}
-
-window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
-
-// ─── PANNEAU CRUD ───
-function resetForm(){
-  document.getElementById('f-id').value=''
-  document.getElementById('f-titre').value=''
-  document.getElementById('f-type').value='domicile'
-  document.getElementById('f-date').value=''
-  document.getElementById('f-heure').value=''
-  document.getElementById('f-duree').value='60'
-  document.getElementById('f-client').value=''
-  document.getElementById('f-rep').value=''
-  document.getElementById('f-lieu').value=''
-  document.getElementById('f-notes').value=''
-  document.getElementById('f-termine').value='false'
-  const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb')
-  t.style.background='var(--bg4)';t.style.borderColor='var(--ln2)';th.style.transform='translateX(0)'
-}
-
-window.openPanel=function(){
-  resetForm()
-  document.getElementById('panelTitle').textContent='Nouveau rendez-vous'
-  document.getElementById('saveBtn').textContent='Enregistrer'
-  document.getElementById('delBtn').style.display='none'
+function updateKPIs(){
   const now=new Date()
-  document.getElementById('f-date').value=now.toISOString().slice(0,10)
-  document.getElementById('f-heure').value='18:00'
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-titre').focus()
+  const moisDiag=allDiagnostics.filter(f=>{const d=new Date(f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
+  const enAttente=allDiagnostics.filter(f=>['nouveau','en_cours'].includes(f.statut)).length
+  const clotures=allDiagnostics.filter(f=>['accepte','refuse','sans_suite'].includes(f.statut)).length
+  const acceptes=allDiagnostics.filter(f=>f.statut==='accepte').length
+  const taux=clotures>0?Math.round((acceptes/clotures)*100):0
+  document.getElementById('k-paye').textContent=moisDiag.length
+  document.getElementById('k-attente').textContent=enAttente
+  document.getElementById('k-retard').textContent=taux+'%'
+  document.getElementById('k-total').textContent=allDiagnostics.length
+  document.getElementById('ph-sub').textContent=`${allDiagnostics.length} diagnostic${allDiagnostics.length>1?'s':''}`
 }
 
-window.openPanelDate=function(dateStr){
-  resetForm()
-  document.getElementById('panelTitle').textContent='Nouveau rendez-vous'
-  document.getElementById('saveBtn').textContent='Enregistrer'
-  document.getElementById('delBtn').style.display='none'
-  document.getElementById('f-date').value=dateStr
-  document.getElementById('f-heure').value='18:00'
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-titre').focus()
+function renderFilters(){
+  const all=['Tous','nouveau','en_cours','accepte','refuse','sans_suite']
+  const labels={'Tous':'Tous','nouveau':'Nouveaux','en_cours':'En cours','accepte':'Acceptés','refuse':'Refusés','sans_suite':'Sans suite'}
+  const colors={'nouveau':'#8b8ba0','en_cours':'#3b82f6','accepte':'#34d399','refuse':'#f87171','sans_suite':'#fb923c'}
+  document.getElementById('filterBtns').innerHTML=all.map(s=>{
+    const a=activeFilter===s
+    return`<button class="filter-btn ${a?'active':''}" style="${a&&colors[s]?`background:${colors[s]};border-color:${colors[s]};`:''}" onclick="setFilter('${s}')">${labels[s]}</button>`
+  }).join('')
+}
+window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
+
+function renderTable(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim()
+  const STAT={nouveau:{l:'Nouveau',c:'sf-brouillon'},en_cours:{l:'En cours',c:'sf-envoye'},accepte:{l:'Accepté',c:'sf-accepte'},refuse:{l:'Refusé',c:'sf-refuse'},sans_suite:{l:'Sans suite',c:'sf-expire'}}
+  const VERDICT={reparable:'Réparable',non_reparable:'Non réparable',a_confirmer:'À confirmer'}
+  let rows=allDiagnostics.filter(f=>{
+    const mf=activeFilter==='Tous'||f.statut===activeFilter
+    const ms=!q||[f.numero,f.client_nom,f.appareil].some(v=>v&&v.toLowerCase().includes(q))
+    return mf&&ms
+  })
+  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
+  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
+  empty.style.display='none'
+  tb.innerHTML=rows.map(f=>{
+    const st=STAT[f.statut]||STAT.nouveau
+    const appareilLbl=[f.marque,f.modele].filter(Boolean).join(' ')||f.appareil||'—'
+    return`<tr>
+      <td><span style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}</span>${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</td>
+      <td><div style="font-weight:500;">${f.client_nom}</div><div style="font-size:11px;color:var(--t3);">${f.client_email||''}</div></td>
+      <td>${appareilLbl}</td>
+      <td style="color:var(--t3);">${VERDICT[f.verdict]||'—'}</td>
+      <td><span class="statut-fac ${st.c}">${st.l}</span></td>
+      <td style="text-align:right;font-weight:600;">${f.prix_estime?Number(f.prix_estime).toFixed(2).replace('.',',')+' €':'—'}</td>
+      <td><div class="actions" style="opacity:1;justify-content:flex-end;">
+        <button class="act-btn" onclick="previewDiagnostic(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="act-btn" onclick="editDiagnostic(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="act-btn del" onclick="deleteDiagnostic(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div></td>
+    </tr>`
+  }).join('')
 }
 
-window.editRdv=function(id){
-  const r=allRdv.find(x=>x.id===id)
-  if(!r)return
-  resetForm()
-  document.getElementById('panelTitle').textContent='Modifier le rendez-vous'
-  document.getElementById('saveBtn').textContent='Mettre à jour'
-  document.getElementById('delBtn').style.display='block'
-  document.getElementById('f-id').value=r.id
-  document.getElementById('f-titre').value=r.titre||''
-  document.getElementById('f-type').value=r.type||'domicile'
-  const d=new Date(r.date_debut)
-  document.getElementById('f-date').value=d.toISOString().slice(0,10)
-  document.getElementById('f-heure').value=d.toTimeString().slice(0,5)
-  // Durée
-  if(r.date_fin){const mins=Math.round((new Date(r.date_fin)-d)/60000);document.getElementById('f-duree').value=['30','60','90','120'].includes(String(mins))?String(mins):''}
-  document.getElementById('f-client').value=r.client_id||''
-  document.getElementById('f-rep').value=r.reparation_id||''
-  document.getElementById('f-lieu').value=r.lieu||''
-  document.getElementById('f-notes').value=r.notes||''
-  document.getElementById('f-termine').value=String(r.termine||false)
-  if(r.termine){const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb');t.style.background='var(--ok)';t.style.borderColor='var(--ok)';th.style.transform='translateX(14px)'}
-  // Bouton rappel
-  const rappelBtn=document.getElementById('rappelBtn')
-  const client=allClients.find(c=>c.id===r.client_id)
-  if(client&&client.email){
-    rappelBtn.style.display='block'
-    if(r.rappel_envoye_le){
-      const dEnv=new Date(r.rappel_envoye_le).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
-      rappelBtn.textContent=`Rappel envoyé le ${dEnv}`
-      rappelBtn.disabled=true
-      rappelBtn.style.opacity='0.6'
-    } else {
-      rappelBtn.textContent='Envoyer le rappel'
-      rappelBtn.disabled=false
-      rappelBtn.style.opacity='1'
-    }
-  } else {
-    rappelBtn.style.display='none'
-  }
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-}
+window.editDiagnostic=function(id){const f=allDiagnostics.find(x=>x.id===id);if(f)openPanel(f)}
 
-window.envoyerRappel=async function(){
+window.saveDiagnostic=async function(){
   const id=document.getElementById('f-id').value
-  const r=allRdv.find(x=>x.id===Number(id))
-  if(!r)return
-  const client=allClients.find(c=>c.id===r.client_id)
-  if(!client||!client.email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
-  const btn=document.getElementById('rappelBtn')
-  btn.disabled=true
-  btn.textContent='Envoi en cours...'
-  try{
-    const prenom=(client.nom||'').split(' ')[0]||''
-    const dRdv=new Date(r.date_debut)
-    const dateLbl=dRdv.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long'})
-    const heureLbl=dRdv.toTimeString().slice(0,5)
-    const lieuLigne=r.lieu?`<p>Lieu : ${r.lieu}</p>`:''
-    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
-    const html=`<p>Bonjour ${prenom},</p><p>Je vous confirme notre rendez-vous prévu <strong>${dateLbl}</strong> à <strong>${heureLbl}</strong>.</p>${lieuLigne}<p>N'hésitez pas à me recontacter si vous avez un empêchement.</p>${signature}`
-    const {data:{session}}=await sb.auth.getSession()
-    const res=await fetch(`${SB}/functions/v1/send-reminder`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
-      body:JSON.stringify({to:client.email,subject:`Rappel de rendez-vous — IT Soluce`,html:html})
-    })
-    const result=await res.json()
-    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
-    const now=new Date().toISOString()
-    await sb.from('rendezvous').update({rappel_envoye_le:now}).eq('id',r.id)
-    const i=allRdv.findIndex(x=>x.id===r.id)
-    if(i>=0)allRdv[i].rappel_envoye_le=now
-    const dEnv=new Date(now).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
-    btn.textContent=`Rappel envoyé le ${dEnv}`
-    btn.style.opacity='0.6'
-    showToast('Rappel envoyé ✓','ok')
-  }catch(err){
-    btn.disabled=false
-    btn.textContent='Envoyer le rappel'
-    showToast('Erreur : '+err.message,'err')
-  }
-}
+  const nom=document.getElementById('f-client').value.trim()
+  if(!nom){showToast('Le nom du client est requis','err');return}
+  const clientSelId=document.getElementById('f-client-select').value
 
-window.saveRdv=async function(){
-  const id=document.getElementById('f-id').value
-  const titre=document.getElementById('f-titre').value.trim()
-  const date=document.getElementById('f-date').value
-  if(!titre){showToast('Le titre est requis','err');return}
-  if(!date){showToast('La date est requise','err');return}
-  const heure=document.getElementById('f-heure').value||'00:00'
-  const dateDebut=new Date(`${date}T${heure}`)
-  const duree=document.getElementById('f-duree').value
-  let dateFin=null
-  if(duree){dateFin=new Date(dateDebut.getTime()+Number(duree)*60000)}
-  // Client lié
-  const clientSel=document.getElementById('f-client')
-  const clientId=clientSel.value?Number(clientSel.value):null
-  const clientNom=clientSel.value?clientSel.options[clientSel.selectedIndex].dataset.nom:null
-  // Réparation liée
-  const repSel=document.getElementById('f-rep')
-  const repId=repSel.value?Number(repSel.value):null
-  const repNum=repSel.value?repSel.options[repSel.selectedIndex].dataset.num:null
-
-  const payload={
-    titre,
-    type:document.getElementById('f-type').value,
-    date_debut:dateDebut.toISOString(),
-    date_fin:dateFin?dateFin.toISOString():null,
-    client_id:clientId,
-    client_nom:clientNom,
-    reparation_id:repId,
-    reparation_numero:repNum,
-    lieu:document.getElementById('f-lieu').value.trim()||null,
-    notes:document.getElementById('f-notes').value.trim()||null,
-    termine:document.getElementById('f-termine').value==='true',
-    updated_at:new Date().toISOString()
-  }
   document.getElementById('saveBtn').textContent='Enregistrement...'
   document.getElementById('saveBtn').disabled=true
+
+  // Gérer le client (créer si nouveau, à la création seulement)
+  let clientLieId = clientSelId?Number(clientSelId):null
+  if(!id && !clientSelId){
+    const email=document.getElementById('f-email').value.trim()
+    let existant=null
+    if(email)existant=allClients.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())
+    if(!existant)existant=allClients.find(c=>c.nom&&c.nom.toLowerCase()===nom.toLowerCase())
+    if(existant){clientLieId=existant.id}
+    else{
+      const numCli=await nextNumero('client','client')
+      const newCli={numero:numCli,nom:nom,email:email||null,telephone:document.getElementById('f-tel').value.trim()||null,adresse:document.getElementById('f-adresse').value.trim()||null,type:'particulier',updated_at:new Date().toISOString()}
+      const rc=await sb.from('clients').insert(newCli).select().single()
+      if(!rc.error&&rc.data){clientLieId=rc.data.id;allClients.unshift(rc.data)}
+    }
+  }
+
+  const payload={
+    client_id:clientLieId,
+    client_nom:nom,
+    client_email:document.getElementById('f-email').value.trim()||null,
+    client_telephone:document.getElementById('f-tel').value.trim()||null,
+    client_adresse:document.getElementById('f-adresse').value.trim()||null,
+    appareil:document.getElementById('f-appareil').value.trim()||null,
+    marque:document.getElementById('f-marque').value.trim()||null,
+    modele:document.getElementById('f-modele').value.trim()||null,
+    probleme_signale:document.getElementById('f-probleme').value.trim()||null,
+    constat:document.getElementById('f-constat').value.trim()||null,
+    verdict:document.getElementById('f-verdict').value,
+    prix_estime:document.getElementById('f-prix-estime').value?Number(document.getElementById('f-prix-estime').value):null,
+    date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
+    statut:document.getElementById('f-statut').value,
+    notes:document.getElementById('f-notes').value.trim()||null,
+    updated_at:new Date().toISOString()
+  }
+
   let error
   if(id){
-    const res=await sb.from('rendezvous').update(payload).eq('id',id)
+    const res=await sb.from('diagnostics').update(payload).eq('id',id)
     error=res.error
-    if(!error){const i=allRdv.findIndex(r=>r.id===Number(id));if(i>=0)allRdv[i]={...allRdv[i],...payload,id:Number(id)}}
+    if(!error){const i=allDiagnostics.findIndex(f=>f.id===Number(id));if(i>=0)allDiagnostics[i]={...allDiagnostics[i],...payload,id:Number(id)}}
   } else {
-    const res=await sb.from('rendezvous').insert(payload).select().single()
+    payload.numero=await nextNumero('diagnostic','diagnostic')
+    const res=await sb.from('diagnostics').insert(payload).select().single()
     error=res.error
-    if(!error&&res.data)allRdv.push(res.data)
+    if(!error&&res.data)allDiagnostics.unshift(res.data)
   }
   document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
   document.getElementById('saveBtn').disabled=false
   if(error){showToast('Erreur : '+error.message,'err');return}
+
   closePanel()
-  render()
-  showToast(id?'Rendez-vous mis à jour ✓':'Rendez-vous créé ✓','ok')
+  renderAll()
+  showToast(id?`Diagnostic ${payload.numero||''} mis à jour ✓`:`Diagnostic ${payload.numero} créé ✓`,'ok')
 }
 
-window.deleteRdv=async function(){
-  const id=document.getElementById('f-id').value
-  if(!id)return
-  if(!confirm('Supprimer ce rendez-vous ?'))return
-  const {error}=await sb.from('rendezvous').delete().eq('id',id)
+window.deleteDiagnostic=async function(id,num){
+  if(!confirm(`Supprimer le diagnostic ${num} ?`))return
+  const {error}=await sb.from('diagnostics').delete().eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
-  allRdv=allRdv.filter(r=>r.id!==Number(id))
-  closePanel()
-  render()
-  showToast('Rendez-vous supprimé','ok')
+  allDiagnostics=allDiagnostics.filter(f=>f.id!==id)
+  renderAll()
+  showToast(`Diagnostic ${num} supprimé`,'ok')
 }
 
+// ─── TEMPLATE PDF ───
+function buildTemplateHTML(f,forPdf){
+  const dateEm=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
+  const VERDICT={reparable:{l:'Réparable',c:'#16a34a'},non_reparable:{l:'Non réparable',c:'#dc2626'},a_confirmer:{l:'À confirmer avec le client',c:'#d97706'}}
+  const v=VERDICT[f.verdict]||VERDICT.a_confirmer
+  const appareilLbl=[f.marque,f.modele].filter(Boolean).join(' ')||f.appareil||'—'
+  // Mode PDF : hauteur fixe = une page A4 pile (210x297mm ratio), pied de page en bas, pas de débordement
+  const hauteurStyle=forPdf?'height:296mm;':'min-height:292mm;'
+  return `
+  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:44px 44px;width:210mm;${hauteurStyle}box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;">
+    <div style="flex:1;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="width:60px;height:60px;border-radius:10px;" alt="logo"/>
+        <div>
+          <div style="font-size:22px;font-weight:700;color:#1d4ed8;letter-spacing:-.5px;">Soluce</div>
+          <div style="font-size:11px;color:#666;margin-top:2px;">Réparations informatiques & électroniques</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#555;line-height:1.7;">
+        ${ENTREPRISE.adresse}<br>${ENTREPRISE.cp_ville}<br>${ENTREPRISE.email}<br>${ENTREPRISE.tel}<br>BCE : ${ENTREPRISE.bce}
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">RAPPORT DE DIAGNOSTIC</span>
+        </div>
+        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${f.numero}</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:#555;">
+        <div>Date du diagnostic : <strong>${dateEm}</strong></div>
+      </div>
+    </div>
+    <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:24px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Client</div>
+      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${f.client_nom||''}</div>
+      ${f.client_adresse?`<div style="font-size:12px;color:#555;margin-top:2px;">${f.client_adresse}</div>`:''}
+      ${f.client_email?`<div style="font-size:12px;color:#555;margin-top:2px;">${f.client_email}</div>`:''}
+      ${f.client_telephone?`<div style="font-size:12px;color:#555;">${f.client_telephone}</div>`:''}
+    </div>
+    <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:24px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Appareil</div>
+      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${appareilLbl}</div>
+    </div>
+    ${f.probleme_signale?`<div style="margin-bottom:20px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Problème signalé</div>
+      <div style="font-size:12.5px;color:#333;line-height:1.6;white-space:pre-wrap;">${f.probleme_signale}</div>
+    </div>`:''}
+    ${f.constat?`<div style="margin-bottom:20px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Constat technique</div>
+      <div style="font-size:12.5px;color:#333;line-height:1.6;white-space:pre-wrap;">${f.constat}</div>
+    </div>`:''}
+    <div style="display:flex;gap:16px;align-items:center;margin-top:26px;padding:16px 18px;border:2px solid ${v.c};border-radius:10px;">
+      <div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:4px;">Verdict</div>
+        <div style="font-size:16px;font-weight:700;color:${v.c};">${v.l}</div>
+      </div>
+      ${f.prix_estime?`<div style="margin-left:auto;text-align:right;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:4px;">Prix estimé si réparation</div>
+        <div style="font-size:18px;font-weight:700;color:#1a1a1a;">${Number(f.prix_estime).toFixed(2).replace('.',',')} €</div>
+      </div>`:''}
+    </div>
+    ${f.notes?`<div style="margin-top:24px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${f.notes}</div>`:''}
+    </div>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
+      <div><strong style="color:#555;">Diagnostic gratuit :</strong> Ce diagnostic ne vous engage à rien. Si vous souhaitez donner suite à la réparation, un devis formel vous sera communiqué avant toute intervention.</div>
+      <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
+      <div style="margin-top:10px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
+    </div>
+  </div>`
+}
+
+window.previewDiagnostic=function(id){
+  const f=allDiagnostics.find(x=>x.id===id)
+  if(!f)return
+  currentPdfDoc=f
+  document.getElementById('pdfModal').innerHTML=buildTemplateHTML(f)
+  document.getElementById('pdfOverlay').classList.add('open')
+}
+
+async function genererPDFBlob(){
+  // Générer le template en mode PDF (hauteur = contenu réel, pas de min-height)
+  const wrap=document.createElement('div')
+  wrap.style.position='fixed'
+  wrap.style.left='-99999px'
+  wrap.style.top='0'
+  wrap.style.width='210mm'
+  wrap.style.background='#ffffff'
+  wrap.innerHTML=buildTemplateHTML(currentPdfDoc,true)
+  document.body.appendChild(wrap)
+  const el=wrap.firstElementChild
+
+  const scale=2
+  const canvas=await html2canvas(el,{scale:scale,useCORS:true,backgroundColor:'#ffffff'})
+  document.body.removeChild(wrap)
+
+  const {jsPDF}=window.jspdf
+  const pdf=new jsPDF('p','mm','a4')
+  const pageW=210, pageH=297
+  const imgWpx=canvas.width
+  const imgHpx=canvas.height
+  // Hauteur totale de l'image rapportée à la largeur d'une page A4
+  const totalHmm=(imgHpx*pageW)/imgWpx
+
+  // Cas normal : tient sur une page → forcer une page A4 exacte (pas de débordement)
+  if(totalHmm<=pageH+10){
+    const imgData=canvas.toDataURL('image/jpeg',0.95)
+    pdf.addImage(imgData,'JPEG',0,0,pageW,pageH,undefined,'FAST')
+    return pdf
+  }
+
+  // Cas multi-pages : découpage net par tranches d'une page exacte
+  const pxPerPage=Math.floor((pageH*imgWpx)/pageW)
+  let renderedPx=0, pageNum=0
+  while(renderedPx<imgHpx){
+    const slicePx=Math.min(pxPerPage,imgHpx-renderedPx)
+    const tmp=document.createElement('canvas')
+    tmp.width=imgWpx
+    tmp.height=slicePx
+    const ctx=tmp.getContext('2d')
+    ctx.fillStyle='#ffffff'
+    ctx.fillRect(0,0,tmp.width,tmp.height)
+    ctx.drawImage(canvas,0,renderedPx,imgWpx,slicePx,0,0,imgWpx,slicePx)
+    const sliceData=tmp.toDataURL('image/jpeg',0.95)
+    const sliceHmm=(slicePx*pageW)/imgWpx
+    if(pageNum>0)pdf.addPage()
+    pdf.addImage(sliceData,'JPEG',0,0,pageW,sliceHmm,undefined,'FAST')
+    renderedPx+=slicePx
+    pageNum++
+  }
+  return pdf
+}
+
+window.downloadPdf=async function(){
+  if(!currentPdfDoc)return
+  showToast('Génération du PDF...','ok')
+  const pdf=await genererPDFBlob()
+  pdf.save(`Diagnostic_${currentPdfDoc.numero}.pdf`)
+}
+
+window.sendPdf=async function(){
+  if(!currentPdfDoc)return
+  const f=currentPdfDoc
+  if(!f.client_email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
+  const btn=document.getElementById('sendPdfBtn')
+  btn.disabled=true;btn.textContent='Envoi en cours...'
+  try{
+    const pdf=await genererPDFBlob()
+    const pdfBase64=pdf.output('datauristring').split(',')[1]
+    const prenom=(f.client_nom||'').split(' ')[0]||''
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
+    const html=`<p>Bonjour ${prenom},</p><p>Vous trouverez ci-joint le rapport de votre diagnostic <strong>${f.numero}</strong>.</p><p>N'hésitez pas à me contacter si vous souhaitez donner suite ou si vous avez la moindre question.</p>${signature}`
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:f.client_email,subject:`Diagnostic ${f.numero} — IT Soluce`,html:html,pdfBase64:pdfBase64,pdfName:`Diagnostic_${f.numero}.pdf`})
+    })
+    const result=await res.json()
+    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
+    await sb.from('diagnostics').update({email_envoye:true,date_envoi:new Date().toISOString()}).eq('id',f.id)
+    const i=allDiagnostics.findIndex(x=>x.id===f.id)
+    if(i>=0){allDiagnostics[i].email_envoye=true;allDiagnostics[i].date_envoi=new Date().toISOString()}
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+    closePdf();renderAll()
+    showToast(`Diagnostic ${f.numero} envoyé à ${f.client_email} ✓`,'ok')
+  }catch(err){
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+    showToast('Erreur envoi : '+err.message,'err')
+  }
+}
+
+window.convertirEnReparation=async function(){
+  const d=currentPdfDoc
+  if(!d)return
+  if(d.converti_reparation_id){showToast('Ce diagnostic a déjà été converti en réparation','err');return}
+  if(!confirm(`Convertir le diagnostic ${d.numero} en réparation ?\n\nUne nouvelle réparation sera créée avec les infos client, l'appareil et le constat. Le statut du diagnostic passera à "Accepté".`))return
+  const btn=document.getElementById('convertRepBtn')
+  const htmlBtn=btn.innerHTML
+  btn.disabled=true;btn.textContent='Conversion...'
+  try{
+    const numRep=await nextNumero('reparation','reparation')
+    const panne=[d.probleme_signale?`Problème signalé : ${d.probleme_signale}`:'',d.constat?`Constat : ${d.constat}`:'',d.notes||''].filter(Boolean).join('\n\n')||'À compléter'
+    const repPayload={
+      numero:numRep,
+      client_id:d.client_id||null,
+      client_nom:d.client_nom,
+      client_email:d.client_email||null,
+      client_telephone:d.client_telephone||null,
+      appareil:d.appareil||'',
+      marque:d.marque||null,
+      modele:d.modele||null,
+      panne_description:panne,
+      statut:'attente_reception',
+      prix_devis:d.prix_estime||0,
+      prix_final:0,
+      piece_id:null,
+      cout_pieces:0,
+      pieces:[],
+      notes:`Créé depuis le diagnostic ${d.numero}`,
+      updated_at:new Date().toISOString()
+    }
+    const resRep=await sb.from('reparations').insert(repPayload).select().single()
+    if(resRep.error)throw new Error(resRep.error.message)
+    await sb.from('diagnostics').update({statut:'accepte',converti_reparation_id:resRep.data.id,reparation_numero:numRep,updated_at:new Date().toISOString()}).eq('id',d.id)
+    const i=allDiagnostics.findIndex(x=>x.id===d.id)
+    if(i>=0){allDiagnostics[i].statut='accepte';allDiagnostics[i].converti_reparation_id=resRep.data.id;allDiagnostics[i].reparation_numero=numRep}
+    btn.disabled=false;btn.innerHTML=htmlBtn
+    closePdf();renderAll()
+    showToast(`Réparation ${numRep} créée depuis le diagnostic ${d.numero} ✓ — Complète les pièces dans Réparations`,'ok')
+  }catch(err){
+    btn.disabled=false;btn.innerHTML=htmlBtn
+    showToast('Erreur conversion : '+err.message,'err')
+  }
+}
+
+window.exportCSV=function(){
+  if(!allDiagnostics.length){showToast('Aucune donnée','err');return}
+  const cols=['numero','client_nom','client_email','appareil','marque','modele','verdict','statut','prix_estime','reparation_numero','date_emission','created_at']
+  const csv=[cols.join(','),...allDiagnostics.map(f=>cols.map(k=>`"${String(f[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const a=document.createElement('a')
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download=`itsoluce_diagnostics_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  showToast('Export téléchargé ✓','ok')
+}
+
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 await load()
 
 } catch(err){
