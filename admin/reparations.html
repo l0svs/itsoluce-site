@@ -88,6 +88,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .filter-btn.active{color:#fff;border-color:transparent;}
 
 .table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;align-content:start;}
+.four-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:18px;transition:border-color .15s;}
+.four-card:hover{border-color:var(--a);}
+.four-card.inactive{opacity:.5;}
+@media(max-width:640px){.cards-wrap{grid-template-columns:1fr;}}
 .table{width:100%;border-collapse:collapse;}
 .table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
 .table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
@@ -490,35 +495,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="toolbar">
         <div class="search-wrap">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" id="searchInput" placeholder="Client, appareil, marque..." oninput="renderTable()"/>
+          <input class="search-input" type="text" id="searchInput" placeholder="Client, appareil, marque..." oninput="renderCards()"/>
         </div>
         <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
       </div>
 
-      <div class="table-wrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th style="width:90px;">N° dossier</th>
-              <th>Client</th>
-              <th>Appareil</th>
-              <th>Panne</th>
-              <th>Statut</th>
-              <th>Reçu le</th>
-              <th style="text-align:right;">Coût</th>
-              <th style="text-align:right;">Facturé</th>
-              <th style="text-align:right;">Marge</th>
-              <th style="width:70px;"></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;">
-          <div class="empty-ico">🔧</div>
-          <div class="empty-title">Aucun dossier trouvé</div>
-          <div class="empty-sub">
-            <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">Créer un premier dossier</button>
-          </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
+      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;">
+        <div class="empty-ico">🔧</div>
+        <div class="empty-title">Aucun dossier trouvé</div>
+        <div class="empty-sub">
+          <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">Créer un premier dossier</button>
         </div>
       </div>
     </div>
@@ -993,7 +980,7 @@ async function loadReps(){
   pb.style.display='flex'
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
+function renderAll(){updateKPIs();renderFilters();renderCards()}
 
 function updateKPIs(){
   const now=new Date()
@@ -1020,7 +1007,7 @@ function renderFilters(){
   }).join('')
 }
 
-function setFilter(f){activeFilter=f;renderFilters();renderTable()}
+function setFilter(f){activeFilter=f;renderFilters();renderCards()}
 window.setFilter=setFilter
 
 function getFiltered(){
@@ -1034,50 +1021,46 @@ function getFiltered(){
   })
 }
 
-function renderTable(){
+function renderCards(){
   const rows=getFiltered()
-  const tbody=document.getElementById('tableBody')
+  const wrap=document.getElementById('cardsWrap')
   const empty=document.getElementById('emptyState')
-  if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return}
+  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
-  tbody.innerHTML=rows.map(r=>{
+  wrap.innerHTML=rows.map(r=>{
     const st=window.STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
     const date=new Date(r.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-    return`<tr data-id="${r.id}">
-      <td><span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${r.numero||'—'}</span></td>
-      <td>
-        <div style="font-weight:500;">${r.client_nom}</div>
-        <div style="font-size:11px;color:var(--t3);">${r.client_telephone||r.client_email||''}</div>
-      </td>
-      <td>
-        <div>${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'}</div>
-        <div style="font-size:11px;color:var(--t3);">${r.appareil||''}</div>
-      </td>
-      <td style="max-width:200px;">
-        <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;color:var(--t2);">${r.panne_description||'—'}</div>
-      </td>
-      <td>
-        <button class="statut ${st.cls}" onclick="openStatusMenu(${r.id},this)">${st.label} ▾</button>
-      </td>
-      <td style="color:var(--t3);white-space:nowrap;">${date}</td>
-      <td style="text-align:right;color:var(--t2);">${r.cout_pieces?Number(r.cout_pieces).toFixed(2)+'€':'—'}</td>
-      <td style="text-align:right;font-weight:500;">${r.prix_final?Number(r.prix_final).toFixed(2)+'€':'—'}</td>
-      <td style="text-align:right;font-weight:500;color:${(Number(r.prix_final||0)-Number(r.cout_pieces||0))>=0?'var(--ok)':'var(--d)'};">${r.prix_final?((Number(r.prix_final||0)-Number(r.cout_pieces||0)).toFixed(2)+'€'):'—'}</td>
-      <td>
-        <div class="actions">
-          <button class="act-btn" onclick="editRep(${r.id})" title="Modifier">
+    const marge=(Number(r.prix_final||0)-Number(r.cout_pieces||0))
+    return`<div class="four-card" data-id="${r.id}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
+        <div style="min-width:0;">
+          <span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${r.numero||'—'}</span>
+          <div style="font-weight:500;font-size:14px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.client_nom}</div>
+        </div>
+        <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" style="flex-shrink:0;">${st.label} ▾</button>
+      </div>
+      <div style="font-size:12px;color:var(--t2);">${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'}</div>
+      <div style="font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${r.panne_description||'—'}</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:8px;">Reçu le ${date}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
+        <div>
+          <span style="font-weight:600;">${r.prix_final?Number(r.prix_final).toFixed(2)+'€':'—'}</span>
+          ${r.prix_final?`<span style="font-size:11px;color:${marge>=0?'var(--ok)':'var(--d)'};margin-left:6px;">marge ${marge.toFixed(2)}€</span>`:''}
+        </div>
+        <div class="actions" style="opacity:1;">
+          <button class="act-btn" onclick="event.stopPropagation();editRep(${r.id})" title="Modifier">
             <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
-          <button class="act-btn del" onclick="deleteRep(${r.id},'${(r.client_nom||'').replace(/'/g,"\\'")}')" title="Supprimer">
+          <button class="act-btn del" onclick="event.stopPropagation();deleteRep(${r.id},'${(r.client_nom||'').replace(/'/g,"\\'")}')" title="Supprimer">
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
           </button>
         </div>
-      </td>
-    </tr>`
+      </div>
+    </div>`
   }).join('')
 }
 
-window.renderTable=renderTable
+window.renderTable=renderCards
 
 window.editRep=function(id){
   const r=allReps.find(r=>r.id===id)

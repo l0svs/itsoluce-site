@@ -485,18 +485,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="kpi"><div class="kpi-label">Total factures</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderTable()"/></div>
+        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderCards()"/></div>
         <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
       </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:100px;">N°</th><th>Client</th><th>Réf. répar.</th><th>Émise le</th><th>Statut</th><th style="text-align:right;">Montant</th><th style="width:130px;"></th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🧾</div><div class="empty-title">Aucune facture</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer la première</button></div></div>
-      </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
+      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;"><div class="empty-ico">🧾</div><div class="empty-title">Aucune facture</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer la première</button></div></div>
     </div>
   </div>
 </div>
@@ -1048,7 +1041,7 @@ window.onRepSelect=function(){
   calcTotaux()
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
+function renderAll(){updateKPIs();renderFilters();renderCards()}
 
 function updateKPIs(){
   const now=new Date()
@@ -1078,9 +1071,9 @@ function renderFilters(){
     return`<button class="filter-btn ${a?'active':''}" style="${a&&colors[s]?`background:${colors[s]};border-color:${colors[s]};`:''}" onclick="setFilter('${s}')">${labels[s]}</button>`
   }).join('')
 }
-window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
+window.setFilter=function(f){activeFilter=f;renderFilters();renderCards()}
 
-function renderTable(){
+function renderCards(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   const STAT={brouillon:{l:'Brouillon',c:'sf-brouillon'},envoyee:{l:'Envoyée',c:'sf-envoyee'},payee:{l:'Payée',c:'sf-payee'},retard:{l:'En retard',c:'sf-retard'},annulee:{l:'Annulée',c:'sf-annulee'}}
   const now=new Date()
@@ -1089,28 +1082,34 @@ function renderTable(){
     const ms=!q||[f.numero,f.client_nom,f.reparation_numero].some(v=>v&&v.toLowerCase().includes(q))
     return mf&&ms
   })
-  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
-  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
+  const wrap=document.getElementById('cardsWrap'),empty=document.getElementById('emptyState')
+  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
-  tb.innerHTML=rows.map(f=>{
+  wrap.innerHTML=rows.map(f=>{
     let stKey=f.statut
     if(f.statut==='envoyee'&&f.date_echeance&&new Date(f.date_echeance)<now)stKey='retard'
     const st=STAT[stKey]||STAT.brouillon
     const date=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})
-    return`<tr>
-      <td><span style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}</span>${f.email_envoye?' <span title="Envoyée par email" style="color:var(--ok);">✉</span>':''}</td>
-      <td><div style="font-weight:500;">${f.client_nom}</div><div style="font-size:11px;color:var(--t3);">${f.client_email||''}</div></td>
-      <td><span style="font-family:monospace;font-size:11px;color:var(--a);">${f.reparation_numero||'—'}</span></td>
-      <td style="color:var(--t3);white-space:nowrap;">${date}</td>
-      <td><span class="statut-fac ${st.c}">${st.l}</span></td>
-      <td style="text-align:right;font-weight:600;">${Number(f.total||0).toFixed(2).replace('.',',')} €</td>
-      <td><div class="actions" style="opacity:1;justify-content:flex-end;">
-        <button class="act-btn" onclick="previewFacture(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        <button class="act-btn" onclick="exportPdfDirect(${f.id})" title="Télécharger le PDF"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg></button>
-        <button class="act-btn" onclick="editFacture(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-        <button class="act-btn del" onclick="deleteFacture(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-      </div></td>
-    </tr>`
+    return`<div class="four-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
+        <div style="min-width:0;">
+          <div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}${f.email_envoye?' <span title="Envoyée par email" style="color:var(--ok);">✉</span>':''}</div>
+          <div style="font-weight:500;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.client_nom}</div>
+        </div>
+        <span class="statut-fac ${st.c}" style="flex-shrink:0;">${st.l}</span>
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:2px;">${date}</div>
+      ${f.reparation_numero?`<div style="font-size:12px;color:var(--a);font-family:monospace;">Réf. ${f.reparation_numero}</div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
+        <span style="font-weight:600;">${Number(f.total||0).toFixed(2).replace('.',',')} €</span>
+        <div class="actions" style="opacity:1;">
+          <button class="act-btn" onclick="event.stopPropagation();previewFacture(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="act-btn" onclick="event.stopPropagation();exportPdfDirect(${f.id})" title="Télécharger le PDF"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg></button>
+          <button class="act-btn" onclick="event.stopPropagation();editFacture(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="act-btn del" onclick="event.stopPropagation();deleteFacture(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+        </div>
+      </div>
+    </div>`
   }).join('')
 }
 

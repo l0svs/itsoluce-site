@@ -489,18 +489,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="kpi"><div class="kpi-label">Total diagnostics</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderTable()"/></div>
+        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderCards()"/></div>
         <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
       </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:100px;">N°</th><th>Client</th><th>Appareil</th><th>Verdict</th><th>Statut</th><th style="text-align:right;">Prix estimé</th><th style="width:130px;"></th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🩺</div><div class="empty-title">Aucun diagnostic</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer le premier</button></div></div>
-      </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
+      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;"><div class="empty-ico">🩺</div><div class="empty-title">Aucun diagnostic</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer le premier</button></div></div>
     </div>
   </div>
 </div>
@@ -779,7 +772,7 @@ window.onClientSelect=function(){
   }
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
+function renderAll(){updateKPIs();renderFilters();renderCards()}
 
 function updateKPIs(){
   const now=new Date()
@@ -804,9 +797,9 @@ function renderFilters(){
     return`<button class="filter-btn ${a?'active':''}" style="${a&&colors[s]?`background:${colors[s]};border-color:${colors[s]};`:''}" onclick="setFilter('${s}')">${labels[s]}</button>`
   }).join('')
 }
-window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
+window.setFilter=function(f){activeFilter=f;renderFilters();renderCards()}
 
-function renderTable(){
+function renderCards(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   const STAT={nouveau:{l:'Nouveau',c:'sf-brouillon'},en_cours:{l:'En cours',c:'sf-envoye'},accepte:{l:'Accepté',c:'sf-accepte'},refuse:{l:'Refusé',c:'sf-refuse'},sans_suite:{l:'Sans suite',c:'sf-expire'}}
   const VERDICT={reparable:'Réparable',non_reparable:'Non réparable',a_confirmer:'À confirmer'}
@@ -815,25 +808,31 @@ function renderTable(){
     const ms=!q||[f.numero,f.client_nom,f.appareil].some(v=>v&&v.toLowerCase().includes(q))
     return mf&&ms
   })
-  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
-  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
+  const wrap=document.getElementById('cardsWrap'),empty=document.getElementById('emptyState')
+  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
-  tb.innerHTML=rows.map(f=>{
+  wrap.innerHTML=rows.map(f=>{
     const st=STAT[f.statut]||STAT.nouveau
     const appareilLbl=[f.marque,f.modele].filter(Boolean).join(' ')||f.appareil||'—'
-    return`<tr>
-      <td><span style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}</span>${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</td>
-      <td><div style="font-weight:500;">${f.client_nom}</div><div style="font-size:11px;color:var(--t3);">${f.client_email||''}</div></td>
-      <td>${appareilLbl}</td>
-      <td style="color:var(--t3);">${VERDICT[f.verdict]||'—'}</td>
-      <td><span class="statut-fac ${st.c}">${st.l}</span></td>
-      <td style="text-align:right;font-weight:600;">${f.prix_estime?Number(f.prix_estime).toFixed(2).replace('.',',')+' €':'—'}</td>
-      <td><div class="actions" style="opacity:1;justify-content:flex-end;">
-        <button class="act-btn" onclick="previewDiagnostic(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        <button class="act-btn" onclick="editDiagnostic(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-        <button class="act-btn del" onclick="deleteDiagnostic(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-      </div></td>
-    </tr>`
+    return`<div class="four-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
+        <div style="min-width:0;">
+          <div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</div>
+          <div style="font-weight:500;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.client_nom}</div>
+        </div>
+        <span class="statut-fac ${st.c}" style="flex-shrink:0;">${st.l}</span>
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:2px;">${appareilLbl}</div>
+      <div style="font-size:12px;color:var(--t3);">${VERDICT[f.verdict]||'—'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
+        <span style="font-weight:600;">${f.prix_estime?Number(f.prix_estime).toFixed(2).replace('.',',')+' €':'—'}</span>
+        <div class="actions" style="opacity:1;">
+          <button class="act-btn" onclick="event.stopPropagation();previewDiagnostic(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button class="act-btn" onclick="event.stopPropagation();editDiagnostic(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="act-btn del" onclick="event.stopPropagation();deleteDiagnostic(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+        </div>
+      </div>
+    </div>`
   }).join('')
 }
 
