@@ -576,6 +576,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
     <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
     <button class="btn btn-secondary" onclick="convertirEnReparation()" id="convertRepBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Convertir en réparation</button>
+    <button class="btn btn-secondary" onclick="convertirEnFacture()" id="convertBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M4 12l6-6 4 4 6-6"/></svg>Convertir en facture</button>
     <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
   <div class="pdf-modal" id="pdfModal"></div>
@@ -1263,6 +1264,10 @@ window.previewDevis=function(id){
   currentPdfDoc=f
   document.getElementById('pdfModal').innerHTML=buildTemplateHTML(f)
   document.getElementById('pdfOverlay').classList.add('open')
+  // Masquer un bouton de conversion si le devis a déjà été converti dans l'autre sens
+  const repBtn=document.getElementById('convertRepBtn'), facBtn=document.getElementById('convertBtn')
+  if(repBtn)repBtn.style.display=f.converti_facture_id?'none':''
+  if(facBtn)facBtn.style.display=f.converti_reparation_id?'none':''
 }
 
 async function genererPDFBlob(){
