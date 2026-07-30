@@ -62,6 +62,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
 .search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
 .table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;align-content:start;}
+.four-card{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:16px 18px;transition:border-color .15s;}
+.four-card:hover{border-color:var(--a);}
+.card-acts{display:flex;gap:4px;}
+.card-act{width:28px;height:28px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.card-act:hover{background:var(--ad);color:var(--a);border-color:var(--a);}
+.card-act.del:hover{background:rgba(220,38,38,0.1);color:#dc2626;border-color:#dc2626;}
+.card-act svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;}
+@media(max-width:640px){.cards-wrap{grid-template-columns:1fr;}}
 .table{width:100%;border-collapse:collapse;}
 .table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
 .table td{padding:10px 12px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
@@ -437,24 +446,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <input class="search-input" type="text" id="searchInput" placeholder="Nom, email, téléphone..." oninput="renderTable()"/>
         </div>
       </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:44px;"></th>
-            <th>Client</th>
-            <th>Contact</th>
-            <th>Réparations</th>
-            <th style="text-align:right;">CA total</th>
-            <th>Dernier passage</th>
-            <th style="width:70px;"></th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;">
-          <div class="empty-ico">👥</div>
-          <div class="empty-title">Aucun client trouvé</div>
-          <div class="empty-sub">Les clients sont créés automatiquement depuis les réparations, ou <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">ajoutez-en un manuellement</button></div>
-        </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
+      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;">
+        <div class="empty-ico">👥</div>
+        <div class="empty-title">Aucun client trouvé</div>
+        <div class="empty-sub">Les clients sont créés automatiquement depuis les réparations, ou <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">ajoutez-en un manuellement</button></div>
       </div>
     </div>
   </div>
@@ -699,36 +695,38 @@ function renderAll(){
 window.renderTable=function(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   const rows=allClients.filter(c=>!q||[c.nom,c.email,c.telephone].some(v=>v&&v.toLowerCase().includes(q)))
-  const tbody=document.getElementById('tableBody')
+  const wrap=document.getElementById('cardsWrap')
   const empty=document.getElementById('emptyState')
-  if(rows.length===0){tbody.innerHTML='';empty.style.display='block';return}
+  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
-  tbody.innerHTML=rows.map(c=>{
+  wrap.innerHTML=rows.map(c=>{
     const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
     const repsCount=c.reps_count||c.reps?.length||0
     const ca=(c.ca||0).toFixed(2)
     const last=c.last_rep||c.created_at
-    const date=last?new Date(last).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'-'
-    return`<tr style="cursor:pointer;" onclick="showDetail(${c.id})">
-      <td><div class="cli-av">${initials}</div></td>
-      <td>
-        <div style="font-weight:500;">${c.nom||'—'}</div>
-        <div style="font-size:11px;color:var(--t3);">${c.numero?`<span style="font-family:monospace;color:var(--a);">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
-      </td>
-      <td>
-        <div>${c.email||'—'}</div>
-        <div style="font-size:11px;color:var(--t3);">${c.telephone||''}</div>
-      </td>
-      <td><span class="tag ${repsCount>0?'tag-ok':''}">${repsCount} répar.</span></td>
-      <td style="text-align:right;font-weight:500;">${ca}€</td>
-      <td style="color:var(--t3);">${date}</td>
-      <td>
-        <div class="actions">
-          <button class="act-btn" onclick="event.stopPropagation();editClient(${c.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="act-btn del" onclick="event.stopPropagation();deleteClient(${c.id},'${(c.nom||'').replace(/'/g,"\\'")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    const date=last?new Date(last).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'—'
+    const nomEsc=(c.nom||'').replace(/'/g,"\\'")
+    return`<div class="four-card" style="cursor:pointer;" onclick="showDetail(${c.id})">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="cli-av" style="width:40px;height:40px;font-size:15px;">${initials}</div>
+        <div style="min-width:0;flex:1;">
+          <div style="font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.nom||'—'}</div>
+          <div style="font-size:11px;color:var(--t3);">${c.numero?`<span style="font-family:monospace;color:var(--a);">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
         </div>
-      </td>
-    </tr>`
+      </div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.email||'—'}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px;">${c.telephone||'Pas de téléphone'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ln);padding-top:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="tag ${repsCount>0?'tag-ok':''}">${repsCount} répar.</span>
+          <span style="font-weight:600;font-size:14px;">${ca}€</span>
+        </div>
+        <div class="card-acts">
+          <div class="card-act" onclick="event.stopPropagation();editClient(${c.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          <div class="card-act del" onclick="event.stopPropagation();deleteClient(${c.id},'${nomEsc}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+        </div>
+      </div>
+    </div>`
   }).join('')
 }
 
