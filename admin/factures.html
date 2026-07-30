@@ -991,6 +991,14 @@ async function load(){
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
+  // Ouverture directe d'une facture si on arrive depuis un lien externe (ex : page Garanties)
+  const openId=new URLSearchParams(location.search).get('open')
+  if(openId){
+    const fid=Number(openId)
+    if(allFactures.some(f=>f.id===fid)){previewFacture(fid)}
+    else{showToast('Facture introuvable','err')}
+    history.replaceState(null,'','/admin/factures.html')
+  }
 }
 
 // Remplir sélecteur réparations
