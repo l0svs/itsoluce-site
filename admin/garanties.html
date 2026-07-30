@@ -454,18 +454,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="kpi"><div class="kpi-label">Durée garantie</div><div class="kpi-val">3<span style="font-size:13px;color:var(--t3);font-weight:400;"> mois</span></div><div class="kpi-sub">après réparation</div></div>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="Nom client, REP-XXXX, appareil..." oninput="renderTable()"/></div>
+        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="Nom client, REP-XXXX, appareil..." oninput="renderCards()"/></div>
         <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
       </div>
-      <div class="table-wrap">
-        <table class="table">
-          <thead><tr>
-            <th style="width:90px;">N° suivi</th><th>Client</th><th>Appareil</th><th>Fin réparation</th><th>Expire le</th><th>Statut garantie</th>
-          </tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-        <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">🛡️</div><div style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;">Aucune réparation terminée</div><div style="font-size:12px;color:var(--t3);">Les garanties apparaîtront ici une fois des réparations passées en « prêt » ou « rendu ».</div></div>
-      </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
+      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;"><div class="empty-ico">🛡️</div><div style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;">Aucune réparation terminée</div><div style="font-size:12px;color:var(--t3);">Les garanties apparaîtront ici une fois des réparations passées en « prêt » ou « rendu ».</div></div>
     </div>
   </div>
 </div>
@@ -599,7 +592,7 @@ async function load(){
   document.getElementById('pageBody').style.display='flex'
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
+function renderAll(){updateKPIs();renderFilters();renderCards()}
 
 function updateKPIs(){
   const actives=allGaranties.filter(g=>g._gar.sousGarantie)
@@ -618,9 +611,19 @@ function renderFilters(){
     return`<button class="filter-btn ${a?'active':''}" onclick="setFilter('${s}')">${s}</button>`
   }).join('')
 }
-window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
+window.setFilter=function(f){activeFilter=f;renderFilters();renderCards()}
 
-function renderTable(){
+// Anneau SVG de progression (temps de garantie restant)
+function ringSVG(pct,color){
+  const r=16,circ=2*Math.PI*r
+  const offset=circ-(pct/100)*circ
+  return `<svg width="40" height="40" viewBox="0 0 40 40" style="flex-shrink:0;">
+    <circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--ln2)" stroke-width="4"/>
+    <circle cx="20" cy="20" r="${r}" fill="none" stroke="${color}" stroke-width="4" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" stroke-linecap="round" transform="rotate(-90 20 20)"/>
+  </svg>`
+}
+
+function renderCards(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   let rows=allGaranties.filter(g=>{
     let mf=true
@@ -630,31 +633,36 @@ function renderTable(){
     const ms=!q||[g.numero,g.client_nom,g.appareil,g.marque,g.modele].some(v=>v&&String(v).toLowerCase().includes(q))
     return mf&&ms
   })
-  const tb=document.getElementById('tableBody'),empty=document.getElementById('emptyState')
-  if(rows.length===0){tb.innerHTML='';empty.style.display='block';return}
+  const wrap=document.getElementById('cardsWrap'),empty=document.getElementById('emptyState')
+  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
   empty.style.display='none'
-  tb.innerHTML=rows.map(g=>{
+  wrap.innerHTML=rows.map(g=>{
     const gar=g._gar
     const appareil=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
-    const dDebut=gar.debut.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
     const dExpire=gar.expire.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    let badge,barColor
+    let badge,ringColor,cardClass=''
     if(gar.sousGarantie){
       const urgent=gar.joursRestants<=15
       badge=`<span class="gar-badge gar-ok"><span class="gar-dot"></span>Sous garantie · ${gar.joursRestants} j</span>`
-      barColor=urgent?'#fb923c':'#16a34a'
+      ringColor=urgent?'#fb923c':'#16a34a'
     } else {
       badge=`<span class="gar-badge gar-expire"><span class="gar-dot"></span>Expirée · depuis ${Math.abs(gar.joursRestants)} j</span>`
-      barColor='#dc2626'
+      ringColor='var(--t3)'
+      cardClass='inactive'
     }
-    return`<tr>
-      <td><span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${g.numero||'—'}</span></td>
-      <td><div style="font-weight:500;">${g.client_nom||'—'}</div><div style="font-size:11px;color:var(--t3);">${g.client_telephone||g.client_email||''}</div></td>
-      <td>${appareil}</td>
-      <td style="color:var(--t3);white-space:nowrap;">${dDebut}</td>
-      <td style="white-space:nowrap;font-weight:500;">${dExpire}</td>
-      <td>${badge}<div class="gar-bar"><div class="gar-bar-fill" style="width:${gar.pct}%;background:${barColor};"></div></div></td>
-    </tr>`
+    return`<div class="four-card ${cardClass}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px;">
+        <div style="min-width:0;">
+          <div style="font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${g.client_nom||'—'}</div>
+          <div style="font-size:12px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${appareil}</div>
+        </div>
+        ${ringSVG(gar.pct,ringColor)}
+      </div>
+      ${badge}
+      <div style="font-size:11px;color:var(--t3);margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span>${gar.sousGarantie?'Expire le '+dExpire:'N° '+(g.numero||'—')}</span>
+      </div>
+    </div>`
   }).join('')
 }
 
