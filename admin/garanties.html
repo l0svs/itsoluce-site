@@ -569,6 +569,7 @@ loadNotifs();
 
 
 let allGaranties=[]
+let factureParReparation={}
 let activeFilter='Toutes'
 
 // Calcule les infos de garantie d'une réparation
@@ -584,12 +585,23 @@ function calcGarantie(r){
 }
 
 async function load(){
-  const {data,error}=await sb.from('reparations').select('*').in('statut',['pret','rendu']).order('date_fin',{ascending:false,nullsFirst:false})
-  if(error){showError(error.message);return}
-  allGaranties=(data||[]).map(r=>({...r,_gar:calcGarantie(r)}))
+  const [rRep,rFac]=await Promise.all([
+    sb.from('reparations').select('*').in('statut',['pret','rendu']).order('date_fin',{ascending:false,nullsFirst:false}),
+    sb.from('factures').select('id,reparation_id').not('reparation_id','is',null)
+  ])
+  if(rRep.error){showError(rRep.error.message);return}
+  allGaranties=(rRep.data||[]).map(r=>({...r,_gar:calcGarantie(r)}))
+  factureParReparation={}
+  ;(rFac.data||[]).forEach(f=>{factureParReparation[f.reparation_id]=f.id})
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
+}
+
+window.ouvrirFacture=function(reparationId){
+  const factureId=factureParReparation[reparationId]
+  if(!factureId){showToast('Aucune facture liée à cette réparation','err');return}
+  window.location.href=`/admin/factures.html?open=${factureId}`
 }
 
 function renderAll(){updateKPIs();renderFilters();renderCards()}
@@ -650,7 +662,7 @@ function renderCards(){
       ringColor='var(--t3)'
       cardClass='inactive'
     }
-    return`<div class="four-card ${cardClass}">
+    return`<div class="four-card ${cardClass}" onclick="ouvrirFacture(${g.id})" style="cursor:pointer;" title="Ouvrir la facture liée">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px;">
         <div style="min-width:0;">
           <div style="font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${g.client_nom||'—'}</div>
