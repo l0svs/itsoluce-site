@@ -178,8 +178,30 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cal-cell.today{background:var(--ad);}
 .cal-daynum{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:3px;}
 .cal-cell.today .cal-daynum{color:var(--a);}
-.cal-evt{font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#fff;font-weight:500;}
+.cal-evt{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px 2px 4px;border-radius:99px;margin-bottom:2px;white-space:nowrap;overflow:hidden;max-width:100%;cursor:pointer;font-weight:500;}
+.cal-evt span{overflow:hidden;text-overflow:ellipsis;}
+.cal-evt svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.2;flex-shrink:0;}
 .cal-more{font-size:9px;color:var(--t3);font-weight:500;}
+/* PASTILLES ICONES PAR TYPE (evenements) */
+.evt-domicile{background:rgba(59,130,246,0.15);color:#3b82f6;}
+.evt-depot{background:rgba(139,92,246,0.15);color:#8b5cf6;}
+.evt-retrait{background:rgba(16,185,129,0.15);color:#10b981;}
+.evt-autre{background:rgba(107,114,128,0.15);color:#6b7280;}
+.week-evt-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.week-evt-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
+/* VUE JOUR (timeline) */
+.cal-day{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow-y:auto;}
+.day-row{display:flex;gap:12px;min-height:52px;border-top:1px solid var(--ln);padding:8px 0;}
+.day-row:last-child{border-bottom:1px solid var(--ln);}
+.day-hour{font-size:12px;color:var(--t3);width:34px;flex-shrink:0;padding-top:6px;}
+.day-row-content{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;}
+.day-empty{flex:1;min-height:36px;cursor:pointer;border-radius:6px;}
+.day-empty:hover{background:var(--bg3);}
+.day-evt{display:flex;align-items:center;gap:10px;border-radius:8px;padding:8px 12px;cursor:pointer;}
+.day-evt svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.day-evt-info{min-width:0;}
+.day-evt-titre{font-size:13px;font-weight:500;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.day-evt-sub{font-size:11px;color:var(--t3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 /* TYPES COULEURS */
 .t-domicile{background:#3b82f6;}
 .t-depot{background:#8b5cf6;}
@@ -496,6 +518,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="cal-switch">
           <button id="btnMonth" class="on" onclick="setView('month')">Mois</button>
           <button id="btnWeek" onclick="setView('week')">Semaine</button>
+          <button id="btnDay" onclick="setView('day')">Jour</button>
         </div>
       </div>
       <div class="cal-month" id="viewMonth">
@@ -505,6 +528,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="cal-grid" id="calGrid"></div>
       </div>
       <div class="cal-week" id="viewWeek" style="display:none;"></div>
+      <div class="cal-day" id="viewDay" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -651,6 +675,15 @@ let currentView='month'
 const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
 const JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi']
 const TYPE_LABEL={domicile:'Domicile',depot:'Dépôt',retrait:'Retrait',autre:'Autre'}
+function iconFor(type){
+  const icons={
+    domicile:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    depot:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+    retrait:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    autre:'<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>'
+  }
+  return `<svg viewBox="0 0 24 24">${icons[type]||icons.autre}</svg>`
+}
 
 async function load(){
   const [rRdv,rCli,rRep]=await Promise.all([
@@ -685,8 +718,12 @@ window.onClientPick=function(){
 
 function render(){
   document.getElementById('ph-sub').textContent=`${allRdv.length} rendez-vous`
+  document.getElementById('viewMonth').style.display='none'
+  document.getElementById('viewWeek').style.display='none'
+  document.getElementById('viewDay').style.display='none'
   if(currentView==='month')renderMonth()
-  else renderWeek()
+  else if(currentView==='week')renderWeek()
+  else renderDay()
 }
 
 function sameDay(d1,d2){return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
@@ -697,7 +734,6 @@ function rdvOfDay(date){
 
 function renderMonth(){
   document.getElementById('viewMonth').style.display='flex'
-  document.getElementById('viewWeek').style.display='none'
   const y=currentDate.getFullYear(),m=currentDate.getMonth()
   document.getElementById('calTitle').textContent=`${MOIS[m]} ${y}`
   // Premier lundi de la grille
@@ -714,7 +750,7 @@ function renderMonth(){
     const dateStr=d.toISOString().slice(0,10)
     let evtHtml=evts.slice(0,3).map(e=>{
       const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-      return `<div class="cal-evt t-${e.type}" onclick="event.stopPropagation();editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}">${h} ${e.titre}</div>`
+      return `<div class="cal-evt evt-${e.type}" onclick="event.stopPropagation();editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}" title="${(e.titre||'').replace(/"/g,'&quot;')}">${iconFor(e.type)}<span>${h}</span></div>`
     }).join('')
     if(evts.length>3)evtHtml+=`<div class="cal-more">+${evts.length-3} autre(s)</div>`
     html+=`<div class="cal-cell ${other?'other':''} ${isToday?'today':''}" onclick="openPanelDate('${dateStr}')"><div class="cal-daynum">${d.getDate()}</div>${evtHtml}</div>`
@@ -723,7 +759,6 @@ function renderMonth(){
 }
 
 function renderWeek(){
-  document.getElementById('viewMonth').style.display='none'
   document.getElementById('viewWeek').style.display='flex'
   const cur=new Date(currentDate)
   let dow=cur.getDay()-1; if(dow<0)dow=6
@@ -743,9 +778,8 @@ function renderWeek(){
       body=evts.map(e=>{
         const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
         const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
-        const col={domicile:'#3b82f6',depot:'#8b5cf6',retrait:'#10b981',autre:'#6b7280'}[e.type]
         const rappelIco=e.rappel_envoye_le?'<span title="Rappel envoyé" style="margin-left:6px;color:var(--ok,#10b981);">✓</span>':''
-        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-bar" style="background:${col};"></div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${e.titre}${rappelIco}</div>${sub?`<div class="week-evt-sub">${sub}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
+        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-ico evt-${e.type}">${iconFor(e.type)}</div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${e.titre}${rappelIco}</div>${sub?`<div class="week-evt-sub">${sub}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
       }).join('')
     }
     html+=`<div class="week-day"><div class="week-day-head ${isToday?'today':''}"><span>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}</span><button onclick="openPanelDate('${dateStr}')" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:18px;line-height:1;">+</button></div><div class="week-day-body">${body}</div></div>`
@@ -753,15 +787,42 @@ function renderWeek(){
   document.getElementById('viewWeek').innerHTML=html
 }
 
+function renderDay(){
+  document.getElementById('viewDay').style.display='flex'
+  const d=currentDate
+  const jourCap=JOURS[d.getDay()].charAt(0).toUpperCase()+JOURS[d.getDay()].slice(1)
+  document.getElementById('calTitle').textContent=`${jourCap} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`
+  const evts=rdvOfDay(d)
+  const startH=8,endH=20
+  let html=''
+  for(let h=startH;h<=endH;h++){
+    const hEvts=evts.filter(e=>new Date(e.date_debut).getHours()===h)
+    const dateStr=d.toISOString().slice(0,10)
+    if(hEvts.length){
+      const items=hEvts.map(e=>{
+        const hh=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
+        const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
+        return `<div class="day-evt evt-${e.type}" onclick="editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}">${iconFor(e.type)}<div class="day-evt-info"><div class="day-evt-titre">${e.titre} · ${hh}</div>${sub?`<div class="day-evt-sub">${sub}</div>`:''}</div></div>`
+      }).join('')
+      html+=`<div class="day-row"><span class="day-hour">${h}h</span><div class="day-row-content">${items}</div></div>`
+    } else {
+      html+=`<div class="day-row"><span class="day-hour">${h}h</span><div class="day-row-content"><div class="day-empty" onclick="openPanelDate('${dateStr}')"></div></div></div>`
+    }
+  }
+  document.getElementById('viewDay').innerHTML=html
+}
+
 window.setView=function(v){
   currentView=v
   document.getElementById('btnMonth').classList.toggle('on',v==='month')
   document.getElementById('btnWeek').classList.toggle('on',v==='week')
+  document.getElementById('btnDay').classList.toggle('on',v==='day')
   render()
 }
 window.navCal=function(dir){
   if(currentView==='month')currentDate.setMonth(currentDate.getMonth()+dir)
-  else currentDate.setDate(currentDate.getDate()+dir*7)
+  else if(currentView==='week')currentDate.setDate(currentDate.getDate()+dir*7)
+  else currentDate.setDate(currentDate.getDate()+dir)
   currentDate=new Date(currentDate)
   render()
 }
