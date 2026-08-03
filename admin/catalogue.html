@@ -247,7 +247,29 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
 .cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:border-color .12s,transform .12s;}
 .cat-opt:hover{border-color:var(--a);transform:translateY(-1px);}
-.cat-opt-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--ln);}
+.cat-opt-head{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.cat-opt-head.niv-eco{background:linear-gradient(135deg,#0a8050,#34d399);}
+.cat-opt-head.niv-recommande{background:linear-gradient(135deg,#2563eb,#3b82f6);}
+.cat-opt-head.niv-recommande_plus{background:linear-gradient(135deg,#7c3aed,#a855f7);}
+.cat-opt-head.niv-premium{background:linear-gradient(135deg,#b45309,#f59e0b);}
+.cat-opt-head.niv-a_valider{background:var(--bg3);}
+.cat-opt-head-label{color:#fff;font-size:11px;font-weight:700;letter-spacing:.3px;}
+.cat-opt-head.niv-a_valider .cat-opt-head-label{color:var(--t2);}
+.cat-opt-head-stock{display:inline-flex;align-items:center;gap:3px;color:#fff;font-size:10px;font-weight:500;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:99px;white-space:nowrap;}
+.cat-opt-head-stock svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.4;}
+.cat-opt-head.niv-a_valider .cat-opt-head-stock{background:var(--bg4);color:var(--t2);}
+.cat-opt-price-big{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;}
+.cat-opt-price-big .prix{font-size:22px;font-weight:700;color:var(--a);}
+.cat-opt-price-big .marge{font-size:12px;font-weight:600;color:var(--ok);}
+.cat-opt-price-sub{font-size:10px;color:var(--t3);margin-bottom:10px;}
+.cat-opt-detail{background:var(--bg3);border-radius:8px;padding:8px 11px;display:flex;flex-direction:column;gap:4px;}
+.cat-opt-detail .cat-price-row{font-size:11px;}
+.cat-synth{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.cat-synth-item{flex:1;min-width:110px;background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:11px 14px;}
+.cat-synth-label{font-size:11px;color:var(--t3);margin-bottom:3px;}
+.cat-synth-val{font-size:19px;font-weight:700;color:var(--t1);}
+.cat-synth-val.ok{color:var(--ok);}
+@media(max-width:640px){.cat-synth{gap:6px;}.cat-synth-item{min-width:90px;padding:9px 11px;}.cat-synth-val{font-size:16px;}}
 .cat-niveau{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;}
 .cat-niveau.eco{background:rgba(52,211,153,.14);color:#0a8050;}
 .cat-niveau.recommande{background:rgba(59,130,246,.14);color:#2563eb;}
@@ -898,6 +920,17 @@ function renderResults(){
     groupes[cat].push(p)
   })
   let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
+  if(data.length>0){
+    const ventes=data.map(p=>calcPrixVente(Number(p.prix_achat)||0))
+    const marges=data.map(p=>{const a=Number(p.prix_achat)||0;return calcPrixVente(a)-(a+FRAIS_LIVRAISON)})
+    const enStock=data.filter(p=>p.instock).length
+    html+=`<div class="cat-synth">
+      <div class="cat-synth-item"><div class="cat-synth-label">Variantes</div><div class="cat-synth-val">${data.length}</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">En stock</div><div class="cat-synth-val ok">${enStock}</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">À partir de</div><div class="cat-synth-val">${Math.min(...ventes).toFixed(2)} €</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">Marge max</div><div class="cat-synth-val ok">+${Math.max(...marges).toFixed(2)} €</div></div>
+    </div>`
+  }
   // Pour chaque catégorie, trier par niveau puis prix
   Object.keys(groupes).sort().forEach(cat=>{
     const items=groupes[cat].sort((a,b)=>{
@@ -913,19 +946,20 @@ function renderResults(){
       const marge=vente-cout
       const niv=p.niveau||'a_valider'
       const stockIco=p.instock?'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+      const etoile=niv==='recommande'?'★ ':''
       html+=`<div class="cat-opt ${p.instock?'':'rupture'}">
-        <div class="cat-opt-head">
-          <span class="cat-niveau ${niv}">${NIVEAU_LABEL[niv]||niv}</span>
-          <span class="stock-badge ${p.instock?'sb-ok':'sb-d'}">${stockIco}${p.instock?'En stock':'Rupture'}</span>
+        <div class="cat-opt-head niv-${niv}">
+          <span class="cat-opt-head-label">${etoile}${(NIVEAU_LABEL[niv]||niv).toUpperCase()}</span>
+          <span class="cat-opt-head-stock">${stockIco}${p.instock?'En stock':'Rupture'}</span>
         </div>
         <div class="cat-opt-body">
           <div class="cat-opt-title">${escapeHtml(p.title||'')}</div>
           <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')} · Réf. ${escapeHtml(p.sku||'')}</div>
-          <div class="cat-prices">
+          <div class="cat-opt-price-big"><span class="prix">${vente.toFixed(2)} €</span><span class="marge">+${marge.toFixed(2)} €</span></div>
+          <div class="cat-opt-price-sub">prix conseillé · marge estimée</div>
+          <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
             <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${FRAIS_LIVRAISON.toFixed(2)} €</span></div>
-            <div class="cat-price-row vente"><span class="lbl">Prix de vente conseillé</span><span class="val">${vente.toFixed(2)} €</span></div>
-            <div class="cat-price-row marge"><span class="lbl">Marge estimée</span><span class="val">+${marge.toFixed(2)} €</span></div>
           </div>
         </div>
         <div class="cat-opt-foot">
