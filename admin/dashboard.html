@@ -731,10 +731,10 @@ const montantImpaye=facturesImpayees.reduce((a,f)=>a+Number(f.total||0),0)
 const facturesRetard=facturesImpayees.filter(f=>f.date_echeance&&new Date(f.date_echeance)<today)
 
 // Réparations actives (réutilisé par la carte Réparations et le badge menu)
-const repsActives=reps.filter(r=>!['rendu','annule'].includes(r.statut))
+const repsActives=reps.filter(r=>!['rendu','annule','non_reparable'].includes(r.statut))
 
 // ─── PRÉPARATION DES LISTES ───
-const STATUT_REP={attente_reception:"En attente de réception de l'appareil",recu:'Reçu',attente:'Attente de pièce',encours:'En réparation',pret:'Prêt à récupérer',rendu:'Rendu',annule:'Annulé'}
+const STATUT_REP={attente_reception:"En attente de réception de l'appareil",recu:'Reçu',attente:'Attente de pièce',encours:'En réparation',pret:'Prêt à récupérer',rendu:'Rendu',non_reparable:'Non réparable',annule:'Annulé'}
 
 // RDV à venir (futurs, non terminés, triés)
 const rdvAvenir=rdvs.filter(r=>!r.termine&&new Date(r.date_debut)>=today).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut)).slice(0,6)
