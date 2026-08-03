@@ -226,7 +226,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 
 /* CATALOGUE FONEDAY */
-.cat-search-zone{padding:20px 24px;flex-shrink:0;}
+.cat-search-zone{padding:14px 24px 10px;flex-shrink:0;}
 .cat-search-big{position:relative;max-width:600px;}
 .cat-search-big svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;}
 .cat-search-big input{width:100%;padding:13px 16px 13px 46px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:12px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
@@ -570,14 +570,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="cat-search-big">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="catSearch" placeholder="Rechercher un modèle… ex : iPhone 13, Galaxy S23, iPad Air" oninput="catSearchDebounce()"/>
-        </div>
-        <div class="cat-chips">
-          <span class="cat-chip" onclick="catSet('iPhone 13')">iPhone 13</span>
-          <span class="cat-chip" onclick="catSet('iPhone 14')">iPhone 14</span>
-          <span class="cat-chip" onclick="catSet('iPhone 15')">iPhone 15</span>
-          <span class="cat-chip" onclick="catSet('Galaxy S23')">Galaxy S23</span>
-          <span class="cat-chip" onclick="catSet('Galaxy A54')">Galaxy A54</span>
-          <span class="cat-chip" onclick="catSet('iPad Air')">iPad Air</span>
         </div>
         <div class="cat-hint"><span class="cat-sync-info" id="sync-info"></span> · <span id="cat-total">—</span> pièces dans le catalogue</div>
         <div class="cat-filters" id="cat-filters" style="display:none;"></div>
