@@ -999,10 +999,10 @@ function renderAll(){updateKPIs();renderFilters();renderCards()}
 
 function updateKPIs(){
   const now=new Date()
-  const actifs=allReps.filter(r=>!['rendu','annule'].includes(r.statut)).length
+  const actifs=allReps.filter(r=>!['rendu','annule','non_reparable'].includes(r.statut)).length
   const moisReps=allReps.filter(r=>{
     const d=new Date(r.created_at)
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&r.statut!=='annule'
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!['annule','non_reparable'].includes(r.statut)
   })
   document.getElementById('k-actifs').textContent=actifs
   document.getElementById('k-mois').textContent=moisReps.length
@@ -1012,9 +1012,9 @@ function updateKPIs(){
 }
 
 function renderFilters(){
-  const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','annule']
-  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"En attente de réception de l'appareil",'recu':'Reçu','attente':'Attente de pièce','encours':'En réparation','pret':'Prêt à récupérer','rendu':'Rendu','annule':'Annulé'}
-  const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','annule':'#f87171'}
+  const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','non_reparable','annule']
+  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"En attente de réception de l'appareil",'recu':'Reçu','attente':'Attente de pièce','encours':'En réparation','pret':'Prêt à récupérer','rendu':'Rendu','non_reparable':'Non réparable','annule':'Annulé'}
+  const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','non_reparable':'#fb923c','annule':'#f87171'}
   document.getElementById('filterBtns').innerHTML=all.map(s=>{
     const isActive=activeFilter===s
     const color=colors[s]
@@ -1029,7 +1029,7 @@ function getFiltered(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   return allReps.filter(r=>{
     let matchFilter=true
-    if(activeFilter==='Actifs')matchFilter=!['rendu','annule'].includes(r.statut)
+    if(activeFilter==='Actifs')matchFilter=!['rendu','annule','non_reparable'].includes(r.statut)
     else if(activeFilter!=='Tous')matchFilter=r.statut===activeFilter
     const matchSearch=!q||[r.client_nom,r.client_email,r.appareil,r.marque,r.modele,r.panne_description].some(v=>v&&v.toLowerCase().includes(q))
     return matchFilter&&matchSearch
