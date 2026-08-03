@@ -109,6 +109,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .s-pret{background:rgba(52,211,153,0.15);color:#34d399;}
 .s-rendu{background:rgba(107,114,128,0.15);color:#6b7280;}
 .s-annule{background:rgba(248,113,113,0.15);color:#f87171;}
+.s-non_reparable{background:rgba(251,146,60,0.15);color:#fb923c;}
 
 /* STATUS MENU */
 .status-menu{position:fixed;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:4px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.3);min-width:160px;display:none;}
@@ -520,6 +521,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <button class="sm-item" onclick="changeStatut('encours')"><span class="statut s-encours" style="pointer-events:none;">En réparation</span></button>
   <button class="sm-item" onclick="changeStatut('pret')"><span class="statut s-pret" style="pointer-events:none;">Prêt à récupérer</span></button>
   <button class="sm-item" onclick="changeStatut('rendu')"><span class="statut s-rendu" style="pointer-events:none;">Rendu</span></button>
+  <button class="sm-item" onclick="changeStatut('non_reparable')"><span class="statut s-non_reparable" style="pointer-events:none;">Non réparable</span></button>
   <button class="sm-item" onclick="changeStatut('annule')"><span class="statut s-annule" style="pointer-events:none;">Annulé</span></button>
 </div>
 
@@ -581,15 +583,20 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="fg-sep">Suivi & Prix</div>
     <div class="fg">
       <label>Statut</label>
-      <select id="f-statut">
+      <select id="f-statut" onchange="toggleMotif()">
         <option value="attente_reception">En attente de réception de l'appareil</option>
         <option value="recu">Reçu</option>
         <option value="attente">Attente de pièce</option>
         <option value="encours">En réparation</option>
         <option value="pret">Prêt à récupérer</option>
         <option value="rendu">Rendu</option>
+        <option value="non_reparable">Non réparable</option>
         <option value="annule">Annulé</option>
       </select>
+    </div>
+    <div class="fg" id="motif-wrap" style="display:none;">
+      <label>Motif</label>
+      <input type="text" id="f-motif" placeholder="ex : carte mère HS, corrosion, refus du client..."/>
     </div>
     <div class="fg-row">
       <div class="fg"><label>Prix devis (€)</label><input type="number" id="f-devis" placeholder="0.00" min="0" step="0.01"/></div>
@@ -637,6 +644,11 @@ function showToast(msg,type='ok'){
   setTimeout(()=>t.className='toast',3000)
 }
 
+window.toggleMotif=function(){
+  const v=document.getElementById('f-statut').value
+  document.getElementById('motif-wrap').style.display=(v==='non_reparable'||v==='annule')?'block':'none'
+}
+
 const STATUTS={
   attente_reception:{label:"En attente de réception de l'appareil",cls:'s-attente_reception'},
   recu:{label:'Reçu',cls:'s-recu'},
@@ -644,6 +656,7 @@ const STATUTS={
   encours:{label:'En réparation',cls:'s-encours'},
   pret:{label:'Prêt à récupérer',cls:'s-pret'},
   rendu:{label:'Rendu',cls:'s-rendu'},
+  non_reparable:{label:'Non réparable',cls:'s-non_reparable'},
   annule:{label:'Annulé',cls:'s-annule'}
 }
 window.STATUTS=STATUTS
@@ -682,6 +695,8 @@ function openPanel(r=null){
   // Vider la liste de pièces
   const _pl=document.getElementById('piecesList');if(_pl)_pl.innerHTML=''
   document.getElementById('f-statut').value=r?.statut||'attente_reception'
+  document.getElementById('f-motif').value=r?.motif||''
+  toggleMotif()
   document.getElementById('f-devis').value=r?.prix_devis||''
   document.getElementById('f-final').value=r?.prix_final||''
   document.getElementById('f-notes').value=r?.notes||''
@@ -1041,6 +1056,7 @@ function renderCards(){
       </div>
       <div style="font-size:12px;color:var(--t2);">${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'}</div>
       <div style="font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${r.panne_description||'—'}</div>
+      ${r.motif?`<div style="font-size:11px;color:#fb923c;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Motif : ${r.motif}</div>`:''}
       <div style="font-size:11px;color:var(--t3);margin-top:8px;">Reçu le ${date}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
         <div>
@@ -1228,6 +1244,7 @@ window.saveDossier=async function(){
     piece_id:piecesData.length>0?piecesData[0].stock_id:null,
     cout_pieces:piecesData.reduce((a,p)=>a+p.qte*p.cout,0),
     pieces:piecesData,
+    motif:document.getElementById('f-motif').value.trim()||null,
     notes:document.getElementById('f-notes').value.trim()||null,
     updated_at:new Date().toISOString()
   }
