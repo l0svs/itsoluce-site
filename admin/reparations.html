@@ -124,15 +124,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
 .act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
 
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.panel-overlay{display:none;}
 .panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;right:0;top:0;bottom:0;width:50vw;min-width:460px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}
+.panel{position:fixed;left:var(--sw);right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;}
 .panel.open{transform:translateX(0);}
 .panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .panel-title{font-size:14px;font-weight:600;color:var(--t1);}
 .panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
 .panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:20px;}
+.panel-body{flex:1;overflow-y:auto;padding:24px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;max-width:960px;margin:0 auto;}
+.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:18px 20px;}
+.form-section-head{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
+.form-section-ico{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.form-section-ico svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;}
+.form-section-head span{font-size:13px;font-weight:600;color:var(--t1);}
+@media(max-width:900px){.form-grid{grid-template-columns:1fr;}}
 .panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
 
 .fg{margin-bottom:13px;}
@@ -529,80 +536,93 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
   <div class="panel-head">
-    <span class="panel-title" id="panelTitle">Nouveau dossier</span>
-    <button class="panel-close" onclick="closePanel()">×</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="panel-close" onclick="closePanel()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <span class="panel-title" id="panelTitle">Nouveau dossier</span>
+    </div>
   </div>
   <div class="panel-body">
     <input type="hidden" id="f-id"/>
+    <div class="form-grid">
 
-    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Client</div>
-    <div class="fg">
-      <label>Client existant ou nouveau</label>
-      <select id="f-client-select" onchange="onClientSelect()">
-        <option value="">➕ Nouveau client</option>
-      </select>
-    </div>
-    <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
-    <div class="fg-row">
-      <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
-      <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
-    </div>
-
-    <div class="fg-sep">Appareil</div>
-    <div class="fg-row">
-      <div class="fg">
-        <label>Type d'appareil *</label>
-        <select id="f-appareil">
-          <option value="">Choisir...</option>
-          <option>Smartphone</option>
-          <option>Tablette</option>
-          <option>PC portable</option>
-          <option>PC fixe</option>
-          <option>Console</option>
-          <option>Mac</option>
-          <option>Autre</option>
-        </select>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></div><span>Client</span></div>
+        <div class="fg">
+          <label>Client existant ou nouveau</label>
+          <select id="f-client-select" onchange="onClientSelect()">
+            <option value="">➕ Nouveau client</option>
+          </select>
+        </div>
+        <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+        <div class="fg-row">
+          <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
+          <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
+        </div>
       </div>
-      <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Apple"/></div>
-    </div>
-    <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
-    <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
 
-    <div class="fg-sep">Pièces & Coûts</div>
-    <div class="fg">
-      <label>Pièces utilisées (depuis le stock)</label>
-      <div class="pieces-list" id="piecesList"></div>
-      <button type="button" class="add-piece-btn" onclick="addPieceLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
-    </div>
-    <div class="fg-row">
-      <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
-      <div class="fg"><label>Marge estimée (€)</label><input type="text" id="f-marge" disabled style="opacity:.6;cursor:not-allowed;" value="—"/></div>
-    </div>
-    <div style="font-size:11px;color:var(--t3);margin:-6px 0 14px;padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span>Appareil</span></div>
+        <div class="fg-row">
+          <div class="fg">
+            <label>Type d'appareil *</label>
+            <select id="f-appareil">
+              <option value="">Choisir...</option>
+              <option>Smartphone</option>
+              <option>Tablette</option>
+              <option>PC portable</option>
+              <option>PC fixe</option>
+              <option>Console</option>
+              <option>Mac</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Apple"/></div>
+        </div>
+        <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
+        <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
+      </div>
 
-    <div class="fg-sep">Suivi & Prix</div>
-    <div class="fg">
-      <label>Statut</label>
-      <select id="f-statut" onchange="toggleMotif()">
-        <option value="attente_reception">En attente de réception de l'appareil</option>
-        <option value="recu">Reçu</option>
-        <option value="attente">Attente de pièce</option>
-        <option value="encours">En réparation</option>
-        <option value="pret">Prêt à récupérer</option>
-        <option value="rendu">Rendu</option>
-        <option value="non_reparable">Non réparable</option>
-        <option value="annule">Annulé</option>
-      </select>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M20.59 13.41L13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><span>Pièces & Coûts</span></div>
+        <div class="fg">
+          <label>Pièces utilisées (depuis le stock)</label>
+          <div class="pieces-list" id="piecesList"></div>
+          <button type="button" class="add-piece-btn" onclick="addPieceLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
+          <div class="fg"><label>Marge estimée (€)</label><input type="text" id="f-marge" disabled style="opacity:.6;cursor:not-allowed;" value="—"/></div>
+        </div>
+        <div style="font-size:11px;color:var(--t3);padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Suivi & Prix</span></div>
+        <div class="fg">
+          <label>Statut</label>
+          <select id="f-statut" onchange="toggleMotif()">
+            <option value="attente_reception">En attente de réception de l'appareil</option>
+            <option value="recu">Reçu</option>
+            <option value="attente">Attente de pièce</option>
+            <option value="encours">En réparation</option>
+            <option value="pret">Prêt à récupérer</option>
+            <option value="rendu">Rendu</option>
+            <option value="non_reparable">Non réparable</option>
+            <option value="annule">Annulé</option>
+          </select>
+        </div>
+        <div class="fg" id="motif-wrap" style="display:none;">
+          <label>Motif</label>
+          <input type="text" id="f-motif" placeholder="ex : carte mère HS, corrosion, refus du client..."/>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Prix devis (€)</label><input type="number" id="f-devis" placeholder="0.00" min="0" step="0.01"/></div>
+          <div class="fg"><label>Prix final (€)</label><input type="number" id="f-final" placeholder="0.00" min="0" step="0.01" oninput="updateMarge()"/></div>
+        </div>
+        <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations, pièces utilisées..."></textarea></div>
+      </div>
+
     </div>
-    <div class="fg" id="motif-wrap" style="display:none;">
-      <label>Motif</label>
-      <input type="text" id="f-motif" placeholder="ex : carte mère HS, corrosion, refus du client..."/>
-    </div>
-    <div class="fg-row">
-      <div class="fg"><label>Prix devis (€)</label><input type="number" id="f-devis" placeholder="0.00" min="0" step="0.01"/></div>
-      <div class="fg"><label>Prix final (€)</label><input type="number" id="f-final" placeholder="0.00" min="0" step="0.01" oninput="updateMarge()"/></div>
-    </div>
-    <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations, pièces utilisées..."></textarea></div>
   </div>
   <div class="panel-footer">
     <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
