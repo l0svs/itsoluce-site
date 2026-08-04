@@ -81,12 +81,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tog.on{background:var(--ok);border-color:var(--ok);}
 .tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
 .tog.on .tog-thumb{transform:translateX(14px);}
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}.panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;right:0;top:0;bottom:0;width:50vw;min-width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
+.panel-overlay{display:none;}.panel-overlay.open{opacity:1;pointer-events:all;}
+.panel{position:fixed;left:var(--sw);right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
 .panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .panel-title{font-size:14px;font-weight:600;color:var(--t1);}
 .panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}.panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:20px;}.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.panel-body{flex:1;overflow-y:auto;padding:32px 40px;}.panel-footer{padding:16px 40px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-shrink:0;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:22px 26px;}
+.form-section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.form-section-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.form-section-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;}
+.form-section-head span{font-size:14px;font-weight:600;color:var(--t1);}
+.form-section .fg{margin-bottom:14px;}
+.form-section .fg:last-child{margin-bottom:0;}
+@media(max-width:1100px){.form-grid{grid-template-columns:1fr;max-width:640px;margin:0 auto;}}
 .fg{margin-bottom:13px;}.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
 .fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}.fg textarea{resize:vertical;min-height:60px;}.fg select option{background:var(--bg3);}
@@ -511,57 +520,72 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
-  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouveau diagnostic</span><button class="panel-close" onclick="closePanel()">×</button></div>
+  <div class="panel-head">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="panel-close" onclick="closePanel()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <span class="panel-title" id="panelTitle">Nouveau diagnostic</span>
+    </div>
+  </div>
   <div class="panel-body">
     <input type="hidden" id="f-id"/>
     <input type="hidden" id="f-numero"/>
+    <div class="form-grid">
 
-    <div class="fg-sep">Client</div>
-    <div class="fg">
-      <label>Client existant ou nouveau</label>
-      <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></div><span>Client</span></div>
+        <div class="fg">
+          <label>Client existant ou nouveau</label>
+          <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
+        </div>
+        <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+        <div class="fg-row">
+          <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
+          <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
+        </div>
+        <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span>Appareil</span></div>
+        <div class="fg-row">
+          <div class="fg"><label>Type d'appareil</label><input type="text" id="f-appareil" placeholder="ex : PC portable"/></div>
+          <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Dell"/></div>
+        </div>
+        <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : XPS 15"/></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span>Diagnostic</span></div>
+        <div class="fg"><label>Problème signalé par le client</label><textarea id="f-probleme" placeholder="Ce que le client a décrit..."></textarea></div>
+        <div class="fg"><label>Constat technique</label><textarea id="f-constat" placeholder="Ce que tu as constaté après examen..."></textarea></div>
+        <div class="fg"><label>Verdict</label>
+          <select id="f-verdict">
+            <option value="a_confirmer">À confirmer avec le client</option>
+            <option value="reparable">Réparable</option>
+            <option value="non_reparable">Non réparable</option>
+          </select>
+        </div>
+        <div class="fg"><label>Prix estimé si réparation (€)</label><input type="number" id="f-prix-estime" placeholder="0.00" min="0" step="0.01"/></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Détails</span></div>
+        <div class="fg"><label>Date du diagnostic</label><input type="date" id="f-date-emission"/></div>
+        <div class="fg"><label>Statut</label><select id="f-statut">
+          <option value="nouveau">Nouveau</option>
+          <option value="en_cours">En cours</option>
+          <option value="accepte">Accepté (réparation)</option>
+          <option value="refuse">Refusé</option>
+          <option value="sans_suite">Sans suite</option>
+        </select></div>
+        <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations complémentaires..."></textarea></div>
+      </div>
+
     </div>
-    <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
-    <div class="fg-row">
-      <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
-      <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
-    </div>
-    <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
-
-    <div class="fg-sep">Appareil</div>
-    <div class="fg-row">
-      <div class="fg"><label>Type d'appareil</label><input type="text" id="f-appareil" placeholder="ex : PC portable"/></div>
-      <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Dell"/></div>
-    </div>
-    <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : XPS 15"/></div>
-
-    <div class="fg-sep">Diagnostic</div>
-    <div class="fg"><label>Problème signalé par le client</label><textarea id="f-probleme" placeholder="Ce que le client a décrit..."></textarea></div>
-    <div class="fg"><label>Constat technique</label><textarea id="f-constat" placeholder="Ce que tu as constaté après examen..."></textarea></div>
-    <div class="fg"><label>Verdict</label>
-      <select id="f-verdict">
-        <option value="a_confirmer">À confirmer avec le client</option>
-        <option value="reparable">Réparable</option>
-        <option value="non_reparable">Non réparable</option>
-      </select>
-    </div>
-    <div class="fg"><label>Prix estimé si réparation (€)</label><input type="number" id="f-prix-estime" placeholder="0.00" min="0" step="0.01"/></div>
-
-    <div class="fg-sep">Détails</div>
-    <div class="fg"><label>Date du diagnostic</label><input type="date" id="f-date-emission"/></div>
-    <div class="fg"><label>Statut</label><select id="f-statut">
-      <option value="nouveau">Nouveau</option>
-      <option value="en_cours">En cours</option>
-      <option value="accepte">Accepté (réparation)</option>
-      <option value="refuse">Refusé</option>
-      <option value="sans_suite">Sans suite</option>
-    </select></div>
-
-    <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations complémentaires..."></textarea></div>
   </div>
-  <div class="panel-footer" style="flex-wrap:wrap;">
-    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveDiagnostic()" style="flex:2;" id="saveBtn">Enregistrer</button>
+  <div class="panel-footer">
+    <button class="btn btn-secondary" onclick="closePanel()" style="padding:9px 18px;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveDiagnostic()" style="padding:9px 22px;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
 

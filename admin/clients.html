@@ -84,16 +84,25 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
 .act-btn:hover{background:var(--bg3);color:var(--t1);}.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
 .act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.panel-overlay{display:none;}
 .panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;right:0;top:0;bottom:0;width:50vw;min-width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}
+.panel{position:fixed;left:var(--sw);right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;}
 .panel.open{transform:translateX(0);}
 .panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .panel-title{font-size:14px;font-weight:600;color:var(--t1);}
 .panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
 .panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:20px;}
-.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.panel-body{flex:1;overflow-y:auto;padding:32px 40px;}
+.panel-footer{padding:16px 40px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-shrink:0;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:22px 26px;}
+.form-section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.form-section-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.form-section-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;}
+.form-section-head span{font-size:14px;font-weight:600;color:var(--t1);}
+.form-section .fg{margin-bottom:14px;}
+.form-section .fg:last-child{margin-bottom:0;}
+@media(max-width:1100px){.form-grid{grid-template-columns:1fr;max-width:640px;margin:0 auto;}}
 .fg{margin-bottom:13px;}
 .fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
 .fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
@@ -472,36 +481,50 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
   <div class="panel-head">
-    <span class="panel-title" id="panelTitle">Nouveau client</span>
-    <button class="panel-close" onclick="closePanel()">×</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="panel-close" onclick="closePanel()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <span class="panel-title" id="panelTitle">Nouveau client</span>
+    </div>
   </div>
   <div class="panel-body">
     <input type="hidden" id="f-id"/>
-    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Identité</div>
-    <div class="fg-row">
-      <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"/></div>
-      <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"/></div>
+    <div class="form-grid">
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></div><span>Identité</span></div>
+        <div class="fg-row">
+          <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"/></div>
+          <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"/></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><span>Contact</span></div>
+        <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
+        <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
+        <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Informations complémentaires</span></div>
+        <div class="fg"><label>Type</label>
+          <select id="f-type" onchange="onTypeClientChange()">
+            <option value="particulier">Particulier</option>
+            <option value="entreprise">Entreprise / TPE</option>
+          </select>
+        </div>
+        <div id="pro-fields-client" style="display:none;flex-direction:column;gap:10px;">
+          <div class="fg"><label>Société</label><input type="text" id="f-societe" placeholder="Nom de la société"/></div>
+          <div class="fg"><label>Numéro TVA / BCE</label><input type="text" id="f-tva" placeholder="BE 0123.456.789"/></div>
+        </div>
+        <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Observations sur ce client..."></textarea></div>
+      </div>
+
     </div>
-    <div class="fg-sep">Contact</div>
-    <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
-    <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
-    <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
-    <div class="fg-sep">Informations complémentaires</div>
-    <div class="fg"><label>Type</label>
-      <select id="f-type" onchange="onTypeClientChange()">
-        <option value="particulier">Particulier</option>
-        <option value="entreprise">Entreprise / TPE</option>
-      </select>
-    </div>
-    <div id="pro-fields-client" style="display:none;flex-direction:column;gap:10px;">
-      <div class="fg"><label>Société</label><input type="text" id="f-societe" placeholder="Nom de la société"/></div>
-      <div class="fg"><label>Numéro TVA / BCE</label><input type="text" id="f-tva" placeholder="BE 0123.456.789"/></div>
-    </div>
-    <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Observations sur ce client..."></textarea></div>
   </div>
   <div class="panel-footer">
-    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveClient()" style="flex:2;" id="saveBtn">Enregistrer</button>
+    <button class="btn btn-secondary" onclick="closePanel()" style="padding:9px 18px;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveClient()" style="padding:9px 22px;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
