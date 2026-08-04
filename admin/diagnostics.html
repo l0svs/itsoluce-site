@@ -197,6 +197,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tot-row.final{font-size:17px;font-weight:600;color:var(--t1);border-top:1px solid var(--ln2);padding-top:8px;margin-top:8px;}
 /* APERÇU PDF MODAL */
 .pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:80px 20px 40px;}
+.email-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.email-box{background:var(--bg1);border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;}
+.email-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--ln);}
+.email-head span{font-size:15px;font-weight:600;color:var(--t1);}
+.email-close{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;line-height:1;padding:0;}
+.email-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
+.email-body .fg label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
+.email-body input,.email-body textarea{width:100%;padding:9px 11px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;color:var(--t1);font-size:13px;font-family:inherit;box-sizing:border-box;}
+.email-body textarea{resize:vertical;line-height:1.5;}
+.email-attach{font-size:11px;color:var(--t3);}
+.email-foot{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--ln);}
 .pdf-overlay.open{display:flex;}
 .pdf-modal{background:#fff;width:210mm;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;transform-origin:top center;}
 @media(max-width:900px){.pdf-modal{transform:scale(.7);}}
@@ -563,6 +574,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
   <div class="pdf-modal" id="pdfModal"></div>
+</div>
+
+<div class="email-overlay" id="emailOverlay">
+  <div class="email-box">
+    <div class="email-head"><span>Aperçu de l'email</span><button class="email-close" onclick="closeEmailModal()">×</button></div>
+    <div class="email-body">
+      <div class="fg"><label>Destinataire</label><input type="email" id="em-to"/></div>
+      <div class="fg"><label>Objet</label><input type="text" id="em-subject"/></div>
+      <div class="fg"><label>Message</label><textarea id="em-body" rows="9"></textarea></div>
+      <div class="email-attach">📎 Pièce jointe : <span id="em-pdfname"></span> · la signature IT Soluce est ajoutée automatiquement à l'envoi</div>
+    </div>
+    <div class="email-foot">
+      <button class="btn btn-secondary" onclick="closeEmailModal()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmerEnvoiEmail()" id="confirmSendBtn" style="flex:2;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1052,34 +1079,69 @@ window.downloadPdf=async function(){
   pdf.save(`Diagnostic_${currentPdfDoc.numero}.pdf`)
 }
 
+let _pendingEmail=null // {doc, pdfBase64, pdfName}
+
+function textToHtml(text){
+  return text.split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')
+}
+const SIGNATURE_HTML=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
+
 window.sendPdf=async function(){
   if(!currentPdfDoc)return
   const f=currentPdfDoc
   if(!f.client_email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
   const btn=document.getElementById('sendPdfBtn')
-  btn.disabled=true;btn.textContent='Envoi en cours...'
+  btn.disabled=true;btn.textContent='Préparation...'
   try{
     const pdf=await genererPDFBlob()
     const pdfBase64=pdf.output('datauristring').split(',')[1]
+    const pdfName=`Diagnostic_${f.numero}.pdf`
     const prenom=(f.client_nom||'').split(' ')[0]||''
-    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
-    const html=`<p>Bonjour ${prenom},</p><p>Vous trouverez ci-joint le rapport de votre diagnostic <strong>${f.numero}</strong>.</p><p>N'hésitez pas à me contacter si vous souhaitez donner suite ou si vous avez la moindre question.</p>${signature}`
+    const messageDefaut=`Bonjour ${prenom},\n\nVous trouverez ci-joint le rapport de votre diagnostic ${f.numero}.\n\nN'hésitez pas à me contacter si vous souhaitez donner suite ou si vous avez la moindre question.`
+    _pendingEmail={doc:f,pdfBase64,pdfName}
+    document.getElementById('em-to').value=f.client_email
+    document.getElementById('em-subject').value=`Diagnostic ${f.numero} — IT Soluce`
+    document.getElementById('em-body').value=messageDefaut
+    document.getElementById('em-pdfname').textContent=pdfName
+    document.getElementById('emailOverlay').style.display='flex'
+  }catch(err){
+    showToast('Erreur de préparation : '+err.message,'err')
+  }
+  btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+}
+
+window.closeEmailModal=function(){
+  document.getElementById('emailOverlay').style.display='none'
+  _pendingEmail=null
+}
+
+window.confirmerEnvoiEmail=async function(){
+  if(!_pendingEmail)return
+  const {doc:f,pdfBase64,pdfName}=_pendingEmail
+  const to=document.getElementById('em-to').value.trim()
+  const subject=document.getElementById('em-subject').value.trim()
+  const messageTexte=document.getElementById('em-body').value
+  if(!to){showToast('Le destinataire est requis','err');return}
+  const btn=document.getElementById('confirmSendBtn')
+  btn.disabled=true;btn.textContent='Envoi en cours...'
+  try{
+    const html=textToHtml(messageTexte)+SIGNATURE_HTML
     const {data:{session}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-invoice`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
-      body:JSON.stringify({to:f.client_email,subject:`Diagnostic ${f.numero} — IT Soluce`,html:html,pdfBase64:pdfBase64,pdfName:`Diagnostic_${f.numero}.pdf`})
+      body:JSON.stringify({to,subject,html,pdfBase64,pdfName})
     })
     const result=await res.json()
     if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
     await sb.from('diagnostics').update({email_envoye:true,date_envoi:new Date().toISOString()}).eq('id',f.id)
     const i=allDiagnostics.findIndex(x=>x.id===f.id)
     if(i>=0){allDiagnostics[i].email_envoye=true;allDiagnostics[i].date_envoi=new Date().toISOString()}
-    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
-    closePdf();renderAll()
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer'
+    closeEmailModal();closePdf();renderAll()
     showToast(`Diagnostic ${f.numero} envoyé à ${f.client_email} ✓`,'ok')
   }catch(err){
-    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer'
     showToast('Erreur envoi : '+err.message,'err')
   }
 }
