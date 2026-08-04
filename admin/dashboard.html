@@ -720,8 +720,12 @@ const chargesMensuelles=charges.filter(c=>c.actif!==false).reduce((a,c)=>{
   return a+m
 },0)
 
-// Marge réparations ce mois (prix_final - cout_pieces)
-const margeMonth=reps.filter(r=>{const d=new Date(r.date_fin||r.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&['pret','rendu'].includes(r.statut)}).reduce((a,r)=>a+(Number(r.prix_final||0)-Number(r.cout_pieces||0)),0)
+// Marge ce mois (basée sur les factures payées, coût pièces récupéré depuis la réparation liée si existante)
+const margeMonth=facturesPayees.filter(f=>{const d=new Date(f.date_paiement||f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reduce((a,f)=>{
+  const rep=f.reparation_id?reps.find(r=>r.id===f.reparation_id):null
+  const cout=rep?Number(rep.cout_pieces||0):0
+  return a+(Number(f.total||0)-cout)
+},0)
 const beneficeNet=margeMonth-chargesMensuelles
 
 // Factures à encaisser (envoyées non payées)

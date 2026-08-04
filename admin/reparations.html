@@ -564,21 +564,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span>Appareil</span></div>
-        <div class="fg-row">
-          <div class="fg">
-            <label>Type d'appareil *</label>
-            <select id="f-appareil">
-              <option value="">Choisir...</option>
-              <option>Smartphone</option>
-              <option>Tablette</option>
-              <option>PC portable</option>
-              <option>PC fixe</option>
-              <option>Console</option>
-              <option>Mac</option>
-              <option>Autre</option>
-            </select>
-          </div>
-          <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Apple"/></div>
+        <div class="fg">
+          <label>Type d'appareil *</label>
+          <select id="f-appareil">
+            <option value="">Choisir...</option>
+            <option>Smartphone</option>
+            <option>Tablette</option>
+            <option>PC portable</option>
+            <option>PC fixe</option>
+            <option>MacBook</option>
+            <option>iMac</option>
+            <option>Console de jeu</option>
+            <option>Imprimante</option>
+            <option>Objet connecté</option>
+            <option>Accessoire</option>
+            <option>Autre</option>
+          </select>
         </div>
         <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
         <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
@@ -591,24 +592,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="pieces-list" id="piecesList"></div>
           <button type="button" class="add-piece-btn" onclick="addPieceLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
         </div>
-        <div class="fg-row">
-          <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
-          <div class="fg"><label>Marge estimée (€)</label><input type="text" id="f-marge" disabled style="opacity:.6;cursor:not-allowed;" value="—"/></div>
-        </div>
+        <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
         <div style="font-size:11px;color:var(--t3);padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
       </div>
 
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Suivi & Prix</span></div>
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Suivi</span></div>
         <div class="fg">
           <label>Statut</label>
           <select id="f-statut" onchange="toggleMotif()">
-            <option value="attente_reception">En attente de réception de l'appareil</option>
-            <option value="recu">Reçu</option>
+            <option value="attente_reception">Nouveau dossier</option>
+            <option value="recu">Appareil reçu</option>
             <option value="attente">Attente de pièce</option>
-            <option value="encours">En réparation</option>
+            <option value="encours">Diagnostic / Réparation en cours</option>
             <option value="pret">Prêt à récupérer</option>
-            <option value="rendu">Rendu</option>
+            <option value="rendu">Rendu au client</option>
             <option value="non_reparable">Non réparable</option>
             <option value="annule">Annulé</option>
           </select>
@@ -616,10 +614,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="fg" id="motif-wrap" style="display:none;">
           <label>Motif</label>
           <input type="text" id="f-motif" placeholder="ex : carte mère HS, corrosion, refus du client..."/>
-        </div>
-        <div class="fg-row">
-          <div class="fg"><label>Prix devis (€)</label><input type="number" id="f-devis" placeholder="0.00" min="0" step="0.01"/></div>
-          <div class="fg"><label>Prix final (€)</label><input type="number" id="f-final" placeholder="0.00" min="0" step="0.01" oninput="updateMarge()"/></div>
         </div>
         <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations, pièces utilisées..."></textarea></div>
       </div>
@@ -672,12 +666,12 @@ window.toggleMotif=function(){
 }
 
 const STATUTS={
-  attente_reception:{label:"En attente de réception de l'appareil",cls:'s-attente_reception'},
-  recu:{label:'Reçu',cls:'s-recu'},
+  attente_reception:{label:"Nouveau dossier",cls:'s-attente_reception'},
+  recu:{label:'Appareil reçu',cls:'s-recu'},
   attente:{label:'Attente de pièce',cls:'s-attente'},
-  encours:{label:'En réparation',cls:'s-encours'},
+  encours:{label:'Diagnostic / Réparation en cours',cls:'s-encours'},
   pret:{label:'Prêt à récupérer',cls:'s-pret'},
-  rendu:{label:'Rendu',cls:'s-rendu'},
+  rendu:{label:'Rendu au client',cls:'s-rendu'},
   non_reparable:{label:'Non réparable',cls:'s-non_reparable'},
   annule:{label:'Annulé',cls:'s-annule'}
 }
@@ -711,7 +705,6 @@ function openPanel(r=null){
   document.getElementById('f-email').value=r?.client_email||''
   document.getElementById('f-tel').value=r?.client_telephone||''
   document.getElementById('f-appareil').value=r?.appareil||''
-  document.getElementById('f-marque').value=r?.marque||''
   document.getElementById('f-modele').value=r?.modele||''
   document.getElementById('f-panne').value=r?.panne_description||''
   // Vider la liste de pièces
@@ -719,8 +712,6 @@ function openPanel(r=null){
   document.getElementById('f-statut').value=r?.statut||'attente_reception'
   document.getElementById('f-motif').value=r?.motif||''
   toggleMotif()
-  document.getElementById('f-devis').value=r?.prix_devis||''
-  document.getElementById('f-final').value=r?.prix_final||''
   document.getElementById('f-notes').value=r?.notes||''
   // Remplir le sélecteur de pièces depuis le stock
   // Charger les pièces (nouveau système multi-pièces)
@@ -729,7 +720,6 @@ function openPanel(r=null){
   if((!r?.pieces||r.pieces.length===0)&&r?.piece_id){
     window.addPieceLigne(`stock-${r.piece_id}`,1,r.cout_pieces||0)
   }
-  updateMarge()
   // Remplir le sélecteur de clients existants + réinitialiser sur "Nouveau client"
   if(window.fillClientSelect)window.fillClientSelect()
   const csel=document.getElementById('f-client-select')
@@ -742,15 +732,6 @@ function openPanel(r=null){
 }
 
 
-function updateMarge(){
-  const final=Number(document.getElementById('f-final').value)||0
-  const cout=Number(document.getElementById('f-cout').value)||0
-  const marge=final-cout
-  const el=document.getElementById('f-marge')
-  if(final===0&&cout===0){el.value='—';el.style.color='';return}
-  el.value=marge.toFixed(2)+' €'
-  el.style.color=marge>=0?'var(--ok)':'var(--d)'
-}
 function closePanel(){
   document.getElementById('overlay').classList.remove('open')
   document.getElementById('panel').classList.remove('open')
@@ -881,15 +862,12 @@ window.onPieceLigneChange=function onPieceLigneChange(sel){
   const row=sel.closest('.piece-row')
   const opt=sel.options[sel.selectedIndex]
   const coutInput=row.querySelectorAll('input')[1]
-  const final=document.getElementById('f-final')
   if(opt&&opt.dataset.kind==='stock'){
     coutInput.value=opt.dataset.achat||0
     coutInput.disabled=false
-    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
   } else if(opt&&opt.dataset.kind==='service'){
     // Une prestation n'a pas de coût de pièce associé
     coutInput.value=0
-    if(!final.value&&opt.dataset.vente&&Number(opt.dataset.vente)>0)final.value=opt.dataset.vente
   }
   recalcCout()
 }
@@ -906,7 +884,6 @@ window.recalcCout=function recalcCout(){
     total+=qte*cout
   })
   document.getElementById('f-cout').value=total.toFixed(2)
-  updateMarge()
 }
 window.getPiecesData=function getPiecesData(){
   const pieces=[]
@@ -1035,7 +1012,7 @@ function updateKPIs(){
 
 function renderFilters(){
   const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','non_reparable','annule']
-  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"En attente de réception de l'appareil",'recu':'Reçu','attente':'Attente de pièce','encours':'En réparation','pret':'Prêt à récupérer','rendu':'Rendu','non_reparable':'Non réparable','annule':'Annulé'}
+  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"Nouveau dossier",'recu':'Appareil reçu','attente':'Attente de pièce','encours':'Diagnostic / Réparation','pret':'Prêt à récupérer','rendu':'Rendu au client','non_reparable':'Non réparable','annule':'Annulé'}
   const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','non_reparable':'#fb923c','annule':'#f87171'}
   document.getElementById('filterBtns').innerHTML=all.map(s=>{
     const isActive=activeFilter===s
@@ -1067,7 +1044,6 @@ function renderCards(){
   wrap.innerHTML=rows.map(r=>{
     const st=window.STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
     const date=new Date(r.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-    const marge=(Number(r.prix_final||0)-Number(r.cout_pieces||0))
     return`<div class="four-card" data-id="${r.id}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
         <div style="min-width:0;">
@@ -1076,14 +1052,13 @@ function renderCards(){
         </div>
         <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" style="flex-shrink:0;">${st.label} ▾</button>
       </div>
-      <div style="font-size:12px;color:var(--t2);">${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'}</div>
+      <div style="font-size:12px;color:var(--t2);">${r.modele||r.appareil||'—'}</div>
       <div style="font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${r.panne_description||'—'}</div>
       ${r.motif?`<div style="font-size:11px;color:#fb923c;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Motif : ${r.motif}</div>`:''}
       <div style="font-size:11px;color:var(--t3);margin-top:8px;">Reçu le ${date}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
         <div>
-          <span style="font-weight:600;">${r.prix_final?Number(r.prix_final).toFixed(2)+'€':'—'}</span>
-          ${r.prix_final?`<span style="font-size:11px;color:${marge>=0?'var(--ok)':'var(--d)'};margin-left:6px;">marge ${marge.toFixed(2)}€</span>`:''}
+          <span style="font-size:11px;color:var(--t3);">${r.cout_pieces?'Coût pièces : '+Number(r.cout_pieces).toFixed(2)+'€':'Aucune pièce'}</span>
         </div>
         <div class="actions" style="opacity:1;">
           <button class="act-btn" onclick="event.stopPropagation();editRep(${r.id})" title="Modifier">
@@ -1257,12 +1232,9 @@ window.saveDossier=async function(){
     client_email:document.getElementById('f-email').value.trim()||null,
     client_telephone:document.getElementById('f-tel').value.trim()||null,
     appareil,
-    marque:document.getElementById('f-marque').value.trim()||null,
     modele:document.getElementById('f-modele').value.trim()||null,
     panne_description:panne,
     statut:nouveauStatut,
-    prix_devis:Number(document.getElementById('f-devis').value)||0,
-    prix_final:Number(document.getElementById('f-final').value)||0,
     piece_id:piecesData.length>0?piecesData[0].stock_id:null,
     cout_pieces:piecesData.reduce((a,p)=>a+p.qte*p.cout,0),
     pieces:piecesData,
@@ -1319,7 +1291,7 @@ window.saveDossier=async function(){
 
 window.exportCSV=function(){
   if(!allReps.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['numero','id','client_nom','client_email','client_telephone','appareil','marque','modele','panne_description','statut','cout_pieces','prix_devis','prix_final','notes','created_at']
+  const cols=['numero','id','client_nom','client_email','client_telephone','appareil','modele','panne_description','statut','cout_pieces','notes','created_at']
   const csv=[cols.join(','),...allReps.map(r=>cols.map(c=>`"${String(r[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
   const a=document.createElement('a')
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
