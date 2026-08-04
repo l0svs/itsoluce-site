@@ -240,6 +240,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 /* DASHBOARD REFONTE */
 .dash-hello{padding:20px 24px 4px;}
+.dash-hero{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;padding:16px 24px 0;}
+.hero-ca{background:linear-gradient(135deg,#0052CC,#2563eb);border-radius:14px;padding:22px 24px;color:#fff;}
+.hero-ca-label{font-size:12.5px;opacity:.85;}
+.hero-ca-val{font-size:32px;font-weight:700;margin:5px 0 3px;letter-spacing:-.5px;}
+.hero-ca-sub{font-size:12px;opacity:.85;}
+.hero-side{display:grid;grid-template-rows:1fr 1fr;gap:12px;}
+.hero-mini{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
+.hero-mini-label{font-size:11px;color:var(--t3);}
+.hero-mini-val{font-size:18px;font-weight:700;margin-top:2px;}
+.hero-mini-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hero-mini-ico svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;}
+@media(max-width:1000px){.dash-hero{grid-template-columns:1fr;}}
 .dash-hello h1{font-size:20px;font-weight:600;color:var(--t1);letter-spacing:-.4px;}
 .dash-hello p{font-size:13px;color:var(--t3);margin-top:3px;text-transform:capitalize;}
 .dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px;}
@@ -248,7 +260,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .dk-val{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
 .dk-sub{font-size:11px;color:var(--t3);margin-top:6px;}
 .dk-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:8px 24px 24px;align-items:start;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 24px 24px;align-items:start;}
 .dcard{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
 .dcard-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--ln);}
 .dcard-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px;}
@@ -563,6 +575,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <h1 id="hello">Bonjour Linton</h1>
         <p id="helloDate">—</p>
       </div>
+      <div class="dash-hero" id="hero"></div>
+      <div class="dash-kpis" id="kpis"></div>
       <div class="dash-grid" id="grid"></div>
     </div>
   </div>
@@ -758,6 +772,38 @@ const garExpire=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
 
 // Alertes stock
 const alerts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte||0))
+
+// ─── DONNÉES SUPPLÉMENTAIRES POUR LE BANDEAU REPORTING ───
+const facturesPayeesMonth=facturesPayees.filter(f=>{const d=new Date(f.date_paiement||f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
+const devisEnAttenteTotal=devis.filter(d=>d.statut==='envoye').length
+const dansSeptJours=new Date(today);dansSeptJours.setDate(dansSeptJours.getDate()+7)
+const rdvSemaine=rdvs.filter(r=>!r.termine&&new Date(r.date_debut)>=today&&new Date(r.date_debut)<dansSeptJours).length
+
+// ─── RENDU DU BANDEAU HERO + KPI ───
+const moisNom=now.toLocaleDateString('fr-BE',{month:'long'})
+document.getElementById('hero').innerHTML=`
+  <div class="hero-ca">
+    <div class="hero-ca-label">Chiffre d'affaires · ${moisNom.charAt(0).toUpperCase()+moisNom.slice(1)} ${now.getFullYear()}</div>
+    <div class="hero-ca-val">${caMonth.toFixed(2).replace('.',',')} €</div>
+    <div class="hero-ca-sub">${facturesPayeesMonth.length} facture${facturesPayeesMonth.length>1?'s':''} payée${facturesPayeesMonth.length>1?'s':''} ce mois</div>
+  </div>
+  <div class="hero-side">
+    <div class="hero-mini">
+      <div><div class="hero-mini-label">Bénéfice net</div><div class="hero-mini-val" style="color:${beneficeNet>=0?'var(--ok)':'var(--d)'};">${beneficeNet>=0?'+':''}${beneficeNet.toFixed(2).replace('.',',')} €</div></div>
+      <div class="hero-mini-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
+    </div>
+    <div class="hero-mini">
+      <div><div class="hero-mini-label">Alertes stock</div><div class="hero-mini-val">${alerts.length}</div></div>
+      <div class="hero-mini-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+    </div>
+  </div>
+`
+document.getElementById('kpis').innerHTML=`
+  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${repsActives.length}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Réparations actives</div></div>
+  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${devisEnAttenteTotal}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Devis en attente</div></div>
+  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;color:${facturesRetard.length>0?'var(--d)':'var(--t1)'};">${facturesRetard.length}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Facture${facturesRetard.length>1?'s':''} en retard</div></div>
+  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${rdvSemaine}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">RDV cette semaine</div></div>
+`
 
 // ─── RENDU DES CARTES ───
 function emptyCard(ico,txt){return `<div class="dempty"><span class="ico">${ico}</span>${txt}</div>`}
