@@ -503,10 +503,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         </div>
       </div>
       <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Diagnostics (mois)</div><div class="kpi-val" id="k-paye" style="color:var(--a)">—</div><div class="kpi-sub">réalisés ce mois-ci</div></div>
-        <div class="kpi"><div class="kpi-label">En attente</div><div class="kpi-val" id="k-attente" style="color:var(--w)">—</div><div class="kpi-sub">nouveau / en cours</div></div>
-        <div class="kpi"><div class="kpi-label">Taux de conversion</div><div class="kpi-val" id="k-retard" style="color:var(--ok)">—</div><div class="kpi-sub">accepté / clôturés</div></div>
-        <div class="kpi"><div class="kpi-label">Total diagnostics</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">depuis le début</div></div>
+        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:9px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div><div class="kpi-label" style="margin-bottom:1px;">Ce mois</div><div class="kpi-val" id="k-paye" style="font-size:19px;">—</div></div>
+        </div>
+        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:9px;background:rgba(245,158,11,.15);color:#f59e0b;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="kpi-label" style="margin-bottom:1px;">En attente</div><div class="kpi-val" id="k-attente" style="font-size:19px;">—</div></div>
+        </div>
+        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:9px;background:rgba(16,185,129,.15);color:#10b981;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
+          <div><div class="kpi-label" style="margin-bottom:1px;">Conversion</div><div class="kpi-val" id="k-retard" style="font-size:19px;">—</div></div>
+        </div>
+        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:9px;background:var(--bg3);color:var(--t3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></div>
+          <div><div class="kpi-label" style="margin-bottom:1px;">Total</div><div class="kpi-val" id="k-total" style="font-size:19px;">—</div></div>
+        </div>
       </div>
       <div class="toolbar">
         <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderCards()"/></div>
@@ -853,7 +865,11 @@ window.setFilter=function(f){activeFilter=f;renderFilters();renderCards()}
 function renderCards(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   const STAT={nouveau:{l:'Nouveau',c:'sf-brouillon'},en_cours:{l:'En cours',c:'sf-envoye'},accepte:{l:'Accepté',c:'sf-accepte'},refuse:{l:'Refusé',c:'sf-refuse'},sans_suite:{l:'Sans suite',c:'sf-expire'}}
-  const VERDICT={reparable:'Réparable',non_reparable:'Non réparable',a_confirmer:'À confirmer'}
+  const VERDICT={
+    reparable:{l:'Réparable',col:'#10b981',ico:'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'},
+    non_reparable:{l:'Non réparable',col:'var(--t3)',ico:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'},
+    a_confirmer:{l:'À confirmer',col:'#f59e0b',ico:'<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'}
+  }
   let rows=allDiagnostics.filter(f=>{
     const mf=activeFilter==='Tous'||f.statut===activeFilter
     const ms=!q||[f.numero,f.client_nom,f.appareil].some(v=>v&&v.toLowerCase().includes(q))
@@ -864,8 +880,10 @@ function renderCards(){
   empty.style.display='none'
   wrap.innerHTML=rows.map(f=>{
     const st=STAT[f.statut]||STAT.nouveau
+    const v=VERDICT[f.verdict]||{l:'—',col:'var(--t3)',ico:''}
+    const dim=(f.statut==='refuse'||f.statut==='sans_suite')?'opacity:.6;':''
     const appareilLbl=[f.marque,f.modele].filter(Boolean).join(' ')||f.appareil||'—'
-    return`<div class="four-card">
+    return`<div class="four-card" style="border-left:3px solid ${v.col};border-radius:0 10px 10px 0;${dim}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
         <div style="min-width:0;">
           <div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</div>
@@ -873,8 +891,11 @@ function renderCards(){
         </div>
         <span class="statut-fac ${st.c}" style="flex-shrink:0;">${st.l}</span>
       </div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:2px;">${appareilLbl}</div>
-      <div style="font-size:12px;color:var(--t3);">${VERDICT[f.verdict]||'—'}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:6px;">${appareilLbl}</div>
+      <div style="display:flex;align-items:center;gap:5px;color:${v.col};">
+        <span style="width:13px;height:13px;display:inline-flex;">${v.ico}</span>
+        <span style="font-size:12px;font-weight:500;">${v.l}</span>
+      </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
         <span style="font-weight:600;">${f.prix_estime?Number(f.prix_estime).toFixed(2).replace('.',',')+' €':'—'}</span>
         <div class="actions" style="opacity:1;">
