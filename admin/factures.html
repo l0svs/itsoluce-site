@@ -81,12 +81,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tog.on{background:var(--ok);border-color:var(--ok);}
 .tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
 .tog.on .tog-thumb{transform:translateX(14px);}
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}.panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;right:0;top:0;bottom:0;width:50vw;min-width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
+.panel-overlay{display:none;}
+.panel{position:fixed;left:var(--sw);right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
 .panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .panel-title{font-size:14px;font-weight:600;color:var(--t1);}
 .panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}.panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:20px;}.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;}
+.panel-body{flex:1;overflow-y:auto;padding:32px 40px;}.panel-footer{padding:16px 40px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-shrink:0;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:22px 26px;}
+.form-section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.form-section-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.form-section-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;}
+.form-section-head span{font-size:14px;font-weight:600;color:var(--t1);}
+.form-section .fg{margin-bottom:14px;}
+.form-section .fg:last-child{margin-bottom:0;}
+@media(max-width:1100px){.form-grid{grid-template-columns:1fr;max-width:640px;margin:0 auto;}}
 .fg{margin-bottom:13px;}.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
 .fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}.fg textarea{resize:vertical;min-height:60px;}.fg select option{background:var(--bg3);}
@@ -507,82 +516,93 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
-  <div class="panel-head"><span class="panel-title" id="panelTitle">Nouvelle facture</span><button class="panel-close" onclick="closePanel()">×</button></div>
+  <div class="panel-head">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="panel-close" onclick="closePanel()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <span class="panel-title" id="panelTitle">Nouvelle facture</span>
+    </div>
+  </div>
   <div class="panel-body">
     <input type="hidden" id="f-id"/>
     <input type="hidden" id="f-numero"/>
+    <div class="form-grid">
 
-    <div class="fg-sep" style="border-top:none;padding-top:0;margin-top:0;">Depuis une réparation (optionnel)</div>
-    <div class="fg">
-      <label>Pré-remplir depuis une réparation</label>
-      <select id="f-rep" onchange="onRepSelect()"><option value="">— Aucune (saisie manuelle) —</option></select>
-    </div>
-
-    <div class="fg-sep">Client</div>
-    <div class="fg">
-      <label>Client existant ou nouveau</label>
-      <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
-    </div>
-    <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
-    <div class="fg-row">
-      <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
-      <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
-    </div>
-    <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
-    <div class="fg" style="margin-top:4px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <label style="margin:0;font-size:12px;font-weight:500;color:var(--t2);">Client professionnel</label>
-        <div id="togPro" onclick="toggleClientPro()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div id="togProThumb" style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;"></div></div>
-        <input type="hidden" id="f-is-pro" value="false"/>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></div><span>Client</span></div>
+        <div class="fg">
+          <label>Pré-remplir depuis une réparation (optionnel)</label>
+          <select id="f-rep" onchange="onRepSelect()"><option value="">— Aucune (saisie manuelle) —</option></select>
+        </div>
+        <div class="fg">
+          <label>Client existant ou nouveau</label>
+          <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
+        </div>
+        <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+        <div class="fg-row">
+          <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
+          <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
+        </div>
+        <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+        <div class="fg" style="margin-top:4px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <label style="margin:0;font-size:12px;font-weight:500;color:var(--t2);">Client professionnel</label>
+            <div id="togPro" onclick="toggleClientPro()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div id="togProThumb" style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;"></div></div>
+            <input type="hidden" id="f-is-pro" value="false"/>
+          </div>
+          <div id="pro-fields" style="display:none;flex-direction:column;gap:10px;">
+            <input type="text" id="f-societe" placeholder="Nom de la société"/>
+            <input type="text" id="f-tva-client" placeholder="Numéro TVA client (ex : BE 0123.456.789)"/>
+          </div>
+        </div>
       </div>
-      <div id="pro-fields" style="display:none;flex-direction:column;gap:10px;">
-        <input type="text" id="f-societe" placeholder="Nom de la société"/>
-        <input type="text" id="f-tva-client" placeholder="Numéro TVA client (ex : BE 0123.456.789)"/>
+
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Détails</span></div>
+        <div class="fg-row">
+          <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission"/></div>
+          <div class="fg"><label>Statut</label><select id="f-statut" onchange="onStatutChange()"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
+        </div>
+        <div class="fg" id="fg-date-paiement" style="display:none;"><label>Date de paiement (encaissement)</label><input type="date" id="f-date-paiement"/></div>
+        <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte</option><option value="mixte">Mixte (carte + espèces)</option></select></div>
+        <div class="fg" id="especes-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
+          <label>Montant donné par le client (€)</label>
+          <input type="number" id="f-montant-donne" min="0" step="0.01" placeholder="Ex : 50.00" oninput="calcRendu()"/>
+          <div id="rendu-affichage" style="margin-top:8px;font-size:13px;font-weight:600;color:var(--ok);display:none;"></div>
+        </div>
+        <div class="fg" id="mixte-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
+          <label>Répartition du paiement</label>
+          <div class="fg-row" style="margin-top:4px;">
+            <div class="fg" style="margin-bottom:8px;"><label style="font-size:10px;">Payé en carte (€)</label><input type="number" id="f-mixte-carte" min="0" step="0.01" placeholder="0.00" oninput="calcMixte()"/></div>
+            <div class="fg" style="margin-bottom:8px;"><label style="font-size:10px;">Payé en espèces (€)</label><input type="number" id="f-mixte-especes" min="0" step="0.01" placeholder="0.00" oninput="calcMixte()"/></div>
+          </div>
+          <div id="mixte-affichage" style="font-size:12px;font-weight:600;display:none;"></div>
+        </div>
+        <div class="fg"><label>Note (visible sur la facture)</label><textarea id="f-notes" placeholder="Ex : Merci de votre confiance."></textarea></div>
       </div>
-    </div>
 
-    <div class="fg-sep">Lignes de facturation</div>
-    <table class="lignes-table">
-      <thead><tr><th style="width:46%;">Description</th><th style="width:14%;">Qté</th><th style="width:22%;">Prix unit. €</th><th style="width:14%;">Total</th><th style="width:36px;"></th></tr></thead>
-      <tbody id="lignesBody"></tbody>
-    </table>
-    <button class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
-
-    <div class="totaux-box">
-      <div class="tot-row"><span>Sous-total</span><span id="t-soustotal">0,00 €</span></div>
-      <div class="tot-row"><span>Remise</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-remise-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
-      <div class="tot-row" id="remise-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="remise-montant"></span></div>
-      <div class="tot-row final"><span>TOTAL</span><span id="t-total">0,00 €</span></div>
-      <div class="tot-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--ln2);"><span>Acompte reçu</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-acompte" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-acompte-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
-      <div class="tot-row" id="acompte-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="acompte-montant"></span></div>
-      <div class="tot-row final" style="color:var(--a);"><span>SOLDE À PAYER</span><span id="t-solde">0,00 €</span></div>
-    </div>
-
-    <div class="fg-sep">Détails</div>
-    <div class="fg-row">
-      <div class="fg"><label>Date d'émission</label><input type="date" id="f-date-emission"/></div>
-      <div class="fg"><label>Statut</label><select id="f-statut" onchange="onStatutChange()"><option value="brouillon">Brouillon</option><option value="envoyee">Envoyée</option><option value="payee">Payée</option><option value="annulee">Annulée</option></select></div>
-    </div>
-    <div class="fg" id="fg-date-paiement" style="display:none;"><label>Date de paiement (encaissement)</label><input type="date" id="f-date-paiement"/></div>
-    <div class="fg"><label>Mode de paiement</label><select id="f-paiement" onchange="onPaiementChange()"><option value="">— Non précisé —</option><option value="especes">Espèces</option><option value="carte">Carte</option><option value="mixte">Mixte (carte + espèces)</option></select></div>
-    <div class="fg" id="especes-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
-      <label>Montant donné par le client (€)</label>
-      <input type="number" id="f-montant-donne" min="0" step="0.01" placeholder="Ex : 50.00" oninput="calcRendu()"/>
-      <div id="rendu-affichage" style="margin-top:8px;font-size:13px;font-weight:600;color:var(--ok);display:none;"></div>
-    </div>
-    <div class="fg" id="mixte-box" style="display:none;background:var(--bg3);border-radius:8px;padding:12px 14px;">
-      <label>Répartition du paiement</label>
-      <div class="fg-row" style="margin-top:4px;">
-        <div class="fg" style="margin-bottom:8px;"><label style="font-size:10px;">Payé en carte (€)</label><input type="number" id="f-mixte-carte" min="0" step="0.01" placeholder="0.00" oninput="calcMixte()"/></div>
-        <div class="fg" style="margin-bottom:8px;"><label style="font-size:10px;">Payé en espèces (€)</label><input type="number" id="f-mixte-especes" min="0" step="0.01" placeholder="0.00" oninput="calcMixte()"/></div>
+      <div class="form-section" style="grid-column:1 / -1;">
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M4 2h16v20l-4-2-4 2-4-2-4 2V2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/></svg></div><span>Lignes de facturation</span></div>
+        <table class="lignes-table">
+          <thead><tr><th style="width:46%;">Description</th><th style="width:14%;">Qté</th><th style="width:22%;">Prix unit. €</th><th style="width:14%;">Total</th><th style="width:36px;"></th></tr></thead>
+          <tbody id="lignesBody"></tbody>
+        </table>
+        <button class="add-ligne" onclick="addLigne()" style="margin-bottom:16px;"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
+        <div class="totaux-box">
+          <div class="tot-row"><span>Sous-total</span><span id="t-soustotal">0,00 €</span></div>
+          <div class="tot-row"><span>Remise</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-remise-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
+          <div class="tot-row" id="remise-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="remise-montant"></span></div>
+          <div class="tot-row final"><span>TOTAL</span><span id="t-total">0,00 €</span></div>
+          <div class="tot-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--ln2);"><span>Acompte reçu</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-acompte" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-acompte-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
+          <div class="tot-row" id="acompte-detail" style="display:none;font-size:11px;color:var(--t3);"><span></span><span id="acompte-montant"></span></div>
+          <div class="tot-row final" style="color:var(--a);"><span>SOLDE À PAYER</span><span id="t-solde">0,00 €</span></div>
+        </div>
       </div>
-      <div id="mixte-affichage" style="font-size:12px;font-weight:600;display:none;"></div>
+
     </div>
-    <div class="fg"><label>Note (visible sur la facture)</label><textarea id="f-notes" placeholder="Ex : Merci de votre confiance."></textarea></div>
   </div>
-  <div class="panel-footer" style="flex-wrap:wrap;">
-    <button class="btn btn-secondary" onclick="closePanel()" style="flex:1;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveFacture()" style="flex:2;" id="saveBtn">Enregistrer</button>
+  <div class="panel-footer">
+    <button class="btn btn-secondary" onclick="closePanel()" style="padding:9px 18px;">Annuler</button>
+    <button class="btn btn-primary" onclick="saveFacture()" style="padding:9px 22px;" id="saveBtn">Enregistrer</button>
   </div>
 </div>
 
