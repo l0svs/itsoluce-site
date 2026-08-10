@@ -641,7 +641,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <thead><tr><th style="width:46%;">Description</th><th style="width:14%;">Qté</th><th style="width:22%;">Prix unit. €</th><th style="width:14%;">Total</th><th style="width:36px;"></th></tr></thead>
           <tbody id="lignesBody"></tbody>
         </table>
-        <button class="add-ligne" onclick="addLigne()" style="margin-bottom:16px;"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
+          <select id="presta-select" onchange="ajouterPresta(this)" style="flex:1;min-width:200px;padding:8px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;color:var(--t2);font-family:inherit;font-size:13px;cursor:pointer;"><option value="">+ Ajouter une prestation…</option></select>
+        </div>
         <div class="totaux-box">
           <div class="tot-row"><span>Sous-total</span><span id="t-soustotal">0,00 €</span></div>
           <div class="tot-row"><span>Remise</span><span style="display:flex;align-items:center;gap:6px;"><input type="number" id="f-remise" value="0" min="0" step="0.01" oninput="calcTotaux()" style="width:80px;padding:4px 8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;text-align:right;font-family:inherit;"/><select id="f-remise-type" onchange="calcTotaux()" style="padding:4px 6px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t1);font-size:12px;font-family:inherit;cursor:pointer;"><option value="euro">€</option><option value="pct">%</option></select></span></div>
@@ -1059,6 +1062,7 @@ let allFactures=[]
 let allReps=[]
 let allClients=[]
 let allStock=[]
+window.allServices=[]
 window.getStock=()=>allStock
 let activeFilter='Tous'
 let currentPdfDoc=null
@@ -1071,13 +1075,38 @@ async function nextNumero(cle, format){
   return `DEV-${String(nouvelle).padStart(4,'0')}`
 }
 
+function fillPrestaSelect(){
+  const sel=document.getElementById('presta-select')
+  if(!sel)return
+  const actifs=(window.allServices||[]).filter(s=>s.actif!==false)
+  if(actifs.length===0){sel.innerHTML='<option value="">Aucune prestation</option>';return}
+  sel.innerHTML='<option value="">+ Ajouter une prestation…</option>'+actifs.map(s=>{
+    const prix=Number(s.prix||0)
+    const lbl=`${s.nom} — ${prix.toFixed(2)} €${s.unite||''}`
+    return `<option value="${s.id}">${lbl.replace(/"/g,'&quot;')}</option>`
+  }).join('')
+}
+window.ajouterPresta=function(sel){
+  const id=sel.value
+  if(!id)return
+  const s=(window.allServices||[]).find(x=>String(x.id)===String(id))
+  if(s){
+    addLigne(s.nom,1,Number(s.prix||0),'');
+    if(typeof calcTotaux==='function')calcTotaux()
+  }
+  sel.value=''
+}
+
 async function load(){
-  const [rFac,rRep,rCli,rStock]=await Promise.all([
+  const [rFac,rRep,rCli,rStock,rServices]=await Promise.all([
     sb.from('factures').select('*').order('created_at',{ascending:false}),
     sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,marque,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom')
+    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom'),
+    sb.from('services').select('*').order('ordre',{ascending:true})
   ])
+  window.allServices=(rServices&&rServices.data)||[]
+  fillPrestaSelect()
   if(rFac.error){showError(rFac.error.message);return}
   allFactures=rFac.data||[]
   allReps=rRep.data||[]
