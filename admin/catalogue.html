@@ -914,10 +914,12 @@ async function rechercher(){
     return
   }
   results.innerHTML='<div class="cat-loading">Recherche en cours…</div>'
-  // Recherche sur suitable_for + title
+  // Recherche sur suitable_for + title, limitee aux qualites retenues par Linton
+  const QUALITES_RETENUES=['OEM-Equivalent','Service Pack','Pulled A','Refurbished','Pulled B','Pulled C']
   const {data,error}=await sb.from('foneday_produits')
     .select('*')
     .or(`suitable_for.ilike.%${q}%,title.ilike.%${q}%`)
+    .in('quality',QUALITES_RETENUES)
     .order('category')
     .limit(500)
   if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
