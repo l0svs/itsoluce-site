@@ -708,7 +708,8 @@ function renderTab(){
       const transporteur=champVal(c,['shipment_method','carrier','shipping_method'])
       const suivi=champVal(c,['trackandtrace','tracking_number','track_and_trace'])
       const total=champVal(c,['total_incl_vat','total','amount'])
-      const paye=champVal(c,['paid','betaald'])
+      const payeRaw=champVal(c,['paid','betaald'])
+      const paye=payeRaw===null?null:(payeRaw===true||payeRaw===1||payeRaw==='1')
       return`<div class="four-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
           <div><div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${numero}</div><div style="font-size:11px;color:var(--t3);margin-top:2px;">${dateStr}</div></div>
@@ -730,7 +731,8 @@ function renderTab(){
       const date=champVal(f,['created_at','date','invoice_date'])
       const dateStr=date?new Date(date).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'—'
       const montant=champVal(f,['amount','total','total_incl_vat'])
-      const paye=champVal(f,['paid','betaald'])
+      const payeRaw=champVal(f,['paid','betaald'])
+      const paye=payeRaw===null?null:(payeRaw===true||payeRaw===1||payeRaw==='1')
       return`<div class="four-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
           <div><div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${numero}</div><div style="font-size:11px;color:var(--t3);margin-top:2px;">${dateStr}</div></div>
@@ -748,9 +750,11 @@ function renderTab(){
     if(!dataAdresse){wrap.innerHTML=`<div class="empty-grid"><div class="empty-ico">📍</div><div class="empty-title">Aucune adresse trouvée</div></div>`;return}
     const a=dataAdresse
     const lignes=[
-      champVal(a,['name','company']),
-      [champVal(a,['street','address']),champVal(a,['house_number','number'])].filter(Boolean).join(' '),
-      [champVal(a,['zipcode','postal_code']),champVal(a,['city'])].filter(Boolean).join(' '),
+      champVal(a,['name']),
+      champVal(a,['to_company']),
+      [champVal(a,['streetaddress_1']),champVal(a,['housenumber'])].filter(Boolean).join(' '),
+      champVal(a,['streetaddress_2']),
+      [champVal(a,['zipcode']),champVal(a,['city'])].filter(Boolean).join(' '),
       champVal(a,['country'])
     ].filter(Boolean)
     wrap.innerHTML=`<div class="four-card" style="max-width:360px;">
