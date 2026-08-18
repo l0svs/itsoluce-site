@@ -933,10 +933,6 @@ function exclusionsQualite(row){
   if(t.includes('fdx'))return false // marque interne Foneday, jamais retenue
   if(row.category==='Battery'){
     if(t.includes('without bms')||t.includes('high capacity'))return false
-    if(row.quality==='Pulled B'||row.quality==='Pulled C')return false
-  }
-  if(row.category==='Back Cover'){
-    if(row.quality==='Pulled B'||row.quality==='Pulled C')return false
   }
   return true
 }
@@ -976,7 +972,7 @@ async function rechercher(){
   }
   results.innerHTML='<div class="cat-loading">Recherche en cours…</div>'
   // Recherche sur suitable_for + title + sku, limitee aux qualites retenues par Linton
-  const QUALITES_RETENUES=['OEM-Equivalent','Service Pack','Pulled A','Refurbished','Pulled B','Pulled C']
+  const QUALITES_RETENUES=['OEM-Equivalent','Service Pack','Pulled A','Refurbished']
   let query=sb.from('foneday_produits').select('*').in('quality',QUALITES_RETENUES)
   if(qModele.length>=2){
     query=query.or(`suitable_for.ilike.%${qModele}%,title.ilike.%${qModele}%,sku.ilike.%${qModele}%`)
