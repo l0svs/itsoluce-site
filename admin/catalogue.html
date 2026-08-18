@@ -276,18 +276,23 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
 .cat-chip{padding:6px 13px;border-radius:99px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);font-size:12px;cursor:pointer;transition:all .12s;}
 .cat-chip:hover{border-color:var(--a);color:var(--a);}
-.cat-results{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.cat-results{flex:1;overflow-y:auto;padding:0 24px 24px;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--a) transparent;}
+.cat-results::-webkit-scrollbar{width:9px;}
+.cat-results::-webkit-scrollbar-track{background:transparent;}
+.cat-results::-webkit-scrollbar-thumb{background:var(--ad);border-radius:99px;border:2px solid transparent;background-clip:padding-box;}
+.cat-results::-webkit-scrollbar-thumb:hover{background:var(--a);background-clip:padding-box;}
+html{scroll-behavior:smooth;}
 .cat-piece-group{margin-bottom:28px;}
 .cat-piece-head{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--ln);}
 .cat-piece-head .cat-cat-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--t2);}
 .cat-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
-.cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s cubic-bezier(.16,1,.3,1),border-color .2s;animation:catCardIn .5s cubic-bezier(.16,1,.3,1) both;}
-.cat-opt.rupture{animation-name:catCardInDim;}
+.cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s cubic-bezier(.16,1,.3,1),border-color .2s;opacity:0;}
 .cat-opt:hover{transform:translateY(-5px);box-shadow:0 16px 32px rgba(0,82,204,.16);border-color:var(--a);}
+.cat-piece-group.revealed .cat-opt{animation:catCardIn .5s cubic-bezier(.16,1,.3,1) both;}
+.cat-piece-group.revealed .cat-opt.rupture{animation-name:catCardInDim;}
 @keyframes catCardIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 @keyframes catCardInDim{from{opacity:0;transform:translateY(16px);}to{opacity:.6;transform:translateY(0);}}
-@media(prefers-reduced-motion:reduce){.cat-opt{animation:none;}.cat-opt:hover{transform:none;}}
-.cat-opt:hover{border-color:var(--a);transform:translateY(-1px);}
+@media(prefers-reduced-motion:reduce){.cat-opt{opacity:1;animation:none;}.cat-opt:hover{transform:none;}}
 .cat-opt-head{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .cat-opt-head.niv-eco{background:linear-gradient(135deg,#0a8050,#34d399);}
 .cat-opt-head.niv-recommande{background:linear-gradient(135deg,#2563eb,#3b82f6);}
@@ -1096,8 +1101,8 @@ function renderResults(){
   })
   let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
   // Pour chaque catégorie, trier par niveau puis prix
-  let cardIdx=0
   Object.keys(groupes).sort().forEach(cat=>{
+    let cardIdx=0
     const items=groupes[cat].sort((a,b)=>{
       const na=NIVEAU_ORDRE[a.niveau]??9, nb=NIVEAU_ORDRE[b.niveau]??9
       if(na!==nb)return na-nb
@@ -1138,6 +1143,26 @@ function renderResults(){
     html+=`</div></div>`
   })
   results.innerHTML=html
+  observerRevelation()
+}
+
+let _catRevealObserver=null
+function observerRevelation(){
+  if(_catRevealObserver)_catRevealObserver.disconnect()
+  const groupes=document.querySelectorAll('.cat-piece-group')
+  if(!('IntersectionObserver' in window)){
+    groupes.forEach(g=>g.classList.add('revealed'))
+    return
+  }
+  _catRevealObserver=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('revealed')
+        _catRevealObserver.unobserve(entry.target)
+      }
+    })
+  },{root:document.getElementById('cat-results'),rootMargin:'0px 0px -40px 0px',threshold:0.08})
+  groupes.forEach(g=>_catRevealObserver.observe(g))
 }
 
 function escapeJs(s){return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
