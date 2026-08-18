@@ -588,6 +588,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="hnav-menu">
           <a href="/admin/stock.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>Stock <span class="nc w" id="nb-alert">—</span></a>
           <a href="/admin/catalogue.html" class="hnav-item active"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Catalogue Foneday</a>
+          <a href="/admin/commandes-foneday.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>Commandes Foneday</a>
           <a href="/admin/fournisseurs.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>Fournisseurs <span class="nc" id="nb-four">—</span></a>
           <a href="/admin/prestations.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>Prestations</a>
     </div>
@@ -1075,8 +1076,9 @@ function renderResults(){
             <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${FRAIS_LIVRAISON.toFixed(2)} €</span></div>
           </div>
         </div>
-        <div class="cat-opt-foot">
-          <button class="cat-btn primary" onclick="ajouterAuStock('${escapeJs(p.sku)}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter au stock</button>
+        <div class="cat-opt-foot" style="display:flex;gap:6px;">
+          <button class="cat-btn primary" onclick="ajouterAuStock('${escapeJs(p.sku)}')" style="flex:1;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Stock</button>
+          <button class="cat-btn" onclick="ajouterAuPanierFoneday('${escapeJs(p.sku)}','${escapeJs(p.title||'')}',this)" style="flex:1;background:var(--bg2);border:1px solid var(--ln2);color:var(--t2);" title="Ajouter au panier Foneday (paiement sur leur site)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Panier</button>
         </div>
       </div>`
     })
@@ -1108,6 +1110,27 @@ window.ajouterAuStock=async function(sku){
   localStorage.setItem('erp-prefill-stock',JSON.stringify(prefill))
   showToast('Redirection vers le stock…','ok')
   setTimeout(()=>{window.location.href='/admin/stock.html?prefill=1'},600)
+}
+
+window.ajouterAuPanierFoneday=async function(sku,titre,btn){
+  const original=btn.innerHTML
+  btn.disabled=true
+  btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Ajout…'
+  try{
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/foneday-proxy`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({action:'cart-add',articles:[{sku,quantity:1,note:null}]})
+    })
+    const result=await res.json()
+    if(!res.ok||!result.ok)throw new Error(result.error||'Échec de l\'ajout au panier')
+    showToast(`${titre||sku} ajouté au panier Foneday ✓`,'ok')
+  }catch(err){
+    showToast('Erreur panier Foneday : '+err.message,'err')
+  }
+  btn.disabled=false
+  btn.innerHTML=original
 }
 
 window.catSearchDebounce=function(){
