@@ -267,7 +267,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-piece-head{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--ln);}
 .cat-piece-head .cat-cat-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--t2);}
 .cat-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
-.cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:border-color .12s,transform .12s;}
+.cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s cubic-bezier(.16,1,.3,1),border-color .2s;animation:catCardIn .5s cubic-bezier(.16,1,.3,1) both;}
+.cat-opt.rupture{animation-name:catCardInDim;}
+.cat-opt:hover{transform:translateY(-5px);box-shadow:0 16px 32px rgba(0,82,204,.16);border-color:var(--a);}
+@keyframes catCardIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes catCardInDim{from{opacity:0;transform:translateY(16px);}to{opacity:.6;transform:translateY(0);}}
+@media(prefers-reduced-motion:reduce){.cat-opt{animation:none;}.cat-opt:hover{transform:none;}}
 .cat-opt:hover{border-color:var(--a);transform:translateY(-1px);}
 .cat-opt-head{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .cat-opt-head.niv-eco{background:linear-gradient(135deg,#0a8050,#34d399);}
@@ -901,6 +906,24 @@ async function loadSyncInfo(){
 
 function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
+function animateCount(el,target,opts){
+  opts=opts||{}
+  const decimals=opts.decimals||0
+  const suffix=opts.suffix||''
+  const prefix=opts.prefix||''
+  const duration=550
+  const start=performance.now()
+  function fmt(v){return prefix+v.toFixed(decimals).replace('.',',')+suffix}
+  function tick(now){
+    const p=Math.min(1,(now-start)/duration)
+    const eased=1-Math.pow(1-p,3)
+    el.textContent=fmt(target*eased)
+    if(p<1)requestAnimationFrame(tick)
+    else el.textContent=fmt(target)
+  }
+  requestAnimationFrame(tick)
+}
+
 let _resultatsActuels=[]
 let _filtreActif='all'
 let _qActuel=''
@@ -1018,7 +1041,10 @@ function renderFiltres(){
 window.setFiltre=function(cat){
   _filtreActif=cat
   renderFiltres()
-  renderResults()
+  const results=document.getElementById('cat-results')
+  results.style.transition='opacity .15s ease'
+  results.style.opacity='0'
+  setTimeout(()=>{renderResults();results.style.opacity='1'},130)
 }
 
 function renderResults(){
@@ -1035,17 +1061,15 @@ function renderResults(){
   })
   let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
   if(data.length>0){
-    const ventes=data.map(p=>calcPrixVente(Number(p.prix_achat)||0))
-    const marges=data.map(p=>{const a=Number(p.prix_achat)||0;return calcPrixVente(a)-(a+FRAIS_LIVRAISON)})
-    const enStock=data.filter(p=>p.instock).length
     html+=`<div class="cat-synth">
-      <div class="cat-synth-item"><div class="cat-synth-label">Variantes</div><div class="cat-synth-val">${data.length}</div></div>
-      <div class="cat-synth-item"><div class="cat-synth-label">En stock</div><div class="cat-synth-val ok">${enStock}</div></div>
-      <div class="cat-synth-item"><div class="cat-synth-label">À partir de</div><div class="cat-synth-val">${Math.min(...ventes).toFixed(2)} €</div></div>
-      <div class="cat-synth-item"><div class="cat-synth-label">Marge max</div><div class="cat-synth-val ok">+${Math.max(...marges).toFixed(2)} €</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">Variantes</div><div class="cat-synth-val" id="synth-variantes">0</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">En stock</div><div class="cat-synth-val ok" id="synth-stock">0</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">À partir de</div><div class="cat-synth-val" id="synth-prixmin">0 €</div></div>
+      <div class="cat-synth-item"><div class="cat-synth-label">Marge max</div><div class="cat-synth-val ok" id="synth-margemax">+0 €</div></div>
     </div>`
   }
   // Pour chaque catégorie, trier par niveau puis prix
+  let cardIdx=0
   Object.keys(groupes).sort().forEach(cat=>{
     const items=groupes[cat].sort((a,b)=>{
       const na=NIVEAU_ORDRE[a.niveau]??9, nb=NIVEAU_ORDRE[b.niveau]??9
@@ -1061,7 +1085,9 @@ function renderResults(){
       const niv=p.niveau||'a_valider'
       const stockIco=p.instock?'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
       const etoile=niv==='recommande'?'★ ':''
-      html+=`<div class="cat-opt ${p.instock?'':'rupture'}">
+      const delai=Math.min(cardIdx*35,560)
+      cardIdx++
+      html+=`<div class="cat-opt ${p.instock?'':'rupture'}" style="animation-delay:${delai}ms;">
         <div class="cat-opt-head niv-${niv}">
           <span class="cat-opt-head-label">${etoile}${(NIVEAU_LABEL[niv]||niv).toUpperCase()}</span>
           <span class="cat-opt-head-stock">${stockIco}${p.instock?'En stock':'Rupture'}</span>
@@ -1085,6 +1111,15 @@ function renderResults(){
     html+=`</div></div>`
   })
   results.innerHTML=html
+  if(data.length>0){
+    const ventes=data.map(p=>calcPrixVente(Number(p.prix_achat)||0))
+    const marges=data.map(p=>{const a=Number(p.prix_achat)||0;return calcPrixVente(a)-(a+FRAIS_LIVRAISON)})
+    const enStock=data.filter(p=>p.instock).length
+    animateCount(document.getElementById('synth-variantes'),data.length)
+    animateCount(document.getElementById('synth-stock'),enStock)
+    animateCount(document.getElementById('synth-prixmin'),Math.min(...ventes),{decimals:2,suffix:' €'})
+    animateCount(document.getElementById('synth-margemax'),Math.max(...marges),{decimals:2,prefix:'+',suffix:' €'})
+  }
 }
 
 function escapeJs(s){return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
