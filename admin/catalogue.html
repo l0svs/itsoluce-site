@@ -1060,14 +1060,6 @@ function renderResults(){
     groupes[cat].push(p)
   })
   let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
-  if(data.length>0){
-    html+=`<div class="cat-synth">
-      <div class="cat-synth-item"><div class="cat-synth-label">Variantes</div><div class="cat-synth-val" id="synth-variantes">0</div></div>
-      <div class="cat-synth-item"><div class="cat-synth-label">En stock</div><div class="cat-synth-val ok" id="synth-stock">0</div></div>
-      <div class="cat-synth-item"><div class="cat-synth-label">À partir de</div><div class="cat-synth-val" id="synth-prixmin">0 €</div></div>
-      <div class="cat-synth-item"><div class="cat-synth-label">Marge max</div><div class="cat-synth-val ok" id="synth-margemax">+0 €</div></div>
-    </div>`
-  }
   // Pour chaque catégorie, trier par niveau puis prix
   let cardIdx=0
   Object.keys(groupes).sort().forEach(cat=>{
@@ -1111,15 +1103,6 @@ function renderResults(){
     html+=`</div></div>`
   })
   results.innerHTML=html
-  if(data.length>0){
-    const ventes=data.map(p=>calcPrixVente(Number(p.prix_achat)||0))
-    const marges=data.map(p=>{const a=Number(p.prix_achat)||0;return calcPrixVente(a)-(a+FRAIS_LIVRAISON)})
-    const enStock=data.filter(p=>p.instock).length
-    animateCount(document.getElementById('synth-variantes'),data.length)
-    animateCount(document.getElementById('synth-stock'),enStock)
-    animateCount(document.getElementById('synth-prixmin'),Math.min(...ventes),{decimals:2,suffix:' €'})
-    animateCount(document.getElementById('synth-margemax'),Math.max(...marges),{decimals:2,prefix:'+',suffix:' €'})
-  }
 }
 
 function escapeJs(s){return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
