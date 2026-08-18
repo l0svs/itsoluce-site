@@ -935,6 +935,9 @@ function exclusionsQualite(row){
     if(t.includes('without bms')||t.includes('high capacity'))return false
     if(row.quality==='Pulled B'||row.quality==='Pulled C')return false
   }
+  if(row.category==='Back Cover'){
+    if(row.quality==='Pulled B'||row.quality==='Pulled C')return false
+  }
   return true
 }
 
