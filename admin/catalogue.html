@@ -925,6 +925,19 @@ function filtrerModeleExact(rows,qModele){
   return rows.filter(r=>correspondModeleExact(r.suitable_for||r.title||'',qModele))
 }
 
+// Exclusions de variantes non retenues par Linton, meme quand leur "quality"
+// brute passe le filtre global (ex: Batterie "Without BMS" est classee
+// OEM-Equivalent mais ne doit jamais s'afficher).
+function exclusionsQualite(row){
+  const t=(row.title||'').toLowerCase()
+  if(t.includes('fdx'))return false // marque interne Foneday, jamais retenue
+  if(row.category==='Battery'){
+    if(t.includes('without bms')||t.includes('high capacity'))return false
+    if(row.quality==='Pulled B'||row.quality==='Pulled C')return false
+  }
+  return true
+}
+
 async function rechercher(){
   const qRaw=document.getElementById('catSearch').value.trim()
   const qLower=qRaw.toLowerCase()
@@ -969,7 +982,7 @@ async function rechercher(){
     query=query.eq('quality',qualiteDetectee)
   }
   const {data:dataRaw,error}=await query.order('category').limit(500)
-  const data=dataRaw?filtrerModeleExact(dataRaw,qModele):dataRaw
+  const data=dataRaw?filtrerModeleExact(dataRaw,qModele).filter(exclusionsQualite):dataRaw
   if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
   if(!data||data.length===0){
     results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(qRaw)}"</div><div>Essayez un autre modèle, une référence SKU, ou associez un mot de qualité (ex : iPhone 13 refurbished).</div></div>`
