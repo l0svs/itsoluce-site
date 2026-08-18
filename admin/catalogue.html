@@ -904,6 +904,27 @@ let _resultatsActuels=[]
 let _filtreActif='all'
 let _qActuel=''
 
+// Empeche "iPhone 15" de remonter aussi "iPhone 15 Plus/Pro/Pro Max" etc,
+// sauf si ce complement est explicitement demande dans la recherche.
+const MODELE_MODIFIERS=['pro max','pro','plus','ultra','mini','max','fe','note','edge','lite','se']
+function correspondModeleExact(texte,requete){
+  if(!texte||!requete)return true
+  const t=texte.toLowerCase()
+  const q=requete.toLowerCase().trim()
+  const idx=t.indexOf(q)
+  if(idx===-1)return true // ne contient meme pas la requete, laisse passer (matche via un autre champ)
+  const suite=t.slice(idx+q.length).trim()
+  if(!suite)return true // rien apres = correspondance exacte
+  for(const mod of MODELE_MODIFIERS){
+    if(suite.startsWith(mod)&&!q.includes(mod))return false
+  }
+  return true
+}
+function filtrerModeleExact(rows,qModele){
+  if(!qModele||qModele.length<2)return rows
+  return rows.filter(r=>correspondModeleExact(r.suitable_for||r.title||'',qModele))
+}
+
 async function rechercher(){
   const qRaw=document.getElementById('catSearch').value.trim()
   const qLower=qRaw.toLowerCase()
@@ -947,7 +968,8 @@ async function rechercher(){
   if(qualiteDetectee){
     query=query.eq('quality',qualiteDetectee)
   }
-  const {data,error}=await query.order('category').limit(500)
+  const {data:dataRaw,error}=await query.order('category').limit(500)
+  const data=dataRaw?filtrerModeleExact(dataRaw,qModele):dataRaw
   if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
   if(!data||data.length===0){
     results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(qRaw)}"</div><div>Essayez un autre modèle, une référence SKU, ou associez un mot de qualité (ex : iPhone 13 refurbished).</div></div>`
