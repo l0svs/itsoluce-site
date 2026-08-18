@@ -905,31 +905,57 @@ let _filtreActif='all'
 let _qActuel=''
 
 async function rechercher(){
-  const q=document.getElementById('catSearch').value.trim()
+  const qRaw=document.getElementById('catSearch').value.trim()
+  const qLower=qRaw.toLowerCase()
   const results=document.getElementById('cat-results')
   const filtersBar=document.getElementById('cat-filters')
-  if(q.length<2){
+
+  // Detecter un mot de qualite dans la recherche (ex: "iphone 16 pro refurbished")
+  const QUALITY_MAP=[
+    ['service pack','Service Pack'],
+    ['pulled a','Pulled A'],
+    ['pulled b','Pulled B'],
+    ['pulled c','Pulled C'],
+    ['refurbished','Refurbished'],
+    ['oem-equivalent','OEM-Equivalent'],
+    ['oem equivalent','OEM-Equivalent'],
+    ['oem','OEM-Equivalent']
+  ]
+  let qualiteDetectee=null
+  let qModele=qRaw
+  for(const [kw,val] of QUALITY_MAP){
+    const idx=qLower.indexOf(kw)
+    if(idx!==-1){
+      qualiteDetectee=val
+      qModele=(qRaw.slice(0,idx)+qRaw.slice(idx+kw.length)).trim()
+      break
+    }
+  }
+
+  if(qModele.length<2 && !qualiteDetectee){
     results.innerHTML=welcomeHtml()
     filtersBar.style.display='none'
     return
   }
   results.innerHTML='<div class="cat-loading">Recherche en cours…</div>'
-  // Recherche sur suitable_for + title, limitee aux qualites retenues par Linton
+  // Recherche sur suitable_for + title + sku, limitee aux qualites retenues par Linton
   const QUALITES_RETENUES=['OEM-Equivalent','Service Pack','Pulled A','Refurbished','Pulled B','Pulled C']
-  const {data,error}=await sb.from('foneday_produits')
-    .select('*')
-    .or(`suitable_for.ilike.%${q}%,title.ilike.%${q}%`)
-    .in('quality',QUALITES_RETENUES)
-    .order('category')
-    .limit(500)
+  let query=sb.from('foneday_produits').select('*').in('quality',QUALITES_RETENUES)
+  if(qModele.length>=2){
+    query=query.or(`suitable_for.ilike.%${qModele}%,title.ilike.%${qModele}%,sku.ilike.%${qModele}%`)
+  }
+  if(qualiteDetectee){
+    query=query.eq('quality',qualiteDetectee)
+  }
+  const {data,error}=await query.order('category').limit(500)
   if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
   if(!data||data.length===0){
-    results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(q)}"</div><div>Essayez un autre modèle (ex : iPhone 13, Galaxy S23, iPad Air).</div></div>`
+    results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(qRaw)}"</div><div>Essayez un autre modèle, une référence SKU, ou associez un mot de qualité (ex : iPhone 13 refurbished).</div></div>`
     filtersBar.style.display='none'
     return
   }
   _resultatsActuels=data
-  _qActuel=q
+  _qActuel=qRaw
   _filtreActif='all'
   renderFiltres()
   renderResults()
