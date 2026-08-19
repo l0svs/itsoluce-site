@@ -1630,6 +1630,129 @@ a.irow:hover {
   .services__title { font-size: 26px; }
 }
 
+/* ══════════ ANIMATIONS ══════════ */
+
+/* Nav dynamique au scroll */
+.nav {
+  transition: background .3s ease, box-shadow .3s ease;
+}
+.nav.scrolled {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 16px rgba(0,0,0,.07);
+}
+
+/* Entrée du Hero au chargement */
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero__title { animation: heroIn .7s cubic-bezier(.22,.61,.36,1) both; }
+.hero__sub   { animation: heroIn .7s cubic-bezier(.22,.61,.36,1) .12s both; }
+.hero__icons { animation: heroIn .7s cubic-bezier(.22,.61,.36,1) .22s both; }
+
+/* Apparition au scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* Cascade dans les grilles (services, tarifs, faq) */
+.services__grid.reveal-group > *,
+.tarifs__grid.reveal-group > *,
+.faq__list.reveal-group > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.services__grid.reveal-group.in > *,
+.tarifs__grid.reveal-group.in > *,
+.faq__list.reveal-group.in > * {
+  opacity: 1;
+  transform: none;
+}
+.services__grid.reveal-group.in > *:nth-child(1) { transition-delay: .02s; }
+.services__grid.reveal-group.in > *:nth-child(2) { transition-delay: .08s; }
+.services__grid.reveal-group.in > *:nth-child(3) { transition-delay: .14s; }
+.services__grid.reveal-group.in > *:nth-child(4) { transition-delay: .20s; }
+.services__grid.reveal-group.in > *:nth-child(5) { transition-delay: .26s; }
+.services__grid.reveal-group.in > *:nth-child(6) { transition-delay: .32s; }
+.tarifs__grid.reveal-group.in > *:nth-child(1) { transition-delay: .02s; }
+.tarifs__grid.reveal-group.in > *:nth-child(2) { transition-delay: .08s; }
+.tarifs__grid.reveal-group.in > *:nth-child(3) { transition-delay: .14s; }
+.tarifs__grid.reveal-group.in > *:nth-child(4) { transition-delay: .20s; }
+.faq__list.reveal-group.in > *:nth-child(1) { transition-delay: .02s; }
+.faq__list.reveal-group.in > *:nth-child(2) { transition-delay: .07s; }
+.faq__list.reveal-group.in > *:nth-child(3) { transition-delay: .12s; }
+.faq__list.reveal-group.in > *:nth-child(4) { transition-delay: .17s; }
+.faq__list.reveal-group.in > *:nth-child(5) { transition-delay: .22s; }
+.faq__list.reveal-group.in > *:nth-child(6) { transition-delay: .27s; }
+
+/* Cartes plus tactiles au survol */
+.svc {
+  transition: background .2s ease, box-shadow .25s ease;
+  position: relative;
+}
+.svc:hover {
+  background: #fafbfc;
+  box-shadow: inset 0 0 0 1px rgba(0,82,204,.14), 0 10px 26px rgba(0,0,0,.06);
+  z-index: 1;
+}
+.svc--featured:hover {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 10px 26px rgba(0,0,0,.25);
+}
+.svc__icon { transition: transform .25s ease, color .25s ease; }
+.svc:hover .svc__icon { transform: translateY(-3px); color: #0052CC; }
+.svc--featured:hover .svc__icon { transform: translateY(-3px); color: rgba(255,255,255,.7); }
+
+.tcard { transition: background .2s ease, box-shadow .25s ease; position: relative; }
+.tcard:hover {
+  background: #fafbfc;
+  box-shadow: inset 0 0 0 1px rgba(0,82,204,.14), 0 10px 26px rgba(0,0,0,.06);
+  z-index: 1;
+}
+.tcard:hover .tcard__head { background: transparent; }
+.tcard__icon { transition: transform .25s ease, color .25s ease; }
+.tcard:hover .tcard__icon { transform: translateY(-3px); color: #0052CC; }
+
+/* Micro-interactions boutons */
+.btn-send:active,
+.btn-wa:active,
+.sticky-cta a:active,
+.fab:active {
+  transform: scale(.96);
+}
+.btn-send { transition: background .2s ease, transform .1s ease; }
+.btn-wa { transition: opacity .2s ease, transform .1s ease; }
+
+/* Pouls discret sur la bulle WhatsApp */
+.fab--pulse { position: relative; }
+.fab--pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(0,82,204,.35);
+  animation: fabPulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes fabPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0,82,204,.35); }
+  70%  { box-shadow: 0 0 0 14px rgba(0,82,204,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,82,204,0); }
+}
+
+/* Respect des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .reveal, .reveal-group > * { opacity: 1 !important; transform: none !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1721,12 +1844,12 @@ a.irow:hover {
 <section class="services" id="services">
   <div class="services__inner">
 
-    <div class="services__header">
+    <div class="services__header reveal">
       <p class="services__label">Ce que je répare</p>
       <h2 class="services__title">Services</h2>
     </div>
 
-    <div class="services__grid">
+    <div class="services__grid reveal-group">
 
       <div class="svc">
         <div class="svc__icon">
@@ -1798,11 +1921,11 @@ a.irow:hover {
 <section class="about" id="about">
   <div class="about__inner">
 
-    <div class="about__photo">
+    <div class="about__photo reveal">
       <img src="img/about-photo.jpg" alt="Linton — IT Soluce">
     </div>
 
-    <div class="about__content">
+    <div class="about__content reveal">
       <p class="about__label">À propos</p>
       <h2 class="about__title">Qui suis-je ?</h2>
       <div class="about__text">
@@ -1821,12 +1944,12 @@ a.irow:hover {
 <section class="tarifs" id="tarifs">
   <div class="tarifs__inner">
 
-    <div class="tarifs__header">
+    <div class="tarifs__header reveal">
       <p class="tarifs__label">Transparence totale</p>
       <h2 class="tarifs__title">Tarifs</h2>
     </div>
 
-    <div class="tarifs__grid">
+    <div class="tarifs__grid reveal-group">
 
       <div class="tcard">
         <div class="tcard__head">
@@ -1895,13 +2018,13 @@ a.irow:hover {
 <section class="zone" id="zone">
   <div class="zone__inner">
 
-    <div class="zone__header">
+    <div class="zone__header reveal">
       <p class="zone__label">Zone d'intervention</p>
       <h2 class="zone__title">Je me déplace partout en Wallonie</h2>
       <p class="zone__subtitle">Basé à Tubize, j'interviens à domicile dans toute la région wallonne, ainsi qu'à Bruxelles selon disponibilité.<br><strong>Réparations également possibles par dépôt sur rendez-vous.</strong></p>
     </div>
 
-    <div class="zone__map">
+    <div class="zone__map reveal">
       <iframe
         src="https://www.google.com/maps?q=Wallonie,Belgique&output=embed&z=8"
         loading="lazy"
@@ -1916,7 +2039,7 @@ a.irow:hover {
 <section class="contact" id="contact">
   <div class="contact__inner">
 
-    <div class="contact__header">
+    <div class="contact__header reveal">
       <p class="contact__label">Réponse en 1 à 2h</p>
       <h2 class="contact__title">Contact</h2>
     </div>
@@ -1924,7 +2047,7 @@ a.irow:hover {
     <div class="contact__grid">
 
       <!-- Formulaire -->
-      <div class="c-form">
+      <div class="c-form reveal">
         <form id="cForm" onsubmit="submitForm(event)">
           <input type="hidden" name="_subject" value="Nouvelle demande — IT Soluce">
           <input type="hidden" name="_language" value="fr">
@@ -1974,7 +2097,7 @@ a.irow:hover {
       </div>
 
       <!-- Coordonnées -->
-      <div class="c-info">
+      <div class="c-info reveal">
         <div class="c-info__title">Coordonnées</div>
 
         <a class="irow" href="tel:+32474056659">
@@ -2025,12 +2148,12 @@ a.irow:hover {
 <section class="faq" id="faq">
   <div class="faq__inner">
 
-    <div class="faq__header">
+    <div class="faq__header reveal">
       <p class="faq__label">Questions fréquentes</p>
       <h2 class="faq__title">Tout ce que vous devez savoir</h2>
     </div>
 
-    <div class="faq__list">
+    <div class="faq__list reveal-group">
 
       <div class="faq__item">
         <button class="faq__q" type="button">Combien de temps prend une réparation ?</button>
@@ -2083,7 +2206,7 @@ a.irow:hover {
 <section class="reviews" id="reviews">
   <div class="reviews__inner">
 
-    <div class="reviews__header">
+    <div class="reviews__header reveal">
       <p class="reviews__label">Ils nous ont fait confiance</p>
       <h2 class="reviews__title">Avis clients</h2>
     </div>
@@ -2556,6 +2679,31 @@ document.querySelectorAll('.faq__item').forEach(item => {
     if (!isOpen) item.classList.add('open');
   });
 });
+
+/* Navbar dynamique au scroll */
+const navEl = document.querySelector('.nav');
+const onScrollNav = () => navEl.classList.toggle('scrolled', window.scrollY > 20);
+onScrollNav();
+window.addEventListener('scroll', onScrollNav, { passive: true });
+
+/* Apparition au scroll */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const revealTargets = document.querySelectorAll('.reveal, .reveal-group');
+if (prefersReducedMotion) {
+  revealTargets.forEach(el => el.classList.add('in'));
+} else if ('IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealTargets.forEach(el => revealObserver.observe(el));
+} else {
+  revealTargets.forEach(el => el.classList.add('in'));
+}
 </script>
 
 <!-- STICKY DROIT -->
@@ -2572,7 +2720,7 @@ document.querySelectorAll('.faq__item').forEach(item => {
 <div class="fabs">
 
   <!-- WhatsApp -->
-  <a class="fab" href="https://wa.me/32474056659" target="_blank" aria-label="WhatsApp" title="WhatsApp">
+  <a class="fab fab--pulse" href="https://wa.me/32474056659" target="_blank" aria-label="WhatsApp" title="WhatsApp">
     <svg viewBox="0 0 32 32" fill="currentColor">
       <path d="M19.11 17.36c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.13-.42-2.16-1.34-.8-.71-1.34-1.6-1.5-1.87-.16-.27-.02-.41.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.99-.22-.53-.44-.46-.6-.47h-.51c-.18 0-.47.07-.71.34-.24.27-.93.91-.93 2.22s.96 2.58 1.09 2.76c.13.18 1.89 2.88 4.58 4.04.64.28 1.14.44 1.53.56.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.8-1.27.22-.62.22-1.16.15-1.27-.07-.11-.24-.18-.51-.32z"/>
       <path d="M26.67 15.97c0 5.89-4.79 10.67-10.67 10.67-1.88 0-3.72-.5-5.33-1.45L5.33 26.67l1.52-5.12c-.99-1.68-1.52-3.6-1.52-5.58C5.33 10.09 10.11 5.33 16 5.33c5.88 0 10.67 4.76 10.67 10.64zm-10.67-8.96c-4.94 0-8.96 4.02-8.96 8.96 0 1.86.57 3.66 1.65 5.19l.12.17-.9 3.02 3.1-.88.16.1c1.48.96 3.2 1.47 4.83 1.47 4.94 0 8.96-4.02 8.96-8.96 0-4.94-4.02-8.96-8.96-8.96z"/>
