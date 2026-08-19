@@ -971,7 +971,7 @@ const ENTREPRISE={
   site:'www.itsoluce.be',
   bce:'BE 1027.026.003',
   iban:'BE02 7320 8265 2640',
-  logo:'https://itsoluce.be/favicon_io/android-chrome-512x512.png',
+  logo:'https://itsoluce.be/img/logo-full.png',
   mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
   conditions:'Paiement comptant à réception de la facture.',
   cgv:[
@@ -1382,10 +1382,9 @@ function buildTemplateHTML(f,forPdf){
     <div style="flex:1;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
       <div style="display:flex;align-items:center;gap:14px;">
-        <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="width:60px;height:60px;border-radius:10px;" alt="logo"/>
         <div>
-          <div style="font-size:22px;font-weight:700;color:#1d4ed8;letter-spacing:-.5px;">Soluce</div>
-          <div style="font-size:11px;color:#666;margin-top:2px;">Réparations informatiques & électroniques</div>
+          <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="height:44px;width:auto;display:block;" alt="IT Soluce"/>
+          <div style="font-size:11px;color:#666;margin-top:6px;">Réparations informatiques &amp; électroniques</div>
         </div>
       </div>
       <div style="text-align:right;font-size:11px;color:#555;line-height:1.7;">
