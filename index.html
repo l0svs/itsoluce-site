@@ -961,14 +961,58 @@ button { cursor: pointer; font: inherit; }
 .f-ok {
   display: none;
   margin-top: 12px;
-  padding: 11px 14px;
+  padding: 28px 20px;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #166534;
+  border-radius: 12px;
   text-align: center;
 }
+.f-ok.show { display: block; }
+.f-ok__check {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+}
+.f-ok__check circle {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 3;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+}
+.f-ok__check path {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+}
+.f-ok.show .f-ok__check circle {
+  animation: fOkCircle .5s ease forwards;
+}
+.f-ok.show .f-ok__check path {
+  animation: fOkTick .3s ease forwards .45s;
+}
+@keyframes fOkCircle { to { stroke-dashoffset: 0; } }
+@keyframes fOkTick { to { stroke-dashoffset: 0; } }
+.f-ok__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #14532d;
+  margin-bottom: 6px;
+  opacity: 0;
+  animation: fOkFade .4s ease forwards .55s;
+}
+.f-ok__text {
+  font-size: 13.5px;
+  color: #166534;
+  line-height: 1.5;
+  opacity: 0;
+  animation: fOkFade .4s ease forwards .65s;
+}
+@keyframes fOkFade { to { opacity: 1; } }
 
 /* Coordonnées */
 .c-info {
@@ -1918,7 +1962,14 @@ a.irow:hover {
             <textarea class="fi fi-ta" name="description" placeholder="Marque, modèle, problème constaté..." rows="4" required></textarea>
           </div>
           <button class="btn-send" type="submit" id="submitBtn">Envoyer</button>
-          <div class="f-ok" id="fOk">✅ Message envoyé — je vous recontacte sous 24h.</div>
+          <div class="f-ok" id="fOk">
+            <svg class="f-ok__check" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="24"/>
+              <path d="M14 27l7 7 16-16"/>
+            </svg>
+            <div class="f-ok__title">Message envoyé !</div>
+            <div class="f-ok__text">Merci, votre demande a bien été reçue.<br>Nous vous répondons sous 1 à 2h.</div>
+          </div>
         </form>
       </div>
 
@@ -2412,7 +2463,7 @@ function submitForm(e){
   .then(([res]) => {
     if (res.ok) {
       form.reset();
-      ok.style.display = 'block';
+      ok.classList.add('show');
       btn.style.display = 'none';
     } else {
       btn.disabled = false;
