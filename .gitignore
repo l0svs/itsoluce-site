@@ -1,0 +1,8 @@
+# Fichiers parasites macOS
+.DS_Store
+**/.DS_Store
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp

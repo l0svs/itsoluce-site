@@ -2065,6 +2065,11 @@ a.irow:hover {
         <form id="cForm" onsubmit="submitForm(event)">
           <input type="hidden" name="_subject" value="Nouvelle demande — IT Soluce">
           <input type="hidden" name="_language" value="fr">
+          <!-- Piège anti-bot (honeypot) : champ invisible pour un humain, souvent rempli par les bots -->
+          <div style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden;" aria-hidden="true">
+            <label for="website">Ne pas remplir ce champ</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <div class="frow">
             <div class="fg">
               <label class="fl">Prénom *</label>
@@ -2509,10 +2514,19 @@ function submitForm(e){
   const form = document.getElementById('cForm');
   const ok = document.getElementById('fOk');
 
+  const data = new FormData(form);
+
+  // Piège anti-bot : si ce champ caché est rempli, c'est un robot.
+  // On fait semblant que tout s'est bien passé, sans rien envoyer nulle part.
+  if ((data.get('website') || '').trim() !== '') {
+    form.reset();
+    ok.classList.add('show');
+    btn.style.display = 'none';
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Envoi…';
-
-  const data = new FormData(form);
 
   // Récupérer les valeurs du formulaire
   const prenom = data.get('prenom') || '';
@@ -2521,66 +2535,29 @@ function submitForm(e){
   const telephone = data.get('telephone') || '';
   const appareil = data.get('appareil') || '';
   const description = data.get('description') || '';
-  const nomComplet = [prenom, nom].filter(Boolean).join(' ');
 
-  // Config Supabase
+  // Config Supabase — envoi via une fonction RPC dédiée (SECURITY DEFINER) :
+  // le navigateur ne lit et n'écrit plus jamais directement dans les tables
+  // clients / reparations, il ne fait qu'exécuter cette fonction précise.
   const SB_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo';
 
-  // Fonction pour insérer dans Supabase
   async function saveToSupabase() {
     try {
-      // 1. Vérifier si le client existe déjà (par email)
-      let clientId = null;
-      if (email) {
-        const checkRes = await fetch(`${SB_URL}/rest/v1/clients?email=eq.${encodeURIComponent(email)}&select=id`, {
-          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-        });
-        const existing = await checkRes.json();
-        if (existing && existing.length > 0) {
-          clientId = existing[0].id;
-        }
-      }
-
-      // 2. Créer le client s'il n'existe pas
-      if (!clientId) {
-        const clientRes = await fetch(`${SB_URL}/rest/v1/clients`, {
-          method: 'POST',
-          headers: {
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify({
-            nom: nomComplet,
-            email: email || null,
-            telephone: telephone || null,
-            type: 'particulier'
-          })
-        });
-        const newClient = await clientRes.json();
-        if (newClient && newClient[0]) clientId = newClient[0].id;
-      }
-
-      // 3. Créer la demande de réparation
-      await fetch(`${SB_URL}/rest/v1/reparations`, {
+      await fetch(`${SB_URL}/rest/v1/rpc/submit_demande_reparation`, {
         method: 'POST',
         headers: {
           'apikey': SB_KEY,
           'Authorization': `Bearer ${SB_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          client_nom: nomComplet,
-          client_email: email || null,
-          client_telephone: telephone || null,
-          appareil: appareil || null,
-          panne_description: description || null,
-          statut: 'recu',
-          prix_devis: 0,
-          prix_final: 0
+          p_prenom: prenom,
+          p_nom: nom,
+          p_email: email || null,
+          p_telephone: telephone || null,
+          p_appareil: appareil || null,
+          p_description: description || null
         })
       });
     } catch(err) {

@@ -6,6 +6,7 @@
 <title>IT Soluce ERP — Catalogue Foneday</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
+<script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -828,7 +829,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">'+msg+'</div></div>';}
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">'+escHtml(msg)+'</div></div>';}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
 window.showToast=showToast
 try {
@@ -886,7 +887,7 @@ function renderNotifs(notifs){
     list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
     return;
   }
-  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${escHtml(n.txt)}</div><div class="notif-sub">${escHtml(n.sub)}</div></div></a>`).join('');
 }
 
 window.markAllRead=async function(){
