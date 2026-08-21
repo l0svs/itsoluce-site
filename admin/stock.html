@@ -1143,7 +1143,7 @@ async function loadFournisseurs(){
     // Reconstruire les options en conservant "Choisir..." en tête
     const valeurCourante=sel.value
     sel.innerHTML='<option value="">Choisir...</option>'
-      +actifs.map(f=>`<option value="${(f.nom||'').replace(/"/g,'&quot;')}">${f.nom}</option>`).join('')
+      +actifs.map(f=>`<option value="${escHtml(f.nom)}">${escHtml(f.nom)}</option>`).join('')
       +'<option value="Autre">Autre</option>'
     if(valeurCourante)sel.value=valeurCourante
   }catch(e){console.warn('Fournisseurs:',e)}
