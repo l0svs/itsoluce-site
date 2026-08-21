@@ -6,6 +6,7 @@
 <title>IT Soluce ERP — Clients</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
+<script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -694,7 +695,7 @@ function renderNotifs(notifs){
     list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
     return;
   }
-  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${escHtml(n.txt)}</div><div class="notif-sub">${escHtml(n.sub)}</div></div></a>`).join('');
 }
 
 window.markAllRead=async function(){
@@ -711,7 +712,7 @@ window.markAllRead=async function(){
 
 loadNotifs();
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
 try {
 const {data:{session}}=await sb.auth.getSession()
@@ -795,17 +796,17 @@ window.renderTable=function(){
     const ca=(c.ca||0).toFixed(2)
     const last=c.last_rep||c.created_at
     const date=last?new Date(last).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'—'
-    const nomEsc=(c.nom||'').replace(/'/g,"\\'")
+    const nomEsc=escJsAttr(c.nom||'')
     return`<div class="four-card" style="cursor:pointer;" onclick="showDetail(${c.id})">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        <div class="cli-av" style="width:40px;height:40px;font-size:15px;">${initials}</div>
+        <div class="cli-av" style="width:40px;height:40px;font-size:15px;">${escHtml(initials)}</div>
         <div style="min-width:0;flex:1;">
-          <div style="font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.nom||'—'}</div>
-          <div style="font-size:11px;color:var(--t3);">${c.numero?`<span style="font-family:monospace;color:var(--a);">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+          <div style="font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.nom)||'—'}</div>
+          <div style="font-size:11px;color:var(--t3);">${c.numero?`<span style="font-family:monospace;color:var(--a);">${escHtml(c.numero)}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--t2);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.email||'—'}</div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:12px;">${c.telephone||'Pas de téléphone'}</div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.email)||'—'}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px;">${escHtml(c.telephone)||'Pas de téléphone'}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ln);padding-top:10px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <span class="tag ${repsCount>0?'tag-ok':''}">${repsCount} répar.</span>
@@ -826,31 +827,31 @@ window.showDetail=function(id){
   const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
   const reps=allReps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
   document.getElementById('detailBody').innerHTML=`
-    <div class="dp-av">${initials}</div>
-    <div class="dp-name">${c.nom||'—'}</div>
-    <div class="dp-sub">${c.numero?`<span style="font-family:monospace;color:var(--a);font-weight:600;">${c.numero}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+    <div class="dp-av">${escHtml(initials)}</div>
+    <div class="dp-name">${escHtml(c.nom)||'—'}</div>
+    <div class="dp-sub">${c.numero?`<span style="font-family:monospace;color:var(--a);font-weight:600;">${escHtml(c.numero)}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
     <div class="dp-stat">
       <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${reps.length}</div></div>
       <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(2)}€</div></div>
     </div>
     <div style="margin-top:8px;">
-      <div class="dp-field"><div class="dp-fl">Email</div><div class="dp-fv">${c.email||'—'}</div></div>
-      <div class="dp-field"><div class="dp-fl">Téléphone</div><div class="dp-fv">${c.telephone||'—'}</div></div>
-      <div class="dp-field"><div class="dp-fl">Adresse</div><div class="dp-fv">${c.adresse||'—'}</div></div>
-      ${c.type==='entreprise'&&(c.societe||c.tva)?`<div class="dp-field"><div class="dp-fl">Société</div><div class="dp-fv">${c.societe||'—'}</div></div><div class="dp-field"><div class="dp-fl">N° TVA / BCE</div><div class="dp-fv">${c.tva||'—'}</div></div>`:''}
-      ${c.notes?`<div class="dp-field"><div class="dp-fl">Notes</div><div class="dp-fv">${c.notes}</div></div>`:''}
+      <div class="dp-field"><div class="dp-fl">Email</div><div class="dp-fv">${escHtml(c.email)||'—'}</div></div>
+      <div class="dp-field"><div class="dp-fl">Téléphone</div><div class="dp-fv">${escHtml(c.telephone)||'—'}</div></div>
+      <div class="dp-field"><div class="dp-fl">Adresse</div><div class="dp-fv">${escHtml(c.adresse)||'—'}</div></div>
+      ${c.type==='entreprise'&&(c.societe||c.tva)?`<div class="dp-field"><div class="dp-fl">Société</div><div class="dp-fv">${escHtml(c.societe)||'—'}</div></div><div class="dp-field"><div class="dp-fl">N° TVA / BCE</div><div class="dp-fv">${escHtml(c.tva)||'—'}</div></div>`:''}
+      ${c.notes?`<div class="dp-field"><div class="dp-fl">Notes</div><div class="dp-fv">${escHtml(c.notes)}</div></div>`:''}
     </div>
     ${reps.length>0?`
     <div style="margin-top:16px;">
       <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Historique réparations</div>
       ${reps.map(r=>`<div class="dp-hist-item">
-        <div style="font-size:12px;color:var(--t1);">${r.statut||'—'}</div>
+        <div style="font-size:12px;color:var(--t1);">${escHtml(r.statut)||'—'}</div>
         <div style="font-size:11px;color:var(--t3);">${new Date(r.created_at).toLocaleDateString('fr-BE')} · ${Number(r.prix_final||0).toFixed(2)}€</div>
       </div>`).join('')}
     </div>`:''}
     <div style="margin-top:16px;display:flex;gap:8px;">
       <button class="btn btn-secondary" style="flex:1;" onclick="editClient(${c.id})">Modifier</button>
-      ${c.email?`<a href="mailto:${c.email}" class="btn btn-primary" style="flex:1;text-decoration:none;justify-content:center;">Envoyer email</a>`:''}
+      ${c.email?`<a href="mailto:${escHtml(c.email)}" class="btn btn-primary" style="flex:1;text-decoration:none;justify-content:center;">Envoyer email</a>`:''}
     </div>`
   document.getElementById('detailPanel').classList.add('open')
   document.getElementById('overlay2').classList.add('open')

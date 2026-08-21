@@ -6,6 +6,7 @@
 <title>IT Soluce ERP — Devis</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
+<script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -699,7 +700,7 @@ function fillPrestaSelect(){
   sel.innerHTML='<option value="">+ Ajouter une prestation…</option>'+actifs.map(s=>{
     const prix=Number(s.prix||0)
     const lbl=`${s.nom} — ${prix.toFixed(2)} €${s.unite||''}`
-    return `<option value="${s.id}">${lbl.replace(/"/g,'&quot;')}</option>`
+    return `<option value="${s.id}">${escHtml(lbl)}</option>`
   }).join('')
 }
 window.ajouterPresta=function(sel){
@@ -721,7 +722,7 @@ function addLigne(desc,qte,prix,stockId){
   tr.dataset.stockId=stockId;
   tr.innerHTML=`
     <td>
-      <input type="text" class="l-desc" value="${String(desc).replace(/"/g,'&quot;')}" placeholder="Ex : Remplacement batterie"/>
+      <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie"/>
       <div style="display:flex;align-items:center;gap:5px;margin-top:3px;">
         <select class="l-stock" onchange="onStockPick(this)" style="flex:1;font-size:10.5px;padding:3px 5px;background:var(--bg2);border:1px solid var(--ln2);border-radius:4px;color:var(--t2);font-family:inherit;cursor:pointer;"><option value="">📦 Choisir un article du stock...</option></select>
         <span class="l-stock-tag" style="font-size:10px;color:var(--ok);white-space:nowrap;${stockId?'':'display:none;'}">✓ lié</span>
@@ -946,7 +947,7 @@ const ENTREPRISE={
   ]
 }
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
 try {
 const {data:{session}}=await sb.auth.getSession()
@@ -1003,7 +1004,7 @@ function renderNotifs(notifs){
     list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
     return;
   }
-  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${escHtml(n.txt)}</div><div class="notif-sub">${escHtml(n.sub)}</div></div></a>`).join('');
 }
 
 window.markAllRead=async function(){
@@ -1066,13 +1067,13 @@ window.fillRepSelect=function(){
   const sel=document.getElementById('f-rep')
   if(!sel)return
   sel.innerHTML='<option value="">— Aucune (saisie manuelle) —</option>'+
-    allReps.map(r=>`<option value="${r.id}">${r.numero||''} · ${r.client_nom} · ${[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||''}</option>`).join('')
+    allReps.map(r=>`<option value="${r.id}">${escHtml(r.numero)||''} · ${escHtml(r.client_nom)} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
 }
 window.fillClientSelect=function(){
   const sel=document.getElementById('f-client-select')
   if(!sel)return
   sel.innerHTML='<option value="">➕ Nouveau client</option>'+
-    allClients.map(c=>`<option value="${c.id}" data-nom="${(c.nom||'').replace(/"/g,'&quot;')}" data-email="${c.email||''}" data-tel="${c.telephone||''}" data-adr="${(c.adresse||'').replace(/"/g,'&quot;')}" data-societe="${(c.societe||'').replace(/"/g,'&quot;')}" data-tva="${(c.tva||'').replace(/"/g,'&quot;')}">${c.numero?c.numero+' · ':''}${c.nom}</option>`).join('')
+    allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-email="${escHtml(c.email)}" data-tel="${escHtml(c.telephone)}" data-adr="${escHtml(c.adresse)}" data-societe="${escHtml(c.societe)}" data-tva="${escHtml(c.tva)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
 }
 window.onClientSelect=function(){
   const sel=document.getElementById('f-client-select')
@@ -1156,19 +1157,19 @@ function renderCards(){
     return`<div class="four-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
         <div style="min-width:0;">
-          <div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${f.numero}${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</div>
-          <div style="font-weight:500;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.client_nom}</div>
+          <div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${escHtml(f.numero)}${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</div>
+          <div style="font-weight:500;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(f.client_nom)}</div>
         </div>
         <span class="statut-fac ${st.c}" style="flex-shrink:0;">${st.l}</span>
       </div>
       <div style="font-size:12px;color:var(--t3);margin-bottom:2px;">${date}</div>
-      ${f.reparation_numero?`<div style="font-size:12px;color:var(--a);font-family:monospace;">Réf. ${f.reparation_numero}</div>`:''}
+      ${f.reparation_numero?`<div style="font-size:12px;color:var(--a);font-family:monospace;">Réf. ${escHtml(f.reparation_numero)}</div>`:''}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
         <span style="font-weight:600;">${Number(f.total||0).toFixed(2).replace('.',',')} €</span>
         <div class="actions" style="opacity:1;">
           <button class="act-btn" onclick="event.stopPropagation();previewDevis(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           <button class="act-btn" onclick="event.stopPropagation();editDevis(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="act-btn del" onclick="event.stopPropagation();deleteDevis(${f.id},'${(f.numero||'').replace(/'/g,"")}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+          <button class="act-btn del" onclick="event.stopPropagation();deleteDevis(${f.id},'${escJsAttr(f.numero||'')}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
         </div>
       </div>
     </div>`
@@ -1267,7 +1268,7 @@ window.deleteDevis=async function(id,num){
 function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${l.description||''}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.quantite}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
@@ -1298,8 +1299,8 @@ function buildTemplateHTML(f,forPdf){
           <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">DEVIS</span>
           ${accepte?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">ACCEPTÉ</span>`:''}
         </div>
-        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${f.numero}</div>
-        ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${f.reparation_numero}</div>`:''}
+        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${escHtml(f.numero)}</div>
+        ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${escHtml(f.reparation_numero)}</div>`:''}
       </div>
       <div style="text-align:right;font-size:12px;color:#555;">
         <div>Date d'émission : <strong>${dateEm}</strong></div>
@@ -1308,10 +1309,10 @@ function buildTemplateHTML(f,forPdf){
     </div>
     <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:30px;">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Facturé à</div>
-      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${f.client_nom||''}</div>
-      ${f.client_adresse?`<div style="font-size:12px;color:#555;margin-top:2px;">${f.client_adresse}</div>`:''}
-      ${f.client_email?`<div style="font-size:12px;color:#555;margin-top:2px;">${f.client_email}</div>`:''}
-      ${f.client_telephone?`<div style="font-size:12px;color:#555;">${f.client_telephone}</div>`:''}
+      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${escHtml(f.client_nom)}</div>
+      ${f.client_adresse?`<div style="font-size:12px;color:#555;margin-top:2px;">${escHtml(f.client_adresse)}</div>`:''}
+      ${f.client_email?`<div style="font-size:12px;color:#555;margin-top:2px;">${escHtml(f.client_email)}</div>`:''}
+      ${f.client_telephone?`<div style="font-size:12px;color:#555;">${escHtml(f.client_telephone)}</div>`:''}
     </div>
     <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
       <thead><tr style="background:#1d4ed8;">
@@ -1343,7 +1344,7 @@ function buildTemplateHTML(f,forPdf){
 
       </div>
     </div>
-    ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${f.notes}</div>`:''}
+    ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${escHtml(f.notes)}</div>`:''}
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
       <div><strong style="color:#555;">Validité :</strong> Ce devis est valable jusqu'au ${dateVal}. Passé ce délai, les prix sont susceptibles d'être révisés.</div>

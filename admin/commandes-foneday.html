@@ -6,6 +6,7 @@
 <title>IT Soluce ERP — Commandes Foneday</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
+<script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -597,7 +598,7 @@ function renderNotifs(notifs){
     list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
     return;
   }
-  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${escHtml(n.txt)}</div><div class="notif-sub">${escHtml(n.sub)}</div></div></a>`).join('');
 }
 
 window.markAllRead=async function(){
@@ -614,7 +615,7 @@ window.markAllRead=async function(){
 
 loadNotifs();
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
 try {
 const {data:{session}}=await sb.auth.getSession()

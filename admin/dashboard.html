@@ -6,6 +6,7 @@
 <title>IT Soluce ERP — Dashboard</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
+<script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -690,7 +691,7 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${msg}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
 
 try {
 const {data:{session}}=await sb.auth.getSession()
@@ -742,7 +743,7 @@ function renderNotifs(notifs){
     list.innerHTML=`<div class="notif-empty"><div class="notif-empty-ico">🔔</div>Aucune notification</div>`;
     return;
   }
-  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-sub">${n.sub}</div></div></a>`).join('');
+  list.innerHTML=notifs.map(n=>`<a href="${n.link}" class="notif-item"><div class="notif-ico ${n.cls}">${n.ico}</div><div class="notif-body"><div class="notif-txt">${escHtml(n.txt)}</div><div class="notif-sub">${escHtml(n.sub)}</div></div></a>`).join('');
 }
 
 window.markAllRead=async function(){
@@ -883,7 +884,7 @@ else cardRdv=rdvAvenir.map(r=>{
   const dStr=d.toLocaleDateString('fr-BE',{weekday:'short',day:'numeric',month:'short'})
   const hStr=d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
   const sub=[r.client_nom,r.lieu].filter(Boolean).join(' · ')
-  return `<a href="/admin/planning.html" class="drow"><div class="drow-dot" style="background:${TYPE_COL[r.type]||'#6b7280'}"></div><div class="drow-main"><div class="drow-t">${r.titre}</div><div class="drow-s">${dStr} · ${hStr}${sub?' · '+sub:''}</div></div><div class="drow-r"><span class="dtag dtag-gray">${TYPE_LBL[r.type]||'Autre'}</span></div></a>`
+  return `<a href="/admin/planning.html" class="drow"><div class="drow-dot" style="background:${TYPE_COL[r.type]||'#6b7280'}"></div><div class="drow-main"><div class="drow-t">${escHtml(r.titre)}</div><div class="drow-s">${dStr} · ${hStr}${sub?' · '+escHtml(sub):''}</div></div><div class="drow-r"><span class="dtag dtag-gray">${escHtml(TYPE_LBL[r.type])||'Autre'}</span></div></a>`
 }).join('')
 
 // CARTE : Réparations en cours
@@ -891,7 +892,7 @@ let cardReps=''
 if(repsActives.length===0)cardReps=emptyCard('🔧','Aucune réparation en cours')
 else cardReps=repsActives.slice(0,6).map(r=>{
   const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
-  return `<a href="/admin/reparations.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${r.client_nom||'—'} ${r.numero?`<span class="dnum">${r.numero}</span>`:''}</div><div class="drow-s">${app}</div></div><div class="drow-r"><span class="dtag dtag-blue">${STATUT_REP[r.statut]||r.statut}</span></div></a>`
+  return `<a href="/admin/reparations.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)||'—'} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-blue">${escHtml(STATUT_REP[r.statut]||r.statut)}</span></div></a>`
 }).join('')
 
 // CARTE : Factures à encaisser
@@ -900,7 +901,7 @@ if(facturesImpayees.length===0)cardFac=emptyCard('✓','Aucune facture en attent
 else cardFac=facturesImpayees.sort((a,b)=>new Date(a.date_emission)-new Date(b.date_emission)).slice(0,6).map(f=>{
   const retard=f.date_echeance&&new Date(f.date_echeance)<today
   const dStr=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${f.client_nom||'—'} <span class="dnum">${f.numero}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${Number(f.total||0).toFixed(2)} €</div></div></a>`
+  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(f.client_nom)||'—'} <span class="dnum">${escHtml(f.numero)}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${Number(f.total||0).toFixed(2)} €</div></div></a>`
 }).join('')
 
 // CARTE : Devis en attente
@@ -908,7 +909,7 @@ let cardDevis=''
 if(devisAttente.length===0)cardDevis=emptyCard('📄','Aucun devis en attente')
 else cardDevis=devisAttente.map(d=>{
   const dStr=new Date(d.date_emission||d.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${d.client_nom||'—'} <span class="dnum">${d.numero}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(2)} €</div></div></a>`
+  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(d.client_nom)||'—'} <span class="dnum">${escHtml(d.numero)}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(2)} €</div></div></a>`
 }).join('')
 
 // ─── ASSEMBLAGE DE LA GRILLE ───
@@ -932,14 +933,14 @@ let extra=''
 if(garExpire.length>0){
   const rows=garExpire.slice(0,5).map(r=>{
     const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
-    return `<a href="/admin/garanties.html" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${r.client_nom} ${r.numero?`<span class="dnum">${r.numero}</span>`:''}</div><div class="drow-s">${app}</div></div><div class="drow-r"><span class="dtag dtag-orange">Expire dans ${r._jours} j</span></div></a>`
+    return `<a href="/admin/garanties.html" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-orange">Expire dans ${r._jours} j</span></div></a>`
   }).join('')
   extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties qui expirent bientôt</div><a href="/admin/garanties.html" class="dcard-link">Garanties →</a></div><div class="dcard-body">${rows}</div></div>`
 }
 if(alerts.length>0){
   const rows=alerts.slice(0,5).map(p=>{
     const rupture=Number(p.quantite)===0
-    return `<a href="/admin/stock.html" class="drow"><div class="drow-dot" style="background:${rupture?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${p.nom}</div><div class="drow-s">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="drow-r"><span class="dtag ${rupture?'dtag-red':'dtag-orange'}">${rupture?'Rupture':'Faible'}</span></div></a>`
+    return `<a href="/admin/stock.html" class="drow"><div class="drow-dot" style="background:${rupture?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(p.nom)}</div><div class="drow-s">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="drow-r"><span class="dtag ${rupture?'dtag-red':'dtag-orange'}">${rupture?'Rupture':'Faible'}</span></div></a>`
   }).join('')
   extra+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alertes stock</div><a href="/admin/stock.html" class="dcard-link">Stock →</a></div><div class="dcard-body">${rows}</div></div>`
 }
