@@ -520,7 +520,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="toolbar">
         <div class="search-wrap">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" id="searchInput" placeholder="Nom, email, téléphone..." oninput="renderTableDebounced()"/>
+          <input class="search-input" type="text" id="searchInput" placeholder="Nom, email, téléphone..." oninput="renderTable()"/>
         </div>
       </div>
       <div class="cards-wrap" id="cardsWrap"></div>
@@ -722,35 +722,16 @@ let allClients=[]
 let allReps=[]
 
 async function nextNumero(cle, prefix){
-  // Incrément atomique côté base : deux onglets ouverts en même temps ne
-  // peuvent plus obtenir le même numéro. Repli sur l'ancien mécanisme si la
-  // fonction next_numero n'est pas disponible. Aucun effet visuel.
-  let nouvelle=null
-  // Garde-fou : si rpc est indisponible ou leve, on retombe sur l'ancien
-  // mecanisme au lieu de faire planter la creation.
-  try{
-    if(typeof sb.rpc==='function'){
-      const rpc=await sb.rpc('next_numero',{p_cle:cle})
-      if(!rpc.error&&rpc.data!=null)nouvelle=Number(rpc.data)
-    }
-  }catch(e){}
-  if(nouvelle==null){
-    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
-    nouvelle=(cpt?.valeur||0)+1
-    await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
-  }
+  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+  const nouvelle=(cpt?.valeur||0)+1
+  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
   return `${prefix}-${String(nouvelle).padStart(4,'0')}`
 }
 window.nextNumero=nextNumero
 
-// Cle de rapprochement normalisee : evite que « Dupont » et « dupont  »
-// soient traites comme deux personnes differentes.
-const normCli=v=>(v==null?'':String(v)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()
-
 async function load(){
   const [r1,r2]=await Promise.all([
-    // Colonnes ciblees : inutile de rapatrier toute la fiche pour afficher la liste.
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse,type,societe,tva,notes,created_at').order('created_at',{ascending:false}),
+    sb.from('clients').select('*').order('created_at',{ascending:false}),
     sb.from('reparations').select('client_nom,client_email,prix_final,created_at,statut')
   ])
   // Si la table clients n'existe pas encore, on génère les clients depuis les réparations
@@ -768,55 +749,18 @@ async function load(){
   } else {
     allClients=r1.data||[]
     const reps=r2.data||[]
-
-    // Index construit UNE fois. Avant, chaque client refiltrait toute la table
-    // des reparations : a 1 000 clients et 4 000 reparations, cela faisait
-    // plusieurs millions de comparaisons a chaque affichage.
-    const parEmail=new Map(), parNom=new Map()
-    for(const r of reps){
-      r._t=Date.parse(r.created_at)||0
-      r._p=Number(r.prix_final||0)
-      const e=normCli(r.client_email), n=normCli(r.client_nom)
-      if(e){let a=parEmail.get(e);if(!a)parEmail.set(e,a=[]);a.push(r)}
-      if(n){let a=parNom.get(n);if(!a)parNom.set(n,a=[]);a.push(r)}
-    }
-    for(const c of allClients){
-      const e=normCli(c.email), n=normCli(c.nom)
-      const parE=e?parEmail.get(e):null
-      const parN=n?parNom.get(n):null
-      // Une seule passe : compte, total et date la plus recente.
-      let nb=0, somme=0, dernier=0
-      const vus=(parE&&parN&&parE!==parN)?new Set():null
-      const passe=arr=>{
-        if(!arr)return
-        for(const r of arr){
-          if(vus){if(vus.has(r))continue;vus.add(r)}
-          nb++; somme+=r._p
-          if(r._t>dernier)dernier=r._t
-        }
-      }
-      passe(parE); passe(parN)
-      c.reps_count=nb
-      c.ca=somme
-      // Auparavant cette date etait celle d'une reparation prise au hasard
-      // dans la liste, pas la plus recente.
-      c.last_rep=dernier?new Date(dernier).toISOString():null
-    }
-
-    // Attribution retroactive des numeros : ne bloque plus le premier
-    // affichage. La page s'affiche, puis l'attribution se fait en arriere-plan,
-    // une seule fois, et s'arrete a la premiere erreur.
+    allClients.forEach(c=>{
+      const cReps=reps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
+      c.reps_count=cReps.length
+      c.ca=cReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
+      c.last_rep=cReps[0]?.created_at
+    })
+    // Attribution rétroactive des numéros clients
     const sansNumero=allClients.filter(c=>!c.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
-    if(sansNumero.length){
-      queueMicrotask(async()=>{
-        for(const c of sansNumero){
-          const num=await nextNumero('client','CLI')
-          const {error}=await sb.from('clients').update({numero:num}).eq('id',c.id)
-          if(error)break
-          c.numero=num
-        }
-        renderAll()
-      })
+    for(const c of sansNumero){
+      const num=await nextNumero('client','CLI')
+      await sb.from('clients').update({numero:num}).eq('id',c.id)
+      c.numero=num
     }
   }
   allReps=r2.data||[]
@@ -837,13 +781,6 @@ function renderAll(){
   document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`;
   (document.getElementById('nb-cli')||{}).textContent=total||'0';
   renderTable()
-}
-
-// La recherche ne relance plus le rendu complet a chaque frappe.
-let _tRech
-window.renderTableDebounced=function(){
-  clearTimeout(_tRech)
-  _tRech=setTimeout(()=>window.renderTable(),160)
 }
 
 window.renderTable=function(){
