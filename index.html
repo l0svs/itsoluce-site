@@ -810,20 +810,176 @@ button { cursor: pointer; font: inherit; }
 .zone__map {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
   border-radius: 18px;
-  overflow: hidden;
   border: 1px solid #d2d2d7;
   box-shadow: 0 8px 28px rgba(0,0,0,0.08);
-  background: #e5e5ea;
+  background: #ffffff;
+  padding: 26px;
 }
 
-.zone__map iframe {
+.zone__stage {
+  position: relative;
+  aspect-ratio: 900/520;
+}
+
+.zone__stage svg {
   width: 100%;
   height: 100%;
-  border: 0;
   display: block;
+  overflow: visible;
 }
+
+.zone__prov {
+  fill: #e8f0fe;
+  stroke: #0052CC;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: fill 0.22s ease;
+}
+
+.zone__prov:hover,
+.zone__prov.is-on { fill: #0052CC; }
+
+.zone__prov--bxl {
+  stroke-dasharray: 5 4;
+  stroke-width: 1.8;
+}
+
+.zone__provname {
+  font-size: 13px;
+  font-weight: 600;
+  fill: #0052CC;
+  letter-spacing: 0.2px;
+  pointer-events: none;
+  transition: fill 0.22s ease;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+}
+
+.zone__provname.is-on { fill: #ffffff; stroke-width: 0; }
+
+.zone__provname--bxl { font-size: 11.5px; font-weight: 500; }
+.zone__provname--bxl.is-on { fill: #0052CC; stroke: #ffffff; stroke-width: 3.5px; }
+
+.zone__base {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.zone__basering {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #0052CC;
+  opacity: 0.5;
+  animation: zonePulse 2.6s ease-out infinite;
+}
+
+.zone__basering--2 { animation-delay: 0.9s; }
+
+@keyframes zonePulse {
+  0%   { transform: scale(0.3); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.zone__basecore {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3.5px solid #0052CC;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.3);
+  transition: transform 0.18s ease;
+}
+
+.zone__base:hover .zone__basecore,
+.zone__base:focus-visible .zone__basecore { transform: scale(1.2); }
+
+.zone__basetag {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  background: #0052CC;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 3px 12px rgba(0,82,204,0.35);
+  pointer-events: none;
+}
+
+.zone__basetag::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #0052CC;
+}
+
+.zone__pop {
+  position: absolute;
+  margin-top: 14px;
+  width: 250px;
+  z-index: 5;
+  background: #ffffff;
+  border: 1px solid #d2d2d7;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  padding: 14px 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 6px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+.zone__pop.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.zone__pop h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.zone__pop p {
+  margin: 0;
+  font-size: 12.5px;
+  color: #6e6e73;
+  line-height: 1.55;
+}
+
+.zone__pop p + p { margin-top: 7px; }
+
+.zone__pop a {
+  color: #0052CC;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.zone__pop a:hover { text-decoration: underline; }
 
 .zone__cities {
   margin-top: 32px;
@@ -859,7 +1015,14 @@ button { cursor: pointer; font: inherit; }
 
 @media (max-width: 700px) {
   .zone__title { font-size: 26px; }
-  .zone__map { aspect-ratio: 4/3; }
+  .zone__map { padding: 12px; }
+  /* le texte SVG suit l'échelle du viewBox : il faut l'agrandir sur petit écran */
+  .zone__provname { font-size: 26px; stroke-width: 6px; }
+  .zone__provname--bxl { font-size: 23px; }
+  .zone__provname--bxl.is-on { stroke-width: 7px; }
+  /* sur mobile la carte est trop petite pour l'étiquette : la pastille reste cliquable */
+  .zone__basetag { display: none; }
+  .zone__pop { width: 200px; }
   .zone__city { font-size: 12px; padding: 7px 13px; }
 }
 
@@ -1859,7 +2022,7 @@ a.irow:hover {
   <div class="services__inner">
 
     <div class="services__header reveal">
-      <p class="services__label">Ce que je répare</p>
+      <p class="services__label">Ce que nous réparons</p>
       <h2 class="services__title">Services</h2>
     </div>
 
@@ -2034,16 +2197,31 @@ a.irow:hover {
 
     <div class="zone__header reveal">
       <p class="zone__label">Zone d'intervention</p>
-      <h2 class="zone__title">Je me déplace partout en Wallonie</h2>
-      <p class="zone__subtitle">Basé à Tubize, j'interviens à domicile dans toute la région wallonne, ainsi qu'à Bruxelles selon disponibilité.<br><strong>Réparations également possibles par dépôt sur rendez-vous.</strong></p>
+      <h2 class="zone__title">Nous nous déplaçons partout en Wallonie</h2>
+      <p class="zone__subtitle">Basés à Tubize, nous intervenons à domicile dans toute la Wallonie, ainsi qu'à Bruxelles selon nos disponibilités.<br><strong>Réparations également possibles par dépôt à Tubize, sur rendez-vous.</strong></p>
     </div>
 
     <div class="zone__map reveal">
-      <iframe
-        src="https://www.google.com/maps?q=Wallonie,Belgique&output=embed&z=8"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        title="Zone d'intervention IT Soluce - Wallonie"></iframe>
+      <div class="zone__stage" id="zoneStage">
+        <svg id="zoneSvg" viewBox="0 0 900 520" role="img" aria-labelledby="zoneMapTitle">
+          <title id="zoneMapTitle">Carte des provinces de Wallonie et de Bruxelles — zone d'intervention IT Soluce</title>
+          <g id="zoneProvinces"></g>
+          <g id="zoneLabels"></g>
+        </svg>
+
+        <button class="zone__base" id="zoneBaseBtn" type="button" aria-expanded="false" aria-controls="zoneBasePop">
+          <span class="zone__basering"></span>
+          <span class="zone__basering zone__basering--2"></span>
+          <span class="zone__basecore"></span>
+          <span class="zone__basetag">Tubize · dépôt</span>
+        </button>
+
+        <div class="zone__pop" id="zoneBasePop" role="dialog" aria-label="Dépôt d'appareil à Tubize">
+          <h3>Dépôt d'appareil — Tubize</h3>
+          <p>Chaussée d'Hondzocht<br>1480 Tubize</p>
+          <p>Dépôt et retrait sur rendez-vous.<br><a href="tel:+32474056659">+32 474 05 66 59</a></p>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -2184,14 +2362,14 @@ a.irow:hover {
       <div class="faq__item">
         <button class="faq__q" type="button">Où se déroulent les interventions ?</button>
         <div class="faq__a">
-          <p>Je me déplace à votre domicile ou sur votre lieu de travail dans toute la Wallonie, principalement à Tubize et ses environs. Vous pouvez également me déposer votre appareil sur rendez-vous. Tout se fait dans la transparence et la simplicité.</p>
+          <p>Nous nous déplaçons à votre domicile ou sur votre lieu de travail dans toute la Wallonie, principalement à Tubize et ses environs. Vous pouvez également nous déposer votre appareil sur rendez-vous. Tout se fait dans la transparence et la simplicité.</p>
         </div>
       </div>
 
       <div class="faq__item">
         <button class="faq__q" type="button">Mes données personnelles sont-elles en sécurité ?</button>
         <div class="faq__a">
-          <p>Absolument. Vos données ne sont jamais consultées, copiées ou conservées. Si un identifiant est nécessaire pour la réparation, il est utilisé uniquement le temps de l'intervention puis supprimé. Je vous recommande malgré tout de réaliser une sauvegarde avant toute intervention.</p>
+          <p>Absolument. Vos données ne sont jamais consultées, copiées ou conservées. Si un identifiant est nécessaire pour la réparation, il est utilisé uniquement le temps de l'intervention puis supprimé. Nous vous recommandons malgré tout de réaliser une sauvegarde avant toute intervention.</p>
         </div>
       </div>
 
@@ -2205,7 +2383,7 @@ a.irow:hover {
       <div class="faq__item">
         <button class="faq__q" type="button">Y a-t-il une garantie sur les réparations ?</button>
         <div class="faq__a">
-          <p>Toutes mes réparations bénéficient d'une garantie de 3 mois sur les pièces et la main d'œuvre. Cette garantie ne couvre pas les chocs, oxydations ou dégâts des eaux survenant après l'intervention.</p>
+          <p>Toutes nos réparations bénéficient d'une garantie de 3 mois sur les pièces et la main d'œuvre. Cette garantie ne couvre pas les chocs, oxydations ou dégâts des eaux survenant après l'intervention.</p>
         </div>
       </div>
 
@@ -2695,6 +2873,127 @@ if (prefersReducedMotion) {
 } else {
   revealTargets.forEach(el => el.classList.add('in'));
 }
+
+/* ── Carte interactive Wallonie (zone d'intervention) ── */
+(function () {
+  var stage = document.getElementById('zoneStage');
+  if (!stage) return;
+
+  var LON_MIN = 2.95, LON_MAX = 6.40, LAT_MIN = 49.45, LAT_MAX = 51.00;
+  var W = 900, H = 520;
+  var K = Math.cos(50.2 * Math.PI / 180);
+  var spanX = (LON_MAX - LON_MIN) * K, spanY = LAT_MAX - LAT_MIN;
+  var scale = Math.min(W / spanX, H / spanY) * 0.97;
+  var offX = (W - spanX * scale) / 2, offY = (H - spanY * scale) / 2;
+
+  function proj(lon, lat) {
+    return [offX + (lon - LON_MIN) * K * scale, offY + (LAT_MAX - lat) * scale];
+  }
+
+  var areas = [
+    { id: 'hainaut', name: 'Hainaut', label: [3.90, 50.45], ring: [
+      [3.22,50.74],[3.30,50.71],[3.42,50.66],[3.40,50.59],[3.52,50.50],[3.62,50.45],
+      [3.72,50.38],[3.78,50.31],[3.88,50.22],[3.98,50.15],[4.07,50.10],[4.16,50.06],
+      [4.22,50.11],[4.30,50.02],[4.40,49.97],[4.50,50.05],[4.46,50.16],[4.52,50.24],
+      [4.48,50.33],[4.58,50.40],[4.55,50.47],[4.40,50.52],[4.34,50.50],[4.31,50.60],
+      [4.16,50.66],[4.10,50.77],[3.92,50.75],[3.75,50.76],[3.55,50.73],[3.38,50.72],
+      [3.28,50.76],[3.22,50.74]
+    ]},
+    { id: 'brabant', name: 'Brabant wallon', label: [4.74, 50.655], ring: [
+      [4.10,50.77],[4.28,50.79],[4.44,50.80],[4.60,50.79],[4.76,50.79],[4.92,50.76],
+      [5.02,50.73],[4.98,50.66],[4.88,50.61],[4.76,50.58],[4.62,50.55],[4.50,50.54],
+      [4.40,50.52],[4.34,50.50],[4.31,50.60],[4.16,50.66],[4.10,50.77]
+    ]},
+    { id: 'namur', name: 'Namur', label: [4.86, 50.33], ring: [
+      [4.34,50.50],[4.40,50.52],[4.50,50.54],[4.62,50.55],[4.76,50.58],[4.88,50.61],
+      [4.98,50.66],[5.08,50.60],[5.16,50.55],[5.22,50.48],[5.32,50.42],[5.42,50.36],
+      [5.36,50.28],[5.24,50.22],[5.12,50.16],[5.04,50.10],[5.02,49.99],[4.94,49.92],
+      [4.86,49.94],[4.82,50.03],[4.72,50.06],[4.62,50.02],[4.56,50.09],[4.50,50.05],
+      [4.46,50.16],[4.52,50.24],[4.48,50.33],[4.58,50.40],[4.55,50.47],[4.34,50.50]
+    ]},
+    { id: 'liege', name: 'Liège', label: [5.62, 50.58], ring: [
+      [4.98,50.66],[5.08,50.72],[5.20,50.78],[5.34,50.82],[5.48,50.83],[5.62,50.81],
+      [5.74,50.79],[5.86,50.77],[5.98,50.74],[6.06,50.70],[6.02,50.62],[6.12,50.55],
+      [6.20,50.47],[6.26,50.40],[6.22,50.32],[6.14,50.24],[6.04,50.22],[5.92,50.26],
+      [5.80,50.30],[5.68,50.32],[5.56,50.34],[5.42,50.36],[5.32,50.42],[5.22,50.48],
+      [5.16,50.55],[5.08,50.60],[4.98,50.66]
+    ]},
+    { id: 'bruxelles', name: 'Bruxelles', bxl: true, label: [4.36, 50.948], ring: [
+      [4.32,50.905],[4.40,50.912],[4.44,50.882],[4.48,50.833],[4.44,50.792],
+      [4.38,50.762],[4.31,50.777],[4.26,50.808],[4.24,50.851],[4.28,50.888],[4.32,50.905]
+    ]},
+    { id: 'luxembourg', name: 'Luxembourg', label: [5.45, 49.95], ring: [
+      [5.42,50.36],[5.56,50.34],[5.68,50.32],[5.80,50.30],[5.92,50.26],[6.04,50.22],
+      [6.14,50.24],[6.13,50.14],[6.09,50.04],[5.99,49.94],[5.90,49.85],[5.88,49.78],
+      [5.83,49.71],[5.74,49.64],[5.60,49.55],[5.49,49.53],[5.35,49.60],[5.28,49.68],
+      [5.15,49.73],[5.05,49.78],[4.94,49.79],[4.88,49.86],[4.94,49.92],[5.02,49.99],
+      [5.04,50.10],[5.12,50.16],[5.24,50.22],[5.36,50.28],[5.42,50.36]
+    ]}
+  ];
+
+  var TUBIZE = [4.20, 50.69];
+  var NS = 'http://www.w3.org/2000/svg';
+  var gShapes = document.getElementById('zoneProvinces');
+  var gLabels = document.getElementById('zoneLabels');
+
+  areas.forEach(function (a) {
+    var d = 'M' + a.ring.map(function (ll) {
+      var pt = proj(ll[0], ll[1]);
+      return pt[0].toFixed(1) + ',' + pt[1].toFixed(1);
+    }).join(' L ') + ' Z';
+
+    var path = document.createElementNS(NS, 'path');
+    path.setAttribute('class', a.bxl ? 'zone__prov zone__prov--bxl' : 'zone__prov');
+    path.setAttribute('d', d);
+    gShapes.appendChild(path);
+
+    var lp = proj(a.label[0], a.label[1]);
+    var txt = document.createElementNS(NS, 'text');
+    txt.setAttribute('class', a.bxl ? 'zone__provname zone__provname--bxl' : 'zone__provname');
+    txt.setAttribute('x', lp[0]);
+    txt.setAttribute('y', lp[1]);
+    txt.setAttribute('text-anchor', 'middle');
+    txt.textContent = a.name;
+    gLabels.appendChild(txt);
+
+    function toggle(on) {
+      path.classList.toggle('is-on', on);
+      txt.classList.toggle('is-on', on);
+    }
+    path.addEventListener('mouseenter', function () { toggle(true); });
+    path.addEventListener('mouseleave', function () { toggle(false); });
+  });
+
+  var tp = proj(TUBIZE[0], TUBIZE[1]);
+  var left = (tp[0] / W * 100) + '%';
+  var top = (tp[1] / H * 100) + '%';
+  var baseBtn = document.getElementById('zoneBaseBtn');
+  var basePop = document.getElementById('zoneBasePop');
+  baseBtn.style.left = left;
+  baseBtn.style.top = top;
+  basePop.style.left = left;
+  basePop.style.top = top;
+
+  baseBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = basePop.classList.toggle('is-open');
+    baseBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('#zoneBasePop') && !e.target.closest('#zoneBaseBtn')) {
+      basePop.classList.remove('is-open');
+      baseBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      basePop.classList.remove('is-open');
+      baseBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
 </script>
 
 <!-- STICKY DROIT -->
