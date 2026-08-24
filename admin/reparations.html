@@ -1025,11 +1025,18 @@ window.fillPieceSelect=function(selectedId){}
 
 // Génère le prochain numéro séquentiel via le compteur Supabase
 async function nextNumero(cle, prefix){
-  // Lire la valeur actuelle
-  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
-  const nouvelle=(cpt?.valeur||0)+1
-  // Incrémenter
-  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
+  // Incrément atomique côté base : deux onglets ouverts en même temps ne
+  // peuvent plus obtenir le même numéro. Tant que la migration
+  // supabase/migrations/20260824120000_next_numero_atomique.sql n'est pas
+  // appliquée, on retombe sur l'ancien mécanisme pour ne rien casser.
+  let nouvelle=null
+  const rpc=await sb.rpc('next_numero',{p_cle:cle})
+  if(!rpc.error&&rpc.data!=null)nouvelle=Number(rpc.data)
+  if(nouvelle==null){
+    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+    nouvelle=(cpt?.valeur||0)+1
+    await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
+  }
   return `${prefix}-${String(nouvelle).padStart(4,'0')}`
 }
 window.nextNumero=nextNumero
@@ -1047,12 +1054,21 @@ async function loadReps(){
   allClientsRep=rCli.data||[]
   allServices=rSvc.data||[]
 
-  // Attribution rétroactive des numéros aux dossiers existants sans numéro
+  // Attribution rétroactive des numéros aux dossiers existants sans numéro.
+  // Elle ne bloque plus le premier rendu : la page s'affiche d'abord, puis
+  // l'attribution se fait en arrière-plan, une seule fois, et uniquement s'il
+  // reste des dossiers sans numéro.
   const sansNumero=allReps.filter(r=>!r.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
-  for(const r of sansNumero){
-    const num=await nextNumero('reparation','REP')
-    await sb.from('reparations').update({numero:num}).eq('id',r.id)
-    r.numero=num
+  if(sansNumero.length){
+    queueMicrotask(async()=>{
+      for(const r of sansNumero){
+        const num=await nextNumero('reparation','REP')
+        const {error}=await sb.from('reparations').update({numero:num}).eq('id',r.id)
+        if(error)break
+        r.numero=num
+      }
+      if(typeof renderAll==='function')renderAll()
+    })
   }
 
   allStockPieces=rStock.data||[]
