@@ -8,11 +8,11 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-:root{--a:#0052CC;--ad:rgba(0,82,204,0.10);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
+:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
 [data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
@@ -422,173 +422,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   html.back-nav::view-transition-old(root){animation:ios-fade-out .25s ease;}
 }
 
-
-/* ═══════════════════════════════════════════════════════════
-   CLIENTS · TABLEAU DENSE (Atelier clair)
-   Placé en fin de feuille : surcharge volontairement les
-   règles .cards-wrap / .kpi-strip / .toolbar précédentes.
-   ═══════════════════════════════════════════════════════════ */
-.num{font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;}
-
-.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 24px 0;flex-shrink:0;}
-.kpi{border:1px solid var(--ln2);border-radius:10px;padding:11px 14px;background:var(--bg2);}
-.kpi-label{font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--t3);margin-bottom:5px;}
-.kpi-val{font-size:21px;font-weight:800;letter-spacing:-.8px;line-height:1;
-  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;}
-.kpi-sub{font-size:10.5px;color:var(--t3);margin-top:4px;}
-@media(max-width:820px){.kpi-strip{grid-template-columns:1fr 1fr;}}
-
-/* barre d'outils */
-.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px 10px;flex-shrink:0;flex-wrap:wrap;}
-.search-wrap{max-width:none;flex:1 1 220px;}
-.search-input{padding-right:44px;}
-.search-kbd{
-  position:absolute;right:8px;top:50%;transform:translateY(-50%);
-  font-size:9.5px;font-weight:600;color:var(--t3);pointer-events:none;
-  border:1px solid var(--ln2);border-radius:4px;padding:1px 5px;background:var(--bg3);
-}
-.fchip{
-  font-size:11px;font-weight:600;padding:6px 11px;border-radius:99px;cursor:pointer;
-  border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);
-  font-family:inherit;white-space:nowrap;transition:all .12s;
-  display:inline-flex;align-items:center;gap:6px;
-}
-.fchip:hover{color:var(--t1);border-color:var(--t3);}
-.fchip.on{background:var(--ad);border-color:var(--a);color:var(--a);}
-.fchip b{font-weight:700;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;opacity:.8;}
-
-/* menu colonnes */
-.colwrap{position:relative;}
-.colmenu{
-  position:absolute;top:calc(100% + 6px);right:0;z-index:120;
-  background:var(--bg2);border:1px solid var(--ln2);border-radius:10px;
-  box-shadow:0 12px 30px rgba(0,0,0,.22);padding:6px;min-width:190px;display:none;
-}
-.colmenu.open{display:block;}
-.colmenu label{
-  display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;
-  font-size:12px;color:var(--t2);cursor:pointer;
-}
-.colmenu label:hover{background:var(--bg3);color:var(--t1);}
-.colmenu input{accent-color:var(--a);width:13px;height:13px;cursor:pointer;}
-
-/* barre de sélection */
-.bulkbar{
-  display:none;align-items:center;gap:10px;margin:0 24px 10px;
-  padding:9px 14px;border-radius:9px;background:var(--a);color:#fff;
-  font-size:12px;font-weight:600;flex-shrink:0;
-}
-.bulkbar.on{display:flex;}
-.bulkbar .sp{margin-left:auto;display:flex;gap:7px;}
-.bulkbar button{
-  border:1px solid rgba(255,255,255,.45);background:none;color:#fff;
-  border-radius:6px;padding:4px 11px;font-size:11.5px;font-weight:600;
-  font-family:inherit;cursor:pointer;transition:background .12s;
-}
-.bulkbar button:hover{background:rgba(255,255,255,.16);}
-
-/* tableau */
-.cli-tablewrap{flex:1;overflow:auto;padding:0 24px;}
-.ctable{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;}
-.ctable thead th{
-  position:sticky;top:0;z-index:10;background:var(--bg);
-  font-size:9.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--t3);
-  text-align:left;padding:9px 12px;border-bottom:1px solid var(--ln2);white-space:nowrap;
-  user-select:none;
-}
-.ctable thead th.sortable{cursor:pointer;}
-.ctable thead th.sortable:hover{color:var(--t1);}
-.ctable thead th.sorted{color:var(--a);}
-.ctable thead th.r{text-align:right;}
-.ctable tbody td{padding:9px 12px;border-bottom:1px solid var(--ln);vertical-align:middle;color:var(--t1);}
-.ctable tbody tr{cursor:pointer;}
-.ctable tbody tr:hover td{background:var(--bg2);}
-.ctable tbody tr.sel td{background:var(--ad);}
-.ctable td.r{text-align:right;}
-.ctable td.chk,.ctable th.chk{width:34px;padding-right:0;}
-.ctable input[type=checkbox]{accent-color:var(--a);width:13px;height:13px;cursor:pointer;vertical-align:middle;}
-
-.cbz{display:flex;align-items:center;gap:9px;min-width:0;}
-.cbz .cli-av{width:27px;height:27px;border-radius:7px;font-size:10.5px;}
-.cbz .cli-av.ent{background:rgba(107,63,196,.14);color:#6b3fc4;}
-[data-mode="dark"] .cbz .cli-av.ent{background:rgba(183,155,245,.16);color:#b79bf5;}
-.cbz b{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cbz small{display:block;font-size:10px;color:var(--t3);margin-top:1px;white-space:nowrap;}
-.cbz small u{text-decoration:none;color:var(--a);font-family:'JetBrains Mono',monospace;font-weight:600;}
-.cct{font-size:11.5px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px;}
-.cct span{display:block;font-size:10.5px;color:var(--t3);margin-top:1px;}
-
-.cbadge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;}
-.cbadge.part{background:var(--ad);color:var(--a);}
-.cbadge.ent{background:rgba(107,63,196,.13);color:#6b3fc4;}
-[data-mode="dark"] .cbadge.ent{background:rgba(183,155,245,.15);color:#b79bf5;}
-
-.cca{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
-.cca em{font-style:normal;font-weight:700;font-size:12.5px;
-  font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;white-space:nowrap;}
-.ccabar{width:44px;height:4px;border-radius:99px;background:var(--ln2);overflow:hidden;flex-shrink:0;}
-.ccabar i{display:block;height:100%;background:var(--a);border-radius:99px;}
-.cdt{font-size:11.5px;color:var(--t2);white-space:nowrap;
-  font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;}
-.cdt.cold{color:var(--t3);}
-.cdot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
-.cdot.ok{background:#0f7a52;}
-.cdot.cold{background:var(--ln2);}
-[data-mode="dark"] .cdot.ok{background:#34d399;}
-
-.ctable tbody .actions{opacity:0;}
-.ctable tbody tr:hover .actions{opacity:1;}
-
-/* pied de tableau */
-.cfoot{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:10px 24px 16px;font-size:11.5px;color:var(--t3);flex-shrink:0;flex-wrap:wrap;
-}
-.cfoot .pg{display:flex;gap:4px;align-items:center;}
-.cfoot .pg button{
-  min-width:26px;height:26px;padding:0 7px;
-  border:1px solid var(--ln2);border-radius:6px;background:var(--bg2);color:var(--t2);
-  font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .12s;
-}
-.cfoot .pg button:hover:not(:disabled){color:var(--t1);border-color:var(--t3);}
-.cfoot .pg button.on{background:var(--a);border-color:var(--a);color:#fff;}
-.cfoot .pg button:disabled{opacity:.4;cursor:default;}
-.cfoot .pg .gap{color:var(--t3);padding:0 2px;}
-
-/* bandeau numérotation manquante */
-.numfix{
-  display:none;align-items:center;gap:10px;margin:0 24px 10px;
-  padding:9px 14px;border-radius:9px;font-size:12px;
-  background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.32);color:var(--t1);
-}
-.numfix.on{display:flex;}
-.numfix button{
-  margin-left:auto;border:1px solid var(--a);background:var(--ad);color:var(--a);
-  border-radius:6px;padding:5px 12px;font-size:11.5px;font-weight:600;
-  font-family:inherit;cursor:pointer;
-}
-.numfix button:disabled{opacity:.5;cursor:default;}
-
-/* mobile : le tableau devient une liste */
-@media(max-width:760px){
-  .cli-tablewrap{padding:0 14px;}
-  .ctable thead{display:none;}
-  .ctable tbody tr{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;padding:10px 2px;border-bottom:1px solid var(--ln);}
-  .ctable tbody tr:hover td{background:none;}
-  .ctable tbody td{border:0;padding:0;}
-  .ctable td.chk{grid-row:1/3;align-self:center;}
-  .ctable td.c-cli{grid-column:2;}
-  .ctable td.c-ca{grid-column:3;text-align:right;align-self:center;}
-  .ctable td.c-contact,.ctable td.c-type,.ctable td.c-reps{display:none;}
-  .ctable td.c-last{grid-column:2;}
-  .ctable td.c-act{grid-column:3;grid-row:2;text-align:right;}
-  .ctable tbody .actions{opacity:1;}
-  .toolbar{padding:10px 14px 8px;}
-  .kpi-strip{padding:12px 14px 0;}
-  .bulkbar,.numfix{margin:0 14px 10px;}
-  .cfoot{padding:10px 14px 16px;}
-}
-
 </style>
 </head>
 <body>
@@ -682,70 +515,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="kpi-strip">
         <div class="kpi"><div class="kpi-label">Total clients</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">enregistrés</div></div>
         <div class="kpi"><div class="kpi-label">Réparations / client</div><div class="kpi-val" id="k-moy">—</div><div class="kpi-sub">en moyenne</div></div>
-        <div class="kpi"><div class="kpi-label">Nouveaux ce mois</div><div class="kpi-val" id="k-new">—</div><div class="kpi-sub">clients</div></div>
-        <div class="kpi"><div class="kpi-label">Inactifs &gt; 12 mois</div><div class="kpi-val" id="k-cold">—</div><div class="kpi-sub">à relancer</div></div>
+        <div class="kpi"><div class="kpi-label">Nouveau ce mois</div><div class="kpi-val" id="k-new">—</div><div class="kpi-sub">clients</div></div>
       </div>
-
       <div class="toolbar">
         <div class="search-wrap">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" id="searchInput" placeholder="Nom, email, téléphone, n° client..." autocomplete="off"/>
-          <span class="search-kbd">Ctrl K</span>
-        </div>
-        <button class="fchip on" data-f="tous" type="button">Tous <b id="c-tous">0</b></button>
-        <button class="fchip" data-f="particulier" type="button">Particuliers <b id="c-particulier">0</b></button>
-        <button class="fchip" data-f="entreprise" type="button">Entreprises <b id="c-entreprise">0</b></button>
-        <button class="fchip" data-f="inactif" type="button">Inactifs <b id="c-inactif">0</b></button>
-        <button class="fchip" data-f="sansrep" type="button">Sans réparation <b id="c-sansrep">0</b></button>
-        <div class="colwrap" style="margin-left:auto;">
-          <button class="btn btn-secondary" type="button" id="colBtn">
-            <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Colonnes
-          </button>
-          <div class="colmenu" id="colMenu">
-            <label><input type="checkbox" data-col="contact" checked> Contact</label>
-            <label><input type="checkbox" data-col="type" checked> Type</label>
-            <label><input type="checkbox" data-col="reps" checked> Réparations</label>
-            <label><input type="checkbox" data-col="ca" checked> CA total</label>
-            <label><input type="checkbox" data-col="last" checked> Dernière visite</label>
-          </div>
+          <input class="search-input" type="text" id="searchInput" placeholder="Nom, email, téléphone..." oninput="renderTable()"/>
         </div>
       </div>
-
-      <div class="numfix" id="numFix">
-        <span id="numFixTxt"></span>
-        <button type="button" id="numFixBtn">Attribuer les numéros</button>
-      </div>
-
-      <div class="bulkbar" id="bulkBar">
-        <span id="bulkCount">0 sélectionné</span>
-        <div class="sp">
-          <button type="button" id="bulkExport">Exporter</button>
-          <button type="button" id="bulkClear">Tout décocher</button>
-        </div>
-      </div>
-
-      <div class="cli-tablewrap">
-        <table class="ctable" id="cliTable">
-          <thead>
-            <tr>
-              <th class="chk"><input type="checkbox" id="selAll" title="Tout sélectionner sur cette page"></th>
-              <th class="sortable" data-s="nom">Client</th>
-              <th class="c-contact">Contact</th>
-              <th class="c-type">Type</th>
-              <th class="r sortable c-reps" data-s="reps">Répar.</th>
-              <th class="r sortable c-ca" data-s="ca">CA total</th>
-              <th class="sortable c-last" data-s="last">Dernière visite</th>
-              <th style="width:70px;"></th>
-            </tr>
-          </thead>
-          <tbody id="cliBody"></tbody>
-        </table>
-      </div>
-
-      <div class="cfoot">
-        <span id="cliRange">—</span>
-        <div class="pg" id="cliPager"></div>
-      </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
       <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;">
         <div class="empty-ico">👥</div>
         <div class="empty-title">Aucun client trouvé</div>
@@ -820,7 +598,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));if(!localStorage.getItem('erp-a')){document.documentElement.style.setProperty('--a',v('#0052CC','#4d94ff'));document.documentElement.style.setProperty('--ad',v('rgba(0,82,204,0.10)','rgba(77,148,255,0.14)'));}}
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
 function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
 const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
@@ -945,9 +723,8 @@ let allReps=[]
 
 async function nextNumero(cle, prefix){
   // Incrément atomique côté base : deux onglets ouverts en même temps ne
-  // peuvent plus obtenir le même numéro. Tant que la migration
-  // supabase/migrations/20260824120000_next_numero_atomique.sql n'est pas
-  // appliquée, on retombe sur l'ancien mécanisme pour ne rien casser.
+  // peuvent plus obtenir le même numéro. Repli sur l'ancien mécanisme si la
+  // fonction next_numero n'est pas disponible. Aucun effet visuel.
   let nouvelle=null
   const rpc=await sb.rpc('next_numero',{p_cle:cle})
   if(!rpc.error&&rpc.data!=null)nouvelle=Number(rpc.data)
@@ -960,337 +737,97 @@ async function nextNumero(cle, prefix){
 }
 window.nextNumero=nextNumero
 
-// ─── ÉTAT DE LA VUE ───
-const PAGE_SIZE=50
-let vQuery='', vFilter='tous', vSort='ca', vDir='desc', vPage=1
-let vCols={contact:true,type:true,reps:true,ca:true,last:true}
-let r1Error=false
-let selected=new Set()
-let maxCA=1
-const UN_AN_MS=365*24*60*60*1000
-
-try{const saved=JSON.parse(localStorage.getItem('erp-cli-cols')||'null');if(saved)vCols={...vCols,...saved}}catch(e){}
-
-const norm=v=>(v==null?'':String(v)).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim()
-const fmtEur=n=>Number(n||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ')
-
 async function load(){
-  // Colonnes ciblées : inutile de rapatrier tout le contenu des fiches pour afficher une liste.
   const [r1,r2]=await Promise.all([
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse,type,societe,tva,notes,created_at').order('created_at',{ascending:false}),
+    sb.from('clients').select('*').order('created_at',{ascending:false}),
     sb.from('reparations').select('client_nom,client_email,prix_final,created_at,statut')
   ])
-
-  const reps=r2.data||[]
-
-  r1Error=!!r1.error
+  // Si la table clients n'existe pas encore, on génère les clients depuis les réparations
   if(r1.error){
-    // Table clients absente : on reconstruit les clients depuis les réparations.
-    const map=new Map()
+    // Générer depuis réparations
+    const reps=r2.data||[]
+    const map={}
     reps.forEach(r=>{
-      const key=norm(r.client_email)||norm(r.client_nom)
-      if(!map.has(key))map.set(key,{nom:r.client_nom,email:r.client_email,telephone:'',adresse:'',type:'particulier',notes:'',created_at:r.created_at,reps:[],ca:0})
-      const c=map.get(key)
-      c.reps.push(r)
-      c.ca+=Number(r.prix_final||0)
+      const key=r.client_email||r.client_nom
+      if(!map[key]){map[key]={nom:r.client_nom,email:r.client_email,telephone:'',adresse:'',type:'particulier',notes:'',created_at:r.created_at,reps:[],ca:0}}
+      map[key].reps.push(r)
+      map[key].ca+=Number(r.prix_final||0)
     })
-    allClients=[...map.values()].map((c,i)=>({...c,id:i+1,reps_count:c.reps.length,last_rep:c.reps[0]?.created_at}))
+    allClients=Object.values(map).map((c,i)=>({...c,id:i+1}))
   } else {
     allClients=r1.data||[]
-    // Index construit UNE fois : on évite de refiltrer toute la table des
-    // réparations pour chaque client (ce qui était quadratique).
-    // Les dates et montants sont convertis ici, une seule fois : les reparser
-    // à chaque comparaison de tri coûtait plus d'une seconde à 1 000 clients.
-    const parEmail=new Map(), parNom=new Map()
-    for(const r of reps){
-      r._t=Date.parse(r.created_at)||0
-      r._p=Number(r.prix_final||0)
-      const e=norm(r.client_email), n=norm(r.client_nom)
-      if(e){let a=parEmail.get(e);if(!a)parEmail.set(e,a=[]);a.push(r)}
-      if(n){let a=parNom.get(n);if(!a)parNom.set(n,a=[]);a.push(r)}
-    }
-    for(const c of allClients){
-      const e=norm(c.email), n=norm(c.nom)
-      const parE=e?parEmail.get(e):null
-      const parN=n?parNom.get(n):null
-      // Une seule passe : total, compte et date la plus récente. Pas de tri,
-      // donc pas de O(n log n) ni de Date créée par comparaison.
-      let nb=0, somme=0, dernier=0
-      // Le dédoublonnage ne sert que si le client est rapproché par les deux clés.
-      const vus=(parE&&parN&&parE!==parN)?new Set():null
-      const passe=arr=>{
-        if(!arr)return
-        for(const r of arr){
-          if(vus){if(vus.has(r))continue;vus.add(r)}
-          nb++; somme+=r._p
-          if(r._t>dernier)dernier=r._t
-        }
-      }
-      passe(parE); passe(parN)
-      c.reps_count=nb
-      c.ca=somme
-      c.last_rep=dernier?new Date(dernier).toISOString():null
-      c._last=dernier
+    const reps=r2.data||[]
+    allClients.forEach(c=>{
+      const cReps=reps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
+      c.reps_count=cReps.length
+      c.ca=cReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
+      c.last_rep=cReps[0]?.created_at
+    })
+    // Attribution rétroactive des numéros clients
+    const sansNumero=allClients.filter(c=>!c.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
+    for(const c of sansNumero){
+      const num=await nextNumero('client','CLI')
+      await sb.from('clients').update({numero:num}).eq('id',c.id)
+      c.numero=num
     }
   }
-
-  // Champs dérivés, calculés une fois pour tri et filtres.
-  const maintenant=Date.now()
-  allClients.forEach(c=>{
-    c._search=[c.nom,c.email,c.telephone,c.numero].map(norm).join(' ')
-    c._nomKey=norm(c.nom)
-    if(c._last==null)c._last=c.last_rep?Date.parse(c.last_rep)||0:0
-    c._inactif=c._last===0||(maintenant-c._last)>UN_AN_MS
-  })
-
-  allReps=reps
+  allReps=r2.data||[]
   renderAll()
   document.getElementById('ldr').style.display='none'
-  document.getElementById('pageBody').style.display='flex'
+  const pb=document.getElementById('pageBody')
+  pb.style.display='flex'
 }
 
 function renderAll(){
   const total=allClients.length
-  const moy=total>0?(allClients.reduce((a,c)=>a+(c.reps_count||0),0)/total).toFixed(1).replace('.',','):'0'
+  const moy=total>0?(allClients.reduce((a,c)=>a+(c.reps_count||c.reps?.length||0),0)/total).toFixed(1):0
   const now=new Date()
   const newCli=allClients.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
-  const inactifs=allClients.filter(c=>c._inactif).length
-
   document.getElementById('k-total').textContent=total
   document.getElementById('k-moy').textContent=moy
   document.getElementById('k-new').textContent=newCli
-  document.getElementById('k-cold').textContent=inactifs
-  document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`
-  ;(document.getElementById('nb-cli')||{}).textContent=total||'0'
-
-  document.getElementById('c-tous').textContent=total
-  document.getElementById('c-particulier').textContent=allClients.filter(c=>c.type!=='entreprise').length
-  document.getElementById('c-entreprise').textContent=allClients.filter(c=>c.type==='entreprise').length
-  document.getElementById('c-inactif').textContent=inactifs
-  document.getElementById('c-sansrep').textContent=allClients.filter(c=>!c.reps_count).length
-
-  maxCA=Math.max(...allClients.map(c=>c.ca||0),1)
-
-  // Bandeau de numérotation : l'attribution ne se fait plus au chargement.
-  const sansNum=allClients.filter(c=>!c.numero&&c.id!=null).length
-  const nf=document.getElementById('numFix')
-  nf.classList.toggle('on',sansNum>0&&!r1Error)
-  if(sansNum>0)document.getElementById('numFixTxt').textContent=`${sansNum} client${sansNum>1?'s n\'ont':' n\'a'} pas encore de numéro.`
-
+  document.getElementById('ph-sub').textContent=`${total} client${total>1?'s':''} enregistré${total>1?'s':''}`;
+  (document.getElementById('nb-cli')||{}).textContent=total||'0';
   renderTable()
 }
 
-function filtrer(){
-  let rows=allClients
-  if(vFilter==='particulier')rows=rows.filter(c=>c.type!=='entreprise')
-  else if(vFilter==='entreprise')rows=rows.filter(c=>c.type==='entreprise')
-  else if(vFilter==='inactif')rows=rows.filter(c=>c._inactif)
-  else if(vFilter==='sansrep')rows=rows.filter(c=>!c.reps_count)
-  if(vQuery){
-    const q=norm(vQuery)
-    rows=rows.filter(c=>c._search.includes(q))
-  }
-  const sens=vDir==='asc'?1:-1
-  const cle={
-    nom:c=>c._nomKey,
-    reps:c=>c.reps_count||0,
-    ca:c=>c.ca||0,
-    last:c=>c._last
-  }[vSort]||(c=>c.ca||0)
-  rows=[...rows].sort((a,b)=>{
-    const x=cle(a),y=cle(b)
-    if(x<y)return -1*sens
-    if(x>y)return 1*sens
-    return 0
-  })
-  return rows
-}
-
 window.renderTable=function(){
-  const rows=filtrer()
-  const pages=Math.max(1,Math.ceil(rows.length/PAGE_SIZE))
-  if(vPage>pages)vPage=pages
-  const debut=(vPage-1)*PAGE_SIZE
-  // On ne construit le HTML que de la page visible : à 1 000 clients,
-  // c'est 50 lignes rendues au lieu de 1 000.
-  const page=rows.slice(debut,debut+PAGE_SIZE)
-
-  const body=document.getElementById('cliBody')
+  const q=document.getElementById('searchInput').value.toLowerCase().trim()
+  const rows=allClients.filter(c=>!q||[c.nom,c.email,c.telephone].some(v=>v&&v.toLowerCase().includes(q)))
+  const wrap=document.getElementById('cardsWrap')
   const empty=document.getElementById('emptyState')
-
-  if(rows.length===0){
-    body.innerHTML=''
-    empty.style.display='block'
-  } else {
-    empty.style.display='none'
-    body.innerHTML=page.map(c=>{
-      const ent=c.type==='entreprise'
-      const initials=(c.nom||'?').split(' ').filter(Boolean).map(w=>w[0]).join('').substring(0,2).toUpperCase()
-      const pct=maxCA>0?Math.round(((c.ca||0)/maxCA)*100):0
-      const dateTxt=c.last_rep
-        ? new Date(c.last_rep).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})
-        : 'Jamais'
-      const froid=c._inactif
-      const nomEsc=escJsAttr(c.nom||'')
-      const coche=selected.has(c.id)
-      return `<tr class="${coche?'sel':''}" data-id="${c.id}">
-        <td class="chk"><input type="checkbox" data-pick="${c.id}" ${coche?'checked':''}></td>
-        <td class="c-cli"><div class="cbz">
-          <div class="cli-av ${ent?'ent':''}">${escHtml(initials)}</div>
-          <div style="min-width:0;"><b>${escHtml(c.nom)||'—'}</b>
-            <small>${c.numero?`<u>${escHtml(c.numero)}</u>`:'<span style="opacity:.6">sans numéro</span>'}${c.adresse?' · '+escHtml(String(c.adresse).split(',').pop().trim()):''}</small>
-          </div></div></td>
-        <td class="c-contact"${vCols.contact?'':' style="display:none"'}><div class="cct">${escHtml(c.email)||'—'}<span>${escHtml(c.telephone)||'—'}</span></div></td>
-        <td class="c-type"${vCols.type?'':' style="display:none"'}><span class="cbadge ${ent?'ent':'part'}">${ent?'Entreprise':'Particulier'}</span></td>
-        <td class="r c-reps num"${vCols.reps?'':' style="display:none"'}>${c.reps_count||0}</td>
-        <td class="r c-ca"${vCols.ca?'':' style="display:none"'}><div class="cca">
-          <span class="ccabar">${c.ca>0?`<i style="width:${pct}%"></i>`:''}</span>
-          <em>${c.ca>0?fmtEur(c.ca)+' €':'—'}</em></div></td>
-        <td class="c-last"${vCols.last?'':' style="display:none"'}><span class="cdt ${froid?'cold':''}"><span class="cdot ${froid?'cold':'ok'}"></span>${dateTxt}</span></td>
-        <td class="c-act" style="text-align:right;"><div class="actions" style="justify-content:flex-end;">
-          <button class="act-btn" data-edit="${c.id}" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="act-btn del" data-del="${c.id}" data-nom="${nomEsc}" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-        </div></td>
-      </tr>`
-    }).join('')
-  }
-
-  // en-têtes de tri
-  document.querySelectorAll('.ctable th.sortable').forEach(th=>{
-    const on=th.dataset.s===vSort
-    th.classList.toggle('sorted',on)
-    const base=th.textContent.replace(/[ ↑↓]+$/,'')
-    th.textContent=on?`${base} ${vDir==='asc'?'↑':'↓'}`:base
-  })
-  // colonnes masquées
-  Object.entries(vCols).forEach(([k,on])=>{
-    document.querySelectorAll('.ctable th.c-'+k).forEach(th=>th.style.display=on?'':'none')
-  })
-
-  const fin=Math.min(debut+PAGE_SIZE,rows.length)
-  document.getElementById('cliRange').textContent=rows.length
-    ? `${debut+1}–${fin} sur ${rows.length} client${rows.length>1?'s':''}`
-    : 'Aucun client'
-  renderPager(pages)
-  syncBulk()
+  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
+  empty.style.display='none'
+  wrap.innerHTML=rows.map(c=>{
+    const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
+    const repsCount=c.reps_count||c.reps?.length||0
+    const ca=(c.ca||0).toFixed(2)
+    const last=c.last_rep||c.created_at
+    const date=last?new Date(last).toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'}):'—'
+    const nomEsc=escJsAttr(c.nom||'')
+    return`<div class="four-card" style="cursor:pointer;" onclick="showDetail(${c.id})">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="cli-av" style="width:40px;height:40px;font-size:15px;">${escHtml(initials)}</div>
+        <div style="min-width:0;flex:1;">
+          <div style="font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.nom)||'—'}</div>
+          <div style="font-size:11px;color:var(--t3);">${c.numero?`<span style="font-family:monospace;color:var(--a);">${escHtml(c.numero)}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(c.email)||'—'}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px;">${escHtml(c.telephone)||'Pas de téléphone'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ln);padding-top:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="tag ${repsCount>0?'tag-ok':''}">${repsCount} répar.</span>
+          <span style="font-weight:600;font-size:14px;">${ca}€</span>
+        </div>
+        <div class="card-acts">
+          <div class="card-act" onclick="event.stopPropagation();editClient(${c.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          <div class="card-act del" onclick="event.stopPropagation();deleteClient(${c.id},'${nomEsc}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+        </div>
+      </div>
+    </div>`
+  }).join('')
 }
-
-function renderPager(pages){
-  const el=document.getElementById('cliPager')
-  if(pages<=1){el.innerHTML='';return}
-  const nums=[]
-  for(let i=1;i<=pages;i++){
-    if(i===1||i===pages||Math.abs(i-vPage)<=1)nums.push(i)
-    else if(nums[nums.length-1]!=='…')nums.push('…')
-  }
-  el.innerHTML=`<button type="button" data-p="${vPage-1}" ${vPage===1?'disabled':''}>‹</button>`
-    +nums.map(n=>n==='…'?'<span class="gap">…</span>':`<button type="button" data-p="${n}" class="${n===vPage?'on':''}">${n}</button>`).join('')
-    +`<button type="button" data-p="${vPage+1}" ${vPage===pages?'disabled':''}>›</button>`
-}
-
-function syncBulk(){
-  const bar=document.getElementById('bulkBar')
-  bar.classList.toggle('on',selected.size>0)
-  document.getElementById('bulkCount').textContent=`${selected.size} client${selected.size>1?'s':''} sélectionné${selected.size>1?'s':''}`
-  const visibles=[...document.querySelectorAll('#cliBody input[data-pick]')]
-  const all=document.getElementById('selAll')
-  all.checked=visibles.length>0&&visibles.every(i=>i.checked)
-  all.indeterminate=!all.checked&&visibles.some(i=>i.checked)
-}
-
-// ─── ÉVÉNEMENTS ───
-let tSearch
-document.getElementById('searchInput').addEventListener('input',e=>{
-  clearTimeout(tSearch)
-  tSearch=setTimeout(()=>{vQuery=e.target.value;vPage=1;renderTable()},160)
-})
-document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('searchInput').focus()}
-})
-document.querySelectorAll('.fchip').forEach(ch=>{
-  ch.addEventListener('click',()=>{
-    document.querySelectorAll('.fchip').forEach(o=>o.classList.remove('on'))
-    ch.classList.add('on')
-    vFilter=ch.dataset.f; vPage=1; renderTable()
-  })
-})
-document.querySelectorAll('.ctable th.sortable').forEach(th=>{
-  th.addEventListener('click',()=>{
-    const k=th.dataset.s
-    if(vSort===k)vDir=vDir==='asc'?'desc':'asc'
-    else{vSort=k;vDir=k==='nom'?'asc':'desc'}
-    vPage=1; renderTable()
-  })
-})
-document.getElementById('cliPager').addEventListener('click',e=>{
-  const b=e.target.closest('button[data-p]');if(!b||b.disabled)return
-  vPage=Number(b.dataset.p); renderTable()
-  document.querySelector('.cli-tablewrap').scrollTop=0
-})
-document.getElementById('colBtn').addEventListener('click',e=>{
-  e.stopPropagation()
-  document.getElementById('colMenu').classList.toggle('open')
-})
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.colwrap'))document.getElementById('colMenu').classList.remove('open')
-})
-document.querySelectorAll('#colMenu input').forEach(inp=>{
-  inp.checked=vCols[inp.dataset.col]
-  inp.addEventListener('change',()=>{
-    vCols[inp.dataset.col]=inp.checked
-    localStorage.setItem('erp-cli-cols',JSON.stringify(vCols))
-    renderTable()
-  })
-})
-document.getElementById('cliBody').addEventListener('click',e=>{
-  const pick=e.target.closest('input[data-pick]')
-  if(pick){
-    const id=Number(pick.dataset.pick)
-    if(pick.checked)selected.add(id);else selected.delete(id)
-    pick.closest('tr').classList.toggle('sel',pick.checked)
-    syncBulk()
-    return
-  }
-  const ed=e.target.closest('button[data-edit]')
-  if(ed){e.stopPropagation();editClient(Number(ed.dataset.edit));return}
-  const dl=e.target.closest('button[data-del]')
-  if(dl){e.stopPropagation();deleteClient(Number(dl.dataset.del),dl.dataset.nom);return}
-  const tr=e.target.closest('tr[data-id]')
-  if(tr)showDetail(Number(tr.dataset.id))
-})
-document.getElementById('selAll').addEventListener('change',e=>{
-  document.querySelectorAll('#cliBody input[data-pick]').forEach(i=>{
-    i.checked=e.target.checked
-    const id=Number(i.dataset.pick)
-    if(e.target.checked)selected.add(id);else selected.delete(id)
-    i.closest('tr').classList.toggle('sel',e.target.checked)
-  })
-  syncBulk()
-})
-document.getElementById('bulkClear').addEventListener('click',()=>{
-  selected.clear(); renderTable()
-})
-document.getElementById('bulkExport').addEventListener('click',()=>{
-  exporter(allClients.filter(c=>selected.has(c.id)),'selection')
-})
-
-// Attribution des numéros : action explicite, plus au chargement de la page.
-document.getElementById('numFixBtn').addEventListener('click',async()=>{
-  const btn=document.getElementById('numFixBtn')
-  const sansNum=allClients.filter(c=>!c.numero&&c.id!=null).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
-  if(!sansNum.length)return
-  btn.disabled=true; btn.textContent='Attribution...'
-  let ok=0
-  for(const c of sansNum){
-    const num=await nextNumero('client','CLI')
-    const {error}=await sb.from('clients').update({numero:num}).eq('id',c.id)
-    if(error){showToast('Erreur : '+error.message,'err');break}
-    c.numero=num; ok++
-  }
-  btn.disabled=false; btn.textContent='Attribuer les numéros'
-  showToast(`${ok} numéro${ok>1?'s attribués':' attribué'} ✓`,'ok')
-  renderAll()
-})
 
 window.showDetail=function(id){
   const c=allClients.find(c=>c.id===id)
@@ -1377,27 +914,19 @@ window.deleteClient=async function(id,nom){
   const {error}=await sb.from('clients').delete().eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   allClients=allClients.filter(c=>c.id!==id)
-  selected.delete(id)
   renderAll()
   showToast(`"${nom}" supprimé`,'ok')
 }
 
-function exporter(rows,suffixe){
-  if(!rows.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['numero','id','nom','email','telephone','adresse','type','societe','tva','notes','created_at']
-  const entetes=['N° client','ID','Nom','Email','Téléphone','Adresse','Type','Société','TVA','Notes','Créé le']
-  const ligne=vals=>vals.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')
-  const csv=[ligne(entetes),...rows.map(c=>ligne(cols.map(k=>c[k])))].join('\n')
-  const a=document.createElement('a')
-  a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv)
-  a.download=`itsoluce_clients${suffixe?'_'+suffixe:''}_${new Date().toISOString().slice(0,10)}.csv`
-  a.click()
-  showToast(`${rows.length} client${rows.length>1?'s exportés':' exporté'} ✓`,'ok')
-}
-
-// L'export suit ce qui est affiché : filtre + recherche en cours.
 window.exportCSV=function(){
-  exporter(filtrer(),vFilter==='tous'&&!vQuery?'':'filtre')
+  if(!allClients.length){showToast('Aucune donnée','err');return}
+  const cols=['numero','id','nom','email','telephone','adresse','type','notes','created_at']
+  const csv=[cols.join(','),...allClients.map(c=>cols.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const a=document.createElement('a')
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download=`itsoluce_clients_${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  showToast('Export téléchargé ✓','ok')
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
