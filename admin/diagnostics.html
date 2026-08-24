@@ -857,8 +857,14 @@ async function nextNumero(cle, format){
   // supabase/migrations/20260824120000_next_numero_atomique.sql n'est pas
   // appliquée, on retombe sur l'ancien mécanisme pour ne rien casser.
   let nouvelle=null
-  const rpc=await sb.rpc('next_numero',{p_cle:cle})
-  if(!rpc.error&&rpc.data!=null)nouvelle=Number(rpc.data)
+  // Garde-fou : si rpc est indisponible ou leve, on retombe sur l'ancien
+  // mecanisme au lieu de faire planter la creation.
+  try{
+    if(typeof sb.rpc==='function'){
+      const rpc=await sb.rpc('next_numero',{p_cle:cle})
+      if(!rpc.error&&rpc.data!=null)nouvelle=Number(rpc.data)
+    }
+  }catch(e){}
   if(nouvelle==null){
     const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
     nouvelle=(cpt?.valeur||0)+1
