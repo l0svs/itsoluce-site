@@ -8,12 +8,12 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 :root{
-  --a:#3b82f6;--ad:rgba(59,130,246,0.12);
+  --a:#0052CC;--ad:rgba(0,82,204,0.10);--bar:#b9d0f2;
   --bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;
   --ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);
   --t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;
@@ -41,7 +41,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tdot{width:12px;height:12px;border-radius:50%;cursor:pointer;border:1.5px solid transparent;transition:transform .12s;flex-shrink:0;}
 .tdot:hover{transform:scale(1.25);}
 .tdot.on{border-color:var(--t1);}
-.tdot[data-c="blue"]{background:#3b82f6;}
+.tdot[data-c="blue"]{background:#0052CC;}
 .tdot[data-c="green"]{background:#34d399;}
 .tdot[data-c="violet"]{background:#a78bfa;}
 .tdot[data-c="amber"]{background:#fbbf24;}
@@ -548,6 +548,167 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   html.back-nav::view-transition-old(root){animation:ios-fade-out .25s ease;}
 }
 
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD · ATELIER CLAIR
+   Placé en fin de feuille : surcharge volontairement les blocs
+   "DASHBOARD REFONTE" précédents (même spécificité, plus bas).
+   ═══════════════════════════════════════════════════════════ */
+.num{font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;}
+
+.dash-hello{padding:22px 24px 2px;}
+.dash-hello h1{font-size:21px;font-weight:700;letter-spacing:-.5px;}
+.dash-hello p{font-size:12.5px;color:var(--t3);margin-top:3px;text-transform:capitalize;}
+
+/* ── HERO : papier millimétré + CA + histogramme 12 mois ── */
+.dash-hero{
+  display:grid;grid-template-columns:minmax(240px,.85fr) 1.6fr;gap:26px;align-items:center;
+  margin:16px 24px 0;padding:20px 22px;
+  background:var(--bg2);
+  background-image:linear-gradient(var(--ad) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--ad) 1px,transparent 1px);
+  background-size:24px 24px;
+  border:1px solid var(--ln2);border-radius:14px;
+}
+@media(max-width:1000px){.dash-hero{grid-template-columns:1fr;gap:18px;}}
+
+.hero-ca{background:none;padding:0;color:inherit;border-radius:0;}
+.hero-ca-label{
+  font-size:10.5px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;
+  color:var(--t3);opacity:1;
+}
+.hero-ca-val{
+  font-size:clamp(26px,2.6vw,33px);font-weight:700;letter-spacing:-.8px;line-height:1.05;
+  color:var(--a);margin:7px 0 6px;
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;
+}
+.hero-ca-sub{font-size:12px;color:var(--t3);opacity:1;line-height:1.5;}
+.hero-delta{
+  display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+  font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;
+}
+.hero-delta.up{background:rgba(16,185,129,.13);color:#059669;}
+.hero-delta.down{background:rgba(248,113,113,.13);color:#dc2626;}
+.hero-delta.flat{background:var(--bg4);color:var(--t2);}
+[data-mode="dark"] .hero-delta.up{color:#34d399;}
+[data-mode="dark"] .hero-delta.down{color:#f87171;}
+
+.hero-facts{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
+.hero-fact span{display:block;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--t3);}
+.hero-fact b{
+  display:block;font-size:15px;font-weight:700;letter-spacing:-.3px;margin-top:3px;
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;
+}
+
+/* ── histogramme ── */
+.hchart{position:relative;}
+.hchart__cap{
+  font-size:10.5px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;
+  color:var(--t3);margin-bottom:12px;
+}
+.hchart__plot{position:relative;height:132px;}
+.hchart__grid{position:absolute;inset:0;pointer-events:none;}
+.hchart__grid i{position:absolute;left:0;right:0;height:1px;background:var(--ln);}
+.hchart__bars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:4px;}
+.hbar{
+  flex:1;position:relative;height:100%;
+  display:flex;align-items:flex-end;justify-content:center;
+  background:none;border:0;padding:0;cursor:default;font-family:inherit;
+}
+.hbar i{
+  display:block;width:100%;border-radius:4px 4px 0 0;
+  background:var(--bar);
+  transition:background .15s ease,transform .15s ease;
+  transform-origin:bottom;
+  animation:hbarIn .5s cubic-bezier(.2,.8,.2,1) backwards;
+}
+@keyframes hbarIn{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+.hbar:hover i{background:var(--a);}
+.hbar.is-now i{background:var(--a);}
+.hchart__labels{display:flex;gap:4px;margin-top:7px;}
+.hchart__labels span{
+  flex:1;text-align:center;font-size:9.5px;color:var(--t3);
+  text-transform:uppercase;letter-spacing:.3px;
+}
+.hchart__labels span.is-now{color:var(--a);font-weight:700;}
+.hchart__tip{
+  position:absolute;pointer-events:none;z-index:5;
+  transform:translate(-50%,calc(-100% - 10px));
+  background:var(--t1);color:var(--bg2);
+  font-size:11px;font-weight:600;padding:5px 9px;border-radius:6px;white-space:nowrap;
+  opacity:0;transition:opacity .12s ease;
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;
+}
+.hchart__tip.show{opacity:1;}
+.hchart__empty{
+  height:132px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--t3);
+}
+
+/* valeurs sémantiques : lisibles sur blanc ET sur noir */
+.v-ok{color:#059669;}
+.v-warn{color:#b45309;}
+.v-bad{color:#dc2626;}
+[data-mode="dark"] .v-ok{color:#34d399;}
+[data-mode="dark"] .v-warn{color:#fbbf24;}
+[data-mode="dark"] .v-bad{color:#f87171;}
+
+/* ── KPI ── */
+.dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px 4px;}
+.dk{
+  background:var(--bg2);border:1px solid var(--ln2);border-radius:11px;padding:14px 15px;
+  transition:border-color .15s ease,transform .15s ease;
+}
+.dk:hover{border-color:var(--a);transform:translateY(-1px);}
+.dk .kpi-val,.dk-val{
+  font-size:26px;font-weight:800;letter-spacing:-1.2px;line-height:1;
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;
+}
+.dk .kpi-label,.dk-label{
+  font-size:10.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--t3);margin-top:6px;line-height:1.35;
+}
+
+/* ── cartes ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 24px 24px;align-items:start;}
+.dcard{background:var(--bg2);border:1px solid var(--ln2);border-radius:11px;overflow:hidden;}
+.dcard-head{padding:12px 16px;border-bottom:1px solid var(--ln);}
+.dcard-title{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--t2);}
+.dcard-title .ico{width:14px;height:14px;stroke:var(--t3);}
+.dcard-link{font-size:11px;font-weight:600;color:var(--a);}
+.dcard-badge{
+  font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;
+  background:var(--ad);color:var(--a);
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;
+}
+.drow{padding:10px 16px;}
+.drow-t{font-size:12.5px;font-weight:600;}
+.drow-s{font-size:11px;color:var(--t3);}
+.drow-amount{
+  font-size:13px;font-weight:700;
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-variant-numeric:tabular-nums;
+}
+.dnum{
+  font-family:'JetBrains Mono','SF Mono',Menlo,monospace;
+  font-size:10.5px;font-weight:600;color:var(--a);background:var(--ad);
+  padding:1px 6px;border-radius:4px;
+}
+.dtag-blue{background:var(--ad);color:var(--a);}
+
+@media(max-width:1000px){.dash-kpis{grid-template-columns:1fr 1fr;}.dash-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){
+  .dash-hero{margin:12px 14px 0;padding:16px;}
+  .dash-kpis{padding:12px 14px 4px;}
+  .dash-grid{padding:12px 14px 20px;}
+  .hchart__labels span{font-size:8px;}
+  .hero-facts{gap:12px 16px;}
+  .hero-fact b{font-size:13px;white-space:nowrap;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hbar i{animation:none;}
+  .dk:hover{transform:none;}
+}
+
 </style>
 </head>
 <body>
@@ -651,7 +812,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 </div>
 
 <script>
-function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));document.documentElement.style.setProperty('--bar',v('#b9d0f2','#2a4270'));if(!localStorage.getItem('erp-a')){document.documentElement.style.setProperty('--a',v('#0052CC','#4d94ff'));document.documentElement.style.setProperty('--ad',v('rgba(0,82,204,0.10)','rgba(77,148,255,0.14)'));}}
 function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
 const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
@@ -847,33 +1008,114 @@ const devisEnAttenteTotal=devis.filter(d=>d.statut==='envoye').length
 const dansSeptJours=new Date(today);dansSeptJours.setDate(dansSeptJours.getDate()+7)
 const rdvSemaine=rdvs.filter(r=>!r.termine&&new Date(r.date_debut)>=today&&new Date(r.date_debut)<dansSeptJours).length
 
+// ─── SÉRIE 12 MOIS (CA encaissé) — calculée sur les factures réellement payées ───
+function dateEncaissement(f){return new Date(f.date_paiement||f.date_emission||f.created_at)}
+const MOIS_COURT=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc']
+const serieCA=[]
+for(let k=11;k>=0;k--){
+  const d=new Date(now.getFullYear(),now.getMonth()-k,1)
+  const total=facturesPayees.reduce((a,f)=>{
+    const p=dateEncaissement(f)
+    return (p.getMonth()===d.getMonth()&&p.getFullYear()===d.getFullYear())?a+Number(f.total||0):a
+  },0)
+  serieCA.push({label:MOIS_COURT[d.getMonth()],annee:d.getFullYear(),total,courant:k===0})
+}
+const caMoisPrecedent=serieCA.length>1?serieCA[serieCA.length-2].total:0
+let deltaPct=null
+if(caMoisPrecedent>0)deltaPct=Math.round(((caMonth-caMoisPrecedent)/caMoisPrecedent)*100)
+else if(caMonth>0)deltaPct='new'
+
 // ─── RENDU DU BANDEAU HERO + KPI ───
 const moisNom=now.toLocaleDateString('fr-BE',{month:'long'})
+const eur=n=>Number(n||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ')
+const maxCA=Math.max(...serieCA.map(m=>m.total),1)
+const aDesDonnees=serieCA.some(m=>m.total>0)
+
+let deltaHtml=''
+if(deltaPct==='new')deltaHtml=`<span class="hero-delta up">Premier mois encaissé</span>`
+else if(deltaPct!==null&&deltaPct>0)deltaHtml=`<span class="hero-delta up">▲ +${deltaPct} % vs ${serieCA[serieCA.length-2].label}</span>`
+else if(deltaPct!==null&&deltaPct<0)deltaHtml=`<span class="hero-delta down">▼ ${deltaPct} % vs ${serieCA[serieCA.length-2].label}</span>`
+else if(deltaPct===0)deltaHtml=`<span class="hero-delta flat">Stable vs ${serieCA[serieCA.length-2].label}</span>`
+
+const barsHtml=serieCA.map((m,i)=>{
+  const h=Math.max((m.total/maxCA)*100,m.total>0?3:1.5)
+  return `<button type="button" class="hbar${m.courant?' is-now':''}" data-i="${i}" aria-label="${m.label} ${m.annee} : ${eur(m.total)} €">`
+       + `<i style="height:${h}%;animation-delay:${i*35}ms"></i></button>`
+}).join('')
+
+const chartHtml=aDesDonnees
+  ? `<div class="hchart__plot">
+       <div class="hchart__grid"><i style="top:0"></i><i style="top:50%"></i><i style="bottom:0"></i></div>
+       <div class="hchart__bars" id="hbars">${barsHtml}</div>
+       <div class="hchart__tip" id="htip"></div>
+     </div>
+     <div class="hchart__labels">${serieCA.map(m=>`<span class="${m.courant?'is-now':''}">${m.label}</span>`).join('')}</div>`
+  : `<div class="hchart__empty">Aucune facture encaissée sur les 12 derniers mois</div>`
+
 document.getElementById('hero').innerHTML=`
   <div class="hero-ca">
     <div class="hero-ca-label">Chiffre d'affaires · ${moisNom.charAt(0).toUpperCase()+moisNom.slice(1)} ${now.getFullYear()}</div>
-    <div class="hero-ca-val">${caMonth.toFixed(2).replace('.',',')} €</div>
+    <div class="hero-ca-val">${eur(caMonth)} €</div>
     <div class="hero-ca-sub">${facturesPayeesMonth.length} facture${facturesPayeesMonth.length>1?'s':''} payée${facturesPayeesMonth.length>1?'s':''} ce mois</div>
+    ${deltaHtml}
+    <div class="hero-facts">
+      <div class="hero-fact">
+        <span>Bénéfice net</span>
+        <b class="${beneficeNet>=0?'v-ok':'v-bad'}">${beneficeNet>=0?'+':''}${eur(beneficeNet)} €</b>
+      </div>
+      <div class="hero-fact">
+        <span>Encours clients</span>
+        <b>${eur(montantImpaye)} €</b>
+      </div>
+      <div class="hero-fact">
+        <span>Alertes stock</span>
+        <b class="${alerts.length>0?'v-warn':''}">${alerts.length}</b>
+      </div>
+    </div>
   </div>
-  <div class="hero-side">
-    <div class="hero-mini">
-      <div><div class="hero-mini-label">Bénéfice net</div><div class="hero-mini-val" style="color:${beneficeNet>=0?'var(--ok)':'var(--d)'};">${beneficeNet>=0?'+':''}${beneficeNet.toFixed(2).replace('.',',')} €</div></div>
-      <div class="hero-mini-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
-    </div>
-    <div class="hero-mini">
-      <div><div class="hero-mini-label">Alertes stock</div><div class="hero-mini-val">${alerts.length}</div></div>
-      <div class="hero-mini-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-    </div>
+  <div class="hchart">
+    <div class="hchart__cap">CA encaissé · 12 derniers mois</div>
+    ${chartHtml}
   </div>
 `
+
+// infobulle de l'histogramme
+if(aDesDonnees){
+  const bars=document.getElementById('hbars')
+  const tip=document.getElementById('htip')
+  bars.addEventListener('mouseover',e=>{
+    const b=e.target.closest('.hbar');if(!b)return
+    const m=serieCA[Number(b.dataset.i)]
+    tip.textContent=`${m.label} ${m.annee} · ${eur(m.total)} €`
+    const pr=bars.getBoundingClientRect(),br=b.getBoundingClientRect()
+    tip.style.left=(br.left-pr.left+br.width/2)+'px'
+    tip.style.top=(br.bottom-pr.top-(b.querySelector('i').offsetHeight))+'px'
+    tip.classList.add('show')
+  })
+  bars.addEventListener('mouseleave',()=>tip.classList.remove('show'))
+}
+
 document.getElementById('kpis').innerHTML=`
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${repsActives.length}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Réparations actives</div></div>
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${devisEnAttenteTotal}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Devis en attente</div></div>
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;color:${facturesRetard.length>0?'var(--d)':'var(--t1)'};">${facturesRetard.length}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Facture${facturesRetard.length>1?'s':''} en retard</div></div>
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${rdvSemaine}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">RDV cette semaine</div></div>
+  <a class="dk" href="/admin/reparations.html" style="text-decoration:none;color:inherit;display:block;">
+    <div class="dk-val">${repsActives.length}</div>
+    <div class="dk-label">Réparations actives</div>
+  </a>
+  <a class="dk" href="/admin/devis.html" style="text-decoration:none;color:inherit;display:block;">
+    <div class="dk-val">${devisEnAttenteTotal}</div>
+    <div class="dk-label">Devis en attente</div>
+  </a>
+  <a class="dk" href="/admin/factures.html" style="text-decoration:none;color:inherit;display:block;">
+    <div class="dk-val ${facturesRetard.length>0?'v-bad':''}">${facturesRetard.length}</div>
+    <div class="dk-label">Facture${facturesRetard.length>1?'s':''} en retard</div>
+  </a>
+  <a class="dk" href="/admin/planning.html" style="text-decoration:none;color:inherit;display:block;">
+    <div class="dk-val">${rdvSemaine}</div>
+    <div class="dk-label">RDV cette semaine</div>
+  </a>
 `
 
 // ─── RENDU DES CARTES ───
+const fmtEur=n=>Number(n||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'\u202f')
 function emptyCard(ico,txt){return `<div class="dempty"><span class="ico">${ico}</span>${txt}</div>`}
 
 // CARTE : RDV à venir
@@ -901,7 +1143,7 @@ if(facturesImpayees.length===0)cardFac=emptyCard('✓','Aucune facture en attent
 else cardFac=facturesImpayees.sort((a,b)=>new Date(a.date_emission)-new Date(b.date_emission)).slice(0,6).map(f=>{
   const retard=f.date_echeance&&new Date(f.date_echeance)<today
   const dStr=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(f.client_nom)||'—'} <span class="dnum">${escHtml(f.numero)}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${Number(f.total||0).toFixed(2)} €</div></div></a>`
+  return `<a href="/admin/factures.html" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(f.client_nom)||'—'} <span class="dnum">${escHtml(f.numero)}</span></div><div class="drow-s">Émise le ${dStr}${retard?' · en retard':''}</div></div><div class="drow-r"><div class="drow-amount">${fmtEur(f.total)} €</div></div></a>`
 }).join('')
 
 // CARTE : Devis en attente
@@ -909,7 +1151,7 @@ let cardDevis=''
 if(devisAttente.length===0)cardDevis=emptyCard('📄','Aucun devis en attente')
 else cardDevis=devisAttente.map(d=>{
   const dStr=new Date(d.date_emission||d.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(d.client_nom)||'—'} <span class="dnum">${escHtml(d.numero)}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(2)} €</div></div></a>`
+  return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(d.client_nom)||'—'} <span class="dnum">${escHtml(d.numero)}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${fmtEur(d.total)} €</div></div></a>`
 }).join('')
 
 // ─── ASSEMBLAGE DE LA GRILLE ───
@@ -921,7 +1163,7 @@ grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg 
 grid+='</div>'
 // Colonne droite : Factures + Devis
 grid+='<div style="display:flex;flex-direction:column;gap:14px;">'
-grid+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${montantImpaye.toFixed(2)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
+grid+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${fmtEur(montantImpaye)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
 grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis en attente</div><a href="/admin/devis.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardDevis}</div></div>`
 grid+='</div>'
 
