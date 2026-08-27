@@ -866,16 +866,6 @@ button { cursor: pointer; font: inherit; }
   stroke-width: 1.8;
 }
 
-/* Provinces hors zone d'intervention */
-.zone__prov--off {
-  fill: #f0f0f2;
-  stroke: #c7c7cc;
-  stroke-width: 1.2;
-  cursor: default;
-}
-
-.zone__prov--off:hover { fill: #f0f0f2; }
-
 .zone__provname {
   font-size: 13px;
   font-weight: 600;
@@ -890,8 +880,6 @@ button { cursor: pointer; font: inherit; }
 }
 
 .zone__provname.is-on { fill: #ffffff; stroke-width: 0; }
-
-.zone__provname--off { fill: #a1a1a6; font-weight: 500; }
 
 .zone__provname--bxl { font-size: 11.5px; font-weight: 500; }
 .zone__provname--bxl.is-on { fill: #0052CC; stroke: #ffffff; stroke-width: 3.5px; }
@@ -922,7 +910,6 @@ button { cursor: pointer; font: inherit; }
 }
 
 .zone__dot--in { background: #0052CC; }
-.zone__dot--out { background: #f0f0f2; border: 1px solid #c7c7cc; }
 
 .zone__base {
   position: absolute;
@@ -2287,7 +2274,6 @@ a.irow:hover {
         <li><span class="zone__dot zone__dot--in"></span>Brabant wallon</li>
         <li><span class="zone__dot zone__dot--in"></span>Bruxelles-Capitale</li>
         <li><span class="zone__dot zone__dot--in"></span>Province de Namur</li>
-        <li><span class="zone__dot zone__dot--out"></span>Hors zone d'intervention</li>
       </ul>
     </div>
 
@@ -2946,59 +2932,49 @@ if (prefersReducedMotion) {
   var stage = document.getElementById('zoneStage');
   if (!stage) return;
 
-  var LON_MIN = 2.95, LON_MAX = 6.40, LAT_MIN = 49.45, LAT_MAX = 51.00;
   var W = 900, H = 520;
   var K = Math.cos(50.2 * Math.PI / 180);
-  var spanX = (LON_MAX - LON_MIN) * K, spanY = LAT_MAX - LAT_MIN;
-  var scale = Math.min(W / spanX, H / spanY) * 0.97;
-  var offX = (W - spanX * scale) / 2, offY = (H - spanY * scale) / 2;
+  var LON_MIN, LON_MAX, LAT_MIN, LAT_MAX, scale, offX, offY;
 
   function proj(lon, lat) {
     return [offX + (lon - LON_MIN) * K * scale, offY + (LAT_MAX - lat) * scale];
   }
 
+  var TUBIZE_LL = [4.20, 50.69];
+
   var areas = [
-    { id: 'hainaut', name: 'Hainaut', covered: false, label: [3.90, 50.45], ring: [
-      [3.22,50.74],[3.30,50.71],[3.42,50.66],[3.40,50.59],[3.52,50.50],[3.62,50.45],
-      [3.72,50.38],[3.78,50.31],[3.88,50.22],[3.98,50.15],[4.07,50.10],[4.16,50.06],
-      [4.22,50.11],[4.30,50.02],[4.40,49.97],[4.50,50.05],[4.46,50.16],[4.52,50.24],
-      [4.48,50.33],[4.58,50.40],[4.55,50.47],[4.40,50.52],[4.34,50.50],[4.31,50.60],
-      [4.16,50.66],[4.10,50.77],[3.92,50.75],[3.75,50.76],[3.55,50.73],[3.38,50.72],
-      [3.28,50.76],[3.22,50.74]
-    ]},
-    { id: 'brabant', name: 'Brabant wallon', covered: true, label: [4.74, 50.655], ring: [
+    { id: 'brabant', name: 'Brabant wallon', label: [4.74, 50.655], ring: [
       [4.10,50.77],[4.28,50.79],[4.44,50.80],[4.60,50.79],[4.76,50.79],[4.92,50.76],
       [5.02,50.73],[4.98,50.66],[4.88,50.61],[4.76,50.58],[4.62,50.55],[4.50,50.54],
       [4.40,50.52],[4.34,50.50],[4.31,50.60],[4.16,50.66],[4.10,50.77]
     ]},
-    { id: 'namur', name: 'Namur', covered: true, label: [4.86, 50.33], ring: [
+    { id: 'namur', name: 'Namur', label: [4.86, 50.33], ring: [
       [4.34,50.50],[4.40,50.52],[4.50,50.54],[4.62,50.55],[4.76,50.58],[4.88,50.61],
       [4.98,50.66],[5.08,50.60],[5.16,50.55],[5.22,50.48],[5.32,50.42],[5.42,50.36],
       [5.36,50.28],[5.24,50.22],[5.12,50.16],[5.04,50.10],[5.02,49.99],[4.94,49.92],
       [4.86,49.94],[4.82,50.03],[4.72,50.06],[4.62,50.02],[4.56,50.09],[4.50,50.05],
       [4.46,50.16],[4.52,50.24],[4.48,50.33],[4.58,50.40],[4.55,50.47],[4.34,50.50]
     ]},
-    { id: 'liege', name: 'Liège', covered: false, label: [5.62, 50.58], ring: [
-      [4.98,50.66],[5.08,50.72],[5.20,50.78],[5.34,50.82],[5.48,50.83],[5.62,50.81],
-      [5.74,50.79],[5.86,50.77],[5.98,50.74],[6.06,50.70],[6.02,50.62],[6.12,50.55],
-      [6.20,50.47],[6.26,50.40],[6.22,50.32],[6.14,50.24],[6.04,50.22],[5.92,50.26],
-      [5.80,50.30],[5.68,50.32],[5.56,50.34],[5.42,50.36],[5.32,50.42],[5.22,50.48],
-      [5.16,50.55],[5.08,50.60],[4.98,50.66]
-    ]},
-    { id: 'bruxelles', name: 'Bruxelles', bxl: true, covered: true, label: [4.36, 50.948], ring: [
+    { id: 'bruxelles', name: 'Bruxelles', bxl: true, label: [4.36, 50.948], ring: [
       [4.32,50.905],[4.40,50.912],[4.44,50.882],[4.48,50.833],[4.44,50.792],
       [4.38,50.762],[4.31,50.777],[4.26,50.808],[4.24,50.851],[4.28,50.888],[4.32,50.905]
     ]},
-    { id: 'luxembourg', name: 'Luxembourg', covered: false, label: [5.45, 49.95], ring: [
-      [5.42,50.36],[5.56,50.34],[5.68,50.32],[5.80,50.30],[5.92,50.26],[6.04,50.22],
-      [6.14,50.24],[6.13,50.14],[6.09,50.04],[5.99,49.94],[5.90,49.85],[5.88,49.78],
-      [5.83,49.71],[5.74,49.64],[5.60,49.55],[5.49,49.53],[5.35,49.60],[5.28,49.68],
-      [5.15,49.73],[5.05,49.78],[4.94,49.79],[4.88,49.86],[4.94,49.92],[5.02,49.99],
-      [5.04,50.10],[5.12,50.16],[5.24,50.22],[5.36,50.28],[5.42,50.36]
-    ]}
   ];
 
-  var TUBIZE = [4.20, 50.69];
+  // Cadrage automatique sur les zones couvertes (+ le point de dépôt à Tubize)
+  var pts = [TUBIZE_LL];
+  areas.forEach(function (a) { pts = pts.concat(a.ring); });
+  LON_MIN = Math.min.apply(null, pts.map(function (ll) { return ll[0]; })) - 0.10;
+  LON_MAX = Math.max.apply(null, pts.map(function (ll) { return ll[0]; })) + 0.10;
+  LAT_MIN = Math.min.apply(null, pts.map(function (ll) { return ll[1]; })) - 0.06;
+  LAT_MAX = Math.max.apply(null, pts.map(function (ll) { return ll[1]; })) + 0.06;
+
+  var spanX = (LON_MAX - LON_MIN) * K, spanY = LAT_MAX - LAT_MIN;
+  scale = Math.min(W / spanX, H / spanY) * 0.97;
+  offX = (W - spanX * scale) / 2;
+  offY = (H - spanY * scale) / 2;
+
+  var TUBIZE = TUBIZE_LL;
   var NS = 'http://www.w3.org/2000/svg';
   var gShapes = document.getElementById('zoneProvinces');
   var gLabels = document.getElementById('zoneLabels');
@@ -3009,20 +2985,14 @@ if (prefersReducedMotion) {
       return pt[0].toFixed(1) + ',' + pt[1].toFixed(1);
     }).join(' L ') + ' Z';
 
-    var cls = a.bxl ? 'zone__prov zone__prov--bxl' : 'zone__prov';
-    if (!a.covered) cls += ' zone__prov--off';
-
     var path = document.createElementNS(NS, 'path');
-    path.setAttribute('class', cls);
+    path.setAttribute('class', a.bxl ? 'zone__prov zone__prov--bxl' : 'zone__prov');
     path.setAttribute('d', d);
     gShapes.appendChild(path);
 
     var lp = proj(a.label[0], a.label[1]);
-    var txtCls = a.bxl ? 'zone__provname zone__provname--bxl' : 'zone__provname';
-    if (!a.covered) txtCls += ' zone__provname--off';
-
     var txt = document.createElementNS(NS, 'text');
-    txt.setAttribute('class', txtCls);
+    txt.setAttribute('class', a.bxl ? 'zone__provname zone__provname--bxl' : 'zone__provname');
     txt.setAttribute('x', lp[0]);
     txt.setAttribute('y', lp[1]);
     txt.setAttribute('text-anchor', 'middle');
@@ -3030,7 +3000,6 @@ if (prefersReducedMotion) {
     gLabels.appendChild(txt);
 
     function toggle(on) {
-      if (!a.covered) return;
       path.classList.toggle('is-on', on);
       txt.classList.toggle('is-on', on);
     }
