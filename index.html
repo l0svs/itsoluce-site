@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce — Réparation smartphone, PC & console en Wallonie</title>
-<meta name="description" content="Réparation smartphone, ordinateur, tablette et console partout en Wallonie. Intervention à domicile, devis gratuit, garantie 3 mois. IT Soluce, votre technicien de proximité basé à Tubize.">
-<meta name="keywords" content="réparation Tubize, réparation smartphone Tubize, réparation iPhone Wallonie, réparation PC Brabant wallon, réparateur informatique Tubize, réparation tablette, réparation console, technicien informatique à domicile">
+<title>IT Soluce — Réparation smartphone, PC & console en Brabant wallon, Bruxelles &amp; Namur</title>
+<meta name="description" content="Réparation smartphone, ordinateur, tablette et console en Brabant wallon, à Bruxelles et en province de Namur. Intervention à domicile, devis gratuit, garantie 3 mois. IT Soluce, votre technicien de proximité basé à Tubize.">
+<meta name="keywords" content="réparation Tubize, réparation smartphone Tubize, réparation iPhone Brabant wallon, réparation PC Bruxelles, réparation smartphone Namur, réparateur informatique Tubize, réparation tablette, réparation console, technicien informatique à domicile">
 <meta name="author" content="IT Soluce">
 <meta name="geo.region" content="BE-WBR">
 <meta name="geo.placename" content="Tubize">
@@ -15,8 +15,8 @@
 <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://itsoluce.be/">
-<meta property="og:title" content="IT Soluce — Réparation smartphone, PC & console en Wallonie">
-<meta property="og:description" content="Réparation smartphone, ordinateur, tablette et console partout en Wallonie. Intervention à domicile, devis gratuit, garantie 3 mois.">
+<meta property="og:title" content="IT Soluce — Réparation smartphone, PC &amp; console en Brabant wallon, Bruxelles &amp; Namur">
+<meta property="og:description" content="Réparation smartphone, ordinateur, tablette et console en Brabant wallon, à Bruxelles et en province de Namur. Intervention à domicile, devis gratuit, garantie 3 mois.">
 <meta property="og:image" content="https://itsoluce.be/img/og-image.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
@@ -28,8 +28,8 @@
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://itsoluce.be/">
-<meta name="twitter:title" content="IT Soluce — Réparation smartphone, PC & console en Wallonie">
-<meta name="twitter:description" content="Réparation smartphone, ordinateur, tablette et console partout en Wallonie. Intervention à domicile, devis gratuit, garantie 3 mois.">
+<meta name="twitter:title" content="IT Soluce — Réparation smartphone, PC &amp; console en Brabant wallon, Bruxelles &amp; Namur">
+<meta name="twitter:description" content="Réparation smartphone, ordinateur, tablette et console en Brabant wallon, à Bruxelles et en province de Namur. Intervention à domicile, devis gratuit, garantie 3 mois.">
 <meta name="twitter:image" content="https://itsoluce.be/img/og-image.jpg">
 
 <!-- Schema.org LocalBusiness -->
@@ -61,11 +61,15 @@
   "areaServed": [
     {
       "@type": "AdministrativeArea",
-      "name": "Wallonie"
+      "name": "Brabant wallon"
     },
     {
       "@type": "AdministrativeArea",
-      "name": "Brabant wallon"
+      "name": "Région de Bruxelles-Capitale"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Province de Namur"
     },
     {
       "@type": "City",
@@ -74,6 +78,22 @@
     {
       "@type": "City",
       "name": "Bruxelles"
+    },
+    {
+      "@type": "City",
+      "name": "Namur"
+    },
+    {
+      "@type": "City",
+      "name": "Wavre"
+    },
+    {
+      "@type": "City",
+      "name": "Nivelles"
+    },
+    {
+      "@type": "City",
+      "name": "Louvain-la-Neuve"
     }
   ],
   "openingHoursSpecification": [
@@ -846,6 +866,16 @@ button { cursor: pointer; font: inherit; }
   stroke-width: 1.8;
 }
 
+/* Provinces hors zone d'intervention */
+.zone__prov--off {
+  fill: #f0f0f2;
+  stroke: #c7c7cc;
+  stroke-width: 1.2;
+  cursor: default;
+}
+
+.zone__prov--off:hover { fill: #f0f0f2; }
+
 .zone__provname {
   font-size: 13px;
   font-weight: 600;
@@ -861,8 +891,38 @@ button { cursor: pointer; font: inherit; }
 
 .zone__provname.is-on { fill: #ffffff; stroke-width: 0; }
 
+.zone__provname--off { fill: #a1a1a6; font-weight: 500; }
+
 .zone__provname--bxl { font-size: 11.5px; font-weight: 500; }
 .zone__provname--bxl.is-on { fill: #0052CC; stroke: #ffffff; stroke-width: 3.5px; }
+
+.zone__legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 22px;
+  margin: 20px 0 0;
+  padding: 0;
+  font-size: 13px;
+  color: #424245;
+}
+
+.zone__legend li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.zone__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.zone__dot--in { background: #0052CC; }
+.zone__dot--out { background: #f0f0f2; border: 1px solid #c7c7cc; }
 
 .zone__base {
   position: absolute;
@@ -2197,14 +2257,14 @@ a.irow:hover {
 
     <div class="zone__header reveal">
       <p class="zone__label">Zone d'intervention</p>
-      <h2 class="zone__title">Je me déplace partout en Wallonie</h2>
-      <p class="zone__subtitle">Basé à Tubize, j'interviens à domicile dans toute la Wallonie, ainsi qu'à Bruxelles selon mes disponibilités.<br><strong>Réparations également possibles par dépôt à Tubize, sur rendez-vous.</strong></p>
+      <h2 class="zone__title">Brabant wallon, Bruxelles &amp; province de Namur</h2>
+      <p class="zone__subtitle">Basé à Tubize, j'interviens à domicile dans tout le Brabant wallon, dans toute la Région de Bruxelles-Capitale et dans toute la province de Namur.<br><strong>Réparations également possibles par dépôt à Tubize, sur rendez-vous.</strong></p>
     </div>
 
     <div class="zone__map reveal">
       <div class="zone__stage" id="zoneStage">
         <svg id="zoneSvg" viewBox="0 0 900 520" role="img" aria-labelledby="zoneMapTitle">
-          <title id="zoneMapTitle">Carte des provinces de Wallonie et de Bruxelles — zone d'intervention IT Soluce</title>
+          <title id="zoneMapTitle">Carte de la zone d'intervention IT Soluce : Brabant wallon, Bruxelles et province de Namur</title>
           <g id="zoneProvinces"></g>
           <g id="zoneLabels"></g>
         </svg>
@@ -2222,6 +2282,13 @@ a.irow:hover {
           <p>Dépôt et retrait sur rendez-vous.<br><a href="tel:+32474056659">+32 474 05 66 59</a></p>
         </div>
       </div>
+
+      <ul class="zone__legend">
+        <li><span class="zone__dot zone__dot--in"></span>Brabant wallon</li>
+        <li><span class="zone__dot zone__dot--in"></span>Bruxelles-Capitale</li>
+        <li><span class="zone__dot zone__dot--in"></span>Province de Namur</li>
+        <li><span class="zone__dot zone__dot--out"></span>Hors zone d'intervention</li>
+      </ul>
     </div>
 
   </div>
@@ -2362,7 +2429,7 @@ a.irow:hover {
       <div class="faq__item">
         <button class="faq__q" type="button">Où se déroulent les interventions ?</button>
         <div class="faq__a">
-          <p>Je me déplace à votre domicile ou sur votre lieu de travail dans toute la Wallonie, principalement à Tubize et ses environs. Vous pouvez également me déposer votre appareil sur rendez-vous. Tout se fait dans la transparence et la simplicité.</p>
+          <p>Je me déplace à votre domicile ou sur votre lieu de travail dans tout le Brabant wallon, dans toute la Région de Bruxelles-Capitale et dans toute la province de Namur, principalement à Tubize et ses environs. Vous pouvez également me déposer votre appareil sur rendez-vous. Tout se fait dans la transparence et la simplicité.</p>
         </div>
       </div>
 
@@ -2821,7 +2888,7 @@ var legal = {
   },
   terms: {
     t: "Conditions générales de service",
-    b: "<h4>Objet</h4><p>Les présentes Conditions Générales de Service régissent les prestations de diagnostic, réparation et assistance informatique fournies par <strong>IT Soluce</strong> (ci-après « le Prestataire ») à ses clients particuliers et professionnels (ci-après « le Client »).</p><h4>Prestations proposées</h4><ul><li>Réparation de smartphones, tablettes, ordinateurs et consoles</li><li>Remplacement d'écrans, batteries, composants</li><li>Diagnostic et réparation de pannes logicielles et matérielles</li><li>Récupération de données</li><li>Assistance et conseils informatiques</li></ul><h4>Zone d'intervention</h4><p>Le Prestataire intervient principalement à Tubize et ses environs, ainsi que dans toute la Wallonie selon disponibilité. Les interventions se font à domicile, sur dépôt ou par échange à distance, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Tout devis est gratuit et sans engagement.</li><li>Le devis est communiqué au Client par écrit (email) avant toute intervention payante.</li><li>L'intervention démarre uniquement après l'accord explicite du Client sur le devis.</li><li>Le diagnostic est gratuit, sauf indication contraire mentionnée préalablement.</li><li>Si le Client refuse le devis après diagnostic approfondi nécessitant un démontage, des frais de diagnostic peuvent être facturés à hauteur de 20 €.</li></ul><h4>Délais d'intervention</h4><p>Les délais communiqués sont indicatifs et dépendent de la disponibilité des pièces détachées. Le Prestataire s'engage à informer le Client en cas de retard ou de difficulté imprévue.</p><h4>Sauvegarde des données</h4><ul><li>Le Client demeure seul responsable de la sauvegarde de ses données avant toute intervention.</li><li>Le Prestataire ne pourra être tenu responsable d'une éventuelle perte de données survenant pendant la réparation.</li><li>Les identifiants et mots de passe communiqués à des fins de réparation ne sont jamais conservés après l'intervention.</li><li>En cas de récupération de données, le Prestataire met tout en œuvre pour récupérer un maximum d'informations sans toutefois garantir un résultat exhaustif.</li></ul><h4>Pièces détachées et garanties</h4><ul><li>Les pièces utilisées peuvent être neuves ou reconditionnées selon l'accord conclu avec le Client.</li><li>Les pièces remplacées bénéficient d'une garantie de <strong>3 mois pièces et main d'œuvre</strong>, sauf mention contraire au devis.</li><li>La garantie ne couvre pas : les chocs, oxydations, dégâts des eaux, mauvaise utilisation, ou toute intervention ultérieure réalisée par un tiers.</li><li>Les pièces défectueuses remplacées peuvent être restituées au Client sur demande, sauf accord contraire.</li></ul><h4>Responsabilité</h4><p>Le Prestataire s'engage à apporter tout le soin nécessaire à l'exécution de ses prestations. Sa responsabilité ne peut être engagée :</p><ul><li>Pour des dommages liés à un défaut antérieur de l'appareil non identifié au moment du diagnostic</li><li>Pour la perte de données non sauvegardées par le Client</li><li>Pour des appareils confiés en mauvais état général ou présentant des signes de corrosion / oxydation</li></ul><h4>Paiement</h4><ul><li>Le paiement est exigible à la fin de l'intervention, sauf accord contraire.</li><li>Modes de paiement acceptés : espèces, Bancontact, virement bancaire, paiement par carte (Tap to Pay).</li><li>Régime TVA : Franchise de la taxe — article 56bis du Code TVA. Aucune TVA n'est appliquée sur les factures émises.</li><li>En cas de retard de paiement, des intérêts de retard pourront être appliqués conformément à la loi du 2 août 2002 relative aux retards de paiement.</li></ul><h4>Annulation et rétractation</h4><p>Conformément à la législation belge, le Client particulier dispose d'un droit de rétractation de 14 jours pour les prestations à distance. Ce droit ne s'applique pas dès lors que la prestation a commencé avec l'accord exprès du Client.</p><h4>Litiges et droit applicable</h4><p>Les présentes conditions sont régies par le droit belge. En cas de litige, une solution amiable sera privilégiée. À défaut, les tribunaux de l'arrondissement judiciaire du Brabant wallon seront seuls compétents.</p><h4>Médiation</h4><p>En cas de différend non résolu à l'amiable, le Client consommateur peut recourir au Service de Médiation pour le Consommateur — Boulevard du Roi Albert II 8, 1000 Bruxelles — <a href='https://www.mediationconsommateur.be' target='_blank'>www.mediationconsommateur.be</a></p>"
+    b: "<h4>Objet</h4><p>Les présentes Conditions Générales de Service régissent les prestations de diagnostic, réparation et assistance informatique fournies par <strong>IT Soluce</strong> (ci-après « le Prestataire ») à ses clients particuliers et professionnels (ci-après « le Client »).</p><h4>Prestations proposées</h4><ul><li>Réparation de smartphones, tablettes, ordinateurs et consoles</li><li>Remplacement d'écrans, batteries, composants</li><li>Diagnostic et réparation de pannes logicielles et matérielles</li><li>Récupération de données</li><li>Assistance et conseils informatiques</li></ul><h4>Zone d'intervention</h4><p>Le Prestataire intervient dans le Brabant wallon, la Région de Bruxelles-Capitale et la province de Namur, et principalement à Tubize et ses environs. Toute intervention en dehors de cette zone est soumise à accord préalable. Les interventions se font à domicile, sur dépôt ou par échange à distance, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Tout devis est gratuit et sans engagement.</li><li>Le devis est communiqué au Client par écrit (email) avant toute intervention payante.</li><li>L'intervention démarre uniquement après l'accord explicite du Client sur le devis.</li><li>Le diagnostic est gratuit, sauf indication contraire mentionnée préalablement.</li><li>Si le Client refuse le devis après diagnostic approfondi nécessitant un démontage, des frais de diagnostic peuvent être facturés à hauteur de 20 €.</li></ul><h4>Délais d'intervention</h4><p>Les délais communiqués sont indicatifs et dépendent de la disponibilité des pièces détachées. Le Prestataire s'engage à informer le Client en cas de retard ou de difficulté imprévue.</p><h4>Sauvegarde des données</h4><ul><li>Le Client demeure seul responsable de la sauvegarde de ses données avant toute intervention.</li><li>Le Prestataire ne pourra être tenu responsable d'une éventuelle perte de données survenant pendant la réparation.</li><li>Les identifiants et mots de passe communiqués à des fins de réparation ne sont jamais conservés après l'intervention.</li><li>En cas de récupération de données, le Prestataire met tout en œuvre pour récupérer un maximum d'informations sans toutefois garantir un résultat exhaustif.</li></ul><h4>Pièces détachées et garanties</h4><ul><li>Les pièces utilisées peuvent être neuves ou reconditionnées selon l'accord conclu avec le Client.</li><li>Les pièces remplacées bénéficient d'une garantie de <strong>3 mois pièces et main d'œuvre</strong>, sauf mention contraire au devis.</li><li>La garantie ne couvre pas : les chocs, oxydations, dégâts des eaux, mauvaise utilisation, ou toute intervention ultérieure réalisée par un tiers.</li><li>Les pièces défectueuses remplacées peuvent être restituées au Client sur demande, sauf accord contraire.</li></ul><h4>Responsabilité</h4><p>Le Prestataire s'engage à apporter tout le soin nécessaire à l'exécution de ses prestations. Sa responsabilité ne peut être engagée :</p><ul><li>Pour des dommages liés à un défaut antérieur de l'appareil non identifié au moment du diagnostic</li><li>Pour la perte de données non sauvegardées par le Client</li><li>Pour des appareils confiés en mauvais état général ou présentant des signes de corrosion / oxydation</li></ul><h4>Paiement</h4><ul><li>Le paiement est exigible à la fin de l'intervention, sauf accord contraire.</li><li>Modes de paiement acceptés : espèces, Bancontact, virement bancaire, paiement par carte (Tap to Pay).</li><li>Régime TVA : Franchise de la taxe — article 56bis du Code TVA. Aucune TVA n'est appliquée sur les factures émises.</li><li>En cas de retard de paiement, des intérêts de retard pourront être appliqués conformément à la loi du 2 août 2002 relative aux retards de paiement.</li></ul><h4>Annulation et rétractation</h4><p>Conformément à la législation belge, le Client particulier dispose d'un droit de rétractation de 14 jours pour les prestations à distance. Ce droit ne s'applique pas dès lors que la prestation a commencé avec l'accord exprès du Client.</p><h4>Litiges et droit applicable</h4><p>Les présentes conditions sont régies par le droit belge. En cas de litige, une solution amiable sera privilégiée. À défaut, les tribunaux de l'arrondissement judiciaire du Brabant wallon seront seuls compétents.</p><h4>Médiation</h4><p>En cas de différend non résolu à l'amiable, le Client consommateur peut recourir au Service de Médiation pour le Consommateur — Boulevard du Roi Albert II 8, 1000 Bruxelles — <a href='https://www.mediationconsommateur.be' target='_blank'>www.mediationconsommateur.be</a></p>"
   }
 };
 const openM = k => {
@@ -2874,7 +2941,7 @@ if (prefersReducedMotion) {
   revealTargets.forEach(el => el.classList.add('in'));
 }
 
-/* ── Carte interactive Wallonie (zone d'intervention) ── */
+/* ── Carte interactive de la zone d'intervention (Brabant wallon, Bruxelles, Namur) ── */
 (function () {
   var stage = document.getElementById('zoneStage');
   if (!stage) return;
@@ -2891,7 +2958,7 @@ if (prefersReducedMotion) {
   }
 
   var areas = [
-    { id: 'hainaut', name: 'Hainaut', label: [3.90, 50.45], ring: [
+    { id: 'hainaut', name: 'Hainaut', covered: false, label: [3.90, 50.45], ring: [
       [3.22,50.74],[3.30,50.71],[3.42,50.66],[3.40,50.59],[3.52,50.50],[3.62,50.45],
       [3.72,50.38],[3.78,50.31],[3.88,50.22],[3.98,50.15],[4.07,50.10],[4.16,50.06],
       [4.22,50.11],[4.30,50.02],[4.40,49.97],[4.50,50.05],[4.46,50.16],[4.52,50.24],
@@ -2899,30 +2966,30 @@ if (prefersReducedMotion) {
       [4.16,50.66],[4.10,50.77],[3.92,50.75],[3.75,50.76],[3.55,50.73],[3.38,50.72],
       [3.28,50.76],[3.22,50.74]
     ]},
-    { id: 'brabant', name: 'Brabant wallon', label: [4.74, 50.655], ring: [
+    { id: 'brabant', name: 'Brabant wallon', covered: true, label: [4.74, 50.655], ring: [
       [4.10,50.77],[4.28,50.79],[4.44,50.80],[4.60,50.79],[4.76,50.79],[4.92,50.76],
       [5.02,50.73],[4.98,50.66],[4.88,50.61],[4.76,50.58],[4.62,50.55],[4.50,50.54],
       [4.40,50.52],[4.34,50.50],[4.31,50.60],[4.16,50.66],[4.10,50.77]
     ]},
-    { id: 'namur', name: 'Namur', label: [4.86, 50.33], ring: [
+    { id: 'namur', name: 'Namur', covered: true, label: [4.86, 50.33], ring: [
       [4.34,50.50],[4.40,50.52],[4.50,50.54],[4.62,50.55],[4.76,50.58],[4.88,50.61],
       [4.98,50.66],[5.08,50.60],[5.16,50.55],[5.22,50.48],[5.32,50.42],[5.42,50.36],
       [5.36,50.28],[5.24,50.22],[5.12,50.16],[5.04,50.10],[5.02,49.99],[4.94,49.92],
       [4.86,49.94],[4.82,50.03],[4.72,50.06],[4.62,50.02],[4.56,50.09],[4.50,50.05],
       [4.46,50.16],[4.52,50.24],[4.48,50.33],[4.58,50.40],[4.55,50.47],[4.34,50.50]
     ]},
-    { id: 'liege', name: 'Liège', label: [5.62, 50.58], ring: [
+    { id: 'liege', name: 'Liège', covered: false, label: [5.62, 50.58], ring: [
       [4.98,50.66],[5.08,50.72],[5.20,50.78],[5.34,50.82],[5.48,50.83],[5.62,50.81],
       [5.74,50.79],[5.86,50.77],[5.98,50.74],[6.06,50.70],[6.02,50.62],[6.12,50.55],
       [6.20,50.47],[6.26,50.40],[6.22,50.32],[6.14,50.24],[6.04,50.22],[5.92,50.26],
       [5.80,50.30],[5.68,50.32],[5.56,50.34],[5.42,50.36],[5.32,50.42],[5.22,50.48],
       [5.16,50.55],[5.08,50.60],[4.98,50.66]
     ]},
-    { id: 'bruxelles', name: 'Bruxelles', bxl: true, label: [4.36, 50.948], ring: [
+    { id: 'bruxelles', name: 'Bruxelles', bxl: true, covered: true, label: [4.36, 50.948], ring: [
       [4.32,50.905],[4.40,50.912],[4.44,50.882],[4.48,50.833],[4.44,50.792],
       [4.38,50.762],[4.31,50.777],[4.26,50.808],[4.24,50.851],[4.28,50.888],[4.32,50.905]
     ]},
-    { id: 'luxembourg', name: 'Luxembourg', label: [5.45, 49.95], ring: [
+    { id: 'luxembourg', name: 'Luxembourg', covered: false, label: [5.45, 49.95], ring: [
       [5.42,50.36],[5.56,50.34],[5.68,50.32],[5.80,50.30],[5.92,50.26],[6.04,50.22],
       [6.14,50.24],[6.13,50.14],[6.09,50.04],[5.99,49.94],[5.90,49.85],[5.88,49.78],
       [5.83,49.71],[5.74,49.64],[5.60,49.55],[5.49,49.53],[5.35,49.60],[5.28,49.68],
@@ -2942,14 +3009,20 @@ if (prefersReducedMotion) {
       return pt[0].toFixed(1) + ',' + pt[1].toFixed(1);
     }).join(' L ') + ' Z';
 
+    var cls = a.bxl ? 'zone__prov zone__prov--bxl' : 'zone__prov';
+    if (!a.covered) cls += ' zone__prov--off';
+
     var path = document.createElementNS(NS, 'path');
-    path.setAttribute('class', a.bxl ? 'zone__prov zone__prov--bxl' : 'zone__prov');
+    path.setAttribute('class', cls);
     path.setAttribute('d', d);
     gShapes.appendChild(path);
 
     var lp = proj(a.label[0], a.label[1]);
+    var txtCls = a.bxl ? 'zone__provname zone__provname--bxl' : 'zone__provname';
+    if (!a.covered) txtCls += ' zone__provname--off';
+
     var txt = document.createElementNS(NS, 'text');
-    txt.setAttribute('class', a.bxl ? 'zone__provname zone__provname--bxl' : 'zone__provname');
+    txt.setAttribute('class', txtCls);
     txt.setAttribute('x', lp[0]);
     txt.setAttribute('y', lp[1]);
     txt.setAttribute('text-anchor', 'middle');
@@ -2957,6 +3030,7 @@ if (prefersReducedMotion) {
     gLabels.appendChild(txt);
 
     function toggle(on) {
+      if (!a.covered) return;
       path.classList.toggle('is-on', on);
       txt.classList.toggle('is-on', on);
     }
