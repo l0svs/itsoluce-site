@@ -2708,6 +2708,18 @@ a.irow:hover {
             </select>
           </div>
           <div class="fg">
+            <label class="fl">Mode d'intervention *</label>
+            <select class="fi fi-sel" name="mode_intervention" id="modeIntervention" required onchange="toggleAdresseField()">
+              <option value="" disabled selected>Sélectionnez...</option>
+              <option value="domicile">À domicile</option>
+              <option value="atelier">Dépôt à l'atelier</option>
+            </select>
+          </div>
+          <div class="fg" id="adresseGroup" style="display:none;">
+            <label class="fl">Adresse d'intervention *</label>
+            <input class="fi" type="text" name="adresse" id="adresseInput" placeholder="Rue, numéro, code postal, ville">
+          </div>
+          <div class="fg">
             <label class="fl">Description de la panne *</label>
             <textarea class="fi fi-ta" name="description" placeholder="Marque, modèle, problème constaté..." rows="4" required></textarea>
           </div>
@@ -3127,6 +3139,16 @@ a.irow:hover {
 
 document.getElementById('yr').textContent = new Date().getFullYear();
 
+function toggleAdresseField(){
+  const mode = document.getElementById('modeIntervention').value;
+  const group = document.getElementById('adresseGroup');
+  const input = document.getElementById('adresseInput');
+  const domicile = mode === 'domicile';
+  group.style.display = domicile ? 'block' : 'none';
+  input.required = domicile;
+  if (!domicile) input.value = '';
+}
+
 function submitForm(e){
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
@@ -3153,17 +3175,21 @@ function submitForm(e){
   const email = data.get('email') || '';
   const telephone = data.get('telephone') || '';
   const appareil = data.get('appareil') || '';
+  const modeIntervention = data.get('mode_intervention') || '';
+  const adresse = data.get('adresse') || '';
   const description = data.get('description') || '';
 
   // Config Supabase — envoi via une fonction RPC dédiée (SECURITY DEFINER) :
-  // le navigateur ne lit et n'écrit plus jamais directement dans les tables
-  // clients / reparations, il ne fait qu'exécuter cette fonction précise.
+  // le navigateur n'écrit jamais directement dans les tables de l'ERP, il ne
+  // fait qu'exécuter cette fonction précise, qui dépose la demande dans
+  // demandes_formulaire (à qualifier manuellement côté ERP — aucun client ni
+  // dossier réparation n'est créé automatiquement).
   const SB_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo';
 
   async function saveToSupabase() {
     try {
-      await fetch(`${SB_URL}/rest/v1/rpc/submit_demande_reparation`, {
+      const res = await fetch(`${SB_URL}/rest/v1/rpc/submit_demande_formulaire`, {
         method: 'POST',
         headers: {
           'apikey': SB_KEY,
@@ -3176,9 +3202,28 @@ function submitForm(e){
           p_email: email || null,
           p_telephone: telephone || null,
           p_appareil: appareil || null,
+          p_mode_intervention: modeIntervention || null,
+          p_adresse: adresse || null,
           p_description: description || null
         })
       });
+      if (!res.ok) {
+        console.warn('Supabase RPC error:', await res.text());
+        return;
+      }
+      const demandeId = await res.json();
+      if (demandeId) {
+        // Accusé de réception au client — non bloquant pour l'UX du formulaire.
+        fetch(`${SB_URL}/functions/v1/send-demande-confirmation`, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ demande_id: demandeId })
+        }).catch(err => console.warn('Confirmation email error (non-bloquant):', err));
+      }
     } catch(err) {
       console.warn('Supabase sync error (non-bloquant):', err);
     }

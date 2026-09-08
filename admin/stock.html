@@ -508,6 +508,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="hnav-drop">
     <button class="hnl" onclick="toggleDrop(this)">Technique<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
     <div class="hnav-menu">
+          <a href="/admin/demandes.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>Demandes <span class="nc" id="nb-dem">0</span></a>
           <a href="/admin/diagnostics.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>Diagnostics</a>
           <a href="/admin/reparations.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>Réparations <span class="nc" id="nb-rep">0</span></a>
           <a href="/admin/garanties.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Garanties</a>
@@ -539,6 +540,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
       <a href="/admin/stock.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
       <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc">0</span></a>
+      <a href="/admin/demandes.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes<span class="nc" id="nb-dem">0</span></a>
       <a href="/admin/diagnostics.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Diagnostics</a>
       <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
@@ -846,18 +848,20 @@ const sb=createClient(SB,SK)
 // ── SYSTÈME DE NOTIFICATIONS ──
 async function loadNotifs(){
   try {
-    const [rRep,rStock,rTask]=await Promise.all([
+    const [rRep,rStock,rTask,rDem]=await Promise.all([
       sb.from('reparations').select('id,client_nom,appareil,statut,vue,created_at'),
       sb.from('stock').select('id,nom,quantite,seuil_alerte'),
-      sb.from('taches').select('id,titre,priorite,faite')
+      sb.from('taches').select('id,titre,priorite,faite'),
+      sb.from('demandes_formulaire').select('id,prenom,nom,appareil,vue,created_at')
     ]);
-    const reps=rRep.data||[], stock=rStock.data||[], tasks=rTask.data||[];
+    const reps=rRep.data||[], stock=rStock.data||[], tasks=rTask.data||[], demandes=rDem.data||[];
     const notifs=[];
     const now=new Date();
 
-    // Nouvelles demandes (vue=false)
-    reps.filter(r=>r.vue===false).forEach(r=>{
-      notifs.push({type:'new',ico:'🆕',cls:'ni-new',txt:`Nouvelle demande de ${r.client_nom}`,sub:`${r.appareil||'Appareil'} · ${new Date(r.created_at).toLocaleDateString('fr-BE')}`,link:'/admin/reparations.html'});
+    // Nouvelles demandes du formulaire (vue=false)
+    demandes.filter(d=>d.vue===false).forEach(d=>{
+      const nomComplet=[d.prenom,d.nom].filter(Boolean).join(' ')||'Visiteur';
+      notifs.push({type:'new',ico:'🆕',cls:'ni-new',txt:`Nouvelle demande de ${nomComplet}`,sub:`${d.appareil||'Appareil'} · ${new Date(d.created_at).toLocaleDateString('fr-BE')}`,link:'/admin/demandes.html'});
     });
 
     // Réparations bloquées (statut recu depuis +3 jours et déjà vue)
@@ -900,10 +904,10 @@ function renderNotifs(notifs){
 
 window.markAllRead=async function(){
   try {
-    const {data}=await sb.from('reparations').select('id').eq('vue',false);
+    const {data}=await sb.from('demandes_formulaire').select('id').eq('vue',false);
     if(data&&data.length){
-      const ids=data.map(r=>r.id);
-      await sb.from('reparations').update({vue:true}).in('id',ids);
+      const ids=data.map(d=>d.id);
+      await sb.from('demandes_formulaire').update({vue:true}).in('id',ids);
     }
     document.getElementById('notifPanel').classList.remove('open');
     loadNotifs();
