@@ -634,6 +634,10 @@ select option{background:var(--bg3);}
             <div class="field"><div class="field-label"><div class="fl-name">Devise</div></div><div class="field-input"><select id="s-devise"><option value="EUR">EUR — Euro (€)</option><option value="USD">USD — Dollar ($)</option></select></div></div>
           </div>
           <div class="field-group">
+            <div class="fg-head">Garantie</div>
+            <div class="field"><div class="field-label"><div class="fl-name">Durée de garantie</div><div class="fl-desc">Appliquée aux réparations (pièces et main d'œuvre), affichée dans Réparations</div></div><div class="field-input" style="display:flex;align-items:center;gap:8px;"><input type="number" id="s-garantie-mois" placeholder="3" min="0" step="1" style="width:70px;flex:none;"/><span style="font-size:12px;color:var(--t3);">mois</span></div></div>
+          </div>
+          <div class="field-group">
             <div class="fg-head">Grille de tarification dégressive</div>
             <div style="padding:12px 16px;font-size:11px;color:var(--t3);line-height:1.5;border-bottom:1px solid var(--ln);">Le prix de vente conseillé est calculé selon le prix d'achat de la pièce : <strong>prix d'achat × coefficient + frais fixes</strong>. Plus la pièce est chère, plus le coefficient diminue — pour rester compétitif sur les appareils récents.</div>
             <div id="grille-rows"></div>
@@ -905,7 +909,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
     });
 
     renderNotifs(notifs);
@@ -976,6 +980,7 @@ fill('s-telephone','entreprise_telephone')
 fill('s-site','entreprise_site')
 fill('s-mode','apparence_mode')
 fill('s-taux','finance_taux_horaire')
+fill('s-garantie-mois','reparation_garantie_mois')
 fill('s-devise','finance_devise')
 fill('s-tva','finance_mention_tva')
 fill('s-iban','finance_iban')
@@ -1037,6 +1042,7 @@ window.saveSettings=async function(){
     ['entreprise_adresse','s-adresse'],['entreprise_email','s-email'],['entreprise_telephone','s-telephone'],
     ['entreprise_site','s-site'],['apparence_mode','s-mode'],
     ['finance_taux_horaire','s-taux'],['finance_devise','s-devise'],
+    ['reparation_garantie_mois','s-garantie-mois'],
     ['finance_mention_tva','s-tva'],['finance_iban','s-iban'],['intervention_rayon','s-rayon'],
     ['intervention_frais_km','s-km'],['fournisseur_default_iphone','s-four-iphone'],
     ['fournisseur_default_samsung','s-four-samsung'],['fournisseur_default_outillage','s-four-outillage'],

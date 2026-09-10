@@ -718,13 +718,14 @@ function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
 const today=startOfDay(now)
 
 // ─── CHARGEMENT PARALLÈLE DE TOUTES LES DONNÉES ───
-const [rRep,rFac,rDev,rRdv,rStock,rCharges]=await Promise.all([
+const [rRep,rFac,rDev,rRdv,rStock,rCharges,rTaches]=await Promise.all([
   sb.from('reparations').select('*'),
   sb.from('factures').select('*'),
   sb.from('devis').select('*'),
   sb.from('rendezvous').select('*'),
   sb.from('stock').select('*'),
-  sb.from('charges').select('*')
+  sb.from('charges').select('*'),
+  sb.from('taches').select('*')
 ])
 const reps=rRep.data||[]
 const factures=rFac.data||[]
@@ -732,6 +733,7 @@ const devis=rDev.data||[]
 const rdvs=rRdv.data||[]
 const stock=rStock.data||[]
 const charges=rCharges.data||[]
+const taches=rTaches.data||[]
 
 // ─── CALCULS KPIs ───
 // CA encaissé ce mois (factures payées ce mois)
@@ -782,6 +784,19 @@ const garExpire=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
   const j=Math.ceil((exp-now)/(1000*60*60*24))
   return {...r,_jours:j,_exp:exp}
 }).filter(r=>r._jours>0&&r._jours<=15).sort((a,b)=>a._jours-b._jours)
+
+// Réparations prêtes, non récupérées depuis plus de 3 jours, pas relancées
+// depuis plus de 5 jours (même logique que reparations.html)
+const aRelancer=reps.filter(r=>{
+  if(r.statut!=='pret')return false
+  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
+  const joursPret=Math.floor((now-debut)/(1000*60*60*24))
+  const joursRelance=r.relance_envoyee_le?Math.floor((now-new Date(r.relance_envoyee_le))/(1000*60*60*24)):Infinity
+  return joursPret>=3&&joursRelance>=5
+}).map(r=>{
+  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
+  return {...r,_jours:Math.floor((now-debut)/(1000*60*60*24))}
+}).sort((a,b)=>b._jours-a._jours)
 
 // Alertes stock
 const alerts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte||0))
@@ -874,7 +889,25 @@ document.getElementById('grid').innerHTML=grid
 
 // ─── CARTES CONDITIONNELLES (garanties + stock) ───
 // On les ajoute en pleine largeur sous la grille si nécessaire
+// Tâches urgentes ou en retard, non faites
+const tachesUrgentes=taches.filter(t=>!t.faite&&(t.priorite==='urgente'||(t.due_at&&new Date(t.due_at)<today)))
+  .sort((a,b)=>new Date(a.due_at||a.created_at)-new Date(b.due_at||b.created_at))
+
 let extra=''
+if(tachesUrgentes.length>0){
+  const rows=tachesUrgentes.slice(0,5).map(t=>{
+    const retard=t.due_at&&new Date(t.due_at)<today
+    return `<a href="/admin/taches.html?open=${t.id}" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(t.titre)}</div><div class="drow-s">${t.client_nom?escHtml(t.client_nom)+' · ':''}${t.categorie?escHtml(t.categorie):(t.priorite==='urgente'?'Urgente':'')}</div></div><div class="drow-r"><span class="dtag ${retard?'dtag-red':'dtag-orange'}">${retard?'En retard':'Urgente'}</span></div></a>`
+  }).join('')
+  extra+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches urgentes</div><a href="/admin/taches.html" class="dcard-link">Tâches →</a></div><div class="dcard-body">${rows}</div></div>`
+}
+if(aRelancer.length>0){
+  const rows=aRelancer.slice(0,5).map(r=>{
+    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+    return `<a href="/admin/reparations.html?filtre=relance" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-orange">Prêt depuis ${r._jours} j</span></div></a>`
+  }).join('')
+  extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>Prêts non récupérés</div><a href="/admin/reparations.html?filtre=relance" class="dcard-link">Réparations →</a></div><div class="dcard-body">${rows}</div></div>`
+}
 if(garExpire.length>0){
   const rows=garExpire.slice(0,5).map(r=>{
     const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
@@ -905,6 +938,7 @@ function setBadge(id,val){const el=document.getElementById(id);if(el)el.textCont
 setBadge('nb-alert',alerts.length||'')
 setBadge('nb-rep',repsActives.length)
 setBadge('nb-four','')
+setBadge('nb-taches',tachesUrgentes.length||'✓')
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 

@@ -821,7 +821,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
     });
 
     renderNotifs(notifs);
@@ -1173,6 +1173,13 @@ window.catSet=function(v){document.getElementById('catSearch').value=v;recherche
 
 document.getElementById('cat-results').innerHTML=welcomeHtml()
 await loadSyncInfo()
+
+// Arrivée depuis un lien externe (ex : pièce en alerte dans Stock)
+const qParam=new URLSearchParams(location.search).get('q')
+if(qParam){
+  catSet(qParam)
+  history.replaceState(null,'','/admin/catalogue.html')
+}
 
 } catch(err){
   console.error(err)

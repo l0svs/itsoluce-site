@@ -570,7 +570,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="fg"><label>Date *</label><input type="date" id="f-date"/></div>
           <div class="fg"><label>Heure</label><input type="time" id="f-heure"/></div>
         </div>
-        <div class="fg"><label>Durée estimée</label><select id="f-duree"><option value="30">30 minutes</option><option value="60" selected>1 heure</option><option value="90">1h30</option><option value="120">2 heures</option><option value="">Non définie</option></select></div>
+        <div class="fg"><label>Prestation prévue <span style="font-weight:400;color:var(--t3);">— optionnel, pré-remplit la durée</span></label><select id="f-prestation" onchange="onPrestationPick()"><option value="">— Aucune —</option></select></div>
+        <div class="fg"><label>Durée estimée</label><select id="f-duree"><option value="30">30 minutes</option><option value="60" selected>1 heure</option><option value="90">1h30</option><option value="120">2 heures</option><option value="180">3 heures</option><option value="">Non définie</option></select></div>
       </div>
 
       <div class="form-section">
@@ -663,7 +664,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
     });
 
     renderNotifs(notifs);
@@ -719,16 +720,20 @@ function iconFor(type){
   return `<svg viewBox="0 0 24 24">${icons[type]||icons.autre}</svg>`
 }
 
+let allServices=[]
+
 async function load(){
-  const [rRdv,rCli,rRep]=await Promise.all([
+  const [rRdv,rCli,rRep,rSvc]=await Promise.all([
     sb.from('rendezvous').select('*').order('date_debut',{ascending:true}),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false})
+    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false}),
+    sb.from('services').select('id,nom,duree_minutes').eq('actif',true).order('ordre',{ascending:true})
   ])
   if(rRdv.error){showError(rRdv.error.message);return}
   allRdv=rRdv.data||[]
   allClients=rCli.data||[]
   allReps=rRep.data||[]
+  allServices=rSvc.data||[]
   fillSelects()
   render()
   document.getElementById('ldr').style.display='none'
@@ -740,6 +745,15 @@ function fillSelects(){
   cs.innerHTML='<option value="">— Aucun —</option>'+allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-adr="${escHtml(c.adresse)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
   const rs=document.getElementById('f-rep')
   rs.innerHTML='<option value="">— Aucune —</option>'+allReps.map(r=>`<option value="${r.id}" data-num="${escHtml(r.numero)}">${escHtml(r.numero)||''} · ${escHtml(r.client_nom)} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
+  const ps=document.getElementById('f-prestation')
+  ps.innerHTML='<option value="">— Aucune —</option>'+allServices.map(s=>`<option value="${s.id}" data-duree="${s.duree_minutes||''}">${escHtml(s.nom)}${s.duree_minutes?' ('+(s.duree_minutes>=60?(s.duree_minutes/60)+'h'+(s.duree_minutes%60||''):s.duree_minutes+'min')+')':''}</option>`).join('')
+}
+
+window.onPrestationPick=function(){
+  const sel=document.getElementById('f-prestation')
+  const opt=sel.options[sel.selectedIndex]
+  const duree=opt&&opt.dataset.duree
+  if(duree)document.getElementById('f-duree').value=duree
 }
 
 window.onClientPick=function(){
@@ -872,6 +886,7 @@ function resetForm(){
   document.getElementById('f-date').value=''
   document.getElementById('f-heure').value=''
   document.getElementById('f-duree').value='60'
+  document.getElementById('f-prestation').value=''
   document.getElementById('f-client').value=''
   document.getElementById('f-rep').value=''
   document.getElementById('f-lieu').value=''
