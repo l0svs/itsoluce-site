@@ -488,9 +488,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="tb-r">
   </div>
 </header>
+<div class="layout">
 <div id="admin-nav-mount"></div>
 <script src="/admin/assets/js/admin-nav.js"></script>
-<div class="layout">
+<script src="/admin/assets/js/admin-palette.js"></script>
 <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
@@ -1029,6 +1030,14 @@ async function loadReps(){
   document.getElementById('ldr').style.display='none'
   const pb=document.getElementById('pageBody')
   pb.style.display='flex'
+  // Ouverture directe d'un dossier si on arrive depuis un lien externe (ex : fiche client)
+  const openId=new URLSearchParams(location.search).get('open')
+  if(openId){
+    const rid=Number(openId)
+    if(allReps.some(r=>r.id===rid)){editRep(rid)}
+    else{showToast('Dossier introuvable','err')}
+    history.replaceState(null,'','/admin/reparations.html')
+  }
 }
 
 function renderAll(){updateKPIs();renderFilters();renderCards()}

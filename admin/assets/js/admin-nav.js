@@ -2,7 +2,7 @@
  * Navigation partagée de l'ERP IT Soluce.
  *
  * Avant ce fichier, chaque page admin (15 fichiers) recopiait intégralement :
- *  - la nav horizontale déroulante (.hnav) ;
+ *  - une nav horizontale déroulante (.hnav), à déplier groupe par groupe ;
  *  - une sidebar verticale IDENTIQUE mais jamais affichée (display:none codé
  *    en dur), qui ne servait qu'à être clonée pour construire le menu mobile
  *    plein écran ;
@@ -11,16 +11,22 @@
  *    marquage de la page active).
  * Résultat : ajouter/renommer une page demandait de modifier 15 fichiers, et
  * ça avait déjà dérivé (ex. libellé du fil d'Ariane différent d'une page à
- * l'autre). Ce fichier est maintenant la SEULE source de vérité pour la
- * structure de navigation ; les classes CSS utilisées (.hnav, .nl, .mbb-item…)
- * restent inchangées, donc le CSS déjà présent dans chaque page continue de
- * s'appliquer sans aucune modification visuelle.
+ * l'autre).
  *
- * Utilisation dans une page : un point de montage vide suivi de ce script.
+ * Ce fichier est maintenant la SEULE source de vérité pour la structure de
+ * navigation, et va plus loin que la v1 :
+ *  - Desktop (≥900px) : la sidebar (.nl / .nl-group, déjà stylée dans chaque
+ *    page mais jamais utilisée) devient la nav permanente, groupes toujours
+ *    visibles — plus besoin de déplier un menu pour voir les pages d'un
+ *    groupe. L'ancienne barre horizontale à onglets déroulants disparaît.
+ *  - Mobile (<900px) : inchangé (hamburger → menu plein écran + barre du bas).
+ *
+ * Utilisation dans une page : le point de montage doit être le premier
+ * enfant de .layout (pour que la sidebar s'insère au bon endroit) :
+ *   <div class="layout">
  *   <div id="admin-nav-mount"></div>
  *   <script src="/admin/assets/js/admin-nav.js"></script>
- *   <div class="layout">
- *     ...contenu de la page...
+ *   <div class="content" id="mainContent">...
  */
 (function () {
   'use strict';
@@ -85,6 +91,11 @@
 
   var currentPage = (location.pathname.split('/').pop() || '').replace('.html', '') || 'dashboard';
 
+  // Exposé pour la palette de commandes (admin-palette.js) : liste plate des
+  // pages, une seule source pour les deux fichiers.
+  window.ADMIN_PAGES = [DASHBOARD].concat(GROUPS.reduce(function (acc, g) { return acc.concat(g.items); }, []))
+    .map(function (it) { return { key: it.key, href: it.href, label: it.label }; });
+
   function badgeHtml(item) {
     if (!item.badge) return '';
     var cls = item.badgeWarn ? 'nc w' : 'nc';
@@ -92,26 +103,8 @@
     return ' <span class="' + cls + '" id="' + item.badge + '">' + val + '</span>';
   }
 
-  function groupIsActive(group) {
-    return group.items.some(function (it) { return it.key === currentPage; });
-  }
-
-  function buildHnav() {
-    var html = '<a href="' + DASHBOARD.href + '" class="hnl' + (currentPage === DASHBOARD.key ? ' active' : '') + '">' +
-      ICONS[DASHBOARD.icon] + DASHBOARD.label + '</a>';
-    GROUPS.forEach(function (group) {
-      html += '<div class="hnav-drop"><button class="hnl' + (groupIsActive(group) ? ' active' : '') + '" onclick="toggleDrop(this)">' +
-        group.name + '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><div class="hnav-menu">';
-      group.items.forEach(function (it) {
-        html += '<a href="' + it.href + '" class="hnav-item' + (it.key === currentPage ? ' active' : '') + '"><span class="hnav-item-ico">' +
-          ICONS[it.icon] + '</span>' + it.label + badgeHtml(it) + '</a>';
-      });
-      html += '</div></div>';
-    });
-    return html;
-  }
-
-  function buildMobileFullNav() {
+  // ---- Sidebar desktop permanente (remplace l'ancienne nav à onglets déroulants) ----
+  function buildSidebarNav() {
     var html = '<a href="' + DASHBOARD.href + '" class="nl' + (currentPage === DASHBOARD.key ? ' active' : '') + '">' +
       ICONS[DASHBOARD.icon] + DASHBOARD.label + '</a>';
     GROUPS.forEach(function (group) {
@@ -136,29 +129,26 @@
   }
 
   // ---- Montage ----
+  // Le point de montage est le premier enfant de .layout : au moment où ce
+  // script s'exécute (synchrone, pendant le parsing), la balise <div
+  // class="layout"> qui l'englobe existe déjà dans le DOM même si elle n'est
+  // pas encore refermée dans le HTML — on peut donc s'y insérer directement.
   var mount = document.getElementById('admin-nav-mount');
   if (mount) {
-    var nav = document.createElement('nav');
-    nav.className = 'hnav';
-    nav.innerHTML = buildHnav();
-    mount.replaceWith(nav);
+    var aside = document.createElement('aside');
+    aside.className = 'sidebar';
+    aside.innerHTML = buildSidebarNav();
+    mount.replaceWith(aside);
+    // La règle .sidebar{display:none} de chaque page cache l'ancien clone
+    // mobile ; ce style inline (priorité supérieure) l'affiche en permanence
+    // à partir de la largeur où l'ancienne .hnav apparaissait (900px), et la
+    // masque en dessous — le mobile garde le hamburger + la barre du bas.
+    var mq = window.matchMedia('(min-width:900px)');
+    var applySidebarVisibility = function () { aside.style.display = mq.matches ? 'flex' : 'none'; };
+    applySidebarVisibility();
+    (mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(applySidebarVisibility);
   }
   document.body.insertAdjacentHTML('beforeend', buildBottombar());
-
-  // ---- Dropdowns de la nav desktop ----
-  window.toggleDrop = function (btn) {
-    var menu = btn.nextElementSibling;
-    var isOpen = menu.classList.contains('open');
-    document.querySelectorAll('.hnav-menu.open').forEach(function (m) { m.classList.remove('open'); });
-    document.querySelectorAll('.hnl.open').forEach(function (b) { b.classList.remove('open'); });
-    if (!isOpen) { menu.classList.add('open'); btn.classList.add('open'); }
-  };
-  document.addEventListener('click', function (e) {
-    if (!e.target.closest('.hnav-drop')) {
-      document.querySelectorAll('.hnav-menu.open').forEach(function (m) { m.classList.remove('open'); });
-      document.querySelectorAll('.hnl.open').forEach(function (b) { b.classList.remove('open'); });
-    }
-  });
 
   // ---- Menu mobile plein écran (construit directement, plus de clone de sidebar) ----
   window.openMobileNav = function () {
@@ -177,7 +167,7 @@
       head.innerHTML = '<img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" alt="IT Soluce"/><button class="mobile-nav-close" onclick="closeMobileNav()">&times;</button>';
       mnav.appendChild(head);
       var body = document.createElement('div');
-      body.innerHTML = buildMobileFullNav();
+      body.innerHTML = buildSidebarNav();
       mnav.appendChild(body);
       document.body.appendChild(ov);
       document.body.appendChild(mnav);
@@ -190,4 +180,22 @@
     if (ov) ov.classList.remove('open');
     if (mnav) mnav.classList.remove('open');
   };
+
+  // ---- Pré-remplissage générique de la recherche depuis l'URL (?q=) ----
+  // Utilisé par la palette de commandes (admin-palette.js) pour renvoyer vers
+  // la page de liste correspondante avec la recherche déjà faite. Générique :
+  // s'applique à toute page qui a un champ #searchInput avec un filtrage sur
+  // l'événement "input" (déjà le cas de Clients, Devis, Factures,
+  // Réparations, Demandes, Diagnostics, Stock, Fournisseurs) ; ne fait rien
+  // sinon.
+  var q = new URLSearchParams(location.search).get('q');
+  if (q) {
+    document.addEventListener('DOMContentLoaded', function () {
+      var input = document.getElementById('searchInput');
+      if (input) {
+        input.value = q;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  }
 })();
