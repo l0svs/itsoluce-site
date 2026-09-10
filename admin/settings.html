@@ -139,12 +139,6 @@ select option{background:var(--bg3);}
 .toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none;}
 .toggle input:checked~.toggle-thumb{transform:translateX(16px);}
 
-/* COULEURS */
-.color-grid{display:flex;gap:8px;flex-wrap:wrap;}
-.color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
-.color-opt:hover{transform:scale(1.15);}
-.color-opt.on{border-color:var(--t1);transform:scale(1.1);}
-
 /* BOUTONS */
 .btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;}
 .btn-primary{background:var(--a);color:#fff;}
@@ -540,22 +534,6 @@ select option{background:var(--bg3);}
           <div class="sec-title">Apparence</div>
           <div class="sec-desc">Personnalise les couleurs et le mode d'affichage de l'ERP.</div>
           <div class="field-group">
-            <div class="fg-head">Couleur d'accent</div>
-            <div class="field">
-              <div class="field-label"><div class="fl-name">Couleur principale</div><div class="fl-desc">Appliquée aux boutons, liens et éléments actifs</div></div>
-              <div class="field-input">
-                <div class="color-grid">
-                  <div class="color-opt on" data-c="#3b82f6" data-d="rgba(59,130,246,0.12)" style="background:#3b82f6;" onclick="pickColor(this)" title="Bleu"></div>
-                  <div class="color-opt" data-c="#34d399" data-d="rgba(52,211,153,0.12)" style="background:#34d399;" onclick="pickColor(this)" title="Vert"></div>
-                  <div class="color-opt" data-c="#a78bfa" data-d="rgba(167,139,250,0.12)" style="background:#a78bfa;" onclick="pickColor(this)" title="Violet"></div>
-                  <div class="color-opt" data-c="#fbbf24" data-d="rgba(251,191,36,0.12)" style="background:#fbbf24;" onclick="pickColor(this)" title="Ambre"></div>
-                  <div class="color-opt" data-c="#f87171" data-d="rgba(248,113,113,0.12)" style="background:#f87171;" onclick="pickColor(this)" title="Rouge"></div>
-                  <div class="color-opt" data-c="#06b6d4" data-d="rgba(6,182,212,0.12)" style="background:#06b6d4;" onclick="pickColor(this)" title="Cyan"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field-group">
             <div class="fg-head">Mode d'affichage</div>
             <div class="field">
               <div class="field-label"><div class="fl-name">Thème par défaut</div><div class="fl-desc">Auto = s'adapte à l'heure (clair 7h–20h, sombre 20h–7h)</div></div>
@@ -723,17 +701,6 @@ select option{background:var(--bg3);}
 function applyMode(m){
   const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
   document.documentElement.setAttribute('data-mode',e)
-  const lv=e==='light'
-  const v=(a,b)=>lv?a:b
-  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
-  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
-  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
-  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
-  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
-  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
-  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
-  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
-  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
 }
 function setMode(m){
   localStorage.setItem('erp-m',m)
@@ -748,23 +715,6 @@ const sm=localStorage.getItem('erp-m')||'auto'
 document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
 applyMode(sm)
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
-
-// ACCENT
-function applyAccent(c,d){
-  document.documentElement.style.setProperty('--a',c)
-  document.documentElement.style.setProperty('--ad',d)
-  localStorage.setItem('erp-a',c)
-  localStorage.setItem('erp-d',d)
-}
-function pickColor(el){
-  document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('on'))
-  el.classList.add('on')
-  applyAccent(el.dataset.c,el.dataset.d)
-  markDirty()
-}
-const sa=localStorage.getItem('erp-a')
-const sd=localStorage.getItem('erp-d')
-if(sa){applyAccent(sa,sd)}
 
 // DIRTY
 let dirty=false
@@ -998,13 +948,6 @@ fill('s-seuil','alertes_seuil_global')
 fill('s-alerte-email','alertes_email_actif')
 fill('s-alerte-dest','alertes_email_destinataire')
 
-// Couleur accent sauvegardée
-const savedAccent=cfg['apparence_accent']||'#3b82f6'
-const savedDim=cfg['apparence_accent_dim']||'rgba(59,130,246,0.12)'
-document.querySelectorAll('.color-opt').forEach(el=>{
-  el.classList.toggle('on',el.dataset.c===savedAccent)
-})
-
 
 
 // Marquer dirty sur chaque input
@@ -1049,14 +992,6 @@ window.saveSettings=async function(){
     ['alertes_seuil_global','s-seuil'],['alertes_email_actif','s-alerte-email'],
     ['alertes_email_destinataire','s-alerte-dest']
   ]
-  // Accent
-  const activeColor=document.querySelector('.color-opt.on')
-  if(activeColor){
-    pairs.push(['apparence_accent',null])
-    pairs.push(['apparence_accent_dim',null])
-    await sb.from('settings').upsert({cle:'apparence_accent',valeur:activeColor.dataset.c},{onConflict:'cle'})
-    await sb.from('settings').upsert({cle:'apparence_accent_dim',valeur:activeColor.dataset.d},{onConflict:'cle'})
-  }
   const updates=pairs.filter(([,id])=>id).map(([cle,id])=>{
     const el=document.getElementById(id)
     return{cle,valeur:el?el.type==='checkbox'?String(el.checked):el.value:''}

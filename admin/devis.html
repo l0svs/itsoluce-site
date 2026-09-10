@@ -634,12 +634,10 @@ body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);c
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
+function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;}
 function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
 const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3500);}
 
 // ─── LIGNES DYNAMIQUES ───
