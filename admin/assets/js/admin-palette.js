@@ -156,13 +156,13 @@
           if (myToken !== searchToken) return; // une frappe plus récente a déjà relancé une recherche
           var entities = [];
           (res[0].data || []).forEach(function (c) {
-            entities.push({ type: 'client', title: c.nom || '—', sub: [c.numero, c.email].filter(Boolean).join(' · '), href: '/admin/clients.html?q=' + encodeURIComponent(c.numero || c.nom || '') });
+            entities.push({ type: 'client', title: c.nom || '—', sub: [c.numero, c.email].filter(Boolean).join(' · '), href: '/admin/clients.html?open=' + c.id });
           });
           (res[1].data || []).forEach(function (r) {
-            entities.push({ type: 'reparation', title: (r.numero ? r.numero + ' · ' : '') + (r.client_nom || '—'), sub: r.appareil || '', href: '/admin/reparations.html?q=' + encodeURIComponent(r.numero || r.client_nom || '') });
+            entities.push({ type: 'reparation', title: (r.numero ? r.numero + ' · ' : '') + (r.client_nom || '—'), sub: r.appareil || '', href: '/admin/reparations.html?open=' + r.id });
           });
           (res[2].data || []).forEach(function (d) {
-            entities.push({ type: 'devis', title: (d.numero ? d.numero + ' · ' : '') + (d.client_nom || '—'), sub: d.total != null ? Number(d.total).toFixed(2) + ' €' : '', href: '/admin/devis.html?q=' + encodeURIComponent(d.numero || d.client_nom || '') });
+            entities.push({ type: 'devis', title: (d.numero ? d.numero + ' · ' : '') + (d.client_nom || '—'), sub: d.total != null ? Number(d.total).toFixed(2) + ' €' : '', href: '/admin/devis.html?open=' + d.id });
           });
           (res[3].data || []).forEach(function (f) {
             entities.push({ type: 'facture', title: (f.numero ? f.numero + ' · ' : '') + (f.client_nom || '—'), sub: f.total != null ? Number(f.total).toFixed(2) + ' €' : '', href: '/admin/factures.html?open=' + f.id });

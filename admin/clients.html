@@ -155,6 +155,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .dp-fv{font-size:12px;color:var(--t1);}
 .dp-hist-item{padding:8px 0;border-bottom:1px solid var(--ln);}
 .dp-hist-item:last-child{border-bottom:none;}
+/* DOSSIER — timeline unifiée Demande / Diagnostic / Devis / Réparation / Facture */
+.dossier-timeline{position:relative;display:flex;flex-direction:column;gap:2px;}
+.dossier-item{position:relative;display:flex;align-items:center;gap:10px;padding:8px 6px 8px 2px;border-radius:8px;text-decoration:none;color:inherit;transition:background .12s;}
+.dossier-item:hover{background:var(--bg3);}
+.dossier-item-ic{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;z-index:1;}
+.dossier-timeline .dossier-item:not(:last-child)::before{content:'';position:absolute;left:15px;top:30px;bottom:-2px;width:1px;background:var(--ln2);}
+.dossier-item-main{flex:1;min-width:0;}
+.dossier-item-t{font-size:12px;font-weight:500;color:var(--t1);}
+.dossier-item-s{font-size:11px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dossier-item-r{text-align:right;flex-shrink:0;}
+.dossier-item-amount{font-size:12px;font-weight:600;color:var(--t1);}
+.dossier-item-date{font-size:10px;color:var(--t3);}
 .empty{padding:60px 24px;text-align:center;}
 .empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
 .empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}
@@ -664,6 +676,12 @@ if(!session){window.location.href='/admin/login.html';throw new Error('no sessio
 
 let allClients=[]
 let allReps=[]
+// Sources du dossier client unifié (timeline Demande → Diagnostic → Devis →
+// Réparation → Facture) — voir showDetail().
+let allDevisCli=[]
+let allFacturesCli=[]
+let allDiagnosticsCli=[]
+let allDemandesCli=[]
 
 async function nextNumero(cle, prefix){
   const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
@@ -674,10 +692,18 @@ async function nextNumero(cle, prefix){
 window.nextNumero=nextNumero
 
 async function load(){
-  const [r1,r2]=await Promise.all([
+  const [r1,r2,r3,r4,r5,r6]=await Promise.all([
     sb.from('clients').select('*').order('created_at',{ascending:false}),
-    sb.from('reparations').select('client_nom,client_email,prix_final,created_at,statut')
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,appareil,marque,modele,prix_final,statut,created_at').order('created_at',{ascending:false}),
+    sb.from('devis').select('id,numero,client_id,client_nom,total,statut,created_at').order('created_at',{ascending:false}),
+    sb.from('factures').select('id,numero,client_id,client_nom,total,statut,date_emission,created_at').order('created_at',{ascending:false}),
+    sb.from('diagnostics').select('id,numero,client_id,client_nom,appareil,marque,modele,verdict,statut,created_at').order('created_at',{ascending:false}),
+    sb.from('demandes_formulaire').select('id,prenom,nom,appareil,converti_reparation_id,created_at').order('created_at',{ascending:false})
   ])
+  allDevisCli=r3.data||[]
+  allFacturesCli=r4.data||[]
+  allDiagnosticsCli=r5.data||[]
+  allDemandesCli=r6.data||[]
   // Si la table clients n'existe pas encore, on génère les clients depuis les réparations
   if(r1.error){
     // Générer depuis réparations
@@ -694,7 +720,7 @@ async function load(){
     allClients=r1.data||[]
     const reps=r2.data||[]
     allClients.forEach(c=>{
-      const cReps=reps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
+      const cReps=reps.filter(r=>r.client_id===c.id||r.client_email===c.email||r.client_nom===c.nom)
       c.reps_count=cReps.length
       c.ca=cReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
       c.last_rep=cReps[0]?.created_at
@@ -712,6 +738,14 @@ async function load(){
   document.getElementById('ldr').style.display='none'
   const pb=document.getElementById('pageBody')
   pb.style.display='flex'
+  // Ouverture directe de la fiche client si on arrive depuis un lien externe (ex : palette de recherche)
+  const openId=new URLSearchParams(location.search).get('open')
+  if(openId){
+    const cid=Number(openId)
+    if(allClients.some(c=>c.id===cid)){showDetail(cid)}
+    else{showToast('Client introuvable','err')}
+    history.replaceState(null,'','/admin/clients.html')
+  }
 }
 
 function renderAll(){
@@ -765,17 +799,97 @@ window.renderTable=function(){
   }).join('')
 }
 
+// Libellés de statut par type de document — propres à cette timeline, pas de
+// dépendance vers les autres pages (chacune garde sa propre logique).
+const REP_STATUT_LABELS={attente_reception:"Nouveau dossier",recu:'Appareil reçu',attente:'Attente de pièce',encours:'Diagnostic / Réparation',pret:'Prêt à récupérer',rendu:'Rendu au client',non_reparable:'Non réparable',annule:'Annulé'}
+const DEVIS_STATUT_LABELS={brouillon:'Brouillon',envoye:'Envoyé',accepte:'Accepté',refuse:'Refusé'}
+const FACTURE_STATUT_LABELS={brouillon:'Brouillon',envoyee:'Envoyée',payee:'Payée',annulee:'Annulée'}
+const DIAG_STATUT_LABELS={nouveau:'Nouveau',en_cours:'En cours',accepte:'Accepté (réparation)',refuse:'Refusé',sans_suite:'Sans suite'}
+
+// Construit le dossier unifié d'un client : Demande → Diagnostic → Devis →
+// Réparation → Facture, à partir des 5 tables déjà chargées par load().
+// Le lien entre tables n'est pas strictement linéaire dans les données (un
+// devis peut devenir une facture sans passer par une réparation, un
+// diagnostic reste parfois sans suite) : on affiche donc tout ce qui
+// concerne ce client, trié chronologiquement, plutôt que de forcer une
+// séquence qui ne correspondrait pas toujours à la réalité du dossier.
+function buildDossier(c){
+  const matches=(x)=>x.client_id===c.id||(x.client_email&&x.client_email===c.email)||(!x.client_email&&x.client_nom===c.nom)
+  const items=[]
+
+  const cliReps=allReps.filter(matches)
+  const repIds=new Set(cliReps.map(r=>r.id))
+  cliReps.forEach(r=>items.push({
+    date:r.created_at, type:'reparation', badge:'R', color:'#fb923c', bg:'rgba(251,146,60,.15)',
+    title:(r.numero?r.numero+' · ':'')+'Réparation',
+    sub:[[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil,REP_STATUT_LABELS[r.statut]||r.statut].filter(Boolean).join(' — '),
+    amount:r.prix_final, href:'/admin/reparations.html?open='+r.id
+  }))
+
+  allDevisCli.filter(matches).forEach(d=>items.push({
+    date:d.created_at, type:'devis', badge:'D', color:'#a78bfa', bg:'rgba(167,139,250,.15)',
+    title:(d.numero?d.numero+' · ':'')+'Devis', sub:DEVIS_STATUT_LABELS[d.statut]||d.statut||'',
+    amount:d.total, href:'/admin/devis.html?open='+d.id
+  }))
+
+  allFacturesCli.filter(matches).forEach(f=>items.push({
+    date:f.date_emission||f.created_at, type:'facture', badge:'F', color:'#34d399', bg:'rgba(52,211,153,.15)',
+    title:(f.numero?f.numero+' · ':'')+'Facture', sub:FACTURE_STATUT_LABELS[f.statut]||f.statut||'',
+    amount:f.total, href:'/admin/factures.html?open='+f.id
+  }))
+
+  allDiagnosticsCli.filter(matches).forEach(d=>items.push({
+    date:d.created_at, type:'diagnostic', badge:'Dx', color:'#22d3ee', bg:'rgba(34,211,238,.15)',
+    title:(d.numero?d.numero+' · ':'')+'Diagnostic',
+    sub:[[d.marque,d.modele].filter(Boolean).join(' ')||d.appareil,DIAG_STATUT_LABELS[d.statut]||d.statut].filter(Boolean).join(' — '),
+    amount:null, href:'/admin/diagnostics.html?q='+encodeURIComponent(d.numero||'')
+  }))
+
+  // Une demande n'est rattachée à ce client que si elle a été qualifiée en
+  // réparation pour lui — avant conversion, une demande est anonyme (visiteur
+  // du site public), elle n'appartient à aucun client.
+  allDemandesCli.filter(d=>d.converti_reparation_id&&repIds.has(d.converti_reparation_id)).forEach(d=>items.push({
+    date:d.created_at, type:'demande', badge:'N', color:'#3b82f6', bg:'rgba(59,130,246,.15)',
+    title:'Demande de contact', sub:d.appareil||'',
+    amount:null, href:'/admin/demandes.html?q='+encodeURIComponent([d.prenom,d.nom].filter(Boolean).join(' '))
+  }))
+
+  return items.sort((a,b)=>new Date(a.date)-new Date(b.date))
+}
+
+function renderDossier(items){
+  if(!items.length)return ''
+  return `
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Dossier — ${items.length} étape${items.length>1?'s':''}</div>
+      <div class="dossier-timeline">
+        ${items.map(it=>`<a class="dossier-item" href="${it.href}">
+          <div class="dossier-item-ic" style="color:${it.color};background:${it.bg};">${it.badge}</div>
+          <div class="dossier-item-main">
+            <div class="dossier-item-t">${escHtml(it.title)}</div>
+            <div class="dossier-item-s">${escHtml(it.sub)||'—'}</div>
+          </div>
+          <div class="dossier-item-r">
+            ${it.amount!=null?`<div class="dossier-item-amount">${Number(it.amount).toFixed(2)}€</div>`:''}
+            <div class="dossier-item-date">${new Date(it.date).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})}</div>
+          </div>
+        </a>`).join('')}
+      </div>
+    </div>`
+}
+
 window.showDetail=function(id){
   const c=allClients.find(c=>c.id===id)
   if(!c)return
   const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
-  const reps=allReps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
+  const dossier=buildDossier(c)
+  const repsCount=dossier.filter(it=>it.type==='reparation').length
   document.getElementById('detailBody').innerHTML=`
     <div class="dp-av">${escHtml(initials)}</div>
     <div class="dp-name">${escHtml(c.nom)||'—'}</div>
     <div class="dp-sub">${c.numero?`<span style="font-family:monospace;color:var(--a);font-weight:600;">${escHtml(c.numero)}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
     <div class="dp-stat">
-      <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${reps.length}</div></div>
+      <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${repsCount}</div></div>
       <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(2)}€</div></div>
     </div>
     <div style="margin-top:8px;">
@@ -785,14 +899,7 @@ window.showDetail=function(id){
       ${c.type==='entreprise'&&(c.societe||c.tva)?`<div class="dp-field"><div class="dp-fl">Société</div><div class="dp-fv">${escHtml(c.societe)||'—'}</div></div><div class="dp-field"><div class="dp-fl">N° TVA / BCE</div><div class="dp-fv">${escHtml(c.tva)||'—'}</div></div>`:''}
       ${c.notes?`<div class="dp-field"><div class="dp-fl">Notes</div><div class="dp-fv">${escHtml(c.notes)}</div></div>`:''}
     </div>
-    ${reps.length>0?`
-    <div style="margin-top:16px;">
-      <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Historique réparations</div>
-      ${reps.map(r=>`<div class="dp-hist-item">
-        <div style="font-size:12px;color:var(--t1);">${escHtml(r.statut)||'—'}</div>
-        <div style="font-size:11px;color:var(--t3);">${new Date(r.created_at).toLocaleDateString('fr-BE')} · ${Number(r.prix_final||0).toFixed(2)}€</div>
-      </div>`).join('')}
-    </div>`:''}
+    ${renderDossier(dossier)}
     <div style="margin-top:16px;display:flex;gap:8px;">
       <button class="btn btn-secondary" style="flex:1;" onclick="editClient(${c.id})">Modifier</button>
       ${c.email?`<a href="mailto:${escHtml(c.email)}" class="btn btn-primary" style="flex:1;text-decoration:none;justify-content:center;">Envoyer email</a>`:''}

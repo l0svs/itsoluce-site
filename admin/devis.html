@@ -1013,6 +1013,14 @@ async function load(){
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
+  // Ouverture directe d'un devis si on arrive depuis un lien externe (ex : fiche client)
+  const openId=new URLSearchParams(location.search).get('open')
+  if(openId){
+    const did=Number(openId)
+    if(allDevis.some(d=>d.id===did)){previewDevis(did)}
+    else{showToast('Devis introuvable','err')}
+    history.replaceState(null,'','/admin/devis.html')
+  }
 }
 
 // Remplir sélecteur réparations

@@ -1030,6 +1030,14 @@ async function loadReps(){
   document.getElementById('ldr').style.display='none'
   const pb=document.getElementById('pageBody')
   pb.style.display='flex'
+  // Ouverture directe d'un dossier si on arrive depuis un lien externe (ex : fiche client)
+  const openId=new URLSearchParams(location.search).get('open')
+  if(openId){
+    const rid=Number(openId)
+    if(allReps.some(r=>r.id===rid)){editRep(rid)}
+    else{showToast('Dossier introuvable','err')}
+    history.replaceState(null,'','/admin/reparations.html')
+  }
 }
 
 function renderAll(){updateKPIs();renderFilters();renderCards()}
