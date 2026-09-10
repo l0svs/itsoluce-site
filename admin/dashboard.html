@@ -8,24 +8,24 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 :root{
-  --a:#3b82f6;--ad:rgba(59,130,246,0.12);
-  --bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;
-  --ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);
-  --t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;
-  --ok:#34d399;--w:#fbbf24;--d:#f87171;
+  --a:#d68a4c;--ad:rgba(214,138,76,0.16);
+  --bg:#1c1815;--bg2:#241f1a;--bg3:#2c2620;--bg4:#332c24;
+  --ln:rgba(255,241,224,0.07);--ln2:rgba(255,241,224,0.12);
+  --t1:#f2ece3;--t2:#b6ab9c;--t3:#7d7364;
+  --ok:#6fac83;--w:#e0b34d;--d:#dd7c62;
   --sw:220px;--th:48px;
 }
 [data-mode="light"]{
-  --bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;
-  --ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);
-  --t1:#111114;--t2:#52525b;--t3:#a1a1aa;
+  --bg:#f7f3ec;--bg2:#fffdfa;--bg3:#efe8dd;--bg4:#e6dccb;
+  --ln:rgba(60,40,20,0.08);--ln2:rgba(60,40,20,0.14);
+  --t1:#241f1a;--t2:#6b5f4f;--t3:#a89a86;
 }
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:-.01em;}
 /* TOPBAR */
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
@@ -82,7 +82,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
 .nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
 .nl:hover{background:var(--bg3);color:var(--t1);}
-.nl.active{background:var(--ad);color:var(--a);}
+.nl.active{background:var(--ad);color:var(--a);position:relative;}.nl.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--a);border-radius:0 2px 2px 0;}
 .nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}
 .nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
@@ -718,13 +718,14 @@ function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
 const today=startOfDay(now)
 
 // ─── CHARGEMENT PARALLÈLE DE TOUTES LES DONNÉES ───
-const [rRep,rFac,rDev,rRdv,rStock,rCharges]=await Promise.all([
+const [rRep,rFac,rDev,rRdv,rStock,rCharges,rTaches]=await Promise.all([
   sb.from('reparations').select('*'),
   sb.from('factures').select('*'),
   sb.from('devis').select('*'),
   sb.from('rendezvous').select('*'),
   sb.from('stock').select('*'),
-  sb.from('charges').select('*')
+  sb.from('charges').select('*'),
+  sb.from('taches').select('*')
 ])
 const reps=rRep.data||[]
 const factures=rFac.data||[]
@@ -732,6 +733,7 @@ const devis=rDev.data||[]
 const rdvs=rRdv.data||[]
 const stock=rStock.data||[]
 const charges=rCharges.data||[]
+const taches=rTaches.data||[]
 
 // ─── CALCULS KPIs ───
 // CA encaissé ce mois (factures payées ce mois)
@@ -782,6 +784,19 @@ const garExpire=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
   const j=Math.ceil((exp-now)/(1000*60*60*24))
   return {...r,_jours:j,_exp:exp}
 }).filter(r=>r._jours>0&&r._jours<=15).sort((a,b)=>a._jours-b._jours)
+
+// Réparations prêtes, non récupérées depuis plus de 3 jours, pas relancées
+// depuis plus de 5 jours (même logique que reparations.html)
+const aRelancer=reps.filter(r=>{
+  if(r.statut!=='pret')return false
+  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
+  const joursPret=Math.floor((now-debut)/(1000*60*60*24))
+  const joursRelance=r.relance_envoyee_le?Math.floor((now-new Date(r.relance_envoyee_le))/(1000*60*60*24)):Infinity
+  return joursPret>=3&&joursRelance>=5
+}).map(r=>{
+  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
+  return {...r,_jours:Math.floor((now-debut)/(1000*60*60*24))}
+}).sort((a,b)=>b._jours-a._jours)
 
 // Alertes stock
 const alerts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte||0))
@@ -874,7 +889,25 @@ document.getElementById('grid').innerHTML=grid
 
 // ─── CARTES CONDITIONNELLES (garanties + stock) ───
 // On les ajoute en pleine largeur sous la grille si nécessaire
+// Tâches urgentes ou en retard, non faites
+const tachesUrgentes=taches.filter(t=>!t.faite&&(t.priorite==='urgente'||(t.due_at&&new Date(t.due_at)<today)))
+  .sort((a,b)=>new Date(a.due_at||a.created_at)-new Date(b.due_at||b.created_at))
+
 let extra=''
+if(tachesUrgentes.length>0){
+  const rows=tachesUrgentes.slice(0,5).map(t=>{
+    const retard=t.due_at&&new Date(t.due_at)<today
+    return `<a href="/admin/taches.html?open=${t.id}" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(t.titre)}</div><div class="drow-s">${t.client_nom?escHtml(t.client_nom)+' · ':''}${t.categorie?escHtml(t.categorie):(t.priorite==='urgente'?'Urgente':'')}</div></div><div class="drow-r"><span class="dtag ${retard?'dtag-red':'dtag-orange'}">${retard?'En retard':'Urgente'}</span></div></a>`
+  }).join('')
+  extra+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches urgentes</div><a href="/admin/taches.html" class="dcard-link">Tâches →</a></div><div class="dcard-body">${rows}</div></div>`
+}
+if(aRelancer.length>0){
+  const rows=aRelancer.slice(0,5).map(r=>{
+    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+    return `<a href="/admin/reparations.html?filtre=relance" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-orange">Prêt depuis ${r._jours} j</span></div></a>`
+  }).join('')
+  extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>Prêts non récupérés</div><a href="/admin/reparations.html?filtre=relance" class="dcard-link">Réparations →</a></div><div class="dcard-body">${rows}</div></div>`
+}
 if(garExpire.length>0){
   const rows=garExpire.slice(0,5).map(r=>{
     const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
@@ -905,6 +938,7 @@ function setBadge(id,val){const el=document.getElementById(id);if(el)el.textCont
 setBadge('nb-alert',alerts.length||'')
 setBadge('nb-rep',repsActives.length)
 setBadge('nb-four','')
+setBadge('nb-taches',tachesUrgentes.length||'✓')
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 

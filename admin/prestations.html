@@ -8,13 +8,13 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
-[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+:root{--a:#d68a4c;--ad:rgba(214,138,76,0.16);--bg:#1c1815;--bg2:#241f1a;--bg3:#2c2620;--bg4:#332c24;--ln:rgba(255,241,224,0.07);--ln2:rgba(255,241,224,0.12);--t1:#f2ece3;--t2:#b6ab9c;--t3:#7d7364;--ok:#6fac83;--w:#e0b34d;--d:#dd7c62;--sw:220px;--th:48px;}
+[data-mode="light"]{--bg:#f7f3ec;--bg2:#fffdfa;--bg3:#efe8dd;--bg4:#e6dccb;--ln:rgba(60,40,20,0.08);--ln2:rgba(60,40,20,0.14);--t1:#241f1a;--t2:#6b5f4f;--t3:#a89a86;}
+body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:-.01em;}
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
 .logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}
@@ -58,7 +58,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 .ng{padding:14px 10px 4px;}.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
 .nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
-.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);}
+.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);position:relative;}.nl.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--a);border-radius:0 2px 2px 0;}
 .nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
 .nhr{height:1px;background:var(--ln);margin:8px 10px;}
@@ -474,7 +474,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div style="flex:1;"><label>Prix (€) *</label><input type="number" step="0.01" id="s-prix" placeholder="50"/></div>
           <div style="flex:1;"><label>Prix max (€) <span style="font-weight:400;color:var(--t3);">— optionnel</span></label><input type="number" step="0.01" id="s-prixmax" placeholder="fourchette"/></div>
         </div>
-        <div class="fg"><label>Unité <span style="font-weight:400;color:var(--t3);">— optionnel (ex : /h)</span></label><input type="text" id="s-unite" placeholder="laisser vide ou /h"/></div>
+        <div class="fg" style="display:flex;gap:10px;">
+          <div style="flex:1;"><label>Unité <span style="font-weight:400;color:var(--t3);">— optionnel (ex : /h)</span></label><input type="text" id="s-unite" placeholder="laisser vide ou /h"/></div>
+          <div style="flex:1;"><label>Durée estimée <span style="font-weight:400;color:var(--t3);">— optionnel</span></label><select id="s-duree"><option value="">Non définie</option><option value="30">30 minutes</option><option value="60">1 heure</option><option value="90">1h30</option><option value="120">2 heures</option><option value="180">3 heures</option></select></div>
+        </div>
         <div class="fg"><label>Détail</label><textarea id="s-detail" rows="2" placeholder="Ce qui est inclus dans la prestation"></textarea></div>
         <div class="fg"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="s-actif" checked style="width:auto;"/> Prestation active (affichée)</label></div>
       </div>
@@ -564,7 +567,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
     });
 
     renderNotifs(notifs);
@@ -629,7 +632,7 @@ async function load(){
           <span class="prest-nom">${escapeHtml(s.nom||'')}</span>
           ${actif?'':'<span class="prest-off">inactive</span>'}
         </div>
-        <div class="prest-prix">${prixLabel(s)}</div>
+        <div class="prest-prix">${prixLabel(s)}${s.duree_minutes?` <span style="font-size:11px;color:var(--t3);font-weight:400;">· ${s.duree_minutes>=60?(s.duree_minutes/60)+'h'+(s.duree_minutes%60||''):s.duree_minutes+'min'}</span>`:''}</div>
         ${s.detail?`<div class="prest-detail">${escapeHtml(s.detail)}</div>`:''}
       </div>`
     }).join('')
@@ -650,6 +653,7 @@ window.openService=function(id){
     document.getElementById('s-prix').value=s.prix||''
     document.getElementById('s-prixmax').value=s.prix_max||''
     document.getElementById('s-unite').value=s.unite||''
+    document.getElementById('s-duree').value=s.duree_minutes||''
     document.getElementById('s-detail').value=s.detail||''
     document.getElementById('s-actif').checked=s.actif!==false
     del.style.display='block'
@@ -660,6 +664,7 @@ window.openService=function(id){
     document.getElementById('s-prix').value=''
     document.getElementById('s-prixmax').value=''
     document.getElementById('s-unite').value=''
+    document.getElementById('s-duree').value=''
     document.getElementById('s-detail').value=''
     document.getElementById('s-actif').checked=true
     del.style.display='none'
@@ -678,6 +683,7 @@ window.saveService=async function(){
     nom,prix,
     prix_max:(prixmax!==null&&!isNaN(prixmax))?prixmax:null,
     unite:document.getElementById('s-unite').value.trim()||null,
+    duree_minutes:document.getElementById('s-duree').value?Number(document.getElementById('s-duree').value):null,
     detail:document.getElementById('s-detail').value.trim()||null,
     actif:document.getElementById('s-actif').checked
   }

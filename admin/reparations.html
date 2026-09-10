@@ -8,20 +8,20 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 :root{
-  --a:#3b82f6;--ad:rgba(59,130,246,0.12);
-  --bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;
-  --ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);
-  --t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;
-  --ok:#34d399;--w:#fbbf24;--d:#f87171;
+  --a:#d68a4c;--ad:rgba(214,138,76,0.16);
+  --bg:#1c1815;--bg2:#241f1a;--bg3:#2c2620;--bg4:#332c24;
+  --ln:rgba(255,241,224,0.07);--ln2:rgba(255,241,224,0.12);
+  --t1:#f2ece3;--t2:#b6ab9c;--t3:#7d7364;
+  --ok:#6fac83;--w:#e0b34d;--d:#dd7c62;
   --sw:220px;--th:48px;
 }
-[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+[data-mode="light"]{--bg:#f7f3ec;--bg2:#fffdfa;--bg3:#efe8dd;--bg4:#e6dccb;--ln:rgba(60,40,20,0.08);--ln2:rgba(60,40,20,0.14);--t1:#241f1a;--t2:#6b5f4f;--t3:#a89a86;}
+body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:-.01em;}
 
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
@@ -71,7 +71,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
 .nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
 .nl:hover{background:var(--bg3);color:var(--t1);}
-.nl.active{background:var(--ad);color:var(--a);}
+.nl.active{background:var(--ad);color:var(--a);position:relative;}.nl.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--a);border-radius:0 2px 2px 0;}
 .nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}
 .nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
@@ -517,6 +517,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="kpi"><div class="kpi-label">Dossiers actifs</div><div class="kpi-val" id="k-actifs">—</div><div class="kpi-sub">en cours</div></div>
         <div class="kpi"><div class="kpi-label">Dossiers ce mois</div><div class="kpi-val" id="k-mois">—</div><div class="kpi-sub">créés ce mois-ci</div></div>
         <div class="kpi" style="cursor:pointer;" onclick="setFilter('Garantie')" title="Voir les dossiers sous garantie"><div class="kpi-label">Sous garantie</div><div class="kpi-val" id="k-garantie" style="color:#16a34a">—</div><div class="kpi-sub">réparations couvertes</div></div>
+        <div class="kpi" style="cursor:pointer;" onclick="setFilter('Relance')" title="Voir les dossiers à relancer"><div class="kpi-label">À relancer</div><div class="kpi-val" id="k-relance" style="color:#f59e0b">—</div><div class="kpi-sub">prêts, non récupérés</div></div>
       </div>
 
       <div class="toolbar">
@@ -599,6 +600,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           </select>
         </div>
         <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
+        <div class="fg"><label>IMEI / numéro de série</label><input type="text" id="f-serie" placeholder="ex : 356789101234567"/></div>
         <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
       </div>
 
@@ -723,6 +725,7 @@ function openPanel(r=null){
   document.getElementById('f-tel').value=r?.client_telephone||''
   document.getElementById('f-appareil').value=r?.appareil||''
   document.getElementById('f-modele').value=r?.modele||''
+  document.getElementById('f-serie').value=r?.numero_serie||''
   document.getElementById('f-panne').value=r?.panne_description||''
   // Vider la liste de pièces
   const _pl=document.getElementById('piecesList');if(_pl)_pl.innerHTML=''
@@ -798,7 +801,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
     });
 
     renderNotifs(notifs);
@@ -857,7 +860,9 @@ let allServices=[]
 // ─── GARANTIE ───
 // Fusionné depuis l'ancienne page Garanties : ce n'était pas une entité
 // propre, seulement un filtre sur les réparations au statut pret/rendu.
-const GARANTIE_MOIS=3
+// Durée configurable dans Paramètres > Facturation (settings.reparation_garantie_mois) ;
+// 3 mois par défaut si non configuré, chargée dans loadReps().
+let GARANTIE_MOIS=3
 function calcGarantie(r){
   const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
   const expire=new Date(debut)
@@ -865,6 +870,22 @@ function calcGarantie(r){
   const joursRestants=Math.ceil((expire-new Date())/(1000*60*60*24))
   return {expire,joursRestants,sousGarantie:joursRestants>0}
 }
+// ─── RELANCE ───
+// date_fin est déjà écrit au premier passage en statut "prêt" (voir plus
+// bas) : on l'utilise pour savoir depuis combien de temps l'appareil
+// attend d'être récupéré.
+function joursDepuisPret(r){
+  if(!r.date_fin)return 0
+  return Math.floor((new Date()-new Date(r.date_fin))/(1000*60*60*24))
+}
+function joursDepuisRelance(r){
+  if(!r.relance_envoyee_le)return Infinity
+  return Math.floor((new Date()-new Date(r.relance_envoyee_le))/(1000*60*60*24))
+}
+function needsRelance(r){
+  return r.statut==='pret' && joursDepuisPret(r)>=3 && joursDepuisRelance(r)>=5
+}
+
 function garantieBadge(r){
   if(!['pret','rendu'].includes(r.statut))return ''
   const g=calcGarantie(r)
@@ -1005,13 +1026,15 @@ async function nextNumero(cle, prefix){
 window.nextNumero=nextNumero
 
 async function loadReps(){
-  const [rRep,rStock,rCli,rSvc]=await Promise.all([
+  const [rRep,rStock,rCli,rSvc,rSet]=await Promise.all([
     sb.from('reparations').select('*').order('created_at',{ascending:false}),
     sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom'),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true})
+    sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true}),
+    sb.from('settings').select('cle,valeur').eq('cle','reparation_garantie_mois').maybeSingle()
   ])
   if(rRep.error){console.error(rRep.error);return}
+  if(rSet.data&&rSet.data.valeur)GARANTIE_MOIS=Number(rSet.data.valeur)||3
   allReps=rRep.data||[]
   allStockPieces=rStock.data||[]
   allClientsRep=rCli.data||[]
@@ -1050,18 +1073,20 @@ function updateKPIs(){
     return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!['annule','non_reparable'].includes(r.statut)
   })
   const sousGarantie=allReps.filter(r=>['pret','rendu'].includes(r.statut)&&calcGarantie(r).sousGarantie).length
+  const aRelancer=allReps.filter(needsRelance).length
   document.getElementById('k-actifs').textContent=actifs
   document.getElementById('k-mois').textContent=moisReps.length
   document.getElementById('k-garantie').textContent=sousGarantie
+  document.getElementById('k-relance').textContent=aRelancer
   document.getElementById('ph-sub').textContent=`${allReps.length} dossier${allReps.length>1?'s':''}`
   const nb=document.getElementById('nb-actives')
   if(nb){nb.textContent=actifs||'✓';nb.className=actifs>0?'nc ok':'nc'}
 }
 
 function renderFilters(){
-  const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','Garantie','non_reparable','annule']
-  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"Nouveau dossier",'recu':'Appareil reçu','attente':'Attente de pièce','encours':'Diagnostic / Réparation','pret':'Prêt à récupérer','rendu':'Rendu au client','Garantie':'Sous garantie','non_reparable':'Non réparable','annule':'Annulé'}
-  const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','Garantie':'#16a34a','non_reparable':'#fb923c','annule':'#f87171'}
+  const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','Garantie','Relance','non_reparable','annule']
+  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"Nouveau dossier",'recu':'Appareil reçu','attente':'Attente de pièce','encours':'Diagnostic / Réparation','pret':'Prêt à récupérer','rendu':'Rendu au client','Garantie':'Sous garantie','Relance':'À relancer','non_reparable':'Non réparable','annule':'Annulé'}
+  const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','Garantie':'#16a34a','Relance':'#f59e0b','non_reparable':'#fb923c','annule':'#f87171'}
   document.getElementById('filterBtns').innerHTML=all.map(s=>{
     const isActive=activeFilter===s
     const color=colors[s]
@@ -1078,6 +1103,7 @@ function getFiltered(){
     let matchFilter=true
     if(activeFilter==='Actifs')matchFilter=!['rendu','annule','non_reparable'].includes(r.statut)
     else if(activeFilter==='Garantie')matchFilter=['pret','rendu'].includes(r.statut)&&calcGarantie(r).sousGarantie
+    else if(activeFilter==='Relance')matchFilter=needsRelance(r)
     else if(activeFilter!=='Tous')matchFilter=r.statut===activeFilter
     const matchSearch=!q||[r.client_nom,r.client_email,r.appareil,r.marque,r.modele,r.panne_description].some(v=>v&&v.toLowerCase().includes(q))
     return matchFilter&&matchSearch
@@ -1101,11 +1127,15 @@ function renderCards(){
         </div>
         <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" style="flex-shrink:0;">${escHtml(st.label)} ▾</button>
       </div>
-      <div style="font-size:12px;color:var(--t2);">${escHtml(r.modele||r.appareil)||'—'}</div>
+      <div style="font-size:12px;color:var(--t2);">${escHtml(r.modele||r.appareil)||'—'}${r.numero_serie?` · <span style="font-family:monospace;color:var(--t3);font-size:11px;">${escHtml(r.numero_serie)}</span>`:''}</div>
       <div style="font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${escHtml(r.panne_description)||'—'}</div>
       ${r.motif?`<div style="font-size:11px;color:#fb923c;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Motif : ${escHtml(r.motif)}</div>`:''}
       <div style="font-size:11px;color:var(--t3);margin-top:8px;">Reçu le ${date}</div>
       ${garantieBadge(r)?`<div style="margin-top:8px;">${garantieBadge(r)}</div>`:''}
+      ${needsRelance(r)?`<div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(245,158,11,.1);border-radius:6px;padding:6px 10px;">
+        <span style="font-size:11px;color:#f59e0b;font-weight:500;">Prêt depuis ${joursDepuisPret(r)} j — non récupéré</span>
+        <button class="act-btn" onclick="event.stopPropagation();relancerClient(${r.id})" style="width:auto;padding:0 6px;gap:4px;color:#f59e0b;" title="Envoyer un rappel par email"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg><span style="font-size:11px;">Relancer</span></button>
+      </div>`:r.relance_envoyee_le?`<div style="font-size:10.5px;color:var(--t3);margin-top:6px;">Relancé le ${new Date(r.relance_envoyee_le).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})}</div>`:''}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
         <div>
           ${r.converti_facture_id?`<button class="act-btn" onclick="event.stopPropagation();window.location.href='/admin/factures.html?open=${r.converti_facture_id}'" style="width:auto;padding:0 4px;gap:5px;color:var(--a);" title="Voir la facture"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span style="font-size:11px;">Facture</span></button>`
@@ -1125,6 +1155,34 @@ function renderCards(){
 }
 
 window.renderTable=renderCards
+
+window.relancerClient=async function(id){
+  const r=allReps.find(r=>r.id===id)
+  if(!r)return
+  if(!r.client_email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
+  if(!confirm(`Envoyer un rappel à ${r.client_nom} pour venir récupérer son appareil ?`))return
+  try{
+    const prenom=(r.client_nom||'').split(' ')[0]||''
+    const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'votre appareil'
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
+    const html=`<p>Bonjour ${prenom},</p><p>Votre ${appareil}${r.numero?' (dossier '+r.numero+')':''} est prêt à être récupéré depuis quelques jours.</p><p>N'hésitez pas à me recontacter pour convenir d'un moment.</p>${signature}`
+    const {data:{session}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-reminder`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      body:JSON.stringify({to:r.client_email,subject:`Votre appareil est prêt — IT Soluce`,html:html})
+    })
+    const result=await res.json()
+    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
+    const now=new Date().toISOString()
+    await sb.from('reparations').update({relance_envoyee_le:now}).eq('id',id)
+    r.relance_envoyee_le=now
+    renderAll()
+    showToast('Rappel envoyé ✓','ok')
+  }catch(err){
+    showToast('Erreur : '+err.message,'err')
+  }
+}
 
 window.editRep=function(id){
   const r=allReps.find(r=>r.id===id)
@@ -1284,6 +1342,7 @@ window.saveDossier=async function(){
     client_telephone:document.getElementById('f-tel').value.trim()||null,
     appareil,
     modele:document.getElementById('f-modele').value.trim()||null,
+    numero_serie:document.getElementById('f-serie').value.trim()||null,
     panne_description:panne,
     statut:nouveauStatut,
     piece_id:piecesData.length>0?piecesData[0].stock_id:null,
@@ -1352,8 +1411,10 @@ window.exportCSV=function(){
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
-// Arrivée depuis un lien "Garanties" (dashboard) : présélectionner le filtre.
-if(new URLSearchParams(location.search).get('filtre')==='garantie')activeFilter='Garantie'
+// Arrivée depuis un lien du dashboard : présélectionner le filtre.
+const filtreUrl=new URLSearchParams(location.search).get('filtre')
+if(filtreUrl==='garantie')activeFilter='Garantie'
+else if(filtreUrl==='relance')activeFilter='Relance'
 
 await loadReps()
 
