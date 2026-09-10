@@ -8,24 +8,24 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 :root{
-  --a:#d68a4c;--ad:rgba(214,138,76,0.16);
-  --bg:#1c1815;--bg2:#241f1a;--bg3:#2c2620;--bg4:#332c24;
-  --ln:rgba(255,241,224,0.07);--ln2:rgba(255,241,224,0.12);
-  --t1:#f2ece3;--t2:#b6ab9c;--t3:#7d7364;
-  --ok:#6fac83;--w:#e0b34d;--d:#dd7c62;
+  --a:#0052CC;--ad:rgba(0,82,204,0.10);
+  --bg:#1c1d1f;--bg2:#242527;--bg3:#2c2d2f;--bg4:#343537;
+  --ln:rgba(255,255,255,0.08);--ln2:rgba(255,255,255,0.14);
+  --t1:#f5f5f7;--t2:#98989d;--t3:#6e6e73;
+  --ok:#30d158;--w:#ff9f0a;--d:#ff453a;
   --sw:220px;--th:48px;
 }
 [data-mode="light"]{
-  --bg:#f7f3ec;--bg2:#fffdfa;--bg3:#efe8dd;--bg4:#e6dccb;
-  --ln:rgba(60,40,20,0.08);--ln2:rgba(60,40,20,0.14);
-  --t1:#241f1a;--t2:#6b5f4f;--t3:#a89a86;
+  --bg:#f5f5f7;--bg2:#ffffff;--bg3:#fafafa;--bg4:#f0f0f2;
+  --ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);
+  --t1:#1d1d1f;--t2:#6e6e73;--t3:#a1a1a6;
 }
-body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:-.01em;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
 /* TOPBAR */
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
@@ -226,58 +226,46 @@ body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);c
 
 
 /* DASHBOARD REFONTE */
-.dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px 8px;}
-.dk{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:15px 16px;position:relative;overflow:hidden;}
-.dk-label{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:7px;}
-.dk-val{font-size:25px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
-.dk-sub{font-size:11px;color:var(--t3);margin-top:6px;}
-.dk-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:8px 24px 24px;}
-.dash-col{display:flex;flex-direction:column;gap:14px;}
-.dcard{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;overflow:hidden;}
-.dcard-head{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--ln);}
-.dcard-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px;}
-.dcard-title .ic{width:16px;height:16px;stroke:var(--t2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.dcard-link{font-size:11px;color:var(--a);text-decoration:none;font-weight:500;}
-.dcard-link:hover{text-decoration:underline;}
-.dcard-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg4);color:var(--t2);}
-.dcard-body{padding:5px;}
-.drow{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:7px;cursor:pointer;text-decoration:none;transition:background .1s;}
-.drow:hover{background:var(--bg3);}
-.drow-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.drow-main{flex:1;min-width:0;}
-.drow-t{font-size:12.5px;color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.drow-s{font-size:11px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.drow-r{font-size:11px;font-weight:600;flex-shrink:0;text-align:right;}
-.dtag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap;}
-.dt-blue{background:rgba(59,130,246,.13);color:#2563eb;}
-.dt-green{background:rgba(52,211,153,.13);color:#059669;}
-.dt-orange{background:rgba(251,146,60,.13);color:#ea580c;}
-.dt-red{background:rgba(248,113,113,.13);color:#dc2626;}
-.dt-gray{background:var(--bg4);color:var(--t2);}
-.dt-purple{background:rgba(139,92,246,.13);color:#7c3aed;}
-.dcard-empty{padding:20px 15px;text-align:center;font-size:12px;color:var(--t3);}
-.dash-greet{padding:18px 24px 4px;}
-.dash-greet h1{font-size:20px;font-weight:600;color:var(--t1);letter-spacing:-.4px;}
-.dash-greet p{font-size:13px;color:var(--t3);margin-top:3px;}
-@media(max-width:1000px){.dash-kpis{grid-template-columns:1fr 1fr;}.dash-grid{grid-template-columns:1fr;}}
-
-/* DASHBOARD REFONTE */
-.dash-hello{padding:20px 24px 4px;}
-.dash-hero{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;padding:16px 24px 0;}
-.hero-ca{background:linear-gradient(135deg,#0052CC,#2563eb);border-radius:14px;padding:22px 24px;color:#fff;}
-.hero-ca-label{font-size:12.5px;opacity:.85;}
-.hero-ca-val{font-size:32px;font-weight:700;margin:5px 0 3px;letter-spacing:-.5px;}
-.hero-ca-sub{font-size:12px;opacity:.85;}
-.hero-side{display:grid;grid-template-rows:1fr 1fr;gap:12px;}
-.hero-mini{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
-.hero-mini-label{font-size:11px;color:var(--t3);}
-.hero-mini-val{font-size:18px;font-weight:700;margin-top:2px;}
-.hero-mini-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.hero-mini-ico svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;}
-@media(max-width:1000px){.dash-hero{grid-template-columns:1fr;}}
+.dash-hello{padding:20px 24px 0;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .dash-hello h1{font-size:20px;font-weight:600;color:var(--t1);letter-spacing:-.4px;}
 .dash-hello p{font-size:13px;color:var(--t3);margin-top:3px;text-transform:capitalize;}
+.period-seg{display:flex;background:var(--bg3);border:1px solid var(--ln2);border-radius:10px;padding:3px;gap:2px;}
+.period-seg button{font-family:inherit;font-size:12.5px;font-weight:500;border:none;background:none;color:var(--t2);padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .15s;}
+.period-seg button.on{background:var(--bg2);color:var(--a);box-shadow:0 1px 2px rgba(0,0,0,.15);}
+.alert-row{padding:14px 24px 0;display:flex;flex-direction:column;gap:8px;}
+.alert-bnr{display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:10px;font-size:12.5px;border-left:3px solid;background:var(--bg2);border-top:1px solid var(--ln);border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);}
+.alert-bnr.wn{border-left-color:var(--w);}
+.alert-bnr svg{width:15px;height:15px;flex-shrink:0;stroke:var(--w);fill:none;stroke-width:1.8;}
+.alert-bnr span{color:var(--t2);flex:1;}
+.alert-bnr span b{color:var(--t1);}
+.alert-bnr a{font-size:12px;font-weight:600;color:var(--a);text-decoration:none;}
+.alert-bnr a:hover{text-decoration:underline;}
+.chart-box{height:130px;}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:104px;}
+.cbar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;position:relative;}
+.cbar{width:100%;max-width:30px;background:var(--ad);border-radius:5px 5px 2px 2px;transition:height .4s cubic-bezier(.3,1,.4,1),background .12s;cursor:pointer;}
+.cbar:hover{background:var(--a);}
+.cbar-lbl{font-size:10px;color:var(--t3);}
+.cbar-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%) translateY(4px);background:var(--t1);color:var(--bg);font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;z-index:2;}
+.cbar-col:hover .cbar-tip{opacity:1;transform:translateX(-50%) translateY(0);}
+.chips{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.chip{font-family:inherit;font-size:11px;font-weight:500;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);padding:4px 11px;border-radius:99px;cursor:pointer;transition:all .12s;}
+.chip.on{background:var(--a);border-color:var(--a);color:#fff;}
+.chip:hover:not(.on){border-color:var(--t3);color:var(--t1);}
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 15px;border-bottom:1px solid var(--ln);cursor:pointer;}
+.task-row:last-child{border-bottom:none;}
+.task-row:hover{background:var(--bg3);}
+.task-chk{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--ln2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.task-chk svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:3;opacity:0;transition:opacity .1s;}
+.task-row.done .task-chk{background:var(--ok);border-color:var(--ok);}
+.task-row.done .task-chk svg{opacity:1;}
+.task-txt{font-size:12.5px;color:var(--t1);flex:1;min-width:0;}
+.task-row.done .task-txt{color:var(--t3);text-decoration:line-through;}
+.task-tag{font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:rgba(255,69,58,.12);color:var(--d);flex-shrink:0;}
+.queue-row{display:flex;justify-content:space-between;align-items:center;padding:7px 15px;font-size:12.5px;border-bottom:1px solid var(--ln);}
+.queue-row:last-child{border-bottom:none;}
+.queue-row span:first-child{color:var(--t2);}
+.queue-row b{color:var(--t1);}
 .dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 24px;}
 .dk{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:15px 16px;position:relative;overflow:hidden;}
 .dk-label{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:7px;}
@@ -583,12 +571,39 @@ body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);c
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow-y:auto;">
       <div class="dash-hello">
-        <h1 id="hello">Bonjour Linton</h1>
-        <p id="helloDate">—</p>
+        <div><h1 id="hello">Bonjour Linton</h1><p id="helloDate">—</p></div>
+        <div class="period-seg" id="periodSeg">
+          <button class="on" data-p="jour">Aujourd'hui</button>
+          <button data-p="semaine">Cette semaine</button>
+          <button data-p="mois">Ce mois</button>
+        </div>
       </div>
-      <div class="dash-hero" id="hero"></div>
       <div class="dash-kpis" id="kpis"></div>
-      <div class="dash-grid" id="grid"></div>
+      <div class="alert-row" id="alertRow"></div>
+      <div class="dash-grid" id="grid">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="dcard">
+            <div class="dcard-head"><div class="dcard-title" id="chartTitle">CA des 7 derniers jours</div></div>
+            <div style="padding:16px;"><div class="chart-box"><div class="chart-bars" id="chartBars"></div></div></div>
+          </div>
+          <div class="dcard">
+            <div class="dcard-head"><div class="dcard-title">Réparations</div><a href="/admin/reparations.html" class="dcard-link">Voir tout →</a></div>
+            <div style="padding:12px 15px 0;"><div class="chips" id="repChips"></div></div>
+            <div class="dcard-body" id="repList" style="max-height:none;"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="dcard">
+            <div class="dcard-head"><div class="dcard-title">Tâches du jour</div><a href="/admin/taches.html" class="dcard-link">Tâches →</a></div>
+            <div id="taskList"></div>
+          </div>
+          <div class="dcard">
+            <div class="dcard-head"><div class="dcard-title">File d'attente</div></div>
+            <div id="queueList"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-grid" id="gridSecondary" style="padding-top:0;"></div>
     </div>
   </div>
 </div>
@@ -716,14 +731,15 @@ function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
 const today=startOfDay(now)
 
 // ─── CHARGEMENT PARALLÈLE DE TOUTES LES DONNÉES ───
-const [rRep,rFac,rDev,rRdv,rStock,rCharges,rTaches]=await Promise.all([
+const [rRep,rFac,rDev,rRdv,rStock,rCharges,rTaches,rCli]=await Promise.all([
   sb.from('reparations').select('*'),
   sb.from('factures').select('*'),
   sb.from('devis').select('*'),
   sb.from('rendezvous').select('*'),
   sb.from('stock').select('*'),
   sb.from('charges').select('*'),
-  sb.from('taches').select('*')
+  sb.from('taches').select('*'),
+  sb.from('clients').select('id,created_at')
 ])
 const reps=rRep.data||[]
 const factures=rFac.data||[]
@@ -732,6 +748,7 @@ const rdvs=rRdv.data||[]
 const stock=rStock.data||[]
 const charges=rCharges.data||[]
 const taches=rTaches.data||[]
+const clients=rCli.data||[]
 
 // ─── CALCULS KPIs ───
 // CA encaissé ce mois (factures payées ce mois)
@@ -802,34 +819,154 @@ const alerts=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte||0))
 // ─── DONNÉES SUPPLÉMENTAIRES POUR LE BANDEAU REPORTING ───
 const facturesPayeesMonth=facturesPayees.filter(f=>{const d=new Date(f.date_paiement||f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
 const devisEnAttenteTotal=devis.filter(d=>d.statut==='envoye').length
-const dansSeptJours=new Date(today);dansSeptJours.setDate(dansSeptJours.getDate()+7)
-const rdvSemaine=rdvs.filter(r=>!r.termine&&new Date(r.date_debut)>=today&&new Date(r.date_debut)<dansSeptJours).length
 
-// ─── RENDU DU BANDEAU HERO + KPI ───
-const moisNom=now.toLocaleDateString('fr-BE',{month:'long'})
-document.getElementById('hero').innerHTML=`
-  <div class="hero-ca">
-    <div class="hero-ca-label">Chiffre d'affaires · ${moisNom.charAt(0).toUpperCase()+moisNom.slice(1)} ${now.getFullYear()}</div>
-    <div class="hero-ca-val">${caMonth.toFixed(2).replace('.',',')} €</div>
-    <div class="hero-ca-sub">${facturesPayeesMonth.length} facture${facturesPayeesMonth.length>1?'s':''} payée${facturesPayeesMonth.length>1?'s':''} ce mois</div>
-  </div>
-  <div class="hero-side">
-    <div class="hero-mini">
-      <div><div class="hero-mini-label">Bénéfice net</div><div class="hero-mini-val" style="color:${beneficeNet>=0?'var(--ok)':'var(--d)'};">${beneficeNet>=0?'+':''}${beneficeNet.toFixed(2).replace('.',',')} €</div></div>
-      <div class="hero-mini-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
-    </div>
-    <div class="hero-mini">
-      <div><div class="hero-mini-label">Alertes stock</div><div class="hero-mini-val">${alerts.length}</div></div>
-      <div class="hero-mini-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-    </div>
-  </div>
-`
-document.getElementById('kpis').innerHTML=`
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${repsActives.length}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Réparations actives</div></div>
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${devisEnAttenteTotal}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Devis en attente</div></div>
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;color:${facturesRetard.length>0?'var(--d)':'var(--t1)'};">${facturesRetard.length}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">Facture${facturesRetard.length>1?'s':''} en retard</div></div>
-  <div class="kpi" style="text-align:center;"><div class="kpi-val" style="font-size:20px;font-weight:700;">${rdvSemaine}</div><div class="kpi-label" style="font-size:11px;color:var(--t3);margin-top:2px;">RDV cette semaine</div></div>
-`
+// ─── KPI PAR PÉRIODE (Aujourd'hui / Semaine / Mois) ───
+function isSameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+const j7=new Date(today);j7.setDate(j7.getDate()-6)
+const euro=n=>Number(n||0).toFixed(2).replace('.',',')+' €'
+
+const caJour=facturesPayees.filter(f=>f.date_paiement&&isSameDay(new Date(f.date_paiement),today)).reduce((a,f)=>a+Number(f.total||0),0)
+const rdvJour=rdvs.filter(r=>!r.termine&&isSameDay(new Date(r.date_debut),today)).length
+const tachesJour=taches.filter(t=>!t.faite&&t.due_at&&isSameDay(new Date(t.due_at),today)).length
+
+const facturesPayees7j=facturesPayees.filter(f=>f.date_paiement&&new Date(f.date_paiement)>=j7)
+const caSemaine=facturesPayees7j.reduce((a,f)=>a+Number(f.total||0),0)
+const repsRecues7j=reps.filter(r=>new Date(r.created_at)>=j7).length
+const repsRendues7j=reps.filter(r=>r.statut==='rendu'&&r.updated_at&&new Date(r.updated_at)>=j7).length
+
+const nouveauxClientsMois=clients.filter(c=>{const d=new Date(c.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).length
+const ticketMoyenMois=facturesPayeesMonth.length?caMonth/facturesPayeesMonth.length:0
+
+const KPI_PERIODES={
+  jour:[
+    {l:'Réparations en cours',v:repsActives.length,ac:true},
+    {l:'RDV aujourd\'hui',v:rdvJour},
+    {l:'Tâches du jour',v:tachesJour},
+    {l:'CA du jour',v:euro(caJour)}
+  ],
+  semaine:[
+    {l:'CA de la semaine',v:euro(caSemaine),ac:true},
+    {l:'Réparations reçues',v:repsRecues7j},
+    {l:'Réparations rendues',v:repsRendues7j},
+    {l:'Devis en attente',v:devisEnAttenteTotal}
+  ],
+  mois:[
+    {l:`CA de ${moisNomCap()}`,v:euro(caMonth),ac:true},
+    {l:'Réparations actives',v:repsActives.length},
+    {l:'Nouveaux clients',v:nouveauxClientsMois},
+    {l:'Ticket moyen',v:euro(ticketMoyenMois)}
+  ]
+}
+function moisNomCap(){const m=now.toLocaleDateString('fr-BE',{month:'long'});return m.charAt(0).toUpperCase()+m.slice(1)}
+function renderKpis(periode){
+  document.getElementById('kpis').innerHTML=KPI_PERIODES[periode].map(k=>
+    `<div class="dk"><div class="dk-accent" style="background:${k.ac?'var(--a)':'transparent'}"></div><div class="dk-label">${k.l}</div><div class="dk-val"${k.ac?' style="color:var(--a)"':''}>${k.v}</div></div>`
+  ).join('')
+}
+document.querySelectorAll('#periodSeg button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#periodSeg button').forEach(b=>b.classList.remove('on'))
+    btn.classList.add('on')
+    renderKpis(btn.dataset.p)
+  })
+})
+renderKpis('jour')
+
+// ─── ALERTES (relance + garantie) ───
+let alertHtml=''
+if(aRelancer.length>0){
+  const pire=aRelancer[0]
+  alertHtml+=`<div class="alert-bnr wn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>${aRelancer.length>1?`<b>${aRelancer.length} réparations</b> prêtes non récupérées`:`<b>${escHtml(pire.client_nom)}</b> n'a pas récupéré sa réparation`} depuis plus de ${pire._jours} jours</span><a href="/admin/reparations.html?filtre=relance">Relancer →</a></div>`
+}
+if(garExpire.length>0){
+  const proche=garExpire[0]
+  const app=[proche.marque,proche.modele].filter(Boolean).join(' ')||proche.appareil||''
+  alertHtml+=`<div class="alert-bnr wn"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>${garExpire.length>1?`<b>${garExpire.length} garanties</b> expirent dans les 15 prochains jours`:`Garantie <b>${escHtml(app)}</b> (${escHtml(proche.client_nom)}) expire dans ${proche._jours} jour${proche._jours>1?'s':''}`}</span><a href="/admin/reparations.html?filtre=garantie">Voir →</a></div>`
+}
+document.getElementById('alertRow').innerHTML=alertHtml
+
+// ─── GRAPHIQUE : CA DES 7 DERNIERS JOURS ───
+const chartDays=[]
+for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);chartDays.push(d)}
+const chartData=chartDays.map(d=>{
+  const total=facturesPayees.filter(f=>f.date_paiement&&isSameDay(new Date(f.date_paiement),d)).reduce((a,f)=>a+Number(f.total||0),0)
+  return {l:d.toLocaleDateString('fr-BE',{weekday:'short'}).replace('.',''),v:total}
+})
+const chartMax=Math.max(...chartData.map(c=>c.v),1)
+document.getElementById('chartBars').innerHTML=chartData.map(c=>{
+  const h=c.v===0?3:Math.max(6,Math.round((c.v/chartMax)*100))
+  return `<div class="cbar-col"><div class="cbar-tip">${euro(c.v)}</div><div class="cbar" style="height:${h}%"></div><div class="cbar-lbl">${c.l}</div></div>`
+}).join('')
+
+// ─── RÉPARATIONS FILTRABLES PAR STATUT ───
+const REP_CHIPS=[
+  {f:'tous',l:'Tous'},
+  {f:'nouveau',l:'Nouveau',st:['attente_reception','recu']},
+  {f:'attente',l:'Attente pièce',st:['attente']},
+  {f:'encours',l:'En cours',st:['encours']},
+  {f:'pret',l:'Prêt',st:['pret']}
+]
+document.getElementById('repChips').innerHTML=REP_CHIPS.map((c,i)=>`<button class="chip ${i===0?'on':''}" data-f="${c.f}">${c.l}</button>`).join('')
+function renderRepList(filter){
+  const chip=REP_CHIPS.find(c=>c.f===filter)
+  const rows=(chip&&chip.st?repsActives.filter(r=>chip.st.includes(r.statut)):repsActives).slice(0,8)
+  const list=document.getElementById('repList')
+  if(rows.length===0){list.innerHTML=emptyCard('🔧','Aucune réparation dans ce statut');return}
+  list.innerHTML=rows.map(r=>{
+    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+    return `<a href="/admin/reparations.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)||'—'} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-blue">${escHtml(STATUT_REP[r.statut]||r.statut)}</span></div></a>`
+  }).join('')
+}
+document.querySelectorAll('#repChips .chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('#repChips .chip').forEach(c=>c.classList.remove('on'))
+    chip.classList.add('on')
+    renderRepList(chip.dataset.f)
+  })
+})
+renderRepList('tous')
+
+// ─── TÂCHES DU JOUR (cochables) ───
+const tachesAffichees=taches.filter(t=>!t.faite).sort((a,b)=>{
+  const da=a.due_at?new Date(a.due_at):new Date(8640000000000000)
+  const db=b.due_at?new Date(b.due_at):new Date(8640000000000000)
+  return da-db
+}).slice(0,5)
+function renderTaches(){
+  const list=document.getElementById('taskList')
+  if(tachesAffichees.length===0){list.innerHTML=emptyCard('✓','Aucune tâche en attente');return}
+  list.innerHTML=tachesAffichees.map(t=>{
+    const retard=t.due_at&&new Date(t.due_at)<today
+    return `<div class="task-row" data-id="${t.id}"><div class="task-chk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="task-txt">${escHtml(t.titre)}</div>${(retard||t.priorite==='urgente')?`<span class="task-tag">${retard?'En retard':'Urgente'}</span>`:''}</div>`
+  }).join('')
+  list.querySelectorAll('.task-row').forEach(row=>{
+    row.addEventListener('click',async()=>{
+      const id=Number(row.dataset.id)
+      row.classList.add('done')
+      try{
+        await sb.from('taches').update({faite:true,updated_at:new Date().toISOString()}).eq('id',id)
+        setTimeout(()=>{
+          const idx=tachesAffichees.findIndex(t=>t.id===id)
+          if(idx>-1)tachesAffichees.splice(idx,1)
+          renderTaches()
+        },350)
+      }catch(e){row.classList.remove('done');showToast('Erreur','err')}
+    })
+  })
+}
+renderTaches()
+
+// ─── FILE D'ATTENTE PAR STATUT ───
+const queueBuckets=[
+  {l:'Nouveau / reçu',st:['attente_reception','recu']},
+  {l:'Attente de pièce',st:['attente']},
+  {l:'Diagnostic / réparation',st:['encours']},
+  {l:'Prêt à récupérer',st:['pret']}
+]
+document.getElementById('queueList').innerHTML=queueBuckets.map(b=>{
+  const n=repsActives.filter(r=>b.st.includes(r.statut)).length
+  return `<div class="queue-row"><span>${b.l}</span><b>${n}</b></div>`
+}).join('')
 
 // ─── RENDU DES CARTES ───
 function emptyCard(ico,txt){return `<div class="dempty"><span class="ico">${ico}</span>${txt}</div>`}
@@ -843,14 +980,6 @@ else cardRdv=rdvAvenir.map(r=>{
   const hStr=d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
   const sub=[r.client_nom,r.lieu].filter(Boolean).join(' · ')
   return `<a href="/admin/planning.html" class="drow"><div class="drow-dot" style="background:${TYPE_COL[r.type]||'#6b7280'}"></div><div class="drow-main"><div class="drow-t">${escHtml(r.titre)}</div><div class="drow-s">${dStr} · ${hStr}${sub?' · '+escHtml(sub):''}</div></div><div class="drow-r"><span class="dtag dtag-gray">${escHtml(TYPE_LBL[r.type])||'Autre'}</span></div></a>`
-}).join('')
-
-// CARTE : Réparations en cours
-let cardReps=''
-if(repsActives.length===0)cardReps=emptyCard('🔧','Aucune réparation en cours')
-else cardReps=repsActives.slice(0,6).map(r=>{
-  const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
-  return `<a href="/admin/reparations.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)||'—'} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-blue">${escHtml(STATUT_REP[r.statut]||r.statut)}</span></div></a>`
 }).join('')
 
 // CARTE : Factures à encaisser
@@ -870,63 +999,26 @@ else cardDevis=devisAttente.map(d=>{
   return `<a href="/admin/devis.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(d.client_nom)||'—'} <span class="dnum">${escHtml(d.numero)}</span></div><div class="drow-s">Envoyé le ${dStr}</div></div><div class="drow-r"><div class="drow-amount">${Number(d.total||0).toFixed(2)} €</div></div></a>`
 }).join('')
 
-// ─── ASSEMBLAGE DE LA GRILLE ───
-let grid=''
-// Colonne gauche : RDV + Réparations
-grid+='<div style="display:flex;flex-direction:column;gap:14px;">'
-grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Rendez-vous à venir</div><a href="/admin/planning.html" class="dcard-link">Planning →</a></div><div class="dcard-body">${cardRdv}</div></div>`
-grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations en cours</div><a href="/admin/reparations.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardReps}</div></div>`
-grid+='</div>'
-// Colonne droite : Factures + Devis
-grid+='<div style="display:flex;flex-direction:column;gap:14px;">'
-grid+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${montantImpaye.toFixed(2)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
-grid+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis en attente</div><a href="/admin/devis.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardDevis}</div></div>`
-grid+='</div>'
-
-document.getElementById('grid').innerHTML=grid
-
-// ─── CARTES CONDITIONNELLES (garanties + stock) ───
-// On les ajoute en pleine largeur sous la grille si nécessaire
-// Tâches urgentes ou en retard, non faites
-const tachesUrgentes=taches.filter(t=>!t.faite&&(t.priorite==='urgente'||(t.due_at&&new Date(t.due_at)<today)))
-  .sort((a,b)=>new Date(a.due_at||a.created_at)-new Date(b.due_at||b.created_at))
-
-let extra=''
-if(tachesUrgentes.length>0){
-  const rows=tachesUrgentes.slice(0,5).map(t=>{
-    const retard=t.due_at&&new Date(t.due_at)<today
-    return `<a href="/admin/taches.html?open=${t.id}" class="drow"><div class="drow-dot" style="background:${retard?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(t.titre)}</div><div class="drow-s">${t.client_nom?escHtml(t.client_nom)+' · ':''}${t.categorie?escHtml(t.categorie):(t.priorite==='urgente'?'Urgente':'')}</div></div><div class="drow-r"><span class="dtag ${retard?'dtag-red':'dtag-orange'}">${retard?'En retard':'Urgente'}</span></div></a>`
-  }).join('')
-  extra+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tâches urgentes</div><a href="/admin/taches.html" class="dcard-link">Tâches →</a></div><div class="dcard-body">${rows}</div></div>`
-}
-if(aRelancer.length>0){
-  const rows=aRelancer.slice(0,5).map(r=>{
-    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
-    return `<a href="/admin/reparations.html?filtre=relance" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-orange">Prêt depuis ${r._jours} j</span></div></a>`
-  }).join('')
-  extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>Prêts non récupérés</div><a href="/admin/reparations.html?filtre=relance" class="dcard-link">Réparations →</a></div><div class="dcard-body">${rows}</div></div>`
-}
-if(garExpire.length>0){
-  const rows=garExpire.slice(0,5).map(r=>{
-    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
-    return `<a href="/admin/reparations.html?filtre=garantie" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-orange">Expire dans ${r._jours} j</span></div></a>`
-  }).join('')
-  extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties qui expirent bientôt</div><a href="/admin/reparations.html?filtre=garantie" class="dcard-link">Réparations →</a></div><div class="dcard-body">${rows}</div></div>`
-}
+// ─── ASSEMBLAGE DE LA GRILLE SECONDAIRE (RDV, factures, devis, stock) ───
+let gridSec=''
+gridSec+='<div style="display:flex;flex-direction:column;gap:14px;">'
+gridSec+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Rendez-vous à venir</div><a href="/admin/planning.html" class="dcard-link">Planning →</a></div><div class="dcard-body">${cardRdv}</div></div>`
+gridSec+=`<div class="dcard ${facturesRetard.length>0?'alert':''}"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures à encaisser</div>${montantImpaye>0?`<span class="dcard-badge">${montantImpaye.toFixed(2)} €</span>`:'<a href="/admin/factures.html" class="dcard-link">Voir →</a>'}</div><div class="dcard-body">${cardFac}</div></div>`
+gridSec+='</div>'
+gridSec+='<div style="display:flex;flex-direction:column;gap:14px;">'
+gridSec+=`<div class="dcard"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis en attente</div><a href="/admin/devis.html" class="dcard-link">Voir →</a></div><div class="dcard-body">${cardDevis}</div></div>`
 if(alerts.length>0){
   const rows=alerts.slice(0,5).map(p=>{
     const rupture=Number(p.quantite)===0
     return `<a href="/admin/stock.html" class="drow"><div class="drow-dot" style="background:${rupture?'#ef4444':'#f59e0b'}"></div><div class="drow-main"><div class="drow-t">${escHtml(p.nom)}</div><div class="drow-s">Stock ${p.quantite} · Seuil ${p.seuil_alerte}</div></div><div class="drow-r"><span class="dtag ${rupture?'dtag-red':'dtag-orange'}">${rupture?'Rupture':'Faible'}</span></div></a>`
   }).join('')
-  extra+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alertes stock</div><a href="/admin/stock.html" class="dcard-link">Stock →</a></div><div class="dcard-body">${rows}</div></div>`
+  gridSec+=`<div class="dcard alert"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alertes stock</div><a href="/admin/stock.html" class="dcard-link">Stock →</a></div><div class="dcard-body">${rows}</div></div>`
 }
-if(extra){
-  const extraDiv=document.createElement('div')
-  extraDiv.className='dash-grid'
-  extraDiv.style.paddingTop='0'
-  extraDiv.innerHTML=extra
-  document.getElementById('grid').parentElement.appendChild(extraDiv)
-}
+gridSec+='</div>'
+document.getElementById('gridSecondary').innerHTML=gridSec
+
+// Tâches urgentes ou en retard, non faites (pour le badge de la sidebar uniquement — affichées dans le widget "Tâches du jour")
+const tachesUrgentes=taches.filter(t=>!t.faite&&(t.priorite==='urgente'||(t.due_at&&new Date(t.due_at)<today)))
 
 document.getElementById('ldr').style.display='none'
 document.getElementById('pageBody').style.display='flex'
