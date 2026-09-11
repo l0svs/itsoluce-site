@@ -1,16 +1,17 @@
 /**
  * Palette de commandes de l'ERP IT Soluce (Cmd+K / Ctrl+K).
  *
- * Recherche unifiée : les 15 pages de l'ERP (correspondance sur le libellé,
- * source commune avec admin-nav.js via window.ADMIN_PAGES) + les clients,
- * réparations, devis et factures (recherche live dans Supabase dès 2
- * caractères). Objectif : ne plus avoir à ouvrir Clients pour chercher un
- * nom, puis Factures pour chercher un numéro — un seul raccourci, partout.
+ * Recherche unifiée : les 15 pages de l'ERP (correspondance sur le libellé)
+ * + les clients, réparations, devis et factures (recherche live dans
+ * Supabase dès 2 caractères). Objectif : ne plus avoir à ouvrir Clients pour
+ * chercher un nom, puis Factures pour chercher un numéro — un seul
+ * raccourci, partout.
  *
- * Chargé sur chaque page juste après admin-nav.js. Ne dépend d'aucun état de
- * page (pas besoin d'être connecté à la session Supabase de la page — le
- * client Supabase est créé ici avec la même clé publique anon déjà présente
- * dans le code source de toutes les pages).
+ * Entièrement autonome : la liste des pages est définie ici (PAGES), le
+ * fichier ne dépend d'aucun autre script ni d'aucun état de page (pas besoin
+ * d'être connecté à la session Supabase de la page — le client Supabase est
+ * créé ici avec la même clé publique anon déjà présente dans le code source
+ * de toutes les pages). Il suffit de l'inclure avant </body>.
  */
 (function () {
   'use strict';
@@ -78,7 +79,27 @@
   var debounceTimer = null;
   var searchToken = 0;
 
-  var STATIC_PAGES = (window.ADMIN_PAGES || []).map(function (p) {
+  // Les 15 pages de l'ERP, dans l'ordre de la nav. Libellés identiques à ceux
+  // de la barre de navigation pour qu'on cherche avec les mots qu'on voit.
+  var PAGES = [
+    { label: 'Dashboard', href: '/admin/dashboard.html' },
+    { label: 'Clients', href: '/admin/clients.html' },
+    { label: 'Devis', href: '/admin/devis.html' },
+    { label: 'Factures', href: '/admin/factures.html' },
+    { label: 'Demandes', href: '/admin/demandes.html' },
+    { label: 'Diagnostics', href: '/admin/diagnostics.html' },
+    { label: 'Réparations', href: '/admin/reparations.html' },
+    { label: 'Garanties', href: '/admin/garanties.html' },
+    { label: 'Stock', href: '/admin/stock.html' },
+    { label: 'Catalogue Foneday', href: '/admin/catalogue.html' },
+    { label: 'Commandes Foneday', href: '/admin/commandes-foneday.html' },
+    { label: 'Fournisseurs', href: '/admin/fournisseurs.html' },
+    { label: 'Prestations', href: '/admin/prestations.html' },
+    { label: 'Planning', href: '/admin/planning.html' },
+    { label: 'Paramètres', href: '/admin/settings.html' }
+  ];
+
+  var STATIC_PAGES = PAGES.map(function (p) {
     return { type: 'page', title: p.label, sub: '', href: p.href };
   });
 
@@ -156,13 +177,13 @@
           if (myToken !== searchToken) return; // une frappe plus récente a déjà relancé une recherche
           var entities = [];
           (res[0].data || []).forEach(function (c) {
-            entities.push({ type: 'client', title: c.nom || '—', sub: [c.numero, c.email].filter(Boolean).join(' · '), href: '/admin/clients.html?open=' + c.id });
+            entities.push({ type: 'client', title: c.nom || '—', sub: [c.numero, c.email].filter(Boolean).join(' · '), href: '/admin/clients.html?q=' + encodeURIComponent(c.numero || c.nom || '') });
           });
           (res[1].data || []).forEach(function (r) {
-            entities.push({ type: 'reparation', title: (r.numero ? r.numero + ' · ' : '') + (r.client_nom || '—'), sub: r.appareil || '', href: '/admin/reparations.html?open=' + r.id });
+            entities.push({ type: 'reparation', title: (r.numero ? r.numero + ' · ' : '') + (r.client_nom || '—'), sub: r.appareil || '', href: '/admin/reparations.html?q=' + encodeURIComponent(r.numero || r.client_nom || '') });
           });
           (res[2].data || []).forEach(function (d) {
-            entities.push({ type: 'devis', title: (d.numero ? d.numero + ' · ' : '') + (d.client_nom || '—'), sub: d.total != null ? Number(d.total).toFixed(2) + ' €' : '', href: '/admin/devis.html?open=' + d.id });
+            entities.push({ type: 'devis', title: (d.numero ? d.numero + ' · ' : '') + (d.client_nom || '—'), sub: d.total != null ? Number(d.total).toFixed(2) + ' €' : '', href: '/admin/devis.html?q=' + encodeURIComponent(d.numero || d.client_nom || '') });
           });
           (res[3].data || []).forEach(function (f) {
             entities.push({ type: 'facture', title: (f.numero ? f.numero + ' · ' : '') + (f.client_nom || '—'), sub: f.total != null ? Number(f.total).toFixed(2) + ' €' : '', href: '/admin/factures.html?open=' + f.id });
@@ -214,4 +235,44 @@
   });
 
   window.openCommandPalette = openPalette;
+
+  // ---- Pré-remplissage générique de la recherche depuis l'URL (?q=) ----
+  // Un résultat "client / réparation / devis" de la palette renvoie vers la
+  // page de liste correspondante avec ?q=… ; ce bloc fait en sorte que la
+  // recherche soit déjà appliquée à l'arrivée. Générique : s'applique à toute
+  // page ayant un champ #searchInput filtrant sur l'événement "input" (Clients,
+  // Devis, Factures, Réparations, Demandes, Diagnostics, Garanties, Stock,
+  // Fournisseurs) ; ne fait rien sur les autres.
+  var q = new URLSearchParams(location.search).get('q');
+  if (q) {
+    // Le filtrage de ces pages passe par un attribut inline (oninput="renderCards()"
+    // ou similaire) dont la fonction est définie dans le <script type="module"> de
+    // la page — lequel s'interrompt sur un `await` (session Supabase) et n'a donc
+    // pas encore tourné au moment du DOMContentLoaded. Déclencher l'événement trop
+    // tôt remplirait le champ sans filtrer la liste : on attend que la fonction
+    // existe réellement avant de déclencher.
+    var prefill = function () {
+      var input = document.getElementById('searchInput');
+      if (!input) return;
+      var attr = input.getAttribute('oninput') || '';
+      var fnName = (attr.match(/([A-Za-z_$][\w$]*)\s*\(/) || [])[1];
+      var fire = function () {
+        input.value = q;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      };
+      if (!fnName) { fire(); return; } // page sans handler inline : comportement direct
+      var waited = 0;
+      var tick = function () {
+        if (typeof window[fnName] === 'function') { fire(); return; }
+        waited += 100;
+        if (waited <= 10000) setTimeout(tick, 100);
+      };
+      tick();
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', prefill);
+    } else {
+      prefill();
+    }
+  }
 })();
