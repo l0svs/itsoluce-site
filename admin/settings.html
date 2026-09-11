@@ -8,20 +8,20 @@
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 :root{
-  --a:#d68a4c;--ad:rgba(214,138,76,0.16);
-  --bg:#1c1815;--bg2:#241f1a;--bg3:#2c2620;--bg4:#332c24;
-  --ln:rgba(255,241,224,0.07);--ln2:rgba(255,241,224,0.12);
-  --t1:#f2ece3;--t2:#b6ab9c;--t3:#7d7364;
-  --ok:#6fac83;--w:#e0b34d;--d:#dd7c62;
+  --a:#3b82f6;--ad:rgba(59,130,246,0.12);
+  --bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;
+  --ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);
+  --t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;
+  --ok:#34d399;--w:#fbbf24;--d:#f87171;
   --sw:220px;--th:48px;
 }
-[data-mode="light"]{--bg:#f7f3ec;--bg2:#fffdfa;--bg3:#efe8dd;--bg4:#e6dccb;--ln:rgba(60,40,20,0.08);--ln2:rgba(60,40,20,0.14);--t1:#241f1a;--t2:#6b5f4f;--t3:#a89a86;}
-body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:-.01em;}
+[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
 
 /* TOPBAR */
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
@@ -75,7 +75,7 @@ body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:var(--bg);c
 .ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
 .nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
 .nl:hover{background:var(--bg3);color:var(--t1);}
-.nl.active{background:var(--ad);color:var(--a);position:relative;}.nl.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--a);border-radius:0 2px 2px 0;}
+.nl.active{background:var(--ad);color:var(--a);}
 .nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}
 .nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
@@ -138,6 +138,12 @@ select option{background:var(--bg3);}
 .toggle input:checked+.toggle-track{background:var(--a);border-color:var(--a);}
 .toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none;}
 .toggle input:checked~.toggle-thumb{transform:translateX(16px);}
+
+/* COULEURS */
+.color-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
+.color-opt:hover{transform:scale(1.15);}
+.color-opt.on{border-color:var(--t1);transform:scale(1.1);}
 
 /* BOUTONS */
 .btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;}
@@ -534,6 +540,22 @@ select option{background:var(--bg3);}
           <div class="sec-title">Apparence</div>
           <div class="sec-desc">Personnalise les couleurs et le mode d'affichage de l'ERP.</div>
           <div class="field-group">
+            <div class="fg-head">Couleur d'accent</div>
+            <div class="field">
+              <div class="field-label"><div class="fl-name">Couleur principale</div><div class="fl-desc">Appliquée aux boutons, liens et éléments actifs</div></div>
+              <div class="field-input">
+                <div class="color-grid">
+                  <div class="color-opt on" data-c="#3b82f6" data-d="rgba(59,130,246,0.12)" style="background:#3b82f6;" onclick="pickColor(this)" title="Bleu"></div>
+                  <div class="color-opt" data-c="#34d399" data-d="rgba(52,211,153,0.12)" style="background:#34d399;" onclick="pickColor(this)" title="Vert"></div>
+                  <div class="color-opt" data-c="#a78bfa" data-d="rgba(167,139,250,0.12)" style="background:#a78bfa;" onclick="pickColor(this)" title="Violet"></div>
+                  <div class="color-opt" data-c="#fbbf24" data-d="rgba(251,191,36,0.12)" style="background:#fbbf24;" onclick="pickColor(this)" title="Ambre"></div>
+                  <div class="color-opt" data-c="#f87171" data-d="rgba(248,113,113,0.12)" style="background:#f87171;" onclick="pickColor(this)" title="Rouge"></div>
+                  <div class="color-opt" data-c="#06b6d4" data-d="rgba(6,182,212,0.12)" style="background:#06b6d4;" onclick="pickColor(this)" title="Cyan"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field-group">
             <div class="fg-head">Mode d'affichage</div>
             <div class="field">
               <div class="field-label"><div class="fl-name">Thème par défaut</div><div class="fl-desc">Auto = s'adapte à l'heure (clair 7h–20h, sombre 20h–7h)</div></div>
@@ -610,10 +632,6 @@ select option{background:var(--bg3);}
             <div class="fg-head">Tarification</div>
             <div class="field"><div class="field-label"><div class="fl-name">Taux horaire main d'œuvre</div><div class="fl-desc">Utilisé pour le calcul automatique des devis</div></div><div class="field-input"><input type="number" id="s-taux" placeholder="40" min="0" step="5"/></div></div>
             <div class="field"><div class="field-label"><div class="fl-name">Devise</div></div><div class="field-input"><select id="s-devise"><option value="EUR">EUR — Euro (€)</option><option value="USD">USD — Dollar ($)</option></select></div></div>
-          </div>
-          <div class="field-group">
-            <div class="fg-head">Garantie</div>
-            <div class="field"><div class="field-label"><div class="fl-name">Durée de garantie</div><div class="fl-desc">Appliquée aux réparations (pièces et main d'œuvre), affichée dans Réparations</div></div><div class="field-input" style="display:flex;align-items:center;gap:8px;"><input type="number" id="s-garantie-mois" placeholder="3" min="0" step="1" style="width:70px;flex:none;"/><span style="font-size:12px;color:var(--t3);">mois</span></div></div>
           </div>
           <div class="field-group">
             <div class="fg-head">Grille de tarification dégressive</div>
@@ -701,6 +719,17 @@ select option{background:var(--bg3);}
 function applyMode(m){
   const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
   document.documentElement.setAttribute('data-mode',e)
+  const lv=e==='light'
+  const v=(a,b)=>lv?a:b
+  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
+  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
+  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
+  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
+  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
+  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
+  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
+  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
+  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
 }
 function setMode(m){
   localStorage.setItem('erp-m',m)
@@ -715,6 +744,23 @@ const sm=localStorage.getItem('erp-m')||'auto'
 document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
 applyMode(sm)
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
+
+// ACCENT
+function applyAccent(c,d){
+  document.documentElement.style.setProperty('--a',c)
+  document.documentElement.style.setProperty('--ad',d)
+  localStorage.setItem('erp-a',c)
+  localStorage.setItem('erp-d',d)
+}
+function pickColor(el){
+  document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('on'))
+  el.classList.add('on')
+  applyAccent(el.dataset.c,el.dataset.d)
+  markDirty()
+}
+const sa=localStorage.getItem('erp-a')
+const sd=localStorage.getItem('erp-d')
+if(sa){applyAccent(sa,sd)}
 
 // DIRTY
 let dirty=false
@@ -859,7 +905,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
     });
 
     renderNotifs(notifs);
@@ -930,7 +976,6 @@ fill('s-telephone','entreprise_telephone')
 fill('s-site','entreprise_site')
 fill('s-mode','apparence_mode')
 fill('s-taux','finance_taux_horaire')
-fill('s-garantie-mois','reparation_garantie_mois')
 fill('s-devise','finance_devise')
 fill('s-tva','finance_mention_tva')
 fill('s-iban','finance_iban')
@@ -947,6 +992,13 @@ fill('s-four-outillage','fournisseur_default_outillage')
 fill('s-seuil','alertes_seuil_global')
 fill('s-alerte-email','alertes_email_actif')
 fill('s-alerte-dest','alertes_email_destinataire')
+
+// Couleur accent sauvegardée
+const savedAccent=cfg['apparence_accent']||'#3b82f6'
+const savedDim=cfg['apparence_accent_dim']||'rgba(59,130,246,0.12)'
+document.querySelectorAll('.color-opt').forEach(el=>{
+  el.classList.toggle('on',el.dataset.c===savedAccent)
+})
 
 
 
@@ -985,13 +1037,20 @@ window.saveSettings=async function(){
     ['entreprise_adresse','s-adresse'],['entreprise_email','s-email'],['entreprise_telephone','s-telephone'],
     ['entreprise_site','s-site'],['apparence_mode','s-mode'],
     ['finance_taux_horaire','s-taux'],['finance_devise','s-devise'],
-    ['reparation_garantie_mois','s-garantie-mois'],
     ['finance_mention_tva','s-tva'],['finance_iban','s-iban'],['intervention_rayon','s-rayon'],
     ['intervention_frais_km','s-km'],['fournisseur_default_iphone','s-four-iphone'],
     ['fournisseur_default_samsung','s-four-samsung'],['fournisseur_default_outillage','s-four-outillage'],
     ['alertes_seuil_global','s-seuil'],['alertes_email_actif','s-alerte-email'],
     ['alertes_email_destinataire','s-alerte-dest']
   ]
+  // Accent
+  const activeColor=document.querySelector('.color-opt.on')
+  if(activeColor){
+    pairs.push(['apparence_accent',null])
+    pairs.push(['apparence_accent_dim',null])
+    await sb.from('settings').upsert({cle:'apparence_accent',valeur:activeColor.dataset.c},{onConflict:'cle'})
+    await sb.from('settings').upsert({cle:'apparence_accent_dim',valeur:activeColor.dataset.d},{onConflict:'cle'})
+  }
   const updates=pairs.filter(([,id])=>id).map(([cle,id])=>{
     const el=document.getElementById(id)
     return{cle,valeur:el?el.type==='checkbox'?String(el.checked):el.value:''}
