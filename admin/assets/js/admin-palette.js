@@ -23,8 +23,7 @@
     client: { badge: 'C', color: '#3b82f6', bg: 'rgba(59,130,246,.15)', section: 'Clients' },
     reparation: { badge: 'R', color: '#fb923c', bg: 'rgba(251,146,60,.15)', section: 'Réparations' },
     devis: { badge: 'D', color: '#a78bfa', bg: 'rgba(167,139,250,.15)', section: 'Devis' },
-    facture: { badge: 'F', color: '#34d399', bg: 'rgba(52,211,153,.15)', section: 'Factures' },
-    tache: { badge: 'T', color: '#f59e0b', bg: 'rgba(245,158,11,.15)', section: 'Tâches' }
+    facture: { badge: 'F', color: '#34d399', bg: 'rgba(52,211,153,.15)', section: 'Factures' }
   };
 
   function escHtml(v) {
@@ -152,8 +151,7 @@
           sb.from('clients').select('id,numero,nom,email').or('nom.ilike.' + like + ',numero.ilike.' + like + ',email.ilike.' + like).limit(5),
           sb.from('reparations').select('id,numero,client_nom,appareil').or('numero.ilike.' + like + ',client_nom.ilike.' + like + ',appareil.ilike.' + like).limit(5),
           sb.from('devis').select('id,numero,client_nom,total').or('numero.ilike.' + like + ',client_nom.ilike.' + like).limit(5),
-          sb.from('factures').select('id,numero,client_nom,total').or('numero.ilike.' + like + ',client_nom.ilike.' + like).limit(5),
-          sb.from('taches').select('id,titre,categorie,client_nom,faite').eq('faite', false).or('titre.ilike.' + like + ',categorie.ilike.' + like + ',client_nom.ilike.' + like).limit(5)
+          sb.from('factures').select('id,numero,client_nom,total').or('numero.ilike.' + like + ',client_nom.ilike.' + like).limit(5)
         ]).then(function (res) {
           if (myToken !== searchToken) return; // une frappe plus récente a déjà relancé une recherche
           var entities = [];
@@ -168,9 +166,6 @@
           });
           (res[3].data || []).forEach(function (f) {
             entities.push({ type: 'facture', title: (f.numero ? f.numero + ' · ' : '') + (f.client_nom || '—'), sub: f.total != null ? Number(f.total).toFixed(2) + ' €' : '', href: '/admin/factures.html?open=' + f.id });
-          });
-          (res[4].data || []).forEach(function (t) {
-            entities.push({ type: 'tache', title: t.titre || '—', sub: [t.categorie, t.client_nom].filter(Boolean).join(' · '), href: '/admin/taches.html?open=' + t.id });
           });
           results = pages.concat(entities);
           selIndex = 0;

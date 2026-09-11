@@ -572,7 +572,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Dell"/></div>
         </div>
         <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : XPS 15"/></div>
-        <div class="fg"><label>IMEI / numéro de série</label><input type="text" id="f-serie" placeholder="ex : 356789101234567"/></div>
       </div>
 
       <div class="form-section">
@@ -615,7 +614,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="pdf-actions">
     <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
     <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
-    <button class="btn btn-secondary" onclick="convertirEnDevis()" id="convertDevisBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Convertir en devis</button>
     <button class="btn btn-secondary" onclick="convertirEnReparation()" id="convertRepBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Convertir en réparation</button>
     <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
@@ -664,7 +662,6 @@ function openPanel(f){
   document.getElementById('f-appareil').value=f?(f.appareil||''):'';
   document.getElementById('f-marque').value=f?(f.marque||''):'';
   document.getElementById('f-modele').value=f?(f.modele||''):'';
-  document.getElementById('f-serie').value=f?(f.numero_serie||''):'';
   document.getElementById('f-probleme').value=f?(f.probleme_signale||''):'';
   document.getElementById('f-constat').value=f?(f.constat||''):'';
   document.getElementById('f-verdict').value=f?(f.verdict||'a_confirmer'):'a_confirmer';
@@ -764,7 +761,7 @@ async function loadNotifs(){
 
     // Tâches urgentes
     tasks.filter(t=>!t.faite&&t.priorite==='urgente').forEach(t=>{
-      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/taches.html'});
+      notifs.push({type:'task',ico:'✅',cls:'ni-task',txt:t.titre,sub:'Tâche urgente non faite',link:'/admin/settings.html'});
     });
 
     renderNotifs(notifs);
@@ -957,7 +954,6 @@ window.saveDiagnostic=async function(){
     appareil:document.getElementById('f-appareil').value.trim()||null,
     marque:document.getElementById('f-marque').value.trim()||null,
     modele:document.getElementById('f-modele').value.trim()||null,
-    numero_serie:document.getElementById('f-serie').value.trim()||null,
     probleme_signale:document.getElementById('f-probleme').value.trim()||null,
     constat:document.getElementById('f-constat').value.trim()||null,
     verdict:document.getElementById('f-verdict').value,
@@ -1204,46 +1200,6 @@ window.confirmerEnvoiEmail=async function(){
   }
 }
 
-window.convertirEnDevis=async function(){
-  const d=currentPdfDoc
-  if(!d)return
-  if(d.converti_devis_id){showToast('Ce diagnostic a déjà été converti en devis','err');return}
-  if(!confirm(`Convertir le diagnostic ${d.numero} en devis ?\n\nUn devis sera créé avec les infos client et une ligne reprenant le constat et le prix estimé. Tu pourras l'ajuster avant de l'envoyer.`))return
-  const btn=document.getElementById('convertDevisBtn')
-  const htmlBtn=btn.innerHTML
-  btn.disabled=true;btn.textContent='Conversion...'
-  try{
-    const numDevis=await nextNumero('devis','devis')
-    const desc=[d.constat||d.probleme_signale||'Diagnostic',[d.marque,d.modele].filter(Boolean).join(' ')||d.appareil||''].filter(Boolean).join(' — ')
-    const prix=Number(d.prix_estime||0)
-    const devisPayload={
-      numero:numDevis,
-      client_id:d.client_id||null,
-      client_nom:d.client_nom,
-      client_email:d.client_email||null,
-      client_telephone:d.client_telephone||null,
-      client_adresse:d.client_adresse||null,
-      statut:'brouillon',
-      lignes:[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:null}],
-      total:prix,
-      remise:0,
-      notes:`Créé depuis le diagnostic ${d.numero}`,
-      updated_at:new Date().toISOString()
-    }
-    const resDevis=await sb.from('devis').insert(devisPayload).select().single()
-    if(resDevis.error)throw new Error(resDevis.error.message)
-    await sb.from('diagnostics').update({converti_devis_id:resDevis.data.id,updated_at:new Date().toISOString()}).eq('id',d.id)
-    const i=allDiagnostics.findIndex(x=>x.id===d.id)
-    if(i>=0)allDiagnostics[i].converti_devis_id=resDevis.data.id
-    btn.disabled=false;btn.innerHTML=htmlBtn
-    closePdf();renderAll()
-    showToast(`Devis ${numDevis} créé depuis le diagnostic ${d.numero} ✓ — À compléter dans Devis`,'ok')
-  }catch(err){
-    btn.disabled=false;btn.innerHTML=htmlBtn
-    showToast('Erreur conversion : '+err.message,'err')
-  }
-}
-
 window.convertirEnReparation=async function(){
   const d=currentPdfDoc
   if(!d)return
@@ -1264,7 +1220,6 @@ window.convertirEnReparation=async function(){
       appareil:d.appareil||'',
       marque:d.marque||null,
       modele:d.modele||null,
-      numero_serie:d.numero_serie||null,
       panne_description:panne,
       statut:'attente_reception',
       prix_devis:d.prix_estime||0,
