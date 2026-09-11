@@ -17,7 +17,6 @@ html,body{height:100%;overflow:hidden;}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
 .topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}.logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}.logo-sep{width:1px;height:14px;background:var(--ln2);}.logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
-.tb-div{width:1px;height:18px;background:var(--ln2);flex-shrink:0;}.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
 .tb-crumb{font-size:12px;color:var(--t3);flex:1;display:flex;align-items:center;gap:6px;}.tb-crumb a{color:var(--t3);text-decoration:none;}.tb-crumb a:hover{color:var(--a);}.tb-crumb span{color:var(--t2);}
 .tb-r{display:flex;align-items:center;gap:8px;margin-left:auto;}
 .mstrip{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;padding:3px;gap:1px;}
@@ -279,7 +278,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   .mobile-bottombar{display:block;}
   .content{padding-bottom:70px !important;}
   /* Topbar allégée */
-  .tb-badge,.tb-crumb,.tb-div{display:none !important;}
+  .tb-crumb{display:none !important;}
   .upill span{display:none !important;}
   .topbar{padding:0 12px !important;gap:8px !important;}
   .mstrip{display:none !important;}
@@ -489,7 +488,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* ── NAV ÉTALÉE (une seule barre en haut, répartition style Apple) ── */
 .topbar{gap:0;padding:0 22px;}
 .topbar .logo{margin-right:10px;}
-.topbar .tb-div,.topbar .tb-badge{flex-shrink:0;}
 .tb-crumb{display:none;}
 .hnav{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-evenly;gap:0;padding:0 18px;background:none;border-bottom:none;}
 .hnav .hnl{padding:7px 14px;}
@@ -522,8 +520,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <button class="mobile-menu-btn" onclick="openMobileNav()" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 
   <a href="/admin/dashboard.html" class="logo"><img src="https://itsoluce.be/img/logo-full.png" alt="IT Soluce" style="height:28px;width:auto;display:block;"/></a>
-  <div class="tb-div"></div><span class="tb-badge">ERP</span>
-  <button onclick="history.length>1?history.back():location.href='/admin/dashboard.html'" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Retour</button>
   <div class="tb-crumb">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>

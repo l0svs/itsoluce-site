@@ -32,8 +32,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}
 .logo-sep{width:1px;height:14px;background:var(--ln2);}
 .logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
-.tb-div{width:1px;height:18px;background:var(--ln2);flex-shrink:0;}
-.tb-badge{font-size:10px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 7px;border-radius:3px;letter-spacing:.5px;flex-shrink:0;}
 .tb-crumb{font-size:12px;color:var(--t3);flex:1;}
 .tb-crumb span{color:var(--t2);}
 .tb-r{display:flex;align-items:center;gap:8px;margin-left:auto;}
@@ -341,7 +339,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   .mobile-bottombar{display:block;}
   .content{padding-bottom:70px !important;}
   /* Topbar allégée */
-  .tb-badge,.tb-crumb,.tb-div{display:none !important;}
+  .tb-crumb{display:none !important;}
   .upill span{display:none !important;}
   .topbar{padding:0 12px !important;gap:8px !important;}
   .mstrip{display:none !important;}
@@ -552,7 +550,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* ── NAV ÉTALÉE (une seule barre en haut, répartition style Apple) ── */
 .topbar{gap:0;padding:0 22px;}
 .topbar .logo{margin-right:10px;}
-.topbar .tb-div,.topbar .tb-badge{flex-shrink:0;}
 .tb-crumb{display:none;}
 .hnav{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-evenly;gap:0;padding:0 18px;background:none;border-bottom:none;}
 .hnav .hnl{padding:7px 14px;}
@@ -585,8 +582,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <button class="mobile-menu-btn" onclick="openMobileNav()" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 
   <a href="/admin/dashboard.html" class="logo"><img src="https://itsoluce.be/img/logo-full.png" alt="IT Soluce" style="height:28px;width:auto;display:block;"/></a>
-  <div class="tb-div"></div>
-  <span class="tb-badge">ERP</span>
   <span class="tb-crumb"><span>Dashboard</span></span>
   <nav class="hnav">
     <a href="/admin/dashboard.html" class="hnl active">Dashboard</a>
