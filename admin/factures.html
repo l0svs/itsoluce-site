@@ -566,6 +566,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="fg">
           <label>Client existant ou nouveau</label>
           <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
+          <div id="lien-client-etat" style="font-size:11px;margin-top:5px;"></div>
         </div>
         <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
         <div class="fg-row">
@@ -887,7 +888,19 @@ function openPanel(f){
   if(window.fillRepSelect)window.fillRepSelect();
   if(window.fillClientSelect)window.fillClientSelect();
   document.getElementById('f-rep').value='';
-  document.getElementById('f-client-select').value='';
+  // Lien client : en modification, on repositionne le sélecteur sur le client
+  // déjà relié. Sans ça, le sélecteur repartait à vide et le client_id était
+  // écrasé à null au premier enregistrement (aucune facture n'était reliée).
+  const selCli=document.getElementById('f-client-select');
+  const lieId=(f&&f.client_id)?String(f.client_id):'';
+  selCli.options[0].textContent=f?'— Aucun client relié —':'➕ Nouveau client';
+  selCli.value=(lieId&&selCli.querySelector('option[value="'+lieId+'"]'))?lieId:'';
+  // Si le client relié n'est pas proposé dans la liste (fiche supprimée, ou
+  // liste pas encore chargée), on mémorise l'id pour ne pas l'écraser au
+  // prochain enregistrement : seul un choix explicite modifie le lien.
+  window._clientIdOrig=(f&&f.client_id)||null;
+  window._clientIdAbsent=!!(lieId&&!selCli.value);
+  if(window.majLienClient)majLienClient(window._clientIdAbsent?f.client_nom:null);
   ['f-client','f-email','f-tel','f-adresse'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}});
   calcTotaux();
   document.getElementById('overlay').classList.add('open');
@@ -1034,9 +1047,25 @@ window.fillClientSelect=function(){
   sel.innerHTML='<option value="">➕ Nouveau client</option>'+
     allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-email="${escHtml(c.email)}" data-tel="${escHtml(c.telephone)}" data-adr="${escHtml(c.adresse)}" data-societe="${escHtml(c.societe)}" data-tva="${escHtml(c.tva)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
 }
+// Affiche l'état du rattachement sous le sélecteur. `introuvable` est le nom
+// du client d'une facture dont le client a depuis été supprimé.
+window.majLienClient=function(introuvable){
+  const zone=document.getElementById('lien-client-etat')
+  if(!zone)return
+  const sel=document.getElementById('f-client-select')
+  const opt=sel.options[sel.selectedIndex]
+  if(sel.value){
+    zone.innerHTML='<span style="color:var(--ok);">● Relié à '+escHtml(opt.dataset.nom||opt.textContent)+'</span>'
+  }else if(introuvable){
+    zone.innerHTML='<span style="color:var(--w);">● Client « '+escHtml(introuvable)+' » introuvable dans la fiche clients — choisis-en un ci-dessus</span>'
+  }else{
+    zone.innerHTML='<span style="color:var(--t3);">○ Non relié à une fiche client</span>'
+  }
+}
 window.onClientSelect=function(){
   const sel=document.getElementById('f-client-select')
   const opt=sel.options[sel.selectedIndex]
+  majLienClient()
   if(sel.value){
     document.getElementById('f-client').value=opt.dataset.nom||''
     document.getElementById('f-email').value=opt.dataset.email||''
@@ -1161,7 +1190,8 @@ window.saveFacture=async function(){
   document.getElementById('saveBtn').disabled=true
 
   // Gérer le client (créer si nouveau, à la création seulement)
-  let clientLieId = clientSelId?Number(clientSelId):null
+  let clientLieId = clientSelId?Number(clientSelId)
+    :((id&&window._clientIdAbsent)?window._clientIdOrig:null)
   if(!id && !clientSelId){
     const email=document.getElementById('f-email').value.trim()
     let existant=null
