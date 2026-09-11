@@ -155,18 +155,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .dp-fv{font-size:12px;color:var(--t1);}
 .dp-hist-item{padding:8px 0;border-bottom:1px solid var(--ln);}
 .dp-hist-item:last-child{border-bottom:none;}
-/* DOSSIER — timeline unifiée Demande / Diagnostic / Devis / Réparation / Facture */
-.dossier-timeline{position:relative;display:flex;flex-direction:column;gap:2px;}
-.dossier-item{position:relative;display:flex;align-items:center;gap:10px;padding:8px 6px 8px 2px;border-radius:8px;text-decoration:none;color:inherit;transition:background .12s;}
-.dossier-item:hover{background:var(--bg3);}
-.dossier-item-ic{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;z-index:1;}
-.dossier-timeline .dossier-item:not(:last-child)::before{content:'';position:absolute;left:15px;top:30px;bottom:-2px;width:1px;background:var(--ln2);}
-.dossier-item-main{flex:1;min-width:0;}
-.dossier-item-t{font-size:12px;font-weight:500;color:var(--t1);}
-.dossier-item-s{font-size:11px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.dossier-item-r{text-align:right;flex-shrink:0;}
-.dossier-item-amount{font-size:12px;font-weight:600;color:var(--t1);}
-.dossier-item-date{font-size:10px;color:var(--t3);}
 .empty{padding:60px 24px;text-align:center;}
 .empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
 .empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}
@@ -452,11 +440,71 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="tb-r">
   </div>
 </header>
+<nav class="hnav">
+  <a href="/admin/dashboard.html" class="hnl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+  <div class="hnav-drop">
+    <button class="hnl active" onclick="toggleDrop(this)">Commercial<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+    <div class="hnav-menu">
+          <a href="/admin/clients.html" class="hnav-item active"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>Clients <span class="nc">0</span></a>
+          <a href="/admin/devis.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>Devis</a>
+          <a href="/admin/factures.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Factures</a>
+    </div>
+  </div>
+  <div class="hnav-drop">
+    <button class="hnl" onclick="toggleDrop(this)">Technique<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+    <div class="hnav-menu">
+          <a href="/admin/demandes.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>Demandes <span class="nc" id="nb-dem">0</span></a>
+          <a href="/admin/diagnostics.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>Diagnostics</a>
+          <a href="/admin/reparations.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>Réparations <span class="nc" id="nb-rep">0</span></a>
+          <a href="/admin/garanties.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Garanties</a>
+    </div>
+  </div>
+  <div class="hnav-drop">
+    <button class="hnl" onclick="toggleDrop(this)">Gestion<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+    <div class="hnav-menu">
+          <a href="/admin/stock.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>Stock <span class="nc w" id="nb-alert">—</span></a>
+          <a href="/admin/catalogue.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Catalogue Foneday</a>
+          <a href="/admin/commandes-foneday.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>Commandes Foneday</a>
+          <a href="/admin/fournisseurs.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>Fournisseurs <span class="nc" id="nb-four">—</span></a>
+          <a href="/admin/prestations.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>Prestations</a>
+    </div>
+  </div>
+  <div class="hnav-drop">
+    <button class="hnl" onclick="toggleDrop(this)">Organisation<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+    <div class="hnav-menu">
+          <a href="/admin/planning.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>Planning</a>
+          <a href="/admin/settings.html" class="hnav-item"><span class="hnav-item-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Paramètres</a>
+    </div>
+  </div>
+</nav>
 <div class="layout">
-<div id="admin-nav-mount"></div>
-<script src="/admin/assets/js/admin-nav.js"></script>
-<script src="/admin/assets/js/admin-palette.js"></script>
-<div class="content" id="mainContent">
+  <aside class="sidebar">
+            <a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+
+      <div class="nl-group">Commercial</div>
+      <a href="/admin/clients.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc">0</span></a>
+      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
+      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+
+      <div class="nl-group">Technique</div>
+      <a href="/admin/demandes.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes<span class="nc" id="nb-dem">0</span></a>
+      <a href="/admin/diagnostics.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Diagnostics</a>
+      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
+      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
+
+      <div class="nl-group">Gestion</div>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
+      <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
+      <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
+      <a href="/admin/prestations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations</a>
+
+      <div class="nl-group">Organisation</div>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
+      <div class="sf">IT Soluce ERP · v1.0</div>
+      </aside>
+
+  <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
       <div class="page-head">
@@ -676,12 +724,6 @@ if(!session){window.location.href='/admin/login.html';throw new Error('no sessio
 
 let allClients=[]
 let allReps=[]
-// Sources du dossier client unifié (timeline Demande → Diagnostic → Devis →
-// Réparation → Facture) — voir showDetail().
-let allDevisCli=[]
-let allFacturesCli=[]
-let allDiagnosticsCli=[]
-let allDemandesCli=[]
 
 async function nextNumero(cle, prefix){
   const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
@@ -692,18 +734,10 @@ async function nextNumero(cle, prefix){
 window.nextNumero=nextNumero
 
 async function load(){
-  const [r1,r2,r3,r4,r5,r6]=await Promise.all([
+  const [r1,r2]=await Promise.all([
     sb.from('clients').select('*').order('created_at',{ascending:false}),
-    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,appareil,marque,modele,prix_final,statut,created_at').order('created_at',{ascending:false}),
-    sb.from('devis').select('id,numero,client_id,client_nom,total,statut,created_at').order('created_at',{ascending:false}),
-    sb.from('factures').select('id,numero,client_id,client_nom,total,statut,date_emission,created_at').order('created_at',{ascending:false}),
-    sb.from('diagnostics').select('id,numero,client_id,client_nom,appareil,marque,modele,verdict,statut,created_at').order('created_at',{ascending:false}),
-    sb.from('demandes_formulaire').select('id,prenom,nom,appareil,converti_reparation_id,created_at').order('created_at',{ascending:false})
+    sb.from('reparations').select('client_nom,client_email,prix_final,created_at,statut')
   ])
-  allDevisCli=r3.data||[]
-  allFacturesCli=r4.data||[]
-  allDiagnosticsCli=r5.data||[]
-  allDemandesCli=r6.data||[]
   // Si la table clients n'existe pas encore, on génère les clients depuis les réparations
   if(r1.error){
     // Générer depuis réparations
@@ -720,7 +754,7 @@ async function load(){
     allClients=r1.data||[]
     const reps=r2.data||[]
     allClients.forEach(c=>{
-      const cReps=reps.filter(r=>r.client_id===c.id||r.client_email===c.email||r.client_nom===c.nom)
+      const cReps=reps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
       c.reps_count=cReps.length
       c.ca=cReps.reduce((a,r)=>a+Number(r.prix_final||0),0)
       c.last_rep=cReps[0]?.created_at
@@ -738,14 +772,6 @@ async function load(){
   document.getElementById('ldr').style.display='none'
   const pb=document.getElementById('pageBody')
   pb.style.display='flex'
-  // Ouverture directe de la fiche client si on arrive depuis un lien externe (ex : palette de recherche)
-  const openId=new URLSearchParams(location.search).get('open')
-  if(openId){
-    const cid=Number(openId)
-    if(allClients.some(c=>c.id===cid)){showDetail(cid)}
-    else{showToast('Client introuvable','err')}
-    history.replaceState(null,'','/admin/clients.html')
-  }
 }
 
 function renderAll(){
@@ -799,97 +825,17 @@ window.renderTable=function(){
   }).join('')
 }
 
-// Libellés de statut par type de document — propres à cette timeline, pas de
-// dépendance vers les autres pages (chacune garde sa propre logique).
-const REP_STATUT_LABELS={attente_reception:"Nouveau dossier",recu:'Appareil reçu',attente:'Attente de pièce',encours:'Diagnostic / Réparation',pret:'Prêt à récupérer',rendu:'Rendu au client',non_reparable:'Non réparable',annule:'Annulé'}
-const DEVIS_STATUT_LABELS={brouillon:'Brouillon',envoye:'Envoyé',accepte:'Accepté',refuse:'Refusé'}
-const FACTURE_STATUT_LABELS={brouillon:'Brouillon',envoyee:'Envoyée',payee:'Payée',annulee:'Annulée'}
-const DIAG_STATUT_LABELS={nouveau:'Nouveau',en_cours:'En cours',accepte:'Accepté (réparation)',refuse:'Refusé',sans_suite:'Sans suite'}
-
-// Construit le dossier unifié d'un client : Demande → Diagnostic → Devis →
-// Réparation → Facture, à partir des 5 tables déjà chargées par load().
-// Le lien entre tables n'est pas strictement linéaire dans les données (un
-// devis peut devenir une facture sans passer par une réparation, un
-// diagnostic reste parfois sans suite) : on affiche donc tout ce qui
-// concerne ce client, trié chronologiquement, plutôt que de forcer une
-// séquence qui ne correspondrait pas toujours à la réalité du dossier.
-function buildDossier(c){
-  const matches=(x)=>x.client_id===c.id||(x.client_email&&x.client_email===c.email)||(!x.client_email&&x.client_nom===c.nom)
-  const items=[]
-
-  const cliReps=allReps.filter(matches)
-  const repIds=new Set(cliReps.map(r=>r.id))
-  cliReps.forEach(r=>items.push({
-    date:r.created_at, type:'reparation', badge:'R', color:'#fb923c', bg:'rgba(251,146,60,.15)',
-    title:(r.numero?r.numero+' · ':'')+'Réparation',
-    sub:[[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil,REP_STATUT_LABELS[r.statut]||r.statut].filter(Boolean).join(' — '),
-    amount:r.prix_final, href:'/admin/reparations.html?open='+r.id
-  }))
-
-  allDevisCli.filter(matches).forEach(d=>items.push({
-    date:d.created_at, type:'devis', badge:'D', color:'#a78bfa', bg:'rgba(167,139,250,.15)',
-    title:(d.numero?d.numero+' · ':'')+'Devis', sub:DEVIS_STATUT_LABELS[d.statut]||d.statut||'',
-    amount:d.total, href:'/admin/devis.html?open='+d.id
-  }))
-
-  allFacturesCli.filter(matches).forEach(f=>items.push({
-    date:f.date_emission||f.created_at, type:'facture', badge:'F', color:'#34d399', bg:'rgba(52,211,153,.15)',
-    title:(f.numero?f.numero+' · ':'')+'Facture', sub:FACTURE_STATUT_LABELS[f.statut]||f.statut||'',
-    amount:f.total, href:'/admin/factures.html?open='+f.id
-  }))
-
-  allDiagnosticsCli.filter(matches).forEach(d=>items.push({
-    date:d.created_at, type:'diagnostic', badge:'Dx', color:'#22d3ee', bg:'rgba(34,211,238,.15)',
-    title:(d.numero?d.numero+' · ':'')+'Diagnostic',
-    sub:[[d.marque,d.modele].filter(Boolean).join(' ')||d.appareil,DIAG_STATUT_LABELS[d.statut]||d.statut].filter(Boolean).join(' — '),
-    amount:null, href:'/admin/diagnostics.html?q='+encodeURIComponent(d.numero||'')
-  }))
-
-  // Une demande n'est rattachée à ce client que si elle a été qualifiée en
-  // réparation pour lui — avant conversion, une demande est anonyme (visiteur
-  // du site public), elle n'appartient à aucun client.
-  allDemandesCli.filter(d=>d.converti_reparation_id&&repIds.has(d.converti_reparation_id)).forEach(d=>items.push({
-    date:d.created_at, type:'demande', badge:'N', color:'#3b82f6', bg:'rgba(59,130,246,.15)',
-    title:'Demande de contact', sub:d.appareil||'',
-    amount:null, href:'/admin/demandes.html?q='+encodeURIComponent([d.prenom,d.nom].filter(Boolean).join(' '))
-  }))
-
-  return items.sort((a,b)=>new Date(a.date)-new Date(b.date))
-}
-
-function renderDossier(items){
-  if(!items.length)return ''
-  return `
-    <div style="margin-top:16px;">
-      <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Dossier — ${items.length} étape${items.length>1?'s':''}</div>
-      <div class="dossier-timeline">
-        ${items.map(it=>`<a class="dossier-item" href="${it.href}">
-          <div class="dossier-item-ic" style="color:${it.color};background:${it.bg};">${it.badge}</div>
-          <div class="dossier-item-main">
-            <div class="dossier-item-t">${escHtml(it.title)}</div>
-            <div class="dossier-item-s">${escHtml(it.sub)||'—'}</div>
-          </div>
-          <div class="dossier-item-r">
-            ${it.amount!=null?`<div class="dossier-item-amount">${Number(it.amount).toFixed(2)}€</div>`:''}
-            <div class="dossier-item-date">${new Date(it.date).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})}</div>
-          </div>
-        </a>`).join('')}
-      </div>
-    </div>`
-}
-
 window.showDetail=function(id){
   const c=allClients.find(c=>c.id===id)
   if(!c)return
   const initials=(c.nom||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()
-  const dossier=buildDossier(c)
-  const repsCount=dossier.filter(it=>it.type==='reparation').length
+  const reps=allReps.filter(r=>r.client_email===c.email||r.client_nom===c.nom)
   document.getElementById('detailBody').innerHTML=`
     <div class="dp-av">${escHtml(initials)}</div>
     <div class="dp-name">${escHtml(c.nom)||'—'}</div>
     <div class="dp-sub">${c.numero?`<span style="font-family:monospace;color:var(--a);font-weight:600;">${escHtml(c.numero)}</span> · `:''}${c.type==='entreprise'?'Entreprise':'Particulier'}</div>
     <div class="dp-stat">
-      <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${repsCount}</div></div>
+      <div class="dp-s"><div class="dp-sl">Réparations</div><div class="dp-sv">${reps.length}</div></div>
       <div class="dp-s"><div class="dp-sl">CA total</div><div class="dp-sv">${(c.ca||0).toFixed(2)}€</div></div>
     </div>
     <div style="margin-top:8px;">
@@ -899,7 +845,14 @@ window.showDetail=function(id){
       ${c.type==='entreprise'&&(c.societe||c.tva)?`<div class="dp-field"><div class="dp-fl">Société</div><div class="dp-fv">${escHtml(c.societe)||'—'}</div></div><div class="dp-field"><div class="dp-fl">N° TVA / BCE</div><div class="dp-fv">${escHtml(c.tva)||'—'}</div></div>`:''}
       ${c.notes?`<div class="dp-field"><div class="dp-fl">Notes</div><div class="dp-fv">${escHtml(c.notes)}</div></div>`:''}
     </div>
-    ${renderDossier(dossier)}
+    ${reps.length>0?`
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Historique réparations</div>
+      ${reps.map(r=>`<div class="dp-hist-item">
+        <div style="font-size:12px;color:var(--t1);">${escHtml(r.statut)||'—'}</div>
+        <div style="font-size:11px;color:var(--t3);">${new Date(r.created_at).toLocaleDateString('fr-BE')} · ${Number(r.prix_final||0).toFixed(2)}€</div>
+      </div>`).join('')}
+    </div>`:''}
     <div style="margin-top:16px;display:flex;gap:8px;">
       <button class="btn btn-secondary" style="flex:1;" onclick="editClient(${c.id})">Modifier</button>
       ${c.email?`<a href="mailto:${escHtml(c.email)}" class="btn btn-primary" style="flex:1;text-decoration:none;justify-content:center;">Envoyer email</a>`:''}
@@ -993,6 +946,44 @@ document.addEventListener('click',function(e){
 });
 </script>
 
+<div class="mobile-bottombar">
+  <div class="mobile-bottombar-inner">
+    <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
+    <a href="/admin/reparations.html" class="mbb-item" data-page="reparations"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Répar.</a>
+    <a href="/admin/stock.html" class="mbb-item" data-page="stock"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Stock</a>
+    <a href="/admin/catalogue.html" class="mbb-item" data-page="catalogue"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue</a>
+    <a href="/admin/clients.html" class="mbb-item" data-page="clients"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+  </div>
+</div>
+
+<script>
+function openMobileNav(){
+  let ov=document.getElementById('mobileOverlay');
+  let nav=document.getElementById('mobileNav');
+  if(!nav){
+    // Construire le menu mobile en clonant la sidebar
+    const sb=document.querySelector('.sidebar');
+    ov=document.createElement('div');ov.id='mobileOverlay';ov.className='mobile-overlay';ov.onclick=closeMobileNav;
+    nav=document.createElement('div');nav.id='mobileNav';nav.className='mobile-nav';
+    const head=document.createElement('div');head.className='mobile-nav-head';
+    head.innerHTML='<img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" alt="IT Soluce"/><button class="mobile-nav-close" onclick="closeMobileNav()">&times;</button>';
+    nav.appendChild(head);
+    if(sb){const clone=sb.cloneNode(true);clone.style.display='block';clone.style.width='100%';clone.style.borderRight='none';nav.appendChild(clone);}
+    document.body.appendChild(ov);document.body.appendChild(nav);
+  }
+  requestAnimationFrame(()=>{ov.classList.add('open');nav.classList.add('open');});
+}
+function closeMobileNav(){
+  const ov=document.getElementById('mobileOverlay');const nav=document.getElementById('mobileNav');
+  if(ov)ov.classList.remove('open');if(nav)nav.classList.remove('open');
+}
+// Marquer l'item actif de la bottombar
+(function(){
+  const path=location.pathname.split('/').pop().replace('.html','');
+  document.querySelectorAll('.mbb-item').forEach(a=>{if(a.dataset.page===path)a.classList.add('active');});
+})();
+</script>
+
 <script>
 (function(){
   if(window.innerWidth>640)return;
@@ -1045,5 +1036,20 @@ document.addEventListener('click',function(e){
 })();
 </script>
 
+<script>
+window.toggleDrop=function(btn){
+  const menu=btn.nextElementSibling
+  const isOpen=menu.classList.contains('open')
+  document.querySelectorAll('.hnav-menu.open').forEach(m=>m.classList.remove('open'))
+  document.querySelectorAll('.hnl.open').forEach(b=>b.classList.remove('open'))
+  if(!isOpen){menu.classList.add('open');btn.classList.add('open')}
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.hnav-drop')){
+    document.querySelectorAll('.hnav-menu.open').forEach(m=>m.classList.remove('open'))
+    document.querySelectorAll('.hnl.open').forEach(b=>b.classList.remove('open'))
+  }
+})
+</script>
 </body>
 </html>
