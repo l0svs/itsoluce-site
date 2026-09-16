@@ -195,7 +195,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* APERÇU PDF MODAL */
 .pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:80px 20px 40px;}
 .email-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
-.email-box{background:var(--bg1);border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;}
+.email-box{background:var(--bg2);border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;}
 .email-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--ln);}
 .email-head span{font-size:15px;font-weight:600;color:var(--t1);}
 .email-close{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;line-height:1;padding:0;}
@@ -996,12 +996,17 @@ window.getStock=()=>allStock
 let activeFilter='Tous'
 let currentPdfDoc=null
 
+const PREFIXES={facture:null,devis:'DEV',reparation:'REP',diagnostic:'DIAG',client:'CLI'}
+/* Le format 'client' n'était pas traité : la fonction retombait sur la valeur
+   par défaut et renvoyait un numéro sans préfixe (ou DEV- dans Factures). */
 async function nextNumero(cle, format){
   const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
   const nouvelle=(cpt?.valeur||0)+1
   await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
-  if(format==='facture'){const an=new Date().getFullYear();return `${an}-${String(nouvelle).padStart(4,'0')}`}
-  return `DEV-${String(nouvelle).padStart(4,'0')}`
+  const seq=String(nouvelle).padStart(4,'0')
+  if(format==='facture')return `${new Date().getFullYear()}-${seq}`
+  const p=PREFIXES[format]||PREFIXES[cle]
+  return p?`${p}-${seq}`:seq
 }
 
 function fillPrestaSelect(){
