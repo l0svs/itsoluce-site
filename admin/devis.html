@@ -917,6 +917,37 @@ try {
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
 
+// ── Coordonnées de l'entreprise : la page Paramètres prime sur les valeurs
+//    par défaut ci-dessus. Sans cette lecture, modifier l'IBAN, le numéro BCE
+//    ou l'adresse dans l'ERP n'avait aucun effet sur les documents envoyés
+//    aux clients : les valeurs étaient figées dans le code de chaque page.
+try{
+  const {data:_set}=await sb.from('settings').select('cle,valeur')
+  if(_set){
+    const _c={}
+    _set.forEach(r=>{const v=r.valeur==null?'':String(r.valeur).trim();if(v)_c[r.cle]=v})
+    if(_c.entreprise_nom)ENTREPRISE.nom=_c.entreprise_nom
+    if(_c.entreprise_email)ENTREPRISE.email=_c.entreprise_email
+    if(_c.entreprise_telephone)ENTREPRISE.tel=_c.entreprise_telephone
+    if(_c.entreprise_site)ENTREPRISE.site=_c.entreprise_site.replace(/^https?:\/\//,'').replace(/\/$/,'')
+    if(_c.entreprise_bce)ENTREPRISE.bce=_c.entreprise_bce
+    if(_c.finance_iban)ENTREPRISE.iban=_c.finance_iban
+    if(_c.finance_mention_tva)ENTREPRISE.mention_tva=_c.finance_mention_tva
+    if(_c.entreprise_adresse){
+      // « rue, code postal ville » tient sur deux lignes dans l'en-tête du
+      // document ; sans virgule, tout reste sur la première.
+      const _i=_c.entreprise_adresse.lastIndexOf(',')
+      if(_i>0){
+        ENTREPRISE.adresse=_c.entreprise_adresse.slice(0,_i).trim()
+        ENTREPRISE.cp_ville=_c.entreprise_adresse.slice(_i+1).trim()
+      }else{
+        ENTREPRISE.adresse=_c.entreprise_adresse
+        ENTREPRISE.cp_ville=''
+      }
+    }
+  }
+}catch(e){console.warn('Coordonnées entreprise : valeurs par défaut conservées.',e)}
+
 
 
 let allDevis=[]
