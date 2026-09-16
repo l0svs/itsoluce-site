@@ -839,9 +839,7 @@ function openPanel(f){
   if(f&&f.lignes&&f.lignes.length){f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id));}
   else{addLigne();}
   // Sélecteurs
-  if(window.fillRepSelect)window.fillRepSelect();
   if(window.fillClientSelect)window.fillClientSelect();
-  const frep=document.getElementById('f-rep');if(frep)frep.value='';
   document.getElementById('f-client-select').value='';
   ['f-client','f-email','f-tel','f-adresse'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}});
   calcTotaux();
@@ -990,51 +988,6 @@ async function load(){
 }
 
 // Remplir sélecteur réparations
-window.fillRepSelect=function(){
-  const sel=document.getElementById('f-rep')
-  if(!sel)return
-  sel.innerHTML='<option value="">— Aucune (saisie manuelle) —</option>'+
-    allReps.map(r=>`<option value="${r.id}">${escHtml(r.numero)||''} · ${escHtml(r.client_nom)} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
-}
-window.fillClientSelect=function(){
-  const sel=document.getElementById('f-client-select')
-  if(!sel)return
-  sel.innerHTML='<option value="">➕ Nouveau client</option>'+
-    allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-email="${escHtml(c.email)}" data-tel="${escHtml(c.telephone)}" data-adr="${escHtml(c.adresse)}" data-societe="${escHtml(c.societe)}" data-tva="${escHtml(c.tva)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
-}
-window.onClientSelect=function(){
-  const sel=document.getElementById('f-client-select')
-  const opt=sel.options[sel.selectedIndex]
-  if(sel.value){
-    document.getElementById('f-client').value=opt.dataset.nom||''
-    document.getElementById('f-email').value=opt.dataset.email||''
-    document.getElementById('f-tel').value=opt.dataset.tel||''
-    document.getElementById('f-adresse').value=opt.dataset.adr||''
-    const societe=opt.dataset.societe||'', tva=opt.dataset.tva||''
-    setClientPro(!!(societe||tva),societe,tva)
-  }
-}
-window.onRepSelect=function(){
-  const sel=document.getElementById('f-rep')
-  if(!sel.value){return}
-  const r=allReps.find(x=>x.id===Number(sel.value))
-  if(!r)return
-  // Pré-remplir le client
-  document.getElementById('f-client').value=r.client_nom||''
-  document.getElementById('f-email').value=r.client_email||''
-  document.getElementById('f-tel').value=r.client_telephone||''
-  // Adresse depuis la fiche client si dispo
-  const cli=allClients.find(c=>c.id===r.client_id||c.email===r.client_email||c.nom===r.client_nom)
-  if(cli){document.getElementById('f-adresse').value=cli.adresse||''}
-  // Pré-remplir une ligne avec la réparation
-  document.getElementById('lignesBody').innerHTML=''
-  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'appareil'
-  const desc=`Réparation ${appareil}${r.panne_description?' — '+r.panne_description:''}`
-  addLigne(desc, 1, Number(r.prix_final)||0)
-  // Mémoriser le lien réparation
-  window._repLink={id:r.id,numero:r.numero}
-  calcTotaux()
-}
 
 function renderAll(){updateKPIs();renderFilters();renderCards()}
 

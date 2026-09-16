@@ -975,8 +975,6 @@ function updateKPIs(){
   document.getElementById('k-actifs').textContent=actifs
   document.getElementById('k-mois').textContent=moisReps.length
   document.getElementById('ph-sub').textContent=`${allReps.length} dossier${allReps.length>1?'s':''}`
-  const nb=document.getElementById('nb-actives')
-  if(nb){nb.textContent=actifs||'✓';nb.className=actifs>0?'nc ok':'nc'}
 }
 
 function renderFilters(){
