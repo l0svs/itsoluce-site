@@ -87,7 +87,6 @@
     { label: 'Devis', href: '/admin/devis.html' },
     { label: 'Factures', href: '/admin/factures.html' },
     { label: 'Demandes', href: '/admin/demandes.html' },
-    { label: 'Diagnostics', href: '/admin/diagnostics.html' },
     { label: 'Réparations', href: '/admin/reparations.html' },
     { label: 'Stock', href: '/admin/stock.html' },
     { label: 'Catalogue Foneday', href: '/admin/catalogue.html' },
@@ -237,7 +236,7 @@
   // page de liste correspondante avec ?q=… ; ce bloc fait en sorte que la
   // recherche soit déjà appliquée à l'arrivée. Générique : s'applique à toute
   // page ayant un champ #searchInput filtrant sur l'événement "input" (Clients,
-  // Devis, Factures, Réparations, Demandes, Diagnostics, Garanties, Stock,
+  // Devis, Factures, Réparations, Demandes, Garanties, Stock,
   // Fournisseurs) ; ne fait rien sur les autres.
   var q = new URLSearchParams(location.search).get('q');
   if (q) {
