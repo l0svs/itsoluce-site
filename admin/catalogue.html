@@ -798,6 +798,18 @@ window.showToast=showToast
 try {
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+
+// ── Grille tarifaire : source de vérité = Supabase ──
+// getGrille() lit le localStorage, qui n'était alimenté qu'en ouvrant la page
+// Paramètres : sur un navigateur neuf, cette page calculait donc avec la
+// grille par défaut au lieu de la grille réellement enregistrée.
+try{
+  const {data:_g}=await sb.from('settings').select('valeur').eq('cle','finance_grille').maybeSingle()
+  if(_g&&_g.valeur){
+    const _parsed=JSON.parse(_g.valeur)
+    if(Array.isArray(_parsed)&&_parsed.length)localStorage.setItem('erp-grille',_g.valeur)
+  }
+}catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 document.getElementById('ldr').style.display='none'
 document.getElementById('pageBody').style.display='flex'
