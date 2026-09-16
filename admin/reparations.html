@@ -704,10 +704,7 @@ body{font-size:14px;}
             <option>Autre</option>
           </select>
         </div>
-        <div class="fg-row">
-          <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Apple, Samsung, Sony"/></div>
-          <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22"/></div>
-        </div>
+        <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : Apple iPhone 13 Pro, Samsung Galaxy S22"/></div>
         <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
       </div>
 
@@ -872,7 +869,6 @@ function openPanel(r=null){
   document.getElementById('f-email').value=r?.client_email||''
   document.getElementById('f-tel').value=r?.client_telephone||''
   document.getElementById('f-appareil').value=r?.appareil||''
-  document.getElementById('f-marque').value=r?.marque||''
   document.getElementById('f-modele').value=r?.modele||''
   document.getElementById('f-panne').value=r?.panne_description||''
   document.getElementById('f-prix').value=r?.prix_final?Number(r.prix_final).toFixed(2):''
@@ -1187,7 +1183,7 @@ function getFiltered(){
     let okF=true
     if(activeFilter==='ouverts')okF=!CLOS.includes(r.statut)
     else if(activeFilter!=='tous')okF=groupeDe(r)===activeFilter
-    const okQ=!q||[r.numero,r.client_nom,r.client_email,r.client_telephone,r.appareil,r.marque,r.modele,r.panne_description]
+    const okQ=!q||[r.numero,r.client_nom,r.client_email,r.client_telephone,r.appareil,r.modele,r.panne_description]
       .some(v=>v&&String(v).toLowerCase().includes(q))
     return okF&&okQ
   })
@@ -1195,8 +1191,7 @@ function getFiltered(){
 
 function ligne(r){
   const st=STATUTS[r.statut]||{court:r.statut,cls:'s-recu'}
-  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
-  const sous=[appareil,r.panne_description].filter(Boolean).join(' · ')
+  const sous=[r.modele||r.appareil,r.panne_description].filter(Boolean).join(' · ')
   const n=jours(r.updated_at||r.created_at)
   const vieux=!CLOS.includes(r.statut)&&n!==null&&n>=7
   return `<div class="row${selectedId===r.id?' sel':''}" tabindex="0" role="button"
@@ -1293,7 +1288,7 @@ function renderDetail(){
   const prix=prixClient(r)
   const marge=prix-cout
   const pieces=Array.isArray(r.pieces)?r.pieces:[]
-  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')
+  const appareil=r.modele||''
   box.innerHTML=`
   <div class="det-in">
     <div class="det-top">
@@ -1365,7 +1360,7 @@ async function creerFactureDepuis(r){
   const seq=(cpt?.valeur||0)+1
   await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
   const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
-  const app=[r.appareil,[r.marque,r.modele].filter(Boolean).join(' ')].filter(Boolean).join(' ').trim()
+  const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
   const desc=`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
   const res=await sb.from('factures').insert({
     numero:numFacture,
@@ -1506,7 +1501,6 @@ window.saveDossier=async function(){
       client_email:document.getElementById('f-email').value.trim()||null,
       client_telephone:document.getElementById('f-tel').value.trim()||null,
       appareil,
-      marque:document.getElementById('f-marque').value.trim()||null,
       modele:document.getElementById('f-modele').value.trim()||null,
       panne_description:panne,
       statut:nouveauStatut,
@@ -1553,7 +1547,7 @@ window.saveDossier=async function(){
 /* ─── Export ─── */
 window.exportCSV=function(){
   if(!allReps.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['numero','client_nom','client_email','client_telephone','appareil','marque','modele','panne_description','statut','cout_pieces','prix_final','motif','notes','created_at','date_fin']
+  const cols=['numero','client_nom','client_email','client_telephone','appareil','modele','panne_description','statut','cout_pieces','prix_final','motif','notes','created_at','date_fin']
   const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
   const csv=[cols.join(';'),...allReps.map(r=>cols.map(c=>cell(r[c])).join(';'))].join('\r\n')
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})

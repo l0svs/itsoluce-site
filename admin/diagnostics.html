@@ -584,9 +584,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span>Appareil</span></div>
         <div class="fg-row">
           <div class="fg"><label>Type d'appareil</label><input type="text" id="f-appareil" placeholder="ex : PC portable"/></div>
-          <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Dell"/></div>
+          <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : Dell XPS 15"/></div>
         </div>
-        <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : XPS 15"/></div>
       </div>
 
       <div class="form-section">
@@ -675,7 +674,6 @@ function openPanel(f){
   document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
   document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
   document.getElementById('f-appareil').value=f?(f.appareil||''):'';
-  document.getElementById('f-marque').value=f?(f.marque||''):'';
   document.getElementById('f-modele').value=f?(f.modele||''):'';
   document.getElementById('f-probleme').value=f?(f.probleme_signale||''):'';
   document.getElementById('f-constat').value=f?(f.constat||''):'';
@@ -826,7 +824,7 @@ function renderCards(){
     const st=STAT[f.statut]||STAT.nouveau
     const v=VERDICT[f.verdict]||{l:'—',col:'var(--t3)',ico:''}
     const dim=(f.statut==='refuse'||f.statut==='sans_suite')?'opacity:.6;':''
-    const appareilLbl=[f.marque,f.modele].filter(Boolean).join(' ')||f.appareil||'—'
+    const appareilLbl=f.modele||f.appareil||'—'
     return`<div class="four-card" style="border-left:3px solid ${v.col};border-radius:0 10px 10px 0;${dim}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
         <div style="min-width:0;">
@@ -886,7 +884,6 @@ window.saveDiagnostic=async function(){
     client_telephone:document.getElementById('f-tel').value.trim()||null,
     client_adresse:document.getElementById('f-adresse').value.trim()||null,
     appareil:document.getElementById('f-appareil').value.trim()||null,
-    marque:document.getElementById('f-marque').value.trim()||null,
     modele:document.getElementById('f-modele').value.trim()||null,
     probleme_signale:document.getElementById('f-probleme').value.trim()||null,
     constat:document.getElementById('f-constat').value.trim()||null,
@@ -932,7 +929,7 @@ function buildTemplateHTML(f,forPdf){
   const dateEm=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
   const VERDICT={reparable:{l:'Réparable',c:'#16a34a'},non_reparable:{l:'Non réparable',c:'#dc2626'},a_confirmer:{l:'À confirmer avec le client',c:'#d97706'}}
   const v=VERDICT[f.verdict]||VERDICT.a_confirmer
-  const appareilLbl=[f.marque,f.modele].filter(Boolean).join(' ')||f.appareil||'—'
+  const appareilLbl=f.modele||f.appareil||'—'
   // Mode PDF : hauteur fixe = une page A4 pile (210x297mm ratio), pied de page en bas, pas de débordement
   const hauteurStyle=forPdf?'height:296mm;':'min-height:292mm;'
   return `
@@ -1152,7 +1149,6 @@ window.convertirEnReparation=async function(){
       client_email:d.client_email||null,
       client_telephone:d.client_telephone||null,
       appareil:d.appareil||'',
-      marque:d.marque||null,
       modele:d.modele||null,
       panne_description:panne,
       statut:'attente_reception',
@@ -1180,7 +1176,7 @@ window.convertirEnReparation=async function(){
 
 window.exportCSV=function(){
   if(!allDiagnostics.length){showToast('Aucune donnée','err');return}
-  const cols=['numero','client_nom','client_email','appareil','marque','modele','verdict','statut','prix_estime','reparation_numero','date_emission','created_at']
+  const cols=['numero','client_nom','client_email','appareil','modele','verdict','statut','prix_estime','reparation_numero','date_emission','created_at']
   const csv=[cols.join(','),...allDiagnostics.map(f=>cols.map(k=>`"${String(f[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
   const a=document.createElement('a')
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)

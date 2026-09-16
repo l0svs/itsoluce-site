@@ -705,7 +705,7 @@ function addLigne(desc,qte,prix,stockId){
   stock.forEach(s=>{
     const o=document.createElement('option');
     o.value=s.id;
-    const label=[s.nom,s.marque,s.modele].filter(Boolean).join(' ');
+    const label=[s.nom,s.modele].filter(Boolean).join(' ');
     o.textContent=`${label} — ${Number(s.prix_vente||0).toFixed(2)}€ (stock: ${s.quantite})`;
     o.dataset.nom=label;
     o.dataset.prix=s.prix_vente||0;
@@ -970,9 +970,9 @@ async function nextNumero(cle, format){
 async function load(){
   const [rDev,rRep,rCli,rStock,rServices]=await Promise.all([
     sb.from('devis').select('*').order('created_at',{ascending:false}),
-    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,marque,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom'),
+    sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom'),
     sb.from('services').select('*').order('ordre',{ascending:true})
   ])
   window.allServices=(rServices&&rServices.data)||[]
@@ -1402,7 +1402,6 @@ window.convertirEnReparation=async function(){
       client_email:d.client_email||null,
       client_telephone:d.client_telephone||null,
       appareil:'',
-      marque:null,
       modele:null,
       panne_description:panne,
       statut:'attente_reception',

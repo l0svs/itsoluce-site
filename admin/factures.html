@@ -695,7 +695,7 @@ function addLigne(desc,qte,prix,stockId){
   stock.forEach(s=>{
     const o=document.createElement('option');
     o.value=s.id;
-    const label=[s.nom,s.marque,s.modele].filter(Boolean).join(' ');
+    const label=[s.nom,s.modele].filter(Boolean).join(' ');
     o.textContent=`${label} — ${Number(s.prix_vente||0).toFixed(2)}€ (stock: ${s.quantite})`;
     o.dataset.nom=label;
     o.dataset.prix=s.prix_vente||0;
@@ -1029,9 +1029,9 @@ window.ajouterPresta=function(sel){
 async function load(){
   const [rFac,rRep,rCli,rStock,rServices]=await Promise.all([
     sb.from('factures').select('*').order('created_at',{ascending:false}),
-    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,marque,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('stock').select('id,nom,marque,modele,quantite,prix_vente').order('nom'),
+    sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom'),
     sb.from('services').select('*').order('ordre',{ascending:true})
   ])
   window.allServices=(rServices&&rServices.data)||[]
@@ -1059,7 +1059,7 @@ window.fillRepSelect=function(){
   const sel=document.getElementById('f-rep')
   if(!sel)return
   sel.innerHTML='<option value="">— Aucune (saisie manuelle) —</option>'+
-    allReps.map(r=>`<option value="${r.id}">${escHtml(r.numero)||''} · ${escHtml(r.client_nom)} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
+    allReps.map(r=>`<option value="${r.id}">${escHtml(r.numero)||''} · ${escHtml(r.client_nom)} · ${escHtml(r.modele||r.appareil||'')}</option>`).join('')
 }
 window.fillClientSelect=function(){
   const sel=document.getElementById('f-client-select')
@@ -1093,7 +1093,7 @@ window.onRepSelect=function(){
   if(cli){document.getElementById('f-adresse').value=cli.adresse||''}
   // Pré-remplir une ligne avec la réparation
   document.getElementById('lignesBody').innerHTML=''
-  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'appareil'
+  const appareil=r.modele||r.appareil||'appareil'
   const desc=`Réparation ${appareil}${r.panne_description?' — '+r.panne_description:''}`
   addLigne(desc, 1, Number(r.prix_final)||0)
   // Mémoriser le lien réparation

@@ -1752,10 +1752,10 @@ window.renderGaranties=function(){
   if(_fGar==='sous')l=l.filter(g=>g._g.sousGarantie)
   if(_fGar==='bientot')l=l.filter(g=>g._g.sousGarantie&&g._g.joursRestants<=15)
   if(_fGar==='expiree')l=l.filter(g=>!g._g.sousGarantie)
-  if(q)l=l.filter(g=>norm(g.client_nom).includes(q)||norm([g.marque,g.modele,g.appareil].join(' ')).includes(q)||norm(g.numero).includes(q))
+  if(q)l=l.filter(g=>norm(g.client_nom).includes(q)||norm([g.modele,g.appareil].join(' ')).includes(q)||norm(g.numero).includes(q))
   const box=document.getElementById('liste-gar')
   box.innerHTML=l.length?l.map(g=>{
-    const app=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
+    const app=g.modele||g.appareil||'—'
     const urgent=g._g.sousGarantie&&g._g.joursRestants<=15
     const tag=g._g.sousGarantie
       ? `<span class="tag ${urgent?'t-wn':'t-ok'}">${g._g.joursRestants} j restants</span>`
@@ -1779,7 +1779,7 @@ function dessinerDetailGar(){
   const g=_gar.find(x=>String(x.id)===String(_selGar))
   if(!g){_selGar=null;return dessinerDetailGar()}
   const d=g._g
-  const app=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
+  const app=g.modele||g.appareil||'—'
   const fmt=x=>x.toLocaleDateString('fr-BE',{day:'2-digit',month:'long',year:'numeric'})
   const urgent=d.sousGarantie&&d.joursRestants<=15
   const couleur=d.sousGarantie?(urgent?'var(--w)':'var(--ok)'):'var(--t3)'

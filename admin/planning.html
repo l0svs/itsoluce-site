@@ -912,7 +912,7 @@ async function load(){
   const [rRdv,rCli,rRep]=await Promise.all([
     sb.from('rendezvous').select('*').order('date_debut',{ascending:false}).limit(2000),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(2000),
-    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false}).limit(2000)
+    sb.from('reparations').select('id,numero,client_nom,appareil,modele,statut').order('created_at',{ascending:false}).limit(2000)
   ])
   if(rRdv.error)throw rRdv.error
   allRdv=rRdv.data||[]
@@ -928,7 +928,7 @@ function fillSelects(){
   document.getElementById('f-client').innerHTML='<option value="">— Aucun —</option>'+
     allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-adr="${escHtml(c.adresse||'')}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
   document.getElementById('f-rep').innerHTML='<option value="">— Aucune —</option>'+
-    allReps.map(r=>`<option value="${r.id}" data-num="${escHtml(r.numero||'')}">${escHtml(r.numero||'')} · ${escHtml(r.client_nom||'')} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
+    allReps.map(r=>`<option value="${r.id}" data-num="${escHtml(r.numero||'')}">${escHtml(r.numero||'')} · ${escHtml(r.client_nom||'')} · ${escHtml(r.modele||r.appareil||'')}</option>`).join('')
 }
 
 /* ── Sélection et filtres ─────────────────────────────────────── */
