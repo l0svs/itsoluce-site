@@ -91,7 +91,6 @@
     { label: 'Réparations', href: '/admin/reparations.html' },
     { label: 'Stock', href: '/admin/stock.html' },
     { label: 'Catalogue Foneday', href: '/admin/catalogue.html' },
-    { label: 'Commandes Foneday', href: '/admin/commandes-foneday.html' },
     { label: 'Planning', href: '/admin/planning.html' },
     { label: 'Gestion', href: '/admin/gestion.html' }
   ];
