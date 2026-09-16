@@ -156,78 +156,204 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
 .tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
 
-/* PLANNING */
-.cal-toolbar{display:flex;align-items:center;gap:12px;padding:12px 24px;flex-wrap:wrap;}
-.cal-nav{display:flex;align-items:center;gap:4px;}
-.cal-navbtn{width:30px;height:30px;border-radius:6px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
-.cal-navbtn:hover{color:var(--t1);border-color:var(--a);}
-.cal-navbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.cal-title{font-size:15px;font-weight:600;color:var(--t1);min-width:170px;text-transform:capitalize;}
-.cal-today{padding:6px 12px;border:1px solid var(--ln2);border-radius:6px;background:var(--bg3);color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;}
-.cal-today:hover{color:var(--t1);}
-.cal-switch{display:flex;background:var(--bg3);border:1px solid var(--ln2);border-radius:7px;padding:2px;margin-left:auto;}
-.cal-switch button{padding:5px 14px;border:none;background:none;color:var(--t3);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border-radius:5px;transition:all .12s;}
-.cal-switch button.on{background:var(--a);color:#fff;}
-/* GRILLE MOIS */
-.cal-month{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow:hidden;}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px;}
-.cal-wd{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:6px 0;}
-.cal-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:1px;background:var(--ln);border:1px solid var(--ln);border-radius:8px;overflow:hidden;}
-.cal-cell{background:var(--bg2);padding:5px 6px;min-height:78px;cursor:pointer;transition:background .1s;overflow:hidden;display:flex;flex-direction:column;}
-.cal-cell:hover{background:var(--bg3);}
-.cal-cell.other{background:var(--bg);opacity:.5;}
-.cal-cell.today{background:var(--ad);}
-.cal-daynum{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:3px;}
-.cal-cell.today .cal-daynum{color:var(--a);}
-.cal-evt{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px 2px 4px;border-radius:99px;margin-bottom:2px;white-space:nowrap;overflow:hidden;max-width:100%;cursor:pointer;font-weight:500;}
-.cal-evt span{overflow:hidden;text-overflow:ellipsis;}
-.cal-evt svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.2;flex-shrink:0;}
-.cal-more{font-size:9px;color:var(--t3);font-weight:500;}
-/* PASTILLES ICONES PAR TYPE (evenements) */
-.evt-domicile{background:rgba(59,130,246,0.15);color:#3b82f6;}
-.evt-depot{background:rgba(139,92,246,0.15);color:#8b5cf6;}
-.evt-retrait{background:rgba(16,185,129,0.15);color:#10b981;}
-.evt-autre{background:rgba(107,114,128,0.15);color:#6b7280;}
-.week-evt-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.week-evt-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
-/* VUE JOUR (timeline) */
-.cal-day{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow-y:auto;}
-.day-row{display:flex;gap:12px;min-height:52px;border-top:1px solid var(--ln);padding:8px 0;}
-.day-row:last-child{border-bottom:1px solid var(--ln);}
-.day-hour{font-size:12px;color:var(--t3);width:34px;flex-shrink:0;padding-top:6px;}
-.day-row-content{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;}
-.day-empty{flex:1;min-height:36px;cursor:pointer;border-radius:6px;}
-.day-empty:hover{background:var(--bg3);}
-.day-evt{display:flex;align-items:center;gap:10px;border-radius:8px;padding:8px 12px;cursor:pointer;}
-.day-evt svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
-.day-evt-info{min-width:0;}
-.day-evt-titre{font-size:13px;font-weight:500;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.day-evt-sub{font-size:11px;color:var(--t3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-/* TYPES COULEURS */
-.t-domicile{background:#3b82f6;}
-.t-depot{background:#8b5cf6;}
-.t-retrait{background:#10b981;}
-.t-autre{background:#6b7280;}
-.dot-domicile{background:#3b82f6;}
-.dot-depot{background:#8b5cf6;}
-.dot-retrait{background:#10b981;}
-.dot-autre{background:#6b7280;}
-/* VUE SEMAINE */
-.cal-week{flex:1;display:flex;flex-direction:column;padding:0 24px 24px;overflow-y:auto;}
-.week-day{border:1px solid var(--ln);border-radius:8px;margin-bottom:8px;overflow:hidden;}
-.week-day-head{padding:8px 14px;background:var(--bg3);font-size:12px;font-weight:600;color:var(--t1);display:flex;align-items:center;justify-content:space-between;text-transform:capitalize;}
-.week-day-head.today{background:var(--ad);color:var(--a);}
-.week-day-body{padding:4px;}
-.week-evt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;cursor:pointer;transition:background .1s;}
-.week-evt:hover{background:var(--bg3);}
-.week-evt-time{font-size:12px;font-weight:600;color:var(--t1);min-width:48px;}
-.week-evt-bar{width:3px;height:32px;border-radius:99px;flex-shrink:0;}
-.week-evt-info{flex:1;min-width:0;}
-.week-evt-titre{font-size:12px;font-weight:500;color:var(--t1);}
-.week-evt-sub{font-size:11px;color:var(--t3);margin-top:1px;}
-.week-empty{padding:14px;font-size:12px;color:var(--t3);text-align:center;}
-.type-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;color:#fff;}
-.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+/* ═══════════════════════════════════════════════════════════════
+   PLANNING — direction « continuité itsoluce.be », mise en page
+   agenda : la liste chronologique porte la page, le calendrier
+   sert à naviguer.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c;
+  --radius:16px;
+}
+body{font-size:14px;}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a); font-weight:500;}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
+
+.page-head{padding:26px 28px 0;}
+.ph-left h1{font-size:27px; font-weight:600; letter-spacing:-.03em;}
+.ph-left p{font-size:13.5px; color:var(--t2); margin-top:3px;}
+.btn{border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.btn-secondary:hover{background:var(--bg4); color:var(--t1);}
+.btn-danger{background:rgba(200,54,44,.1); color:var(--d); border:1px solid rgba(200,54,44,.2);}
+
+/* ── Barre d'outils ── */
+.plan-tools{display:flex; align-items:center; gap:10px; padding:16px 28px 0; flex-wrap:wrap; flex-shrink:0;}
+.seg{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px;}
+.seg button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 13px; border-radius:8px; cursor:pointer; transition:.12s; white-space:nowrap;}
+.seg button:hover{color:var(--t1);}
+.seg button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.07);}
+.navbtn{width:30px; height:30px; border-radius:9px; border:1px solid var(--ln); background:var(--bg3); color:var(--t2); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.navbtn:hover{color:var(--t1); background:var(--bg4);}
+.navbtn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.cal-title{font-size:15px; font-weight:600; letter-spacing:-.02em; margin-left:2px;}
+
+.pscroll{flex:1; overflow-y:auto; padding:18px 28px 32px;}
+
+/* ── Colonnes ── */
+.plan-grid{display:grid; grid-template-columns:minmax(0,1fr) 318px; gap:20px; align-items:start;}
+
+/* ── Prochain rendez-vous ── */
+.next{display:flex; gap:18px; align-items:center; background:var(--bg2); border-radius:var(--radius); padding:20px 22px; box-shadow:0 1px 2px rgba(0,0,0,.045); margin-bottom:18px;}
+.next-when{text-align:center; flex-shrink:0; padding-right:18px; border-right:1px solid var(--ln);}
+.next-d{font-size:30px; font-weight:600; letter-spacing:-.03em; line-height:1; font-variant-numeric:tabular-nums;}
+.next-m{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--a); margin-top:4px;}
+.next-body{flex:1; min-width:0;}
+.next-lbl{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3);}
+.next-t{font-size:17px; font-weight:600; letter-spacing:-.01em; margin:3px 0 4px; word-break:break-word;}
+.next-meta{font-size:13px; color:var(--t2); word-break:break-word;}
+
+/* ── Liste par jour ── */
+.daygrp{margin-bottom:18px;}
+.day-h{display:flex; align-items:baseline; gap:10px; margin-bottom:8px; padding-left:2px; flex-wrap:wrap;}
+.day-h b{font-size:13.5px; font-weight:600;}
+.day-h span{font-size:12px; color:var(--t3);}
+.day-h i{font-style:normal; font-size:10.5px; font-weight:600; color:var(--a); background:var(--ad); border-radius:980px; padding:2px 8px;}
+.ev{display:flex; align-items:center; gap:16px; background:var(--bg2); border-radius:14px; padding:14px 18px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.04); cursor:pointer; transition:box-shadow .14s, transform .1s;}
+.ev:hover{box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.ev:active{transform:scale(.995);}
+.ev.done{opacity:.55;}
+.ev.done .ev-t{text-decoration:line-through;}
+.ev-h{font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; width:86px; flex-shrink:0;}
+.ev-h em{display:block; font-style:normal; font-size:11px; font-weight:400; color:var(--t3); margin-top:1px;}
+.ev-b{flex:1; min-width:0;}
+.ev-t{font-size:14px; font-weight:500; word-break:break-word;}
+.ev-s{font-size:12.5px; color:var(--t2); margin-top:2px; word-break:break-word;}
+.ev-r{display:flex; align-items:center; gap:9px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end;}
+.tick{font-size:11.5px; color:var(--ok); white-space:nowrap;}
+
+/* ── Pastilles de type ── */
+.pill{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap;}
+.p-domicile{background:rgba(0,82,204,.1); color:#0052CC;}
+.p-depot{background:rgba(109,40,217,.1); color:#6d28d9;}
+.p-retrait{background:rgba(26,138,82,.11); color:#1a8a52;}
+.p-autre{background:var(--bg4); color:var(--t2);}
+[data-mode="dark"] .p-domicile{background:rgba(91,155,255,.16); color:#7fb2ff;}
+[data-mode="dark"] .p-depot{background:rgba(167,139,250,.16); color:#c4b0ff;}
+[data-mode="dark"] .p-retrait{background:rgba(52,211,153,.16); color:#5fe3ac;}
+
+/* ── Colonne latérale ── */
+.srch-wrap{position:relative; margin-bottom:14px;}
+.srch-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.srch{width:100%; background:var(--bg2); border:1px solid transparent; border-radius:11px; padding:10px 12px 10px 34px; font-family:inherit; font-size:13px; color:var(--t1); outline:none; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.14s;}
+.srch:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.srch::placeholder{color:var(--t3);}
+
+.mini{background:var(--bg2); border-radius:var(--radius); padding:16px 18px 18px; box-shadow:0 1px 2px rgba(0,0,0,.045); margin-bottom:14px;}
+.mini-h{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+.mini-h b{font-size:13.5px; font-weight:600;}
+.mini-nav{display:flex; gap:4px;}
+.mini-g{display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center;}
+.mini-g .dow{font-size:10px; color:var(--t3); padding-bottom:5px;}
+.mini-g button{
+  border:none; background:none; font-family:inherit; font-size:12px; color:var(--t1);
+  padding:6px 0; border-radius:8px; position:relative; cursor:pointer;
+  font-variant-numeric:tabular-nums; transition:background .12s;
+}
+.mini-g button:hover{background:var(--bg3);}
+.mini-g button.off{color:var(--t3);}
+.mini-g button.has::after{content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--a);}
+.mini-g button.now{background:var(--a); color:#fff; font-weight:600;}
+.mini-g button.now.has::after{background:#fff;}
+
+.filt{background:var(--bg2); border-radius:var(--radius); padding:14px 18px 16px; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.filt-l{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3); margin-bottom:8px;}
+.filt-r{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; border:none; background:none; font-family:inherit; font-size:13px; color:var(--t2); padding:7px 8px; border-radius:9px; cursor:pointer; text-align:left; transition:background .12s;}
+.filt-r:hover{background:var(--bg3); color:var(--t1);}
+.filt-r.on{background:var(--ad); color:var(--a); font-weight:500;}
+.filt-r b{font-weight:600; font-variant-numeric:tabular-nums;}
+
+/* ── Vue Mois ── */
+.cal{background:var(--bg2); border-radius:var(--radius); overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.cal-hd{display:grid; grid-template-columns:repeat(7,1fr); border-bottom:1px solid var(--ln);}
+.cal-hd span{font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--t3); text-align:center; padding:11px 0;}
+.cal-g{display:grid; grid-template-columns:repeat(7,1fr);}
+.cal-c{min-height:92px; border-right:1px solid var(--ln); border-bottom:1px solid var(--ln); padding:7px 8px; cursor:pointer; transition:background .12s;}
+.cal-c:nth-child(7n){border-right:none;}
+.cal-c:hover{background:var(--bg3);}
+.cal-n{font-size:12.5px; color:var(--t1); font-variant-numeric:tabular-nums; margin-bottom:5px; display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px;}
+.cal-c.off .cal-n{color:var(--t3);}
+.cal-n.now{background:var(--a); color:#fff; border-radius:980px; font-weight:600;}
+.chip{display:flex; align-items:center; gap:5px; font-size:11px; background:var(--bg3); border-radius:6px; padding:3px 6px; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.chip s{width:5px; height:5px; border-radius:50%; flex-shrink:0; text-decoration:none;}
+.chip b{font-weight:600; font-variant-numeric:tabular-nums;}
+.chip.done{opacity:.5; text-decoration:line-through;}
+.cal-more{font-size:10.5px; color:var(--t3); padding-left:2px;}
+
+/* ── Vue Semaine ── */
+.wk{display:grid; grid-template-columns:repeat(7,1fr); gap:10px;}
+.wk-c{background:var(--bg2); border-radius:14px; padding:12px 12px 14px; box-shadow:0 1px 2px rgba(0,0,0,.045); min-height:200px; cursor:pointer;}
+.wk-c.now{box-shadow:0 0 0 2px var(--a), 0 1px 2px rgba(0,0,0,.045);}
+.wk-h{text-align:center; padding-bottom:10px; border-bottom:1px solid var(--ln); margin-bottom:11px;}
+.wk-j{font-size:10.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3);}
+.wk-n{font-size:19px; font-weight:600; letter-spacing:-.02em; margin-top:2px; font-variant-numeric:tabular-nums;}
+.wk-c.now .wk-n{color:var(--a);}
+.wk-e{background:var(--bg3); border-radius:10px; padding:9px 10px; margin-bottom:7px; border-left:3px solid var(--a);}
+.wk-e.t-depot{border-left-color:#6d28d9;} .wk-e.t-retrait{border-left-color:#1a8a52;} .wk-e.t-autre{border-left-color:var(--t3);}
+.wk-e.done{opacity:.55;}
+.wk-t{font-size:12.5px; font-weight:600; font-variant-numeric:tabular-nums;}
+.wk-x{font-size:12px; margin-top:2px; line-height:1.35; word-break:break-word;}
+.wk-s{font-size:11px; color:var(--t2); margin-top:2px; line-height:1.35; word-break:break-word;}
+.wk-v{font-size:11.5px; color:var(--t3); text-align:center; padding-top:16px;}
+
+/* ── Vide ── */
+.vide{background:var(--bg2); border-radius:var(--radius); padding:46px 24px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.vide-ico{width:50px; height:50px; border-radius:15px; background:var(--ad); color:var(--a); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+.vide-ico svg{width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+.vide h3{font-size:15px; font-weight:600; margin-bottom:6px;}
+.vide p{font-size:13px; color:var(--t2); line-height:1.55; max-width:42ch; margin:0 auto 16px;}
+
+/* ── Panneau ── */
+.panel{background:var(--bg);}
+.panel-head{padding:16px 22px; border-bottom:1px solid var(--ln); display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-shrink:0;}
+.panel-title{font-size:15px; font-weight:600;}
+.panel-back{width:32px; height:32px; border-radius:10px; border:none; background:var(--bg3); color:var(--t2); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+.panel-back:hover{background:var(--bg4); color:var(--t1);}
+.panel-body{flex:1; overflow-y:auto; padding:28px 24px; display:flex; justify-content:center;}
+.form-card{background:var(--bg2); border-radius:var(--radius); padding:6px 22px; width:100%; max-width:560px; height:fit-content; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.form-lbl{font-size:11.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3); padding:17px 0 3px;}
+.fg{display:flex; align-items:center; gap:18px; padding:13px 0; border-bottom:1px solid var(--ln);}
+.fg:last-child{border-bottom:none;}
+.fg > label{width:150px; flex-shrink:0; font-size:13.5px; font-weight:500; color:var(--t1);}
+.fg > label em{display:block; font-style:normal; font-size:12px; font-weight:400; color:var(--t3); margin-top:1px;}
+.fg-f{flex:1; min-width:0; display:flex; gap:10px;}
+.panel input[type=text],.panel input[type=date],.panel input[type=time],.panel select,.panel textarea{
+  width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px;
+  padding:9px 13px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; transition:.14s;
+}
+.panel input:focus,.panel select:focus,.panel textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.panel textarea{resize:vertical; min-height:74px; line-height:1.5;}
+.panel input::placeholder,.panel textarea::placeholder{color:var(--t3);}
+.panel-footer{padding:14px 24px; border-top:1px solid var(--ln); display:flex; justify-content:flex-end; align-items:center; gap:9px; flex-shrink:0; flex-wrap:wrap; background:var(--bg);}
+.tog{width:44px; height:26px; border-radius:980px; background:var(--bg4); border:1px solid var(--ln2); position:relative; cursor:pointer; transition:.18s; flex-shrink:0;}
+.tog.on{background:var(--ok); border-color:var(--ok);}
+.tog i{position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .18s; box-shadow:0 1px 2px rgba(0,0,0,.2);}
+.tog.on i{transform:translateX(18px);}
+
+@media(max-width:1100px){ .plan-grid{grid-template-columns:1fr;} }
+@media(max-width:820px){ .wk{grid-template-columns:1fr; } .wk-c{min-height:0;} }
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .pscroll{padding:14px 16px 24px;}
+  .plan-tools{padding:12px 16px 0;}
+  /* Sur téléphone, les pastilles en bout de ligne écrasaient l'intitulé :
+     elles passent sous le texte, alignées sur la colonne des heures. */
+  .ev{gap:12px; padding:13px 15px; flex-wrap:wrap; align-items:flex-start;}
+  .ev-h{width:64px; font-size:13.5px;}
+  .ev-r{width:100%; justify-content:flex-start; padding-left:76px; margin-top:2px;}
+  .cal-c{min-height:64px; padding:5px 5px;}
+  .chip{font-size:9.5px; padding:2px 4px;}
+  .fg{flex-direction:column; align-items:stretch; gap:7px;}
+  .fg > label{width:auto;}
+}
+
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
@@ -532,100 +658,185 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/planning.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
       <a href="/admin/settings.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
-      <div class="sf">IT Soluce ERP · v1.0</div>
+      <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+
       <div class="page-head">
-        <div class="ph-left"><h1>Planning</h1><p id="ph-sub">— rendez-vous</p></div>
+        <div class="ph-left"><h1>Planning</h1><p id="ph-sub">—</p></div>
         <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau rendez-vous</button>
       </div>
-      <div class="cal-toolbar">
-        <div class="cal-nav">
-          <button class="cal-navbtn" onclick="navCal(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-          <button class="cal-navbtn" onclick="navCal(1)"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+
+      <div class="plan-tools">
+        <div class="seg" id="segVue">
+          <button class="on" data-v="agenda" onclick="setView(this)">Agenda</button>
+          <button data-v="semaine" onclick="setView(this)">Semaine</button>
+          <button data-v="mois" onclick="setView(this)">Mois</button>
         </div>
-        <button class="cal-today" onclick="goToday()">Aujourd'hui</button>
-        <div class="cal-title" id="calTitle">—</div>
-        <div style="display:flex;align-items:center;gap:14px;margin-left:8px;flex-wrap:wrap;">
-          <span class="type-pill t-domicile"><span class="dot" style="background:#fff;"></span>Domicile</span>
-          <span class="type-pill t-depot"><span class="dot" style="background:#fff;"></span>Dépôt</span>
-          <span class="type-pill t-retrait"><span class="dot" style="background:#fff;"></span>Retrait</span>
-          <span class="type-pill t-autre"><span class="dot" style="background:#fff;"></span>Autre</span>
-        </div>
-        <div class="cal-switch">
-          <button id="btnMonth" class="on" onclick="setView('month')">Mois</button>
-          <button id="btnWeek" onclick="setView('week')">Semaine</button>
-          <button id="btnDay" onclick="setView('day')">Jour</button>
+        <div id="navCal" style="display:none;align-items:center;gap:8px;">
+          <button class="navbtn" onclick="navPeriode(-1)" aria-label="Période précédente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="navbtn" onclick="navPeriode(1)" aria-label="Période suivante"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="btn btn-secondary" onclick="goToday()">Aujourd'hui</button>
+          <span class="cal-title" id="calTitle">—</span>
         </div>
       </div>
-      <div class="cal-month" id="viewMonth">
-        <div class="cal-weekdays">
-          <div class="cal-wd">Lun</div><div class="cal-wd">Mar</div><div class="cal-wd">Mer</div><div class="cal-wd">Jeu</div><div class="cal-wd">Ven</div><div class="cal-wd">Sam</div><div class="cal-wd">Dim</div>
+
+      <div class="pscroll">
+
+        <!-- AGENDA -->
+        <div class="plan-grid" id="vueAgenda">
+          <div>
+            <div id="nextBox"></div>
+            <div id="agendaList"></div>
+          </div>
+          <div>
+            <div class="srch-wrap">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input class="srch" id="q" type="search" placeholder="Rechercher un rendez-vous…" oninput="render()"/>
+            </div>
+            <div class="mini">
+              <div class="mini-h">
+                <b id="miniTitle">—</b>
+                <div class="mini-nav">
+                  <button class="navbtn" onclick="navMini(-1)" aria-label="Mois précédent"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+                  <button class="navbtn" onclick="navMini(1)" aria-label="Mois suivant"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+                </div>
+              </div>
+              <div class="mini-g" id="miniGrid"></div>
+            </div>
+            <div class="filt">
+              <div class="filt-l">Filtrer</div>
+              <div id="filtres"></div>
+            </div>
+          </div>
         </div>
-        <div class="cal-grid" id="calGrid"></div>
+
+        <!-- SEMAINE -->
+        <div class="wk" id="vueSemaine" style="display:none;"></div>
+
+        <!-- MOIS -->
+        <div class="cal" id="vueMois" style="display:none;">
+          <div class="cal-hd"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+          <div class="cal-g" id="calGrid"></div>
+        </div>
+
       </div>
-      <div class="cal-week" id="viewWeek" style="display:none;"></div>
-      <div class="cal-day" id="viewDay" style="display:none;"></div>
     </div>
   </div>
 </div>
 
+<!-- PANNEAU RENDEZ-VOUS -->
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
   <div class="panel-head">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="panel-close" onclick="closePanel()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <span class="panel-title" id="panelTitle">Nouveau rendez-vous</span>
-    </div>
+    <button class="panel-back" onclick="closePanel()" aria-label="Fermer"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+    <span class="panel-title" id="panelTitle">Nouveau rendez-vous</span>
   </div>
+
   <div class="panel-body">
-    <input type="hidden" id="f-id"/>
-    <div class="form-grid">
+    <div class="form-card">
+      <input type="hidden" id="f-id"/>
 
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span>Rendez-vous</span></div>
-        <div class="fg"><label>Titre *</label><input type="text" id="f-titre" placeholder="ex : Remplacement écran iPhone"/></div>
-        <div class="fg"><label>Type</label><select id="f-type"><option value="domicile">Domicile</option><option value="depot">Dépôt</option><option value="retrait">Retrait</option><option value="autre">Autre</option></select></div>
-        <div class="fg-row">
-          <div class="fg"><label>Date *</label><input type="date" id="f-date"/></div>
-          <div class="fg"><label>Heure</label><input type="time" id="f-heure"/></div>
+      <div class="form-lbl">Rendez-vous</div>
+      <div class="fg"><label for="f-titre">Intitulé *</label><div class="fg-f"><input type="text" id="f-titre" placeholder="Remplacement écran iPhone 13"/></div></div>
+      <div class="fg"><label for="f-type">Type</label><div class="fg-f"><select id="f-type">
+        <option value="domicile">Domicile</option><option value="depot">Dépôt</option><option value="retrait">Retrait</option><option value="autre">Autre</option>
+      </select></div></div>
+      <div class="fg">
+        <label for="f-date">Date et heure *</label>
+        <div class="fg-f"><input type="date" id="f-date"/><input type="time" id="f-heure"/></div>
+      </div>
+      <div class="fg"><label for="f-duree">Durée</label><div class="fg-f"><select id="f-duree">
+        <option value="30">30 minutes</option><option value="60" selected>1 heure</option>
+        <option value="90">1 h 30</option><option value="120">2 heures</option>
+        <option value="180">3 heures</option><option value="">Non définie</option>
+      </select></div></div>
+
+      <div class="form-lbl">Rattachement</div>
+      <div class="fg"><label for="f-client">Client</label><div class="fg-f"><select id="f-client" onchange="onClientPick()"><option value="">— Aucun —</option></select></div></div>
+      <div class="fg"><label for="f-rep">Réparation</label><div class="fg-f"><select id="f-rep"><option value="">— Aucune —</option></select></div></div>
+      <div class="fg"><label for="f-lieu">Lieu</label><div class="fg-f"><input type="text" id="f-lieu" placeholder="Adresse de l'intervention"/></div></div>
+
+      <div class="form-lbl">Compléments</div>
+      <div class="fg"><label for="f-notes">Notes</label><div class="fg-f"><textarea id="f-notes" placeholder="Détails, matériel à prévoir…"></textarea></div></div>
+      <div class="fg">
+        <label>Terminé<em>Le rendez-vous a eu lieu</em></label>
+        <div class="fg-f" style="flex:0 0 auto;">
+          <div class="tog" id="tog" onclick="toggleTermine()" role="switch" tabindex="0" aria-label="Rendez-vous terminé"><i></i></div>
+          <input type="hidden" id="f-termine" value="false"/>
         </div>
-        <div class="fg"><label>Durée estimée</label><select id="f-duree"><option value="30">30 minutes</option><option value="60" selected>1 heure</option><option value="90">1h30</option><option value="120">2 heures</option><option value="">Non définie</option></select></div>
       </div>
-
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><span>Lien (optionnel)</span></div>
-        <div class="fg"><label>Client</label><select id="f-client" onchange="onClientPick()"><option value="">— Aucun —</option></select></div>
-        <div class="fg"><label>Réparation</label><select id="f-rep"><option value="">— Aucune —</option></select></div>
-        <div class="fg"><label>Lieu / Adresse</label><input type="text" id="f-lieu" placeholder="Adresse de l'intervention"/></div>
-        <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Détails, matériel à prévoir..."></textarea></div>
-        <div class="fg" style="display:flex;align-items:center;gap:10px;"><label style="margin:0;">Rendez-vous terminé</label><div class="cr-tog" id="togTermine" onclick="toggleTermine()" style="width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;"><div style="width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;" id="togTermineThumb"></div></div><input type="hidden" id="f-termine" value="false"/></div>
-      </div>
-
     </div>
   </div>
+
   <div class="panel-footer">
-    <button class="btn btn-secondary" id="delBtn" onclick="deleteRdv()" style="display:none;">Supprimer</button>
+    <button class="btn btn-danger" id="delBtn" onclick="deleteRdv()" style="display:none;">Supprimer</button>
     <button class="btn btn-secondary" id="rappelBtn" onclick="envoyerRappel()" style="display:none;"></button>
-    <button class="btn btn-secondary" onclick="closePanel()" style="padding:9px 18px;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveRdv()" style="padding:9px 22px;" id="saveBtn">Enregistrer</button>
+    <button class="btn btn-secondary" onclick="closePanel()">Annuler</button>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveRdv()">Enregistrer</button>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
-function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
-const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
-setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
-function toggleTermine(){const i=document.getElementById('f-termine');const on=i.value==='true';i.value=String(!on);const t=document.getElementById('togTermine');const th=document.getElementById('togTermineThumb');t.style.background=!on?'var(--ok)':'var(--bg4)';t.style.borderColor=!on?'var(--ok)':'var(--ln2)';th.style.transform=!on?'translateX(14px)':'translateX(0)';}
-function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
+/* Thème et accent — mêmes valeurs que la page Paramètres. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){
+  h=String(h||'').replace('#','')
+  if(h.length===3)h=h.split('').map(c=>c+c).join('')
+  if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc'
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]
+}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+/** Le bleu de marque est trop sombre pour rester lisible sur le thème sombre. */
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
+}
+function applyMode(m){
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'))
+  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'))
+  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)'))
+  s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'))
+  s('--t2', v('#6e6e73','#98989d'))
+  s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'))
+  s('--w',  v('#b25e09','#fbbf24'))
+  s('--d',  v('#c8362c','#f87171'))
+  applyAccent(accentBase)
+}
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
+
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='toast show '+(type==='ok'?'ok':'err')
+  setTimeout(()=>t.className='toast',3200)
+}
+function closePanel(){
+  document.getElementById('overlay').classList.remove('open')
+  document.getElementById('panel').classList.remove('open')
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()})
 </script>
 
 <script type="module">
@@ -634,39 +845,83 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:9px 20px;background:var(--a);color:#fff;border:none;border-radius:980px;cursor:pointer;font-family:inherit;font-size:13px;">Réessayer</button></div>`
+}
 
 try {
+
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
 
-
-
-let allRdv=[]
-let allClients=[]
-let allReps=[]
-let currentDate=new Date()
-let currentView='month'
 const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+const MOIS_C=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.']
 const JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi']
-const TYPE_LABEL={domicile:'Domicile',depot:'Dépôt',retrait:'Retrait',autre:'Autre'}
-function iconFor(type){
-  const icons={
-    domicile:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
-    depot:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
-    retrait:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
-    autre:'<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>'
-  }
-  return `<svg viewBox="0 0 24 24">${icons[type]||icons.autre}</svg>`
+const TYPES=[{v:'domicile',l:'Domicile'},{v:'depot',l:'Dépôt'},{v:'retrait',l:'Retrait'},{v:'autre',l:'Autre'}]
+const TYPE_LABEL=Object.fromEntries(TYPES.map(t=>[t.v,t.l]))
+const TYPE_COULEUR={domicile:'var(--a)',depot:'#6d28d9',retrait:'#1a8a52',autre:'var(--t3)'}
+const DUREES=[30,60,90,120,180]
+
+let allRdv=[],allClients=[],allReps=[]
+let _vue='agenda'
+let _filtre='avenir'
+let _jourSel=null              // jour choisi dans le mini-calendrier
+let _periode=new Date()        // vue Semaine / Mois
+let _mini=new Date()           // mois du mini-calendrier
+
+/* ── Dates : tout en heure locale ──────────────────────────────
+   toISOString() renvoie de l'UTC. En Belgique, minuit local y devient
+   22h ou 23h la veille : la grille du calendrier créait donc chaque
+   rendez-vous un jour trop tôt, et modifier un rendez-vous de nuit le
+   décalait réellement. Ces trois fonctions restent en heure locale. */
+function ymd(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+}
+function hm(d){
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')
+}
+function jourZero(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
+
+function ecartJours(d){
+  return Math.round((jourZero(d)-jourZero(new Date()))/86400000)
+}
+function libelleJour(d){
+  const e=ecartJours(d)
+  if(e===0)return "Aujourd'hui"
+  if(e===1)return 'Demain'
+  if(e===-1)return 'Hier'
+  const j=JOURS[d.getDay()]
+  return j.charAt(0).toUpperCase()+j.slice(1)+' '+d.getDate()+' '+MOIS[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')
+}
+function libelleEcart(d){
+  const e=ecartJours(d)
+  if(e===0)return "aujourd'hui"
+  if(e===1)return 'demain'
+  if(e===-1)return 'hier'
+  if(e>1)return 'dans '+e+' jours'
+  return 'il y a '+Math.abs(e)+' jours'
+}
+function dureeLbl(r){
+  if(!r.date_fin)return ''
+  const min=Math.round((new Date(r.date_fin)-new Date(r.date_debut))/60000)
+  if(min<=0)return ''
+  if(min<60)return min+' min'
+  const h=Math.floor(min/60), m=min%60
+  return m?`${h} h ${String(m).padStart(2,'0')}`:`${h} h`
+}
+function sousTitre(r){
+  return [r.client_nom,r.reparation_numero,r.lieu].filter(Boolean).join(' · ')
 }
 
+/* ── Chargement ───────────────────────────────────────────────── */
 async function load(){
   const [rRdv,rCli,rRep]=await Promise.all([
-    sb.from('rendezvous').select('*').order('date_debut',{ascending:true}),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
-    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false})
+    sb.from('rendezvous').select('*').order('date_debut',{ascending:false}).limit(2000),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(2000),
+    sb.from('reparations').select('id,numero,client_nom,appareil,marque,modele,statut').order('created_at',{ascending:false}).limit(2000)
   ])
-  if(rRdv.error){showError(rRdv.error.message);return}
+  if(rRdv.error)throw rRdv.error
   allRdv=rRdv.data||[]
   allClients=rCli.data||[]
   allReps=rRep.data||[]
@@ -677,311 +932,389 @@ async function load(){
 }
 
 function fillSelects(){
-  const cs=document.getElementById('f-client')
-  cs.innerHTML='<option value="">— Aucun —</option>'+allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-adr="${escHtml(c.adresse)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
-  const rs=document.getElementById('f-rep')
-  rs.innerHTML='<option value="">— Aucune —</option>'+allReps.map(r=>`<option value="${r.id}" data-num="${escHtml(r.numero)}">${escHtml(r.numero)||''} · ${escHtml(r.client_nom)} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
+  document.getElementById('f-client').innerHTML='<option value="">— Aucun —</option>'+
+    allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-adr="${escHtml(c.adresse||'')}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
+  document.getElementById('f-rep').innerHTML='<option value="">— Aucune —</option>'+
+    allReps.map(r=>`<option value="${r.id}" data-num="${escHtml(r.numero||'')}">${escHtml(r.numero||'')} · ${escHtml(r.client_nom||'')} · ${escHtml([r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'')}</option>`).join('')
 }
 
-window.onClientPick=function(){
-  const sel=document.getElementById('f-client')
-  const opt=sel.options[sel.selectedIndex]
-  if(sel.value && opt.dataset.adr && !document.getElementById('f-lieu').value){
-    document.getElementById('f-lieu').value=opt.dataset.adr
+/* ── Sélection et filtres ─────────────────────────────────────── */
+function estPasse(r){return new Date(r.date_debut)<jourZero(new Date())}
+function compteurs(){
+  return {
+    avenir:allRdv.filter(r=>!estPasse(r)).length,
+    passes:allRdv.filter(estPasse).length,
+    domicile:allRdv.filter(r=>r.type==='domicile').length,
+    depot:allRdv.filter(r=>r.type==='depot').length,
+    retrait:allRdv.filter(r=>r.type==='retrait').length,
+    autre:allRdv.filter(r=>(r.type||'autre')==='autre').length
   }
 }
-
-function render(){
-  document.getElementById('ph-sub').textContent=`${allRdv.length} rendez-vous`
-  document.getElementById('viewMonth').style.display='none'
-  document.getElementById('viewWeek').style.display='none'
-  document.getElementById('viewDay').style.display='none'
-  if(currentView==='month')renderMonth()
-  else if(currentView==='week')renderWeek()
-  else renderDay()
+function filtres(q){
+  let l=allRdv.slice()
+  if(_jourSel)l=l.filter(r=>ymd(new Date(r.date_debut))===_jourSel)
+  else if(_filtre==='avenir')l=l.filter(r=>!estPasse(r))
+  else if(_filtre==='passes')l=l.filter(estPasse)
+  else if(_filtre)l=l.filter(r=>(r.type||'autre')===_filtre)
+  if(q){
+    const n=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    const qq=n(q)
+    l=l.filter(r=>n(r.titre).includes(qq)||n(r.client_nom).includes(qq)||n(r.lieu).includes(qq)||n(r.reparation_numero).includes(qq)||n(r.notes).includes(qq))
+  }
+  const desc=(_filtre==='passes'&&!_jourSel)
+  return l.sort((a,b)=>desc?new Date(b.date_debut)-new Date(a.date_debut):new Date(a.date_debut)-new Date(b.date_debut))
 }
 
-function sameDay(d1,d2){return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
+/* ── Rendu ────────────────────────────────────────────────────── */
+window.render=function(){
+  const q=document.getElementById('q').value.trim()
+  const c=compteurs()
+  document.getElementById('ph-sub').textContent=
+    `${c.avenir} rendez-vous à venir · ${allRdv.length} au total`
 
-function rdvOfDay(date){
-  return allRdv.filter(r=>sameDay(new Date(r.date_debut),date)).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut))
+  document.getElementById('vueAgenda').style.display=_vue==='agenda'?'grid':'none'
+  document.getElementById('vueSemaine').style.display=_vue==='semaine'?'grid':'none'
+  document.getElementById('vueMois').style.display=_vue==='mois'?'block':'none'
+  document.getElementById('navCal').style.display=_vue==='agenda'?'none':'flex'
+
+  if(_vue==='agenda')renderAgenda(q,c)
+  else if(_vue==='semaine')renderSemaine()
+  else renderMois()
 }
 
-function renderMonth(){
-  document.getElementById('viewMonth').style.display='flex'
-  const y=currentDate.getFullYear(),m=currentDate.getMonth()
-  document.getElementById('calTitle').textContent=`${MOIS[m]} ${y}`
-  // Premier lundi de la grille
-  const first=new Date(y,m,1)
-  let startDay=first.getDay()-1; if(startDay<0)startDay=6
-  const gridStart=new Date(y,m,1-startDay)
-  const today=new Date()
+function ligne(r){
+  const d=new Date(r.date_debut)
+  const dur=dureeLbl(r)
+  const st=sousTitre(r)
+  const type=r.type||'autre'
+  return `<div class="ev ${r.termine?'done':''}" onclick="editRdv(${Number(r.id)})">
+    <div class="ev-h">${hm(d)}${dur?`<em>${escHtml(dur)}</em>`:''}</div>
+    <div class="ev-b"><div class="ev-t">${escHtml(r.titre)}</div>${st?`<div class="ev-s">${escHtml(st)}</div>`:''}</div>
+    <div class="ev-r">${r.rappel_envoye_le?'<span class="tick">✓ rappel</span>':''}<span class="pill p-${escHtml(type)}">${escHtml(TYPE_LABEL[type]||'Autre')}</span></div>
+  </div>`
+}
+
+function renderAgenda(q,c){
+  // Prochain rendez-vous : le premier à venir, non terminé.
+  const prochain=allRdv.filter(r=>!estPasse(r)&&!r.termine)
+                       .sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut))[0]
+  const box=document.getElementById('nextBox')
+  if(prochain&&!_jourSel){
+    const d=new Date(prochain.date_debut)
+    const dur=dureeLbl(prochain)
+    const meta=[hm(d)+(dur?` · ${dur}`:''),prochain.client_nom,prochain.lieu].filter(Boolean).join(' · ')
+    box.innerHTML=`<div class="next" onclick="editRdv(${Number(prochain.id)})" style="cursor:pointer;">
+      <div class="next-when"><div class="next-d">${d.getDate()}</div><div class="next-m">${MOIS_C[d.getMonth()]}</div></div>
+      <div class="next-body">
+        <div class="next-lbl">Prochain rendez-vous · ${escHtml(libelleEcart(d))}</div>
+        <div class="next-t">${escHtml(prochain.titre)}</div>
+        <div class="next-meta">${escHtml(meta)}</div>
+      </div>
+      <span class="pill p-${escHtml(prochain.type||'autre')}">${escHtml(TYPE_LABEL[prochain.type]||'Autre')}</span>
+    </div>`
+  } else box.innerHTML=''
+
+  const liste=filtres(q)
+  const cible=document.getElementById('agendaList')
+
+  if(!liste.length){
+    const quoi=_jourSel?`le ${escHtml(_jourSel.split('-').reverse().join('/'))}`
+      :(q?'pour cette recherche':(_filtre==='passes'?'dans le passé':'à venir'))
+    cible.innerHTML=`<div class="vide">
+      <div class="vide-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <h3>Aucun rendez-vous ${quoi}</h3>
+      <p>${allRdv.length?'Change de filtre dans la colonne de droite, ou crée un rendez-vous.':'Crée ton premier rendez-vous pour le voir apparaître ici.'}</p>
+      <button class="btn btn-primary" style="display:inline-flex;" onclick="${_jourSel?`openPanelDate('${escJsAttr(_jourSel)}')`:'openPanel()'}">Nouveau rendez-vous</button>
+    </div>`
+  } else {
+    const groupes=new Map()
+    liste.forEach(r=>{
+      const k=ymd(new Date(r.date_debut))
+      if(!groupes.has(k))groupes.set(k,[])
+      groupes.get(k).push(r)
+    })
+    let html=''
+    if(_jourSel){
+      html+=`<div class="day-h" style="margin-bottom:12px;"><b>Jour sélectionné</b><button class="btn btn-secondary" style="padding:4px 12px;font-size:12px;" onclick="clearJour()">Tout afficher</button></div>`
+    }
+    groupes.forEach((evts,k)=>{
+      const d=new Date(k+'T12:00:00')
+      const e=ecartJours(d)
+      html+=`<div class="daygrp">
+        <div class="day-h"><b>${escHtml(libelleJour(d))}</b><span>${evts.length} rendez-vous</span>${(e>1&&e<=14)?`<i>${escHtml(libelleEcart(d))}</i>`:''}</div>
+        ${evts.map(ligne).join('')}
+      </div>`
+    })
+    cible.innerHTML=html
+  }
+
+  // Filtres
+  const def=[
+    ['avenir','À venir',c.avenir],['passes','Passés',c.passes],
+    ...TYPES.map(t=>[t.v,t.l,c[t.v]])
+  ]
+  document.getElementById('filtres').innerHTML=def.map(([v,l,n])=>
+    `<button class="filt-r ${(!_jourSel&&_filtre===v)?'on':''}" onclick="setFiltre('${escJsAttr(v)}')"><span>${escHtml(l)}</span><b>${n}</b></button>`
+  ).join('')
+
+  renderMini()
+}
+
+function renderMini(){
+  const y=_mini.getFullYear(), m=_mini.getMonth()
+  document.getElementById('miniTitle').textContent=MOIS[m].charAt(0).toUpperCase()+MOIS[m].slice(1)+' '+y
+  const jours=new Set(allRdv.map(r=>ymd(new Date(r.date_debut))))
+  const premier=new Date(y,m,1)
+  let dec=premier.getDay()-1; if(dec<0)dec=6
+  const debut=new Date(y,m,1-dec)
+  const auj=ymd(new Date())
+  let html=['L','M','M','J','V','S','D'].map(j=>`<div class="dow">${j}</div>`).join('')
+  for(let i=0;i<42;i++){
+    const d=new Date(debut); d.setDate(debut.getDate()+i)
+    const s=ymd(d)
+    const cls=[d.getMonth()!==m?'off':'',jours.has(s)?'has':'',s===auj?'now':'',s===_jourSel?'now':''].filter(Boolean).join(' ')
+    html+=`<button class="${cls}" onclick="pickJour('${escJsAttr(s)}')">${d.getDate()}</button>`
+  }
+  document.getElementById('miniGrid').innerHTML=html
+}
+
+function renderSemaine(){
+  const cur=new Date(_periode)
+  let dow=cur.getDay()-1; if(dow<0)dow=6
+  const lundi=new Date(cur); lundi.setDate(cur.getDate()-dow)
+  const dim=new Date(lundi); dim.setDate(lundi.getDate()+6)
+  document.getElementById('calTitle').textContent=
+    `${lundi.getDate()} ${MOIS_C[lundi.getMonth()]} — ${dim.getDate()} ${MOIS_C[dim.getMonth()]} ${dim.getFullYear()}`
+  const auj=ymd(new Date())
+  let html=''
+  for(let i=0;i<7;i++){
+    const d=new Date(lundi); d.setDate(lundi.getDate()+i)
+    const s=ymd(d)
+    const evts=allRdv.filter(r=>ymd(new Date(r.date_debut))===s).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut))
+    const corps=evts.length?evts.map(r=>{
+      const dd=new Date(r.date_debut), dur=dureeLbl(r), st=sousTitre(r)
+      return `<div class="wk-e t-${escHtml(r.type||'autre')} ${r.termine?'done':''}" onclick="event.stopPropagation();editRdv(${Number(r.id)})">
+        <div class="wk-t">${hm(dd)}${dur?` · ${escHtml(dur)}`:''}</div>
+        <div class="wk-x">${escHtml(r.titre)}</div>
+        ${st?`<div class="wk-s">${escHtml(st)}</div>`:''}
+        ${r.rappel_envoye_le?'<div class="wk-s" style="color:var(--ok);">✓ rappel</div>':''}
+      </div>`
+    }).join(''):'<div class="wk-v">—</div>'
+    html+=`<div class="wk-c ${s===auj?'now':''}" onclick="openPanelDate('${escJsAttr(s)}')">
+      <div class="wk-h"><div class="wk-j">${JOURS[d.getDay()].slice(0,3)}</div><div class="wk-n">${d.getDate()}</div></div>
+      ${corps}
+    </div>`
+  }
+  document.getElementById('vueSemaine').innerHTML=html
+}
+
+function renderMois(){
+  const y=_periode.getFullYear(), m=_periode.getMonth()
+  document.getElementById('calTitle').textContent=MOIS[m].charAt(0).toUpperCase()+MOIS[m].slice(1)+' '+y
+  const premier=new Date(y,m,1)
+  let dec=premier.getDay()-1; if(dec<0)dec=6
+  const debut=new Date(y,m,1-dec)
+  const auj=ymd(new Date())
   let html=''
   for(let i=0;i<42;i++){
-    const d=new Date(gridStart);d.setDate(gridStart.getDate()+i)
-    const other=d.getMonth()!==m
-    const isToday=sameDay(d,today)
-    const evts=rdvOfDay(d)
-    const dateStr=d.toISOString().slice(0,10)
-    let evtHtml=evts.slice(0,3).map(e=>{
-      const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-      return `<div class="cal-evt evt-${e.type}" onclick="event.stopPropagation();editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}" title="${escHtml(e.titre)}">${iconFor(e.type)}<span>${h}</span></div>`
-    }).join('')
-    if(evts.length>3)evtHtml+=`<div class="cal-more">+${evts.length-3} autre(s)</div>`
-    html+=`<div class="cal-cell ${other?'other':''} ${isToday?'today':''}" onclick="openPanelDate('${dateStr}')"><div class="cal-daynum">${d.getDate()}</div>${evtHtml}</div>`
+    const d=new Date(debut); d.setDate(debut.getDate()+i)
+    const s=ymd(d)   // heure locale : c'est ici que le décalage d'un jour se produisait
+    const evts=allRdv.filter(r=>ymd(new Date(r.date_debut))===s).sort((a,b)=>new Date(a.date_debut)-new Date(b.date_debut))
+    const chips=evts.slice(0,3).map(r=>
+      `<div class="chip ${r.termine?'done':''}" onclick="event.stopPropagation();editRdv(${Number(r.id)})" title="${escHtml(r.titre)}"><s style="background:${TYPE_COULEUR[r.type||'autre']}"></s><b>${hm(new Date(r.date_debut))}</b> ${escHtml(r.titre)}</div>`
+    ).join('')
+    const reste=evts.length>3?`<div class="cal-more">+${evts.length-3}</div>`:''
+    html+=`<div class="cal-c ${d.getMonth()!==m?'off':''}" onclick="openPanelDate('${escJsAttr(s)}')">
+      <div class="cal-n ${s===auj?'now':''}">${d.getDate()}</div>${chips}${reste}
+    </div>`
   }
   document.getElementById('calGrid').innerHTML=html
 }
 
-function renderWeek(){
-  document.getElementById('viewWeek').style.display='flex'
-  const cur=new Date(currentDate)
-  let dow=cur.getDay()-1; if(dow<0)dow=6
-  const monday=new Date(cur);monday.setDate(cur.getDate()-dow)
-  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6)
-  document.getElementById('calTitle').textContent=`${monday.getDate()} ${MOIS[monday.getMonth()].slice(0,4)}. — ${sunday.getDate()} ${MOIS[sunday.getMonth()].slice(0,4)}. ${sunday.getFullYear()}`
-  const today=new Date()
-  let html=''
-  for(let i=0;i<7;i++){
-    const d=new Date(monday);d.setDate(monday.getDate()+i)
-    const evts=rdvOfDay(d)
-    const isToday=sameDay(d,today)
-    const dateStr=d.toISOString().slice(0,10)
-    let body=''
-    if(evts.length===0){body=`<div class="week-empty">Aucun rendez-vous</div>`}
-    else{
-      body=evts.map(e=>{
-        const h=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-        const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
-        const rappelIco=e.rappel_envoye_le?'<span title="Rappel envoyé" style="margin-left:6px;color:var(--ok,#10b981);">✓</span>':''
-        return `<div class="week-evt" onclick="editRdv(${e.id})"><div class="week-evt-time">${h}</div><div class="week-evt-ico evt-${e.type}">${iconFor(e.type)}</div><div class="week-evt-info"><div class="week-evt-titre" style="${e.termine?'text-decoration:line-through;opacity:.6;':''}">${escHtml(e.titre)}${rappelIco}</div>${sub?`<div class="week-evt-sub">${escHtml(sub)}</div>`:''}</div><span class="type-pill t-${e.type}">${TYPE_LABEL[e.type]}</span></div>`
-      }).join('')
-    }
-    html+=`<div class="week-day"><div class="week-day-head ${isToday?'today':''}"><span>${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]}</span><button onclick="openPanelDate('${dateStr}')" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:18px;line-height:1;">+</button></div><div class="week-day-body">${body}</div></div>`
-  }
-  document.getElementById('viewWeek').innerHTML=html
-}
-
-function renderDay(){
-  document.getElementById('viewDay').style.display='flex'
-  const d=currentDate
-  const jourCap=JOURS[d.getDay()].charAt(0).toUpperCase()+JOURS[d.getDay()].slice(1)
-  document.getElementById('calTitle').textContent=`${jourCap} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`
-  const evts=rdvOfDay(d)
-  const startH=8,endH=20
-  let html=''
-  for(let h=startH;h<=endH;h++){
-    const hEvts=evts.filter(e=>new Date(e.date_debut).getHours()===h)
-    const dateStr=d.toISOString().slice(0,10)
-    if(hEvts.length){
-      const items=hEvts.map(e=>{
-        const hh=new Date(e.date_debut).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
-        const sub=[e.client_nom,e.reparation_numero,e.lieu].filter(Boolean).join(' · ')
-        return `<div class="day-evt evt-${e.type}" onclick="editRdv(${e.id})" style="${e.termine?'opacity:.5;text-decoration:line-through;':''}">${iconFor(e.type)}<div class="day-evt-info"><div class="day-evt-titre">${escHtml(e.titre)} · ${hh}</div>${sub?`<div class="day-evt-sub">${escHtml(sub)}</div>`:''}</div></div>`
-      }).join('')
-      html+=`<div class="day-row"><span class="day-hour">${h}h</span><div class="day-row-content">${items}</div></div>`
-    } else {
-      html+=`<div class="day-row"><span class="day-hour">${h}h</span><div class="day-row-content"><div class="day-empty" onclick="openPanelDate('${dateStr}')"></div></div></div>`
-    }
-  }
-  document.getElementById('viewDay').innerHTML=html
-}
-
-window.setView=function(v){
-  currentView=v
-  document.getElementById('btnMonth').classList.toggle('on',v==='month')
-  document.getElementById('btnWeek').classList.toggle('on',v==='week')
-  document.getElementById('btnDay').classList.toggle('on',v==='day')
+/* ── Navigation ───────────────────────────────────────────────── */
+window.setView=function(btn){
+  _vue=btn.dataset.v
+  document.querySelectorAll('#segVue button').forEach(b=>b.classList.toggle('on',b===btn))
   render()
 }
-window.navCal=function(dir){
-  if(currentView==='month')currentDate.setMonth(currentDate.getMonth()+dir)
-  else if(currentView==='week')currentDate.setDate(currentDate.getDate()+dir*7)
-  else currentDate.setDate(currentDate.getDate()+dir)
-  currentDate=new Date(currentDate)
+window.setFiltre=function(v){_jourSel=null;_filtre=v;render()}
+window.clearJour=function(){_jourSel=null;render()}
+window.pickJour=function(s){_jourSel=(_jourSel===s)?null:s;render()}
+window.navMini=function(dir){_mini=new Date(_mini.getFullYear(),_mini.getMonth()+dir,1);renderMini()}
+window.navPeriode=function(dir){
+  const d=new Date(_periode)
+  if(_vue==='mois')d.setMonth(d.getMonth()+dir)
+  else d.setDate(d.getDate()+dir*7)
+  _periode=d
   render()
 }
-window.goToday=function(){currentDate=new Date();render()}
+window.goToday=function(){_periode=new Date();render()}
 
-window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
-
-// ─── PANNEAU CRUD ───
+/* ── Panneau ──────────────────────────────────────────────────── */
 function resetForm(){
-  document.getElementById('f-id').value=''
-  document.getElementById('f-titre').value=''
+  ['f-id','f-titre','f-lieu','f-notes'].forEach(id=>document.getElementById(id).value='')
   document.getElementById('f-type').value='domicile'
   document.getElementById('f-date').value=''
   document.getElementById('f-heure').value=''
   document.getElementById('f-duree').value='60'
+  fillSelects()
   document.getElementById('f-client').value=''
   document.getElementById('f-rep').value=''
-  document.getElementById('f-lieu').value=''
-  document.getElementById('f-notes').value=''
   document.getElementById('f-termine').value='false'
-  const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb')
-  t.style.background='var(--bg4)';t.style.borderColor='var(--ln2)';th.style.transform='translateX(0)'
+  document.getElementById('tog').classList.remove('on')
+  document.getElementById('delBtn').style.display='none'
+  document.getElementById('rappelBtn').style.display='none'
 }
-
+function ouvrir(){
+  document.getElementById('overlay').classList.add('open')
+  document.getElementById('panel').classList.add('open')
+  // Le focus immédiat ouvre le clavier pendant la transition sur mobile.
+  setTimeout(()=>document.getElementById('f-titre').focus(),220)
+}
 window.openPanel=function(){
   resetForm()
   document.getElementById('panelTitle').textContent='Nouveau rendez-vous'
   document.getElementById('saveBtn').textContent='Enregistrer'
-  document.getElementById('delBtn').style.display='none'
-  const now=new Date()
-  document.getElementById('f-date').value=now.toISOString().slice(0,10)
+  document.getElementById('f-date').value=ymd(new Date())
   document.getElementById('f-heure').value='18:00'
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-titre').focus()
+  ouvrir()
 }
-
-window.openPanelDate=function(dateStr){
+window.openPanelDate=function(s){
   resetForm()
   document.getElementById('panelTitle').textContent='Nouveau rendez-vous'
   document.getElementById('saveBtn').textContent='Enregistrer'
-  document.getElementById('delBtn').style.display='none'
-  document.getElementById('f-date').value=dateStr
+  document.getElementById('f-date').value=s
   document.getElementById('f-heure').value='18:00'
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-titre').focus()
+  ouvrir()
+}
+window.toggleTermine=function(){
+  const t=document.getElementById('tog'), f=document.getElementById('f-termine')
+  const on=f.value!=='true'
+  f.value=String(on)
+  t.classList.toggle('on',on)
+}
+window.onClientPick=function(){
+  const sel=document.getElementById('f-client')
+  const opt=sel.options[sel.selectedIndex]
+  const lieu=document.getElementById('f-lieu')
+  if(sel.value&&opt.dataset.adr&&!lieu.value)lieu.value=opt.dataset.adr
 }
 
 window.editRdv=function(id){
-  const r=allRdv.find(x=>x.id===id)
+  const r=allRdv.find(x=>Number(x.id)===Number(id))
   if(!r)return
   resetForm()
   document.getElementById('panelTitle').textContent='Modifier le rendez-vous'
   document.getElementById('saveBtn').textContent='Mettre à jour'
-  document.getElementById('delBtn').style.display='block'
+  document.getElementById('delBtn').style.display='inline-flex'
   document.getElementById('f-id').value=r.id
   document.getElementById('f-titre').value=r.titre||''
   document.getElementById('f-type').value=r.type||'domicile'
+
   const d=new Date(r.date_debut)
-  document.getElementById('f-date').value=d.toISOString().slice(0,10)
-  document.getElementById('f-heure').value=d.toTimeString().slice(0,5)
-  // Durée
-  if(r.date_fin){const mins=Math.round((new Date(r.date_fin)-d)/60000);document.getElementById('f-duree').value=['30','60','90','120'].includes(String(mins))?String(mins):''}
-  document.getElementById('f-client').value=r.client_id||''
-  document.getElementById('f-rep').value=r.reparation_id||''
+  document.getElementById('f-date').value=ymd(d)     // heure locale, pas UTC
+  document.getElementById('f-heure').value=hm(d)
+
+  // Une durée hors liste était silencieusement remise à « non définie »,
+  // ce qui effaçait date_fin à l'enregistrement : on l'ajoute au menu.
+  const selD=document.getElementById('f-duree')
+  if(r.date_fin){
+    const min=Math.round((new Date(r.date_fin)-d)/60000)
+    if(min>0&&!DUREES.includes(min)){
+      const o=document.createElement('option')
+      o.value=String(min); o.textContent=dureeLbl(r)+' (personnalisée)'
+      selD.appendChild(o)
+    }
+    selD.value=min>0?String(min):''
+  } else selD.value=''
+
+  // Un client ou une réparation supprimé disparaissait du menu, et
+  // l'enregistrement effaçait le lien sans prévenir.
+  const selC=document.getElementById('f-client')
+  if(r.client_id&&!allClients.some(c=>Number(c.id)===Number(r.client_id))){
+    const o=document.createElement('option')
+    o.value=String(r.client_id); o.dataset.nom=r.client_nom||''
+    o.textContent=(r.client_nom||'Client')+' (supprimé)'
+    selC.appendChild(o)
+  }
+  selC.value=r.client_id?String(r.client_id):''
+
+  const selR=document.getElementById('f-rep')
+  if(r.reparation_id&&!allReps.some(x=>Number(x.id)===Number(r.reparation_id))){
+    const o=document.createElement('option')
+    o.value=String(r.reparation_id); o.dataset.num=r.reparation_numero||''
+    o.textContent=(r.reparation_numero||'Réparation')+' (supprimée)'
+    selR.appendChild(o)
+  }
+  selR.value=r.reparation_id?String(r.reparation_id):''
+
   document.getElementById('f-lieu').value=r.lieu||''
   document.getElementById('f-notes').value=r.notes||''
-  document.getElementById('f-termine').value=String(r.termine||false)
-  if(r.termine){const t=document.getElementById('togTermine'),th=document.getElementById('togTermineThumb');t.style.background='var(--ok)';t.style.borderColor='var(--ok)';th.style.transform='translateX(14px)'}
-  // Bouton rappel
-  const rappelBtn=document.getElementById('rappelBtn')
-  const client=allClients.find(c=>c.id===r.client_id)
-  if(client&&client.email){
-    rappelBtn.style.display='block'
-    if(r.rappel_envoye_le){
-      const dEnv=new Date(r.rappel_envoye_le).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
-      rappelBtn.textContent=`Rappel envoyé le ${dEnv}`
-      rappelBtn.disabled=true
-      rappelBtn.style.opacity='0.6'
-    } else {
-      rappelBtn.textContent='Envoyer le rappel'
-      rappelBtn.disabled=false
-      rappelBtn.style.opacity='1'
-    }
-  } else {
-    rappelBtn.style.display='none'
-  }
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-}
+  document.getElementById('f-termine').value=String(!!r.termine)
+  document.getElementById('tog').classList.toggle('on',!!r.termine)
 
-window.envoyerRappel=async function(){
-  const id=document.getElementById('f-id').value
-  const r=allRdv.find(x=>x.id===Number(id))
-  if(!r)return
-  const client=allClients.find(c=>c.id===r.client_id)
-  if(!client||!client.email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
   const btn=document.getElementById('rappelBtn')
-  btn.disabled=true
-  btn.textContent='Envoi en cours...'
-  try{
-    const prenom=(client.nom||'').split(' ')[0]||''
-    const dRdv=new Date(r.date_debut)
-    const dateLbl=dRdv.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long'})
-    const heureLbl=dRdv.toTimeString().slice(0,5)
-    const lieuLigne=r.lieu?`<p>Lieu : ${r.lieu}</p>`:''
-    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
-    const html=`<p>Bonjour ${prenom},</p><p>Je vous confirme notre rendez-vous prévu <strong>${dateLbl}</strong> à <strong>${heureLbl}</strong>.</p>${lieuLigne}<p>N'hésitez pas à me recontacter si vous avez un empêchement.</p>${signature}`
-    const {data:{session}}=await sb.auth.getSession()
-    const res=await fetch(`${SB}/functions/v1/send-reminder`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
-      body:JSON.stringify({to:client.email,subject:`Rappel de rendez-vous — IT Soluce`,html:html})
-    })
-    const result=await res.json()
-    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
-    const now=new Date().toISOString()
-    await sb.from('rendezvous').update({rappel_envoye_le:now}).eq('id',r.id)
-    const i=allRdv.findIndex(x=>x.id===r.id)
-    if(i>=0)allRdv[i].rappel_envoye_le=now
-    const dEnv=new Date(now).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
-    btn.textContent=`Rappel envoyé le ${dEnv}`
-    btn.style.opacity='0.6'
-    showToast('Rappel envoyé ✓','ok')
-  }catch(err){
-    btn.disabled=false
-    btn.textContent='Envoyer le rappel'
-    showToast('Erreur : '+err.message,'err')
+  const client=allClients.find(c=>Number(c.id)===Number(r.client_id))
+  if(client&&client.email){
+    btn.style.display='inline-flex'
+    if(r.rappel_envoye_le){
+      btn.textContent='Rappel envoyé le '+new Date(r.rappel_envoye_le).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
+      btn.disabled=true; btn.style.opacity='.6'
+    } else {
+      btn.textContent='Envoyer le rappel'; btn.disabled=false; btn.style.opacity='1'
+    }
   }
+  ouvrir()
 }
 
 window.saveRdv=async function(){
   const id=document.getElementById('f-id').value
   const titre=document.getElementById('f-titre').value.trim()
   const date=document.getElementById('f-date').value
-  if(!titre){showToast('Le titre est requis','err');return}
-  if(!date){showToast('La date est requise','err');return}
+  if(!titre){showToast('L\'intitulé est obligatoire','err');return}
+  if(!date){showToast('La date est obligatoire','err');return}
   const heure=document.getElementById('f-heure').value||'00:00'
-  const dateDebut=new Date(`${date}T${heure}`)
+  const debut=new Date(`${date}T${heure}`)
+  if(isNaN(debut)){showToast('Date ou heure invalide','err');return}
   const duree=document.getElementById('f-duree').value
-  let dateFin=null
-  if(duree){dateFin=new Date(dateDebut.getTime()+Number(duree)*60000)}
-  // Client lié
-  const clientSel=document.getElementById('f-client')
-  const clientId=clientSel.value?Number(clientSel.value):null
-  const clientNom=clientSel.value?clientSel.options[clientSel.selectedIndex].dataset.nom:null
-  // Réparation liée
-  const repSel=document.getElementById('f-rep')
-  const repId=repSel.value?Number(repSel.value):null
-  const repNum=repSel.value?repSel.options[repSel.selectedIndex].dataset.num:null
+  const fin=duree?new Date(debut.getTime()+Number(duree)*60000):null
 
+  const selC=document.getElementById('f-client'), selR=document.getElementById('f-rep')
   const payload={
     titre,
     type:document.getElementById('f-type').value,
-    date_debut:dateDebut.toISOString(),
-    date_fin:dateFin?dateFin.toISOString():null,
-    client_id:clientId,
-    client_nom:clientNom,
-    reparation_id:repId,
-    reparation_numero:repNum,
+    date_debut:debut.toISOString(),
+    date_fin:fin?fin.toISOString():null,
+    client_id:selC.value?Number(selC.value):null,
+    client_nom:selC.value?(selC.options[selC.selectedIndex].dataset.nom||null):null,
+    reparation_id:selR.value?Number(selR.value):null,
+    reparation_numero:selR.value?(selR.options[selR.selectedIndex].dataset.num||null):null,
     lieu:document.getElementById('f-lieu').value.trim()||null,
     notes:document.getElementById('f-notes').value.trim()||null,
     termine:document.getElementById('f-termine').value==='true',
     updated_at:new Date().toISOString()
   }
-  document.getElementById('saveBtn').textContent='Enregistrement...'
-  document.getElementById('saveBtn').disabled=true
-  let error
-  if(id){
-    const res=await sb.from('rendezvous').update(payload).eq('id',id)
-    error=res.error
-    if(!error){const i=allRdv.findIndex(r=>r.id===Number(id));if(i>=0)allRdv[i]={...allRdv[i],...payload,id:Number(id)}}
-  } else {
-    const res=await sb.from('rendezvous').insert(payload).select().single()
-    error=res.error
-    if(!error&&res.data)allRdv.push(res.data)
+  const btn=document.getElementById('saveBtn')
+  const lbl=btn.textContent
+  btn.disabled=true; btn.textContent='Enregistrement…'
+  try{
+    if(id){
+      const {error}=await sb.from('rendezvous').update(payload).eq('id',id)
+      if(error)throw error
+      const i=allRdv.findIndex(r=>Number(r.id)===Number(id))
+      if(i>=0)allRdv[i]={...allRdv[i],...payload,id:Number(id)}
+    } else {
+      const {data,error}=await sb.from('rendezvous').insert(payload).select().single()
+      if(error)throw error
+      if(data)allRdv.push(data)
+    }
+    closePanel(); render()
+    showToast(id?'Rendez-vous mis à jour':'Rendez-vous créé','ok')
+  }catch(err){
+    showToast('Erreur : '+(err.message||err),'err')
+  }finally{
+    btn.disabled=false; btn.textContent=lbl
   }
-  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
-  document.getElementById('saveBtn').disabled=false
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  closePanel()
-  render()
-  showToast(id?'Rendez-vous mis à jour ✓':'Rendez-vous créé ✓','ok')
 }
 
 window.deleteRdv=async function(){
@@ -990,11 +1323,52 @@ window.deleteRdv=async function(){
   if(!confirm('Supprimer ce rendez-vous ?'))return
   const {error}=await sb.from('rendezvous').delete().eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
-  allRdv=allRdv.filter(r=>r.id!==Number(id))
-  closePanel()
-  render()
+  allRdv=allRdv.filter(r=>Number(r.id)!==Number(id))
+  closePanel(); render()
   showToast('Rendez-vous supprimé','ok')
 }
+
+window.envoyerRappel=async function(){
+  const id=document.getElementById('f-id').value
+  const r=allRdv.find(x=>Number(x.id)===Number(id))
+  if(!r)return
+  const client=allClients.find(c=>Number(c.id)===Number(r.client_id))
+  if(!client||!client.email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
+  const btn=document.getElementById('rappelBtn')
+  btn.disabled=true; btn.textContent='Envoi en cours…'
+  try{
+    const prenom=(client.nom||'').split(' ')[0]||''
+    const d=new Date(r.date_debut)
+    const dateLbl=d.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long'})
+    const lieuLigne=r.lieu?`<p>Lieu : ${escHtml(r.lieu)}</p>`:''
+    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
+    const html=`<p>Bonjour ${escHtml(prenom)},</p><p>Je vous confirme notre rendez-vous prévu <strong>${escHtml(dateLbl)}</strong> à <strong>${hm(d)}</strong>.</p>${lieuLigne}<p>N'hésitez pas à me recontacter si vous avez un empêchement.</p>${signature}`
+    const {data:{session:s2}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/send-reminder`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${s2.access_token}`},
+      body:JSON.stringify({to:client.email,subject:'Rappel de rendez-vous — IT Soluce',html})
+    })
+    const result=await res.json().catch(()=>({}))
+    if(!res.ok)throw new Error(result.error||'Échec de l\'envoi')
+    const now=new Date().toISOString()
+    await sb.from('rendezvous').update({rappel_envoye_le:now}).eq('id',r.id)
+    const i=allRdv.findIndex(x=>Number(x.id)===Number(r.id))
+    if(i>=0)allRdv[i].rappel_envoye_le=now
+    btn.textContent='Rappel envoyé le '+new Date(now).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
+    btn.style.opacity='.6'
+    render()   // la coche n'apparaissait qu'au rechargement de la page
+    showToast('Rappel envoyé','ok')
+  }catch(err){
+    btn.disabled=false; btn.textContent='Envoyer le rappel'
+    showToast('Erreur : '+(err.message||err),'err')
+  }
+}
+
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden&&!document.querySelector('.panel.open'))load()
+})
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 
 await load()
 
@@ -1003,6 +1377,7 @@ await load()
   showError(err.message||'Erreur inattendue')
 }
 </script>
+
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
     <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
