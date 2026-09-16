@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>IT Soluce ERP — Paramètres</title>
+<title>IT Soluce ERP — Gestion</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="icon" href="/favicon_io/favicon.ico">
 <script src="/assets/js/admin-security.js"></script>
@@ -121,6 +121,11 @@ body{font-size:14px;}
 .sn-item.active{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.05);}
 .sn-item svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; color:var(--t3); flex-shrink:0;}
 .sn-item.active svg{color:var(--a);}
+.sn-item .cnt{margin-left:auto; font-size:10.5px; font-weight:600; color:var(--t3); background:var(--bg3); border-radius:980px; padding:1px 7px; min-width:20px; text-align:center;}
+.sn-item.active .cnt{background:var(--bg4);}
+.sn-item .cnt:empty{display:none;}
+.sn-item .cnt.alerte{background:rgba(178,94,9,.13); color:var(--w);}
+[data-mode="dark"] .sn-item .cnt.alerte{background:rgba(251,191,36,.16); color:var(--w);}
 
 .settings-body{flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0;}
 .settings-content{flex:1; overflow-y:auto; padding:32px 36px 16px;}
@@ -215,6 +220,86 @@ body{font-size:14px;}
 
 .note{font-size:12.5px; color:var(--t2); line-height:1.55; background:var(--bg2); border-radius:12px; padding:13px 16px; margin-bottom:16px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
 .note b{color:var(--t1); font-weight:600;}
+
+/* ═══ SECTIONS D'ACTIVITÉ — liste et détail côte à côte ═══════════
+   Prestations, Fournisseurs et Garanties sont des listes : le détail
+   s'ouvre dans un panneau à droite plutôt qu'en plein écran, pour
+   passer d'une fiche à l'autre sans fermer ni rouvrir. */
+.sec.large{max-width:1060px;}
+.sec-bar{display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+.sec-bar .srch-wrap{position:relative; flex:1; min-width:180px; max-width:320px;}
+.sec-bar .srch-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.sec-bar input[type=search]{width:100%; background:var(--bg2); border:1px solid transparent; border-radius:11px; padding:9px 12px 9px 34px; font-family:inherit; font-size:13px; color:var(--t1); outline:none; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.sec-bar input[type=search]:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.segf{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px;}
+.segf button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap;}
+.segf button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.07);}
+
+.split{display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:16px; align-items:start;}
+.liste{background:var(--bg2); border-radius:var(--radius); overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.lrow{display:flex; align-items:center; gap:14px; padding:13px 17px; border-bottom:1px solid var(--ln); cursor:pointer; transition:background .12s;}
+.lrow:last-child{border-bottom:none;}
+.lrow:hover{background:var(--bg3);}
+.lrow.sel{background:var(--ad); box-shadow:inset 3px 0 0 var(--a);}
+.lrow.off{opacity:.5;}
+.lrow-n{flex:1; min-width:0;}
+.lrow-n b{display:block; font-size:13.5px; font-weight:500; color:var(--t1); word-break:break-word;}
+.lrow-n em{display:block; font-style:normal; font-size:12px; color:var(--t3); margin-top:1px; word-break:break-word;}
+.lrow-v{font-size:14px; font-weight:600; color:var(--a); font-variant-numeric:tabular-nums; white-space:nowrap; flex-shrink:0;}
+.stars{color:#d9a400; font-size:12.5px; letter-spacing:1.5px; white-space:nowrap; flex-shrink:0;}
+[data-mode="dark"] .stars{color:#ffce3d;}
+.tag{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; flex-shrink:0;}
+.t-ok{background:rgba(26,138,82,.11); color:var(--ok);}
+.t-wn{background:rgba(178,94,9,.12); color:var(--w);}
+.t-of{background:var(--bg4); color:var(--t3);}
+.t-ko{background:rgba(200,54,44,.1); color:var(--d);}
+[data-mode="dark"] .t-ok{background:rgba(52,211,153,.16);}
+[data-mode="dark"] .t-wn{background:rgba(251,191,36,.16);}
+
+.detail{background:var(--bg2); border-radius:var(--radius); padding:6px 20px 18px; box-shadow:0 1px 2px rgba(0,0,0,.045); position:sticky; top:0;}
+.detail-h{font-size:16px; font-weight:600; letter-spacing:-.02em; padding-top:16px;}
+.detail-s{font-size:12.5px; color:var(--t3); margin:2px 0 4px;}
+.detail .fg{padding:12px 0; border-bottom:1px solid var(--ln);}
+.detail .fg:last-of-type{border-bottom:none;}
+.detail .fg > label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.detail input[type=text],.detail input[type=email],.detail input[type=tel],.detail input[type=url],
+.detail input[type=number],.detail select,.detail textarea{
+  width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px;
+  padding:9px 12px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; transition:.14s;
+}
+.detail input:focus,.detail select:focus,.detail textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.detail textarea{resize:vertical; min-height:64px; line-height:1.5;}
+.detail input::placeholder,.detail textarea::placeholder{color:var(--t3);}
+.duo{display:flex; gap:10px;}
+.detail-f{display:flex; gap:8px; flex-wrap:wrap; padding-top:16px; margin-top:4px; border-top:1px solid var(--ln);}
+.detail-f .btn{flex:1; justify-content:center; text-decoration:none;}
+.dline{display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--ln); font-size:13px;}
+.dline:last-of-type{border-bottom:none;}
+.dline span{color:var(--t2); flex-shrink:0;}
+.dline b{font-weight:500; text-align:right; word-break:break-word;}
+.detail-vide{padding:40px 12px; text-align:center; font-size:13px; color:var(--t3); line-height:1.6;}
+
+.toggle-l{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--ln); font-size:13.5px; color:var(--t1);}
+.tog{width:44px; height:26px; border-radius:980px; background:var(--bg4); border:1px solid var(--ln2); position:relative; cursor:pointer; transition:.18s; flex-shrink:0;}
+.tog.on{background:var(--ok); border-color:var(--ok);}
+.tog i{position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .18s; box-shadow:0 1px 2px rgba(0,0,0,.2);}
+.tog.on i{transform:translateX(18px);}
+
+.notestars{display:flex; gap:5px;}
+.notestars button{border:none; background:none; font-size:20px; line-height:1; color:var(--ln2); cursor:pointer; padding:0; transition:color .12s;}
+.notestars button.on{color:#d9a400;}
+
+.jauge{width:100%; height:5px; border-radius:980px; background:var(--bg4); overflow:hidden; margin-top:10px;}
+.jauge i{display:block; height:100%; border-radius:980px; transition:width .3s ease;}
+.vide-l{padding:44px 20px; text-align:center;}
+.vide-l h4{font-size:14px; font-weight:600; margin-bottom:5px;}
+.vide-l p{font-size:12.5px; color:var(--t3); margin:0 auto 14px; max-width:38ch; line-height:1.55;}
+
+@media(max-width:1180px){
+  .sec.large{max-width:100%;}
+  .split{grid-template-columns:1fr;}
+  .detail{position:static;}
+}
 
 @media(max-width:900px){
   .settings-wrap{flex-direction:column;}
@@ -510,7 +595,7 @@ body{font-size:14px;}
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     <a href="/admin/dashboard.html">Dashboard</a>
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    <span>Paramètres</span>
+    <span>Gestion</span>
   </div>
   <nav class="hnav">
     <a href="/admin/dashboard.html" class="hnl">Dashboard</a>
@@ -520,14 +605,11 @@ body{font-size:14px;}
     <a href="/admin/demandes.html" class="hnl">Demandes<span class="nc" id="nb-dem">0</span></a>
     <a href="/admin/diagnostics.html" class="hnl">Diagnostics</a>
     <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep">0</span></a>
-    <a href="/admin/garanties.html" class="hnl">Garanties</a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert">—</span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
     <a href="/admin/commandes-foneday.html" class="hnl">Commandes</a>
-    <a href="/admin/fournisseurs.html" class="hnl">Fournisseurs<span class="nc" id="nb-four">—</span></a>
-    <a href="/admin/prestations.html" class="hnl">Prestations</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
-    <a href="/admin/settings.html" class="hnl active">Paramètres</a>
+    <a href="/admin/gestion.html" class="hnl active">Gestion</a>
   </nav>
 </header>
 
@@ -543,11 +625,8 @@ body{font-size:14px;}
       <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
-      <a href="/admin/garanties.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties</a>
-      <a href="/admin/prestations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
-      <a href="/admin/fournisseurs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="nc" id="nb-four">—</span></a>
-      <a href="/admin/settings.html" class="nl active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
+      <a href="/admin/gestion.html" class="nl active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
       <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
   <main class="content">
@@ -556,16 +635,19 @@ body{font-size:14px;}
     <div class="settings-wrap" id="settingsWrap" style="display:none;">
 
       <nav class="settings-nav">
-        <div class="sn-group">Général</div>
-        <button class="sn-item active" data-sec="entreprise" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Entreprise</button>
+        <div class="sn-group">Activité</div>
+        <button class="sn-item active" data-sec="prestations" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations<span class="cnt" id="cnt-prestations"></span></button>
+        <button class="sn-item" data-sec="fournisseurs" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="cnt" id="cnt-fournisseurs"></span></button>
+        <button class="sn-item" data-sec="garanties" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties<span class="cnt" id="cnt-garanties"></span></button>
+
+        <div class="sn-group">Réglages</div>
+        <button class="sn-item" data-sec="entreprise" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Entreprise</button>
         <button class="sn-item" data-sec="apparence" onclick="showSec(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>Apparence</button>
         <button class="sn-item" data-sec="compte" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Compte</button>
 
-        <div class="sn-group">Finance</div>
         <button class="sn-item" data-sec="facturation" onclick="showSec(this)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Facturation</button>
         <button class="sn-item" data-sec="grille" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Grille tarifaire</button>
 
-        <div class="sn-group">Système</div>
         <button class="sn-item" data-sec="integrations" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Intégrations</button>
         <button class="sn-item" data-sec="donnees" onclick="showSec(this)"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Données</button>
       </nav>
@@ -573,8 +655,68 @@ body{font-size:14px;}
       <div class="settings-body">
         <div class="settings-content">
 
+          <!-- ── PRESTATIONS ── -->
+          <section class="sec large visible" id="sec-prestations">
+            <h1 class="sec-title">Prestations</h1>
+            <p class="sec-desc">Ta grille de services hors réparations. Elle sert de repère quand tu établis un devis ; les prix restent stables tant que tu ne les changes pas.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-prest" placeholder="Rechercher une prestation…" oninput="renderPrestations()"/></div>
+              <div class="segf" id="seg-prest">
+                <button class="on" data-v="" onclick="filtrePrest(this)">Toutes</button>
+                <button data-v="actif" onclick="filtrePrest(this)">Actives</button>
+                <button data-v="inactif" onclick="filtrePrest(this)">Inactives</button>
+              </div>
+              <button class="btn btn-primary" style="margin-left:auto;" onclick="nouvellePrestation()">Ajouter</button>
+            </div>
+            <div class="split">
+              <div class="liste" id="liste-prest"></div>
+              <div class="detail" id="detail-prest"></div>
+            </div>
+          </section>
+
+          <!-- ── FOURNISSEURS ── -->
+          <section class="sec large" id="sec-fournisseurs">
+            <h1 class="sec-title">Fournisseurs</h1>
+            <p class="sec-desc">Tes sources de pièces et d'outillage, classées par note décroissante puis par nom.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-four" placeholder="Rechercher un fournisseur…" oninput="renderFournisseurs()"/></div>
+              <div class="segf" id="seg-four">
+                <button class="on" data-v="" onclick="filtreFour(this)">Tous</button>
+                <button data-v="actif" onclick="filtreFour(this)">Actifs</button>
+                <button data-v="inactif" onclick="filtreFour(this)">Inactifs</button>
+              </div>
+              <button class="btn btn-primary" style="margin-left:auto;" onclick="nouveauFournisseur()">Ajouter</button>
+            </div>
+            <div class="split">
+              <div class="liste" id="liste-four"></div>
+              <div class="detail" id="detail-four"></div>
+            </div>
+          </section>
+
+          <!-- ── GARANTIES ── -->
+          <section class="sec large" id="sec-garanties">
+            <h1 class="sec-title">Garanties</h1>
+            <p class="sec-desc" id="gar-desc">Suivi des réparations rendues ou prêtes. La garantie court à partir de la date de fin d'intervention.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-gar" placeholder="Rechercher un client ou un appareil…" oninput="renderGaranties()"/></div>
+              <div class="segf" id="seg-gar">
+                <button class="on" data-v="" onclick="filtreGar(this)">Toutes</button>
+                <button data-v="sous" onclick="filtreGar(this)">Sous garantie</button>
+                <button data-v="bientot" onclick="filtreGar(this)">Expirent bientôt</button>
+                <button data-v="expiree" onclick="filtreGar(this)">Expirées</button>
+              </div>
+            </div>
+            <div class="split">
+              <div class="liste" id="liste-gar"></div>
+              <div class="detail" id="detail-gar"></div>
+            </div>
+          </section>
+
           <!-- ── ENTREPRISE ── -->
-          <section class="sec visible" id="sec-entreprise">
+          <section class="sec" id="sec-entreprise">
             <h1 class="sec-title">Entreprise</h1>
             <p class="sec-desc">Ces informations composent l'en-tête de tes devis, de tes factures et de tes reçus d'acompte. Elles sont relues à chaque ouverture de ces pages.</p>
 
@@ -664,6 +806,7 @@ body{font-size:14px;}
               <div class="card-lbl">Paiement</div>
               <div class="row"><div class="row-l"><b>IBAN</b><em>Compte affiché pour les virements clients</em></div><div class="row-f"><input type="text" id="s-iban" data-cle="finance_iban" placeholder="BE00 0000 0000 0000"/></div></div>
               <div class="row"><div class="row-l"><b>Devise</b></div><div class="row-f"><select id="s-devise" data-cle="finance_devise"><option value="EUR">EUR — Euro (€)</option><option value="USD">USD — Dollar ($)</option></select></div></div>
+              <div class="row"><div class="row-l"><b>Durée de garantie</b><em>En mois. Reprise par la section Garanties et par les conditions générales de tes devis et factures.</em></div><div class="row-f"><input type="number" id="s-garantie" data-cle="garantie_mois" min="1" max="36" step="1" placeholder="3"/></div></div>
             </div>
 
             <div class="card">
@@ -851,6 +994,8 @@ function cancelChanges(){
 /* ── Navigation interne ──────────────────────────────────────── */
 function showSec(btn){
   const id=btn.dataset.sec
+  // Les sections d'activité chargent leurs données à leur première ouverture.
+  if(window.chargerSection)window.chargerSection(id)
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('visible'))
   const cible=document.getElementById('sec-'+id)
   if(cible)cible.classList.add('visible')
@@ -1117,14 +1262,377 @@ async function majDanger(){
 }
 majDanger()
 
-/* ── Ouverture directe d'une section via l'ancre ─────────────── */
-const ancre=(location.hash||'').replace('#','')
-if(ancre){
-  const btn=document.querySelector(`.sn-item[data-sec="${CSS.escape(ancre)}"]`)
-  if(btn)showSec(btn)
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS D'ACTIVITÉ — Prestations, Fournisseurs, Garanties
+   Chaque section charge ses données à sa première ouverture :
+   réunir quatre pages ne doit pas rendre l'ouverture quatre fois
+   plus lente.
+   ═══════════════════════════════════════════════════════════════ */
+
+const GARANTIE_MOIS=Math.max(1,parseInt(cfg['garantie_mois'],10)||3)
+const CATEGORIES_FOUR=['Pièces iPhone','Pièces Samsung / Android','Multi-appareils','Outillage & consommables','Composants PC','Autre']
+
+let _prest=[], _four=[], _gar=[], _factParRep={}
+let _selPrest=null, _selFour=null, _selGar=null
+let _fPrest='', _fFour='', _fGar=''
+const _charge={}
+
+function norm(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
+function eur(n){return Number(n||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
+function majCompteur(id,n,alerte){
+  const el=document.getElementById('cnt-'+id)
+  if(!el)return
+  el.textContent=n
+  el.classList.toggle('alerte',!!alerte)
+}
+
+/** Appelée par showSec() à chaque changement de section. */
+window.chargerSection=async function(id){
+  if(_charge[id])return
+  _charge[id]=true
+  try{
+    if(id==='prestations')await loadPrestations()
+    else if(id==='fournisseurs')await loadFournisseurs()
+    else if(id==='garanties')await loadGaranties()
+  }catch(err){
+    _charge[id]=false
+    showToast('Erreur de chargement : '+(err.message||err),'err')
+  }
+}
+
+/* ══════════ PRESTATIONS ══════════ */
+async function loadPrestations(){
+  const {data,error}=await sb.from('services').select('*').order('ordre',{ascending:true}).limit(500)
+  if(error)throw error
+  _prest=data||[]
+  renderPrestations()
+}
+function prixLabel(s){
+  const u=s.unite?' '+s.unite:''
+  return (s.prix_max&&Number(s.prix_max)>Number(s.prix))
+    ? `${eur(s.prix)} – ${eur(s.prix_max)}${u}` : `${eur(s.prix)}${u}`
+}
+window.filtrePrest=function(btn){
+  _fPrest=btn.dataset.v
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn))
+  renderPrestations()
+}
+window.renderPrestations=function(){
+  const q=norm(document.getElementById('q-prest').value.trim())
+  majCompteur('prestations',_prest.filter(s=>s.actif!==false).length)
+  let l=_prest.slice()
+  if(_fPrest==='actif')l=l.filter(s=>s.actif!==false)
+  if(_fPrest==='inactif')l=l.filter(s=>s.actif===false)
+  if(q)l=l.filter(s=>norm(s.nom).includes(q)||norm(s.detail).includes(q))
+  const box=document.getElementById('liste-prest')
+  box.innerHTML=l.length?l.map(s=>`
+    <div class="lrow ${s.actif===false?'off':''} ${String(s.id)===String(_selPrest)?'sel':''}" onclick="voirPrestation('${escJsAttr(s.id)}')">
+      <div class="lrow-n"><b>${escHtml(s.nom)}</b>${s.detail?`<em>${escHtml(s.detail)}</em>`:''}</div>
+      <span class="lrow-v">${escHtml(prixLabel(s))}</span>
+      ${s.actif===false?'<span class="tag t-of">Inactive</span>':''}
+    </div>`).join('')
+    : `<div class="vide-l"><h4>Aucune prestation${q||_fPrest?' ne correspond':''}</h4><p>${_prest.length?'Change de filtre ou vide la recherche.':'Ajoute ta première prestation pour la retrouver dans tes devis.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvellePrestation()">Ajouter une prestation</button></div>`
+  if(_selPrest&&!_prest.some(s=>String(s.id)===String(_selPrest)))_selPrest=null
+  dessinerDetailPrest()
+}
+window.nouvellePrestation=function(){_selPrest='__neuf';renderPrestations()}
+window.voirPrestation=function(id){_selPrest=(String(_selPrest)===String(id))?null:id;renderPrestations()}
+function dessinerDetailPrest(){
+  const box=document.getElementById('detail-prest')
+  if(!_selPrest){
+    box.innerHTML='<div class="detail-vide">Choisis une prestation pour la modifier,<br>ou clique sur « Ajouter ».</div>'
+    return
+  }
+  const neuf=_selPrest==='__neuf'
+  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true}:_prest.find(x=>String(x.id)===String(_selPrest))
+  if(!s){_selPrest=null;return dessinerDetailPrest()}
+  box.innerHTML=`
+    <div class="detail-h">${neuf?'Nouvelle prestation':escHtml(s.nom)}</div>
+    <div class="detail-s">${neuf?'Elle apparaîtra dans la liste une fois enregistrée.':'Modifie puis enregistre.'}</div>
+    <div class="fg"><label for="p-nom">Nom *</label><input type="text" id="p-nom" value="${escHtml(s.nom)}" placeholder="Transfert de données"/></div>
+    <div class="fg"><label>Prix *</label><div class="duo">
+      <input type="number" step="0.01" min="0" id="p-prix" value="${s.prix===''?'':escHtml(s.prix)}" placeholder="50"/>
+      <input type="number" step="0.01" min="0" id="p-prixmax" value="${s.prix_max==null?'':escHtml(s.prix_max)}" placeholder="max (facultatif)"/>
+    </div></div>
+    <div class="fg"><label for="p-unite">Unité</label><input type="text" id="p-unite" value="${escHtml(s.unite||'')}" placeholder="/h — laisser vide si forfait"/></div>
+    <div class="fg"><label for="p-detail">Détail</label><textarea id="p-detail" placeholder="Ce qui est inclus">${escHtml(s.detail||'')}</textarea></div>
+    <div class="toggle-l"><span>Prestation active</span><div class="tog ${s.actif!==false?'on':''}" id="p-actif" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
+    <div class="detail-f">
+      ${neuf?'':'<button class="btn btn-danger" onclick="supprimerPrestation()">Supprimer</button>'}
+      <button class="btn btn-primary" onclick="enregistrerPrestation()">${neuf?'Créer':'Enregistrer'}</button>
+    </div>`
+}
+window.enregistrerPrestation=async function(){
+  const nom=document.getElementById('p-nom').value.trim()
+  const prix=parseFloat(document.getElementById('p-prix').value)
+  if(!nom){showToast('Le nom est obligatoire','err');return}
+  if(isNaN(prix)||prix<0){showToast('Prix invalide','err');return}
+  const brutMax=document.getElementById('p-prixmax').value
+  const pmax=brutMax!==''?parseFloat(brutMax):null
+  const data={
+    nom, prix,
+    prix_max:(pmax!==null&&!isNaN(pmax))?pmax:null,
+    unite:document.getElementById('p-unite').value.trim()||null,
+    detail:document.getElementById('p-detail').value.trim()||null,
+    actif:document.getElementById('p-actif').classList.contains('on')
+  }
+  try{
+    if(_selPrest==='__neuf'){
+      data.ordre=(_prest.length?Math.max(..._prest.map(x=>x.ordre||0)):0)+1
+      const {data:res,error}=await sb.from('services').insert(data).select().single()
+      if(error)throw error
+      _prest.push(res); _selPrest=res.id
+    } else {
+      const {error}=await sb.from('services').update(data).eq('id',_selPrest)
+      if(error)throw error
+      const i=_prest.findIndex(x=>String(x.id)===String(_selPrest))
+      if(i>=0)_prest[i]={..._prest[i],...data}
+    }
+    renderPrestations(); showToast('Prestation enregistrée','ok')
+  }catch(err){showToast('Erreur : '+(err.message||err),'err')}
+}
+window.supprimerPrestation=async function(){
+  const s=_prest.find(x=>String(x.id)===String(_selPrest))
+  if(!s)return
+  if(!confirm(`Supprimer la prestation « ${s.nom} » ?`))return
+  const {error}=await sb.from('services').delete().eq('id',s.id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  _prest=_prest.filter(x=>String(x.id)!==String(s.id)); _selPrest=null
+  renderPrestations(); showToast('Prestation supprimée','ok')
+}
+
+/* ══════════ FOURNISSEURS ══════════ */
+async function loadFournisseurs(){
+  // Le tri se fait côté client : en SQL, « note desc » place les valeurs
+  // nulles en tête, donc un fournisseur jamais noté passait devant
+  // celui noté cinq étoiles.
+  const {data,error}=await sb.from('fournisseurs').select('*').limit(1000)
+  if(error)throw error
+  _four=(data||[]).sort((a,b)=>(Number(b.note)||0)-(Number(a.note)||0)||String(a.nom||'').localeCompare(String(b.nom||''),'fr'))
+  renderFournisseurs()
+}
+window.filtreFour=function(btn){
+  _fFour=btn.dataset.v
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn))
+  renderFournisseurs()
+}
+function etoiles(n){
+  const v=Math.max(0,Math.min(5,Math.round(Number(n)||0)))
+  return v?'★'.repeat(v)+'☆'.repeat(5-v):''
+}
+window.renderFournisseurs=function(){
+  const q=norm(document.getElementById('q-four').value.trim())
+  majCompteur('fournisseurs',_four.filter(f=>f.actif!==false).length)
+  let l=_four.slice()
+  if(_fFour==='actif')l=l.filter(f=>f.actif!==false)
+  if(_fFour==='inactif')l=l.filter(f=>f.actif===false)
+  if(q)l=l.filter(f=>norm(f.nom).includes(q)||norm(f.categorie).includes(q)||norm(f.contact).includes(q)||norm(f.email).includes(q))
+  const box=document.getElementById('liste-four')
+  box.innerHTML=l.length?l.map(f=>{
+    const sous=[f.categorie,f.delai_livraison?'livraison '+f.delai_livraison:''].filter(Boolean).join(' · ')
+    return `<div class="lrow ${f.actif===false?'off':''} ${String(f.id)===String(_selFour)?'sel':''}" onclick="voirFournisseur('${escJsAttr(f.id)}')">
+      <div class="lrow-n"><b>${escHtml(f.nom)}</b>${sous?`<em>${escHtml(sous)}</em>`:''}</div>
+      ${f.note?`<span class="stars">${etoiles(f.note)}</span>`:''}
+      <span class="tag ${f.actif===false?'t-of':'t-ok'}">${f.actif===false?'Inactif':'Actif'}</span>
+    </div>`
+  }).join('')
+    : `<div class="vide-l"><h4>Aucun fournisseur${q||_fFour?' ne correspond':''}</h4><p>${_four.length?'Change de filtre ou vide la recherche.':'Ajoute tes sources de pièces pour les retrouver ici.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouveauFournisseur()">Ajouter un fournisseur</button></div>`
+  if(_selFour&&_selFour!=='__neuf'&&!_four.some(f=>String(f.id)===String(_selFour)))_selFour=null
+  dessinerDetailFour()
+}
+window.nouveauFournisseur=function(){_selFour='__neuf';renderFournisseurs()}
+window.voirFournisseur=function(id){_selFour=(String(_selFour)===String(id))?null:id;renderFournisseurs()}
+window.noterFour=function(n){
+  document.querySelectorAll('#f-note-stars button').forEach((b,i)=>b.classList.toggle('on',i<n))
+  document.getElementById('f-note').value=String(n)
+}
+function dessinerDetailFour(){
+  const box=document.getElementById('detail-four')
+  if(!_selFour){
+    box.innerHTML='<div class="detail-vide">Choisis un fournisseur pour voir sa fiche,<br>ou clique sur « Ajouter ».</div>'
+    return
+  }
+  const neuf=_selFour==='__neuf'
+  const f=neuf?{nom:'',categorie:'',contact:'',email:'',telephone:'',site_web:'',delai_livraison:'',note:0,notes:'',actif:true}
+             :_four.find(x=>String(x.id)===String(_selFour))
+  if(!f){_selFour=null;return dessinerDetailFour()}
+  const note=Math.max(0,Math.min(5,Math.round(Number(f.note)||0)))
+  box.innerHTML=`
+    <div class="detail-h">${neuf?'Nouveau fournisseur':escHtml(f.nom)}</div>
+    <div class="detail-s">${neuf?'Il apparaîtra dans la liste une fois enregistré.':'Modifie puis enregistre.'}</div>
+    <div class="fg"><label for="f-nom">Nom *</label><input type="text" id="f-nom" value="${escHtml(f.nom)}" placeholder="Foneday"/></div>
+    <div class="fg"><label for="f-cat">Catégorie</label><select id="f-cat">
+      <option value="">— Aucune —</option>
+      ${CATEGORIES_FOUR.map(c=>`<option ${c===f.categorie?'selected':''}>${escHtml(c)}</option>`).join('')}
+    </select></div>
+    <div class="fg"><label for="f-contact">Contact</label><input type="text" id="f-contact" value="${escHtml(f.contact||'')}" placeholder="Service commercial"/></div>
+    <div class="fg"><label for="f-email">Email</label><input type="email" id="f-email" value="${escHtml(f.email||'')}" placeholder="sales@exemple.be"/></div>
+    <div class="fg"><label for="f-tel">Téléphone</label><input type="tel" id="f-tel" value="${escHtml(f.telephone||'')}"/></div>
+    <div class="fg"><label for="f-site">Site web</label><input type="url" id="f-site" value="${escHtml(f.site_web||'')}" placeholder="https://"/></div>
+    <div class="fg"><label for="f-delai">Délai de livraison</label><input type="text" id="f-delai" value="${escHtml(f.delai_livraison||'')}" placeholder="2 à 3 jours"/></div>
+    <div class="fg"><label>Note</label>
+      <div class="notestars" id="f-note-stars">
+        ${[1,2,3,4,5].map(n=>`<button type="button" class="${n<=note?'on':''}" onclick="noterFour(${n})" aria-label="${n} étoile${n>1?'s':''}">★</button>`).join('')}
+      </div>
+      <input type="hidden" id="f-note" value="${note}"/>
+    </div>
+    <div class="fg"><label for="f-notes">Remarques</label><textarea id="f-notes" placeholder="Conditions, minimum de commande…">${escHtml(f.notes||'')}</textarea></div>
+    <div class="toggle-l"><span>Fournisseur actif</span><div class="tog ${f.actif!==false?'on':''}" id="f-actif" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
+    <div class="detail-f">
+      ${neuf?'':'<button class="btn btn-danger" onclick="supprimerFournisseur()">Supprimer</button>'}
+      <button class="btn btn-primary" onclick="enregistrerFournisseur()">${neuf?'Créer':'Enregistrer'}</button>
+    </div>`
+}
+window.enregistrerFournisseur=async function(){
+  const nom=document.getElementById('f-nom').value.trim()
+  if(!nom){showToast('Le nom est obligatoire','err');return}
+  const data={
+    nom,
+    categorie:document.getElementById('f-cat').value||null,
+    contact:document.getElementById('f-contact').value.trim()||null,
+    email:document.getElementById('f-email').value.trim()||null,
+    telephone:document.getElementById('f-tel').value.trim()||null,
+    site_web:document.getElementById('f-site').value.trim()||null,
+    delai_livraison:document.getElementById('f-delai').value.trim()||null,
+    note:Number(document.getElementById('f-note').value)||null,
+    notes:document.getElementById('f-notes').value.trim()||null,
+    actif:document.getElementById('f-actif').classList.contains('on'),
+    updated_at:new Date().toISOString()
+  }
+  try{
+    if(_selFour==='__neuf'){
+      const {data:res,error}=await sb.from('fournisseurs').insert(data).select().single()
+      if(error)throw error
+      _four.push(res); _selFour=res.id
+    } else {
+      const {error}=await sb.from('fournisseurs').update(data).eq('id',_selFour)
+      if(error)throw error
+      const i=_four.findIndex(x=>String(x.id)===String(_selFour))
+      if(i>=0)_four[i]={..._four[i],...data}
+    }
+    _four.sort((a,b)=>(Number(b.note)||0)-(Number(a.note)||0)||String(a.nom||'').localeCompare(String(b.nom||''),'fr'))
+    renderFournisseurs(); showToast('Fournisseur enregistré','ok')
+  }catch(err){showToast('Erreur : '+(err.message||err),'err')}
+}
+window.supprimerFournisseur=async function(){
+  const f=_four.find(x=>String(x.id)===String(_selFour))
+  if(!f)return
+  if(!confirm(`Supprimer le fournisseur « ${f.nom} » ?`))return
+  const {error}=await sb.from('fournisseurs').delete().eq('id',f.id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  _four=_four.filter(x=>String(x.id)!==String(f.id)); _selFour=null
+  renderFournisseurs(); showToast('Fournisseur supprimé','ok')
+}
+
+/* ══════════ GARANTIES ══════════ */
+/** Ajoute des mois sans déborder sur le mois suivant : setMonth(+3) sur le
+ *  30 novembre donnait le 2 mars, soit deux jours de garantie offerts. */
+function ajouteMois(date,n){
+  const d=new Date(date)
+  const jour=d.getDate()
+  d.setDate(1)
+  d.setMonth(d.getMonth()+n)
+  const dernier=new Date(d.getFullYear(),d.getMonth()+1,0).getDate()
+  d.setDate(Math.min(jour,dernier))
+  return d
+}
+function calcGarantie(r){
+  const debut=r.date_fin?new Date(r.date_fin):new Date(r.created_at)
+  const expire=ajouteMois(debut,GARANTIE_MOIS)
+  const jz=x=>{const d=new Date(x);d.setHours(0,0,0,0);return d}
+  const joursRestants=Math.round((jz(expire)-jz(new Date()))/86400000)
+  const total=Math.max(1,Math.round((jz(expire)-jz(debut))/86400000))
+  // Le dernier jour compte encore : « joursRestants > 0 » excluait le jour
+  // même de l'échéance, alors que le client est toujours couvert.
+  return {debut,expire,joursRestants,sousGarantie:joursRestants>=0,
+          pct:Math.max(0,Math.min(100,(joursRestants/total)*100))}
+}
+async function loadGaranties(){
+  const [rRep,rFac]=await Promise.all([
+    sb.from('reparations').select('*').in('statut',['pret','rendu']).order('date_fin',{ascending:false,nullsFirst:false}).limit(2000),
+    sb.from('factures').select('id,numero,reparation_id').not('reparation_id','is',null).limit(2000)
+  ])
+  if(rRep.error)throw rRep.error
+  _gar=(rRep.data||[]).map(r=>({...r,_g:calcGarantie(r)}))
+  _factParRep={}
+  ;(rFac.data||[]).forEach(f=>{_factParRep[f.reparation_id]={id:f.id,numero:f.numero}})
+  document.getElementById('gar-desc').textContent=
+    `Suivi des réparations rendues ou prêtes. La garantie court ${GARANTIE_MOIS} mois à partir de la date de fin d'intervention.`
+  renderGaranties()
+}
+window.filtreGar=function(btn){
+  _fGar=btn.dataset.v
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn))
+  renderGaranties()
+}
+window.renderGaranties=function(){
+  const q=norm(document.getElementById('q-gar').value.trim())
+  const bientot=_gar.filter(g=>g._g.sousGarantie&&g._g.joursRestants<=15).length
+  majCompteur('garanties',bientot||_gar.filter(g=>g._g.sousGarantie).length,bientot>0)
+  let l=_gar.slice()
+  if(_fGar==='sous')l=l.filter(g=>g._g.sousGarantie)
+  if(_fGar==='bientot')l=l.filter(g=>g._g.sousGarantie&&g._g.joursRestants<=15)
+  if(_fGar==='expiree')l=l.filter(g=>!g._g.sousGarantie)
+  if(q)l=l.filter(g=>norm(g.client_nom).includes(q)||norm([g.marque,g.modele,g.appareil].join(' ')).includes(q)||norm(g.numero).includes(q))
+  const box=document.getElementById('liste-gar')
+  box.innerHTML=l.length?l.map(g=>{
+    const app=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
+    const urgent=g._g.sousGarantie&&g._g.joursRestants<=15
+    const tag=g._g.sousGarantie
+      ? `<span class="tag ${urgent?'t-wn':'t-ok'}">${g._g.joursRestants} j restants</span>`
+      : `<span class="tag t-of">Expirée</span>`
+    return `<div class="lrow ${g._g.sousGarantie?'':'off'} ${String(g.id)===String(_selGar)?'sel':''}" onclick="voirGarantie('${escJsAttr(g.id)}')">
+      <div class="lrow-n"><b>${escHtml(g.client_nom||'—')}</b><em>${escHtml(app)}${g.numero?' · '+escHtml(g.numero):''}</em></div>
+      ${tag}
+    </div>`
+  }).join('')
+    : `<div class="vide-l"><h4>Aucune garantie${q||_fGar?' ne correspond':''}</h4><p>${_gar.length?'Change de filtre ou vide la recherche.':'Les réparations passées en « prêt » ou « rendu » apparaîtront ici.'}</p></div>`
+  if(_selGar&&!_gar.some(g=>String(g.id)===String(_selGar)))_selGar=null
+  dessinerDetailGar()
+}
+window.voirGarantie=function(id){_selGar=(String(_selGar)===String(id))?null:id;renderGaranties()}
+function dessinerDetailGar(){
+  const box=document.getElementById('detail-gar')
+  if(!_selGar){
+    box.innerHTML='<div class="detail-vide">Choisis une réparation<br>pour voir l\'état de sa garantie.</div>'
+    return
+  }
+  const g=_gar.find(x=>String(x.id)===String(_selGar))
+  if(!g){_selGar=null;return dessinerDetailGar()}
+  const d=g._g
+  const app=[g.marque,g.modele].filter(Boolean).join(' ')||g.appareil||'—'
+  const fmt=x=>x.toLocaleDateString('fr-BE',{day:'2-digit',month:'long',year:'numeric'})
+  const urgent=d.sousGarantie&&d.joursRestants<=15
+  const couleur=d.sousGarantie?(urgent?'var(--w)':'var(--ok)'):'var(--t3)'
+  const fac=_factParRep[g.id]
+  box.innerHTML=`
+    <div class="detail-h">${escHtml(g.client_nom||'—')}</div>
+    <div class="detail-s">${escHtml(app)}</div>
+    <div style="margin:10px 0 16px;">
+      <div style="font-size:13.5px;font-weight:600;color:${couleur};">
+        ${d.sousGarantie?`Sous garantie · ${d.joursRestants} jour${d.joursRestants>1?'s':''} restant${d.joursRestants>1?'s':''}`:`Expirée depuis ${Math.abs(d.joursRestants)} jour${Math.abs(d.joursRestants)>1?'s':''}`}
+      </div>
+      <div class="jauge"><i style="width:${d.pct}%;background:${couleur};"></i></div>
+    </div>
+    <div class="dline"><span>Réparation</span><b>${escHtml(g.numero||'—')}</b></div>
+    <div class="dline"><span>Statut</span><b>${escHtml(g.statut==='rendu'?'Rendu':'Prêt')}</b></div>
+    <div class="dline"><span>Début</span><b>${escHtml(fmt(d.debut))}</b></div>
+    <div class="dline"><span>Échéance</span><b>${escHtml(fmt(d.expire))}</b></div>
+    <div class="dline"><span>Durée</span><b>${GARANTIE_MOIS} mois</b></div>
+    <div class="dline"><span>Facture</span><b>${fac?escHtml(fac.numero||'n° '+fac.id):'—'}</b></div>
+    <div class="detail-f">
+      <a class="btn btn-secondary" href="/admin/reparations.html">Voir la réparation</a>
+      ${fac?`<a class="btn btn-primary" href="/admin/factures.html">Voir la facture</a>`:''}
+    </div>`
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
+/* ── Ouverture directe d'une section via l'ancre ─────────────── */
+const ancre=(location.hash||'').replace('#','')
+const btnAncre=ancre?document.querySelector(`.sn-item[data-sec="${CSS.escape(ancre)}"]`):null
+showSec(btnAncre||document.querySelector('.sn-item[data-sec="prestations"]'))
 
 document.getElementById('ldr').style.display='none'
 document.getElementById('settingsWrap').style.display='flex'
@@ -1194,7 +1702,7 @@ function closeMobileNav(){
   if(!document.startViewTransition)return; // navigateur non compatible -> navigation normale
 
   // Ordre des pages pour déterminer aller/retour (profondeur)
-  const DEPTH={dashboard:0,reparations:1,stock:1,catalogue:1,clients:1,fournisseurs:1,devis:1,factures:1,garanties:1,charges:1,planning:1,taches:1,marketing:1,performance:1,relances:1,settings:1};
+  const DEPTH={dashboard:0,reparations:1,stock:1,catalogue:1,clients:1,devis:1,factures:1,charges:1,planning:1,taches:1,marketing:1,performance:1,relances:1,settings:1};
   function pageName(url){try{return (new URL(url,location.href)).pathname.split('/').pop().replace('.html','')||'dashboard';}catch(e){return '';}}
   const current=pageName(location.href);
 

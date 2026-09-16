@@ -89,14 +89,11 @@
     { label: 'Demandes', href: '/admin/demandes.html' },
     { label: 'Diagnostics', href: '/admin/diagnostics.html' },
     { label: 'Réparations', href: '/admin/reparations.html' },
-    { label: 'Garanties', href: '/admin/garanties.html' },
     { label: 'Stock', href: '/admin/stock.html' },
     { label: 'Catalogue Foneday', href: '/admin/catalogue.html' },
     { label: 'Commandes Foneday', href: '/admin/commandes-foneday.html' },
-    { label: 'Fournisseurs', href: '/admin/fournisseurs.html' },
-    { label: 'Prestations', href: '/admin/prestations.html' },
     { label: 'Planning', href: '/admin/planning.html' },
-    { label: 'Paramètres', href: '/admin/settings.html' }
+    { label: 'Gestion', href: '/admin/gestion.html' }
   ];
 
   var STATIC_PAGES = PAGES.map(function (p) {
