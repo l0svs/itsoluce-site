@@ -83,139 +83,159 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* CONTENU PRINCIPAL */
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
 
-/* PAGE HEADER */
-.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
-.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
-.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
-.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.btn-primary{background:var(--a);color:#fff;}
-.btn-primary:hover{opacity:.85;}
-.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}
-.btn-secondary:hover{color:var(--t1);}
-.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
-.btn-danger:hover{background:rgba(248,113,113,.2);}
 
-/* KPI STRIP */
-.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
-.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
-.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+/* ═══════════════════════════════════════════════════════════════
+   STOCK — direction « continuité itsoluce.be », groupé par état.
+   Pas de bandeau de chiffres : le récapitulatif tient en une phrase
+   sous le titre, et les compteurs vivent dans les en-têtes de groupe.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c;
+  --radius:16px;
+}
+body{font-size:14px;}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a); font-weight:500;}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
 
-/* TOOLBAR */
-.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
-.search-wrap{position:relative;flex:1;max-width:320px;}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
-.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.search-input:focus{border-color:var(--a);}
-.search-input::placeholder{color:var(--t3);}
-.filter-btn{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;}
-.filter-btn:hover{color:var(--t1);border-color:var(--ln2);}
-.filter-btn.active{background:var(--ad);color:var(--a);border-color:var(--a);}
-.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
-.count-badge{font-size:11px;color:var(--t3);}
+.page-head{padding:26px 28px 0; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; flex-shrink:0;}
+.ph-left h1{font-size:27px; font-weight:600; letter-spacing:-.03em; color:var(--t1);}
+.ph-resume{font-size:13.5px; color:var(--t2); margin-top:4px;}
+.ph-resume b{color:var(--t1); font-weight:600;}
+.ph-resume .alerte{color:var(--w); font-weight:600;}
+.ph-right{display:flex; gap:8px; flex-wrap:wrap;}
 
-/* TABLE */
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;align-content:start;}
-.stock-card{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:16px 18px;transition:border-color .15s,opacity .15s;}
-.stock-card:hover{border-color:var(--a);}
-.stock-card.rupture{opacity:.6;}
-.stock-cat-badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--ad);color:var(--a);}
-.stock-lvl-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;}
-.stock-lvl-badge svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.4;}
-.stock-lvl-badge.ok{background:rgba(52,211,153,.14);color:var(--ok);}
-.stock-lvl-badge.warn{background:rgba(251,191,36,.14);color:var(--w);}
-.stock-lvl-badge.ko{background:var(--bg3);color:var(--t3);}
-.stock-card-title{font-size:13px;font-weight:600;color:var(--t1);margin:9px 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.stock-card-sub{font-size:11px;color:var(--t3);margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.stock-card-qty{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:8px;padding:5px 10px;margin-bottom:10px;}
-.stock-card-prices{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:10px;}
-.stock-card-foot{display:flex;justify-content:flex-end;gap:4px;border-top:1px solid var(--ln);padding-top:10px;}
-@media(max-width:640px){.cards-wrap{grid-template-columns:1fr;}}
-.table{width:100%;border-collapse:collapse;border-spacing:0;}
-.table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table th:first-child{padding-left:0;}
-.table td{padding:9px 12px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table td:first-child{padding-left:0;}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; cursor:pointer; font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s;}
+.btn svg{width:14px; height:14px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.btn-secondary:hover{background:var(--bg4); color:var(--t1);}
+.btn-danger{background:rgba(200,54,44,.1); color:var(--d); border:1px solid rgba(200,54,44,.2);}
 
-/* BADGE STOCK */
-.stock-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:3px;}
-.sb-ok{background:rgba(52,211,153,.12);color:var(--ok);}
-.sb-w{background:rgba(251,191,36,.12);color:var(--w);}
-.sb-d{background:rgba(248,113,113,.12);color:var(--d);}
+/* ── Barre d'outils ── */
+.tools{display:flex; align-items:center; gap:10px; padding:16px 28px 0; flex-wrap:wrap; flex-shrink:0;}
+.srch-wrap{position:relative; flex:1; min-width:190px; max-width:320px;}
+.srch-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.srch-wrap input{width:100%; background:var(--bg2); border:1px solid transparent; border-radius:11px; padding:9px 12px 9px 34px; font-family:inherit; font-size:13px; color:var(--t1); outline:none; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.14s;}
+.srch-wrap input:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.srch-wrap input::placeholder{color:var(--t3);}
+.segf{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px; max-width:100%; overflow-x:auto; scrollbar-width:none;}
+.segf::-webkit-scrollbar{display:none;}
+.segf button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap; flex-shrink:0;}
+.segf button:hover{color:var(--t1);}
+.segf button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.07);}
 
-/* AJUSTEUR QUANTITÉ */
-.qty-ctrl{display:flex;align-items:center;gap:4px;}
-.qty-btn{width:22px;height:22px;border-radius:4px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);font-size:14px;line-height:1;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;font-family:inherit;}
-.qty-btn:hover{background:var(--bg4);color:var(--t1);}
-.qty-val{min-width:28px;text-align:center;font-size:13px;font-weight:500;color:var(--t1);}
+.zone{flex:1; overflow-y:auto; padding:18px 28px 32px;}
 
-/* ACTIONS */
-.actions{display:flex;align-items:center;gap:4px;opacity:0;}
-.table tr:hover .actions{opacity:1;}
-.act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
-.act-btn:hover{background:var(--bg3);color:var(--t1);}
-.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
-.act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+/* ── Groupes par état ── */
+.grp{margin-bottom:22px;}
+.grp-h{display:flex; align-items:baseline; gap:9px; margin-bottom:9px; padding-left:2px; flex-wrap:wrap;}
+.grp-h b{font-size:13.5px; font-weight:600; color:var(--t1);}
+.grp-h i{font-style:normal; font-size:11px; font-weight:600; border-radius:980px; padding:2px 9px;}
+.grp-h i.ko{background:rgba(200,54,44,.1); color:var(--d);}
+.grp-h i.wn{background:rgba(178,94,9,.12); color:var(--w);}
+.grp-h i.ok{background:var(--bg3); color:var(--t3);}
+[data-mode="dark"] .grp-h i.ko{background:rgba(248,113,113,.14);}
+[data-mode="dark"] .grp-h i.wn{background:rgba(251,191,36,.16);}
+.grp-h span{font-size:12px; color:var(--t3);}
 
-/* CATEGORIE TAG */
-.cat-tag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--t2);white-space:nowrap;}
+.liste{background:var(--bg2); border-radius:var(--radius); overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.row{display:flex; align-items:center; gap:14px; padding:13px 17px; border-bottom:1px solid var(--ln); transition:background .12s;}
+.row:last-child{border-bottom:none;}
+.row:hover{background:var(--bg3);}
+.jauge{width:3px; height:36px; border-radius:2px; flex-shrink:0;}
+.j-ok{background:var(--ok);} .j-wn{background:var(--w);} .j-ko{background:var(--d);}
+.row-n{flex:1; min-width:0; cursor:pointer;}
+.row-n b{display:block; font-size:13.5px; font-weight:500; color:var(--t1); word-break:break-word;}
+.row-n em{display:block; font-style:normal; font-size:12px; color:var(--t3); margin-top:1px; word-break:break-word;}
+.row-px{font-size:13px; color:var(--t2); font-variant-numeric:tabular-nums; white-space:nowrap; flex-shrink:0;}
+.row-px b{color:var(--t1); font-weight:600;}
+.qte{display:flex; align-items:center; gap:6px; flex-shrink:0;}
+.qte button{width:28px; height:28px; border-radius:9px; border:1px solid var(--ln); background:var(--bg3); color:var(--t2); cursor:pointer; font-size:15px; line-height:1; display:flex; align-items:center; justify-content:center; font-family:inherit; transition:.12s;}
+.qte button:hover{background:var(--bg4); color:var(--t1);}
+.qte button:disabled{opacity:.4; cursor:default;}
+.qte .val{min-width:28px; text-align:center; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums; color:var(--t1);}
+.tag{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; flex-shrink:0;}
+.t-ok{background:rgba(26,138,82,.11); color:var(--ok);}
+.t-wn{background:rgba(178,94,9,.12); color:var(--w);}
+.t-ko{background:rgba(200,54,44,.1); color:var(--d);}
+[data-mode="dark"] .t-ok{background:rgba(52,211,153,.16);}
+[data-mode="dark"] .t-wn{background:rgba(251,191,36,.16);}
+[data-mode="dark"] .t-ko{background:rgba(248,113,113,.14);}
+.row-acts{display:flex; gap:3px; flex-shrink:0;}
+.act{width:28px; height:28px; border-radius:9px; border:none; background:none; color:var(--t3); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.12s;}
+.act:hover{background:var(--bg3); color:var(--t1);}
+.act.del:hover{background:rgba(200,54,44,.1); color:var(--d);}
+.act svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
 
-/* PANNEAU LATÉRAL */
+.vide{background:var(--bg2); border-radius:var(--radius); padding:50px 24px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.vide-ico{width:52px; height:52px; border-radius:15px; background:var(--ad); color:var(--a); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+.vide-ico svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+.vide h3{font-size:15px; font-weight:600; color:var(--t1); margin-bottom:6px;}
+.vide p{font-size:13px; color:var(--t2); line-height:1.6; max-width:44ch; margin:0 auto 16px;}
+
+/* ── Panneau : même forme que les autres pages refondues ── */
+.panel{background:var(--bg);}
+.panel-head{padding:16px 22px; border-bottom:1px solid var(--ln); display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-shrink:0;}
+.panel-title{font-size:15px; font-weight:600;}
+.panel-close{width:32px; height:32px; border-radius:10px; border:none; background:var(--bg3); color:var(--t2); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+.panel-close:hover{background:var(--bg4); color:var(--t1);}
+.panel-body{flex:1; overflow-y:auto; padding:26px 24px; display:flex; justify-content:center;}
+.form-grid{display:flex; flex-direction:column; gap:16px; width:100%; max-width:560px;}
+.form-section{background:var(--bg2); border-radius:var(--radius); padding:6px 22px 16px; box-shadow:0 1px 2px rgba(0,0,0,.045); border:none;}
+.form-section-head{display:flex; align-items:center; gap:10px; padding:17px 0 6px;}
+.form-section-ico{width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.form-section-ico svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2;}
+.form-section-head span{font-size:11.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3);}
+.fg{margin-bottom:13px;}
+.fg label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.fg-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.panel input[type=text],.panel input[type=number],.panel select,.panel textarea{
+  width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px;
+  padding:9px 12px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; transition:.14s;
+}
+.panel input:focus,.panel select:focus,.panel textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.panel textarea{resize:vertical; min-height:64px; line-height:1.5;}
+.panel input::placeholder,.panel textarea::placeholder{color:var(--t3);}
+.panel-footer{padding:14px 24px; border-top:1px solid var(--ln); display:flex; justify-content:flex-end; gap:9px; flex-shrink:0; background:var(--bg);}
+
+/* Aide au prix de vente */
+#prix-helper{background:var(--ad); border-radius:11px; padding:11px 13px; margin-top:-4px; margin-bottom:13px;}
+#formule-rappel{font-size:11.5px; color:var(--t2); line-height:1.5;}
+#prix-suggere{font-size:15px; font-weight:700; color:var(--a); font-variant-numeric:tabular-nums;}
+#marge-affichee{font-weight:600; font-variant-numeric:tabular-nums;}
+
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .page-head{padding:20px 16px 0;}
+  .tools{padding:12px 16px 0;}
+  .zone{padding:14px 16px 24px;}
+  .row{flex-wrap:wrap; gap:10px 8px; padding:13px 15px; align-items:flex-start;}
+  .jauge{align-self:stretch; height:auto; min-height:34px;}
+  .row-n{flex:1 1 55%;}
+  .qte{margin-left:auto;}
+  .row-px{flex:1 1 100%; order:5; padding-left:15px; font-size:12.5px;}
+  .fg-row{grid-template-columns:1fr;}
+}
+
+/* ── Blocs repris de l'ancienne feuille (nécessaires au shell) ── */
 .panel-overlay{display:none;}
 .panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;left:0;right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;overflow:hidden;}
+.panel{position:fixed;left:0;right:0;top:0;bottom:0;width:auto;min-width:0;border-left:none;z-index:201;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;overflow:hidden;}
 .panel.open{transform:translateX(0);}
-.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
-.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .12s;}
-.panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:32px 40px;}
-.panel-footer{padding:16px 40px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-shrink:0;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
-.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:22px 26px;}
-.form-section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-.form-section-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.form-section-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;}
-.form-section-head span{font-size:14px;font-weight:600;color:var(--t1);}
-.form-section .fg{margin-bottom:14px;}
-.form-section .fg:last-child{margin-bottom:0;}
-@media(max-width:1100px){.form-grid{grid-template-columns:1fr;max-width:640px;margin:0 auto;}}
-
-/* FORM */
-.fg{margin-bottom:14px;}
-.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:5px;}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}
-.fg textarea{resize:vertical;min-height:64px;}
 .fg select option{background:var(--bg3);}
-.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;padding-top:6px;margin-bottom:2px;border-top:1px solid var(--ln);padding-top:14px;}
-
-/* EMPTY STATE */
-.empty{padding:60px 24px;text-align:center;color:var(--t3);}
-.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
-.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}
-.empty-sub{font-size:12px;color:var(--t3);}
-
-/* TOAST */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg2);border:1px solid var(--ln2);border-radius:12px;padding:11px 17px;font-size:13px;color:var(--t1);box-shadow:0 10px 30px rgba(0,0,0,.14);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}
-.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
-
-/* LOADER */
-.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
-.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+.toast.ok{border-color:rgba(26,138,82,.34);color:var(--ok);}
+.toast.err{border-color:rgba(200,54,44,.34);color:var(--d);}
+.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:9px;font-size:13px;color:var(--t3);}
+.spin{width:15px;height:15px;border:1.6px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.kpi-strip{flex-wrap:wrap;}.kpi{flex:1 1 calc(50% - 5px);}}
-
-
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
@@ -517,60 +537,36 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.0</div>
+      <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
 
-  <!-- CONTENU -->
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
-
-    <!-- PAGE (cachée jusqu'au chargement) -->
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
 
-      <!-- HEADER -->
       <div class="page-head">
         <div class="ph-left">
           <h1>Stock</h1>
-          <p id="ph-sub">— pièces référencées</p>
+          <p class="ph-resume" id="ph-resume">—</p>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-secondary" onclick="exportCSV()">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exporter
-          </button>
-          <button class="btn btn-primary" onclick="openPanel()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Ajouter une pièce
-          </button>
+        <div class="ph-right">
+          <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
         </div>
       </div>
 
-      <!-- KPI -->
-      <div class="kpi-strip" id="kpiStrip"></div>
-
-      <!-- TOOLBAR -->
-      <div class="toolbar">
-        <div class="search-wrap">
+      <div class="tools">
+        <div class="srch-wrap">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" id="searchInput" placeholder="Rechercher une pièce..." oninput="filterStock()"/>
+          <input type="search" id="searchInput" placeholder="Rechercher une pièce…" oninput="filterStock()"/>
         </div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-        <div class="toolbar-right">
-          <span class="count-badge" id="countBadge"></span>
-        </div>
+        <div class="segf" id="filterBtns"></div>
       </div>
 
-      <!-- CARTES -->
-      <div class="cards-wrap" id="cardsWrap"></div>
-      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;">
-        <div class="empty-ico">📦</div>
-        <div class="empty-title">Aucune pièce trouvée</div>
-        <div class="empty-sub">Essaie un autre terme de recherche ou <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">ajoute une pièce</button></div>
-      </div>
-
-    </div><!-- end pageBody -->
-  </div><!-- end content -->
-</div><!-- end layout -->
+      <div class="zone"><div id="listeStock"></div></div>
+    </div>
+  </div>
+</div>
 
 <!-- PANNEAU AJOUT / MODIFICATION -->
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
@@ -641,7 +637,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
             <input type="number" id="f-vente" placeholder="0.00" min="0" step="0.01" oninput="updateMargeStock()"/>
           </div>
         </div>
-        <div id="prix-helper" style="display:none;margin-bottom:14px;padding:10px 12px;background:var(--bg3);border-radius:7px;font-size:12px;">
+        <div id="prix-helper" style="display:none;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
             <span style="color:var(--t2);">Prix de vente suggéré : <strong id="prix-suggere" style="color:var(--a);">—</strong></span>
             <button type="button" onclick="appliquerPrixSuggere()" style="padding:3px 10px;border:1px solid var(--a);border-radius:5px;background:var(--ad);color:var(--a);font-size:11px;font-family:inherit;cursor:pointer;">Appliquer</button>
@@ -678,42 +674,45 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="toast" id="toast"></div>
 
 <script>
+/* Thème et accent — mêmes valeurs que les autres pages refondues. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc';return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
+}
 function applyMode(m){
-  const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
-  document.documentElement.setAttribute('data-mode',e)
-  const lv=e==='light'
-  const v=(a,b)=>lv?a:b
-  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
-  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
-  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
-  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
-  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
-  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
-  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
-  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
-  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'));  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'));  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)')); s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'));  s('--t2', v('#6e6e73','#98989d')); s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'));  s('--w',  v('#b25e09','#fbbf24'));  s('--d',  v('#c8362c','#f87171'))
+  applyAccent(accentBase)
 }
-function setMode(m){
-  localStorage.setItem('erp-m',m)
-  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m))
-  applyMode(m)
-}
-const sm=localStorage.getItem('erp-m')||'auto'
-document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
-applyMode(sm)
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
-
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d')
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd)}
 
 function showToast(msg,type='ok'){
   const t=document.getElementById('toast')
   t.textContent=msg
   t.className='toast show '+(type==='ok'?'ok':'err')
-  setTimeout(()=>t.className='toast',3000)
+  setTimeout(()=>t.className='toast',3200)
 }
 
-// ─── CALCUL PRIX DE VENTE — GRILLE DÉGRESSIVE ───
+/* ─── Aide au prix de vente : grille dégressive ─── */
 const GRILLE_DEFAUT=[
   {min:0,max:30,coef:2.2,fixe:25},
   {min:30,max:80,coef:1.8,fixe:25},
@@ -745,11 +744,9 @@ function onAchatChange(){
   document.getElementById('formule-rappel').textContent=`Palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
   helper.style.display='block'
   const suggere=calcPrixVente(achat)
-  document.getElementById('prix-suggere').textContent=suggere.toFixed(2)+' €'
+  document.getElementById('prix-suggere').textContent=suggere.toFixed(2).replace('.',',')+' €'
   const venteInput=document.getElementById('f-vente')
-  if(!venteInput.value||Number(venteInput.value)===0){
-    venteInput.value=suggere.toFixed(2)
-  }
+  if(!venteInput.value||Number(venteInput.value)===0)venteInput.value=suggere.toFixed(2)
   updateMargeStock()
 }
 function appliquerPrixSuggere(){
@@ -763,13 +760,14 @@ function updateMargeStock(){
   const vente=Number(document.getElementById('f-vente').value)||0
   const el=document.getElementById('marge-affichee')
   if(!el)return
-  if(achat<=0||vente<=0){el.textContent='—';return}
+  if(achat<=0||vente<=0){el.textContent='—';el.style.color='var(--t2)';return}
   const marge=vente-achat
-  const pct=achat>0?Math.round((marge/achat)*100):0
-  el.textContent=`${marge.toFixed(2)} € (${pct}%)`
+  const pct=Math.round((marge/achat)*100)
+  el.textContent=`${marge.toFixed(2).replace('.',',')} € (${pct} %)`
   el.style.color=marge>0?'var(--ok)':'var(--d)'
 }
 
+/* ─── Panneau ajout / modification ─── */
 function openPanel(piece=null){
   document.getElementById('panelTitle').textContent=piece?'Modifier la pièce':'Ajouter une pièce'
   document.getElementById('saveBtn').textContent=piece?'Mettre à jour':'Enregistrer'
@@ -782,7 +780,7 @@ function openPanel(piece=null){
   document.getElementById('f-seuil').value=piece?.seuil_alerte??2
   document.getElementById('f-achat').value=piece?.prix_achat||''
   document.getElementById('f-vente').value=piece?.prix_vente||''
-  // Fournisseur : si la valeur enregistrée n'existe plus dans les options actives, l'ajouter pour la conserver visible
+  // Fournisseur : si la valeur enregistrée n'est plus dans les options actives, l'ajouter pour la garder visible
   const selFour=document.getElementById('f-four')
   const fourVal=piece?.fournisseur||''
   if(fourVal&&![...selFour.options].some(o=>o.value===fourVal)){
@@ -790,18 +788,15 @@ function openPanel(piece=null){
   }
   selFour.value=fourVal
   document.getElementById('f-notes').value=piece?.notes||''
-  // Rafraîchir le helper prix de vente / marge
-  if(typeof onAchatChange==='function')onAchatChange()
+  onAchatChange()
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   document.getElementById('f-nom').focus()
 }
-
 function closePanel(){
   document.getElementById('overlay').classList.remove('open')
   document.getElementById('panel').classList.remove('open')
 }
-
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()})
 </script>
 
@@ -811,29 +806,26 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-
-
 function showError(msg){
   document.getElementById('ldr').style.display='none'
   document.getElementById('mainContent').innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;">
-      <div style="font-size:28px;">⚠️</div>
-      <div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
-      <div style="font-size:12px;color:var(--t3);max-width:360px;text-align:center;">${escHtml(msg)}</div>
-      <button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;margin-top:4px;">Réessayer</button>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:24px;">
+      <div style="font-size:15px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
+      <div style="font-size:13px;color:var(--t2);max-width:42ch;text-align:center;line-height:1.6;">${escHtml(msg)}</div>
+      <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:4px;">Réessayer</button>
     </div>`
 }
 
+const EUR=new Intl.NumberFormat('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})
+function eur(v){return EUR.format(Number(v)||0)+' €'}
+
 try {
 
-// Auth
+// ── Session ──
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html'; throw new Error('no session')}
 
-// ── Grille tarifaire : source de vérité = Supabase ──
-// getGrille() lit le localStorage, qui n'était alimenté qu'en ouvrant la page
-// Paramètres : sur un navigateur neuf, cette page calculait donc avec la
-// grille par défaut au lieu de la grille réellement enregistrée.
+// ── Grille tarifaire : source de vérité = Supabase, pas le localStorage ──
 try{
   const {data:_g}=await sb.from('settings').select('valeur').eq('cle','finance_grille').maybeSingle()
   if(_g&&_g.valeur){
@@ -842,118 +834,152 @@ try{
   }
 }catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
 
-// State
+// ── État ──
 let allStock=[]
 let activeFilter='Tous'
 
-// Charger le stock
+function etat(p){
+  const q=Number(p.quantite)||0
+  const s=Number(p.seuil_alerte)||0
+  if(q===0)return 'ko'
+  if(q<=s)return 'wn'
+  return 'ok'
+}
+
 async function loadStock(){
-  const {data,error}=await sb.from('stock').select('*').order('categorie').order('nom')
-  if(error){console.error(error);return}
+  const {data,error,count}=await sb.from('stock')
+    .select('*',{count:'exact'})
+    .order('nom')
+    .limit(5000)
+  if(error)throw new Error(error.message)
   allStock=data||[]
+  if(typeof count==='number'&&count>allStock.length){
+    showToast(`Seules ${allStock.length} pièces sur ${count} ont été chargées.`,'err')
+  }
   renderAll()
   document.getElementById('ldr').style.display='none'
-  const pb=document.getElementById('pageBody')
-  pb.style.display='flex'
+  document.getElementById('pageBody').style.display='flex'
 }
 
 function renderAll(){
-  updateKPIs()
+  majResume()
   renderFilters()
-  renderTable()
+  renderGroupes()
 }
 
-function updateKPIs(){
+// ── Résumé en une phrase (remplace l'ancien bandeau de chiffres) ──
+function majResume(){
   const total=allStock.length
-  const alertes=allStock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte)&&Number(p.quantite)>0).length
-  const ruptures=allStock.filter(p=>Number(p.quantite)===0).length
-  document.getElementById('ph-sub').textContent=`${total} pièce${total>1?'s':''} référencée${total>1?'s':''}`
-  updateKpiStrip()
+  const valeur=allStock.reduce((a,p)=>a+(Number(p.quantite)||0)*(Number(p.prix_achat)||0),0)
+  const ruptures=allStock.filter(p=>etat(p)==='ko').length
+  const faibles=allStock.filter(p=>etat(p)==='wn').length
+  const bouts=[]
+  bouts.push(`<b>${total}</b> référence${total>1?'s':''}`)
+  bouts.push(`${eur(valeur)} de valeur d'achat`)
+  if(ruptures)bouts.push(`<span class="alerte">${ruptures} à recommander</span>`)
+  if(faibles)bouts.push(`<span class="alerte">${faibles} en stock faible</span>`)
+  if(!ruptures&&!faibles&&total)bouts.push('aucune alerte')
+  document.getElementById('ph-resume').innerHTML=total?bouts.join(' · '):'Aucune pièce référencée pour le moment.'
+  // Pastille de la navigation : nombre de pièces à surveiller
+  document.querySelectorAll('#nb-alert').forEach(el=>{
+    const n=ruptures+faibles
+    el.textContent=n
+    el.style.display=n?'':'none'
+  })
 }
 
 function renderFilters(){
-  const cats=['Tous',...new Set(allStock.map(p=>p.categorie).filter(Boolean))]
-  const wrap=document.getElementById('filterBtns')
-  wrap.innerHTML=cats.map(c=>`<button class="filter-btn ${activeFilter===c?'active':''}" onclick="setFilter('${c}')">${c}</button>`).join('')
+  const cats=['Tous',...[...new Set(allStock.map(p=>p.categorie).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'))]
+  if(!cats.includes(activeFilter))activeFilter='Tous'
+  document.getElementById('filterBtns').innerHTML=cats.map(c=>
+    `<button class="${activeFilter===c?'on':''}" onclick="setFilter('${escJsAttr(c)}')">${escHtml(c)}</button>`
+  ).join('')
 }
 
-function setFilter(cat){
-  window.setFilter=setFilter
+window.setFilter=function(cat){
   activeFilter=cat
   renderFilters()
-  renderTable()
+  renderGroupes()
 }
-window.setFilter=setFilter
 
 function getFiltered(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   return allStock.filter(p=>{
-    const matchCat=activeFilter==='Tous'||p.categorie===activeFilter
-    const matchSearch=!q||[p.nom,p.categorie,p.marque,p.modele,p.fournisseur].some(v=>v&&v.toLowerCase().includes(q))
-    return matchCat&&matchSearch
+    const okCat=activeFilter==='Tous'||p.categorie===activeFilter
+    const okQ=!q||[p.nom,p.categorie,p.marque,p.modele,p.fournisseur].some(v=>v&&String(v).toLowerCase().includes(q))
+    return okCat&&okQ
   })
 }
 
-function updateKpiStrip(){
-  const total=allStock.length
-  const valeur=allStock.reduce((a,p)=>a+Number(p.quantite||0)*Number(p.prix_achat||0),0)
-  const ruptures=allStock.filter(p=>Number(p.quantite)===0).length
-  const faibles=allStock.filter(p=>Number(p.quantite)>0&&Number(p.quantite)<=Number(p.seuil_alerte||0)).length
-  document.getElementById('kpiStrip').innerHTML=`
-    <div class="kpi"><div class="kpi-label">Références</div><div class="kpi-val">${total}</div></div>
-    <div class="kpi"><div class="kpi-label">Valeur du stock</div><div class="kpi-val">${valeur.toFixed(2).replace('.',',')} €</div></div>
-    <div class="kpi"><div class="kpi-label">Ruptures</div><div class="kpi-val" style="color:${ruptures>0?'var(--d)':'var(--t1)'};">${ruptures}</div></div>
-    <div class="kpi"><div class="kpi-label">Stock faible</div><div class="kpi-val" style="color:${faibles>0?'var(--w)':'var(--t1)'};">${faibles}</div></div>
-  `
+const ICO_EDIT='<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+const ICO_DEL='<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>'
+
+function ligne(p){
+  const e=etat(p)
+  const qty=Number(p.quantite)||0
+  const seuil=Number(p.seuil_alerte)||0
+  const sousTitre=[p.categorie,p.marque,p.modele].filter(Boolean).join(' · ')
+  const four=p.fournisseur?' · '+escHtml(p.fournisseur):''
+  const tag=e==='ko'?'<span class="tag t-ko">Rupture</span>'
+    :e==='wn'?`<span class="tag t-wn">Seuil ${seuil}</span>`
+    :'<span class="tag t-ok">En stock</span>'
+  const prix=[]
+  if(p.prix_achat)prix.push('achat '+eur(p.prix_achat))
+  if(p.prix_vente)prix.push('vente <b>'+eur(p.prix_vente)+'</b>')
+  return `<div class="row">
+    <div class="jauge j-${e}"></div>
+    <div class="row-n" onclick="editPiece(${p.id})">
+      <b>${escHtml(p.nom||'Sans nom')}</b>
+      <em>${sousTitre?escHtml(sousTitre):'—'}${four}</em>
+    </div>
+    <div class="row-px">${prix.join(' · ')||'—'}</div>
+    <div class="qte">
+      <button onclick="adjustQty(${p.id},-1)" ${qty===0?'disabled':''} aria-label="Retirer une unité">−</button>
+      <span class="val">${qty}</span>
+      <button onclick="adjustQty(${p.id},1)" aria-label="Ajouter une unité">+</button>
+    </div>
+    ${tag}
+    <div class="row-acts">
+      <button class="act" onclick="editPiece(${p.id})" title="Modifier">${ICO_EDIT}</button>
+      <button class="act del" onclick="deletePiece(${p.id},'${escJsAttr(p.nom||'')}')" title="Supprimer">${ICO_DEL}</button>
+    </div>
+  </div>`
 }
 
-function renderTable(){
+const GROUPES=[
+  {cle:'ko',titre:'À recommander',pill:'ko',note:'Quantité à zéro'},
+  {cle:'wn',titre:'Stock faible',  pill:'wn',note:'Au niveau du seuil d’alerte ou en dessous'},
+  {cle:'ok',titre:'En stock',      pill:'ok',note:''}
+]
+
+function renderGroupes(){
   const rows=getFiltered()
-  const wrap=document.getElementById('cardsWrap')
-  const empty=document.getElementById('emptyState')
-  document.getElementById('countBadge').textContent=rows.length+' résultat'+(rows.length>1?'s':'')
-  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  wrap.innerHTML=rows.map(p=>{
-    const qty=Number(p.quantite)
-    const seuil=Number(p.seuil_alerte)
-    const rupture=qty===0
-    const lvlClass=rupture?'ko':qty<=seuil?'warn':'ok'
-    const lvlText=rupture?'Rupture':qty<=seuil?'Faible':'OK'
-    const lvlIco=rupture
-      ?'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
-      :qty<=seuil
-      ?'<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
-      :'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
-    return`<div class="stock-card ${rupture?'rupture':''}">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="stock-cat-badge">${escHtml(p.categorie)||'—'}</span>
-        <span class="stock-lvl-badge ${lvlClass}">${lvlIco}${lvlText}</span>
+  const wrap=document.getElementById('listeStock')
+  if(!rows.length){
+    const vide=allStock.length===0
+    wrap.innerHTML=`<div class="vide">
+      <div class="vide-ico"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+      <h3>${vide?'Le stock est vide':'Aucune pièce ne correspond'}</h3>
+      <p>${vide?'Ajoute ta première pièce pour suivre tes quantités, tes prix d’achat et tes seuils de réapprovisionnement.':'Essaie un autre terme de recherche ou change de catégorie.'}</p>
+      ${vide?'<button class="btn btn-primary" onclick="openPanel()" style="margin:0 auto;">Ajouter une pièce</button>':''}
+    </div>`
+    return
+  }
+  wrap.innerHTML=GROUPES.map(g=>{
+    const items=rows.filter(p=>etat(p)===g.cle)
+    if(!items.length)return ''
+    return `<div class="grp">
+      <div class="grp-h">
+        <b>${g.titre}</b>
+        <i class="${g.pill}">${items.length}</i>
+        ${g.note?`<span>${g.note}</span>`:''}
       </div>
-      <div class="stock-card-title">${escHtml(p.nom)}</div>
-      <div class="stock-card-sub">${escHtml([p.marque,p.modele].filter(Boolean).join(' · ')||p.fournisseur||'—')}</div>
-      <div class="stock-card-qty">
-        <button class="qty-btn" onclick="adjustQty(${p.id},-1)">−</button>
-        <span class="qty-val" style="font-weight:600;">${qty}</span>
-        <button class="qty-btn" onclick="adjustQty(${p.id},+1)">+</button>
-      </div>
-      <div class="stock-card-prices">
-        <span>Achat ${p.prix_achat?Number(p.prix_achat).toFixed(2)+'€':'—'}</span>
-        <span>Vente ${p.prix_vente?Number(p.prix_vente).toFixed(2)+'€':'—'}</span>
-      </div>
-      <div class="stock-card-foot">
-        <button class="act-btn" onclick="editPiece(${p.id})" title="Modifier">
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="act-btn del" onclick="deletePiece(${p.id},'${escJsAttr(p.nom||'')}' )" title="Supprimer">
-          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-        </button>
-      </div>
+      <div class="liste">${items.map(ligne).join('')}</div>
     </div>`
   }).join('')
 }
 
-window.filterStock=function(){renderTable()}
+window.filterStock=function(){renderGroupes()}
 
 window.editPiece=function(id){
   const p=allStock.find(p=>p.id===id)
@@ -963,21 +989,23 @@ window.editPiece=function(id){
 window.adjustQty=async function(id,delta){
   const p=allStock.find(p=>p.id===id)
   if(!p)return
-  const newQty=Math.max(0,Number(p.quantite)+delta)
-  const {error}=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',id)
+  const avant=Number(p.quantite)||0
+  const nouvelle=Math.max(0,avant+delta)
+  if(nouvelle===avant)return
+  const {error}=await sb.from('stock').update({quantite:nouvelle,updated_at:new Date().toISOString()}).eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
-  p.quantite=newQty
+  p.quantite=nouvelle
   renderAll()
-  showToast(delta>0?`+1 ajouté · ${p.nom}`:`-1 retiré · ${p.nom}`,'ok')
+  showToast(`${p.nom} : ${nouvelle} en stock`,'ok')
 }
 
 window.deletePiece=async function(id,nom){
-  if(!confirm(`Supprimer "${nom}" du stock ?`))return
+  if(!confirm(`Supprimer « ${nom} » du stock ?`))return
   const {error}=await sb.from('stock').delete().eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   allStock=allStock.filter(p=>p.id!==id)
   renderAll()
-  showToast(`"${nom}" supprimé`,'ok')
+  showToast(`« ${nom} » supprimé`,'ok')
 }
 
 window.savePiece=async function(){
@@ -1003,8 +1031,9 @@ window.savePiece=async function(){
     updated_at:new Date().toISOString()
   }
 
-  document.getElementById('saveBtn').textContent='Enregistrement...'
-  document.getElementById('saveBtn').disabled=true
+  const btn=document.getElementById('saveBtn')
+  btn.textContent='Enregistrement…'
+  btn.disabled=true
 
   let error
   if(id){
@@ -1014,78 +1043,96 @@ window.savePiece=async function(){
       const idx=allStock.findIndex(p=>p.id===Number(id))
       if(idx>=0)allStock[idx]={...allStock[idx],...payload,id:Number(id)}
     }
-  } else {
+  }else{
     const res=await sb.from('stock').insert(payload).select().single()
     error=res.error
     if(!error&&res.data)allStock.push(res.data)
   }
 
-  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
-  document.getElementById('saveBtn').disabled=false
+  btn.textContent=id?'Mettre à jour':'Enregistrer'
+  btn.disabled=false
 
   if(error){showToast('Erreur : '+error.message,'err');return}
   closePanel()
   renderAll()
-  showToast(id?`"${nom}" mis à jour ✓`:`"${nom}" ajouté ✓`,'ok')
+  showToast(id?`« ${nom} » mis à jour`:`« ${nom} » ajouté`,'ok')
 }
 
 window.exportCSV=function(){
   if(!allStock.length){showToast('Aucune donnée à exporter','err');return}
   const cols=['id','nom','categorie','marque','modele','quantite','seuil_alerte','prix_achat','prix_vente','fournisseur','notes']
-  const csv=[cols.join(','),...allStock.map(p=>cols.map(c=>`"${String(p[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const cell=v=>{
+    if(v===null||v===undefined)return '""'
+    return '"'+String(v).replace(/"/g,'""')+'"'
+  }
+  const csv=[cols.join(';'),...allStock.map(p=>cols.map(c=>cell(p[c])).join(';'))].join('\r\n')
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob)
   const a=document.createElement('a')
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
-  a.download=`itsoluce_stock_${new Date().toISOString().slice(0,10)}.csv`
+  const d=new Date()
+  const jour=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+  a.href=url
+  a.download=`itsoluce_stock_${jour}.csv`
   a.click()
-  showToast('Export téléchargé ✓','ok')
+  setTimeout(()=>URL.revokeObjectURL(url),1000)
+  showToast('Export téléchargé','ok')
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 
-// ─── FOURNISSEURS DYNAMIQUES (depuis la page Fournisseurs) ───
+// ── Fournisseurs actifs (table fournisseurs) ──
 async function loadFournisseurs(){
   const sel=document.getElementById('f-four')
   if(!sel)return
   try{
     const {data,error}=await sb.from('fournisseurs').select('nom,actif').order('nom')
-    if(error){console.warn('Fournisseurs:',error);return}
+    if(error){console.warn('Fournisseurs :',error);return}
     const actifs=(data||[]).filter(f=>f.actif!==false&&f.nom)
-    // Reconstruire les options en conservant "Choisir..." en tête
     const valeurCourante=sel.value
-    sel.innerHTML='<option value="">Choisir...</option>'
+    sel.innerHTML='<option value="">Choisir…</option>'
       +actifs.map(f=>`<option value="${escHtml(f.nom)}">${escHtml(f.nom)}</option>`).join('')
       +'<option value="Autre">Autre</option>'
-    if(valeurCourante)sel.value=valeurCourante
-  }catch(e){console.warn('Fournisseurs:',e)}
+    if(valeurCourante&&[...sel.options].some(o=>o.value===valeurCourante))sel.value=valeurCourante
+  }catch(e){console.warn('Fournisseurs :',e)}
 }
 window.loadFournisseurs=loadFournisseurs
 
 await loadStock()
 await loadFournisseurs()
 
-// Pré-remplissage depuis le catalogue Foneday
+// ── Pré-remplissage depuis le catalogue ──
 if(new URLSearchParams(location.search).get('prefill')==='1'){
   try{
     const pf=JSON.parse(localStorage.getItem('erp-prefill-stock')||'null')
     if(pf){
       openPanel()
-      setTimeout(()=>{
-        const set=(id,v)=>{const el=document.getElementById(id);if(el&&v!=null)el.value=v}
-        set('f-nom',pf.nom);set('f-categorie',pf.categorie);set('f-marque',(pf.marque||'').trim())
-        set('f-modele',pf.modele);set('f-achat',pf.prix_achat);set('f-vente',pf.prix_vente)
-        set('f-four',pf.fournisseur);set('f-notes',pf.notes)
-        if(typeof onAchatChange==='function')onAchatChange()
-        localStorage.removeItem('erp-prefill-stock')
-      },300)
+      const set=(id,v)=>{const el=document.getElementById(id);if(el&&v!=null&&v!=='')el.value=v}
+      set('f-nom',pf.nom)
+      set('f-cat',pf.categorie)
+      set('f-marque',(pf.marque||'').trim())
+      set('f-modele',pf.modele)
+      set('f-achat',pf.prix_achat)
+      set('f-vente',pf.prix_vente)
+      if(pf.fournisseur){
+        const selF=document.getElementById('f-four')
+        if(![...selF.options].some(o=>o.value===pf.fournisseur)){
+          const o=document.createElement('option');o.value=pf.fournisseur;o.textContent=pf.fournisseur;selF.appendChild(o)
+        }
+        selF.value=pf.fournisseur
+      }
+      set('f-notes',pf.notes)
+      onAchatChange()
+      localStorage.removeItem('erp-prefill-stock')
     }
   }catch(e){console.warn('prefill',e)}
 }
 
 } catch(err) {
-  console.error('Erreur stock:', err)
+  console.error('Erreur stock :',err)
   showError(err.message||'Une erreur inattendue est survenue.')
 }
 </script>
+
 
 
 <div class="mobile-bottombar">
