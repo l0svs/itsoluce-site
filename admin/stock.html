@@ -868,9 +868,6 @@ function updateKPIs(){
   const alertes=allStock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte)&&Number(p.quantite)>0).length
   const ruptures=allStock.filter(p=>Number(p.quantite)===0).length
   document.getElementById('ph-sub').textContent=`${total} pièce${total>1?'s':''} référencée${total>1?'s':''}`
-  const nb=document.getElementById('nb-stock')
-  const tot=alertes+ruptures
-  if(nb){nb.textContent=tot||'✓';nb.className=tot>0?'nc w':'nc'}
   updateKpiStrip()
 }
 

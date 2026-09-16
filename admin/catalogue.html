@@ -663,32 +663,6 @@ function showToast(msg,type='ok'){
   setTimeout(()=>t.className='toast',3000)
 }
 
-// ─── CALCULATEUR FRAIS DE PORT ───
-function openCalc(){document.getElementById('calcModal').classList.add('open');}
-function closeCalc(){document.getElementById('calcModal').classList.remove('open');}
-function closeCalcOutside(e){if(e.target===document.getElementById('calcModal'))closeCalc();}
-function resetCalc(){
-  ['c-nb','c-total','c-port','c-douane'].forEach(id=>{document.getElementById(id).value=''})
-  document.getElementById('calcResult').style.display='none'
-}
-function calcPort(){
-  const nb=Number(document.getElementById('c-nb').value)||0
-  const total=Number(document.getElementById('c-total').value)||0
-  const port=Number(document.getElementById('c-port').value)||0
-  const douane=Number(document.getElementById('c-douane').value)||0
-  if(nb<=0||total<=0){document.getElementById('calcResult').style.display='none';return}
-  const frais=port+douane
-  const coutTotal=total+frais
-  const fraisParPiece=frais/nb
-  const prixParPiece=total/nb
-  const prixFinal=prixParPiece+fraisParPiece
-  document.getElementById('calcResult').style.display='block'
-  document.getElementById('cr-total').textContent=coutTotal.toFixed(2)+' €'
-  document.getElementById('cr-frais').textContent=frais.toFixed(2)+' €'
-  document.getElementById('cr-parpiece').textContent=fraisParPiece.toFixed(2)+' €'
-  document.getElementById('cr-final').textContent=prixFinal.toFixed(2)+' €'
-}
-
 // ─── CALCUL PRIX DE VENTE — GRILLE DÉGRESSIVE ───
 const GRILLE_DEFAUT=[
   {min:0,max:30,coef:2.2,fixe:25},
@@ -715,68 +689,6 @@ function calcPrixVente(achat){
   const p=getPalier(cout)
   return cout*p.coef+p.fixe
 }
-function onAchatChange(){
-  const achat=Number(document.getElementById('f-achat').value)||0
-  const helper=document.getElementById('prix-helper')
-  if(achat<=0){helper.style.display='none';return}
-  const cout=achat+FRAIS_LIVRAISON
-  const p=getPalier(cout)
-  document.getElementById('formule-rappel').textContent=`Achat ${achat.toFixed(2)}€ + livraison ${FRAIS_LIVRAISON.toFixed(2)}€ → palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
-  helper.style.display='block'
-  const suggere=calcPrixVente(achat)
-  document.getElementById('prix-suggere').textContent=suggere.toFixed(2)+' €'
-  const venteInput=document.getElementById('f-vente')
-  if(!venteInput.value||Number(venteInput.value)===0){
-    venteInput.value=suggere.toFixed(2)
-  }
-  updateMargeStock()
-}
-function appliquerPrixSuggere(){
-  const achat=Number(document.getElementById('f-achat').value)||0
-  if(achat<=0)return
-  document.getElementById('f-vente').value=calcPrixVente(achat).toFixed(2)
-  updateMargeStock()
-}
-function updateMargeStock(){
-  const achat=Number(document.getElementById('f-achat').value)||0
-  const vente=Number(document.getElementById('f-vente').value)||0
-  const el=document.getElementById('marge-affichee')
-  if(!el)return
-  if(achat<=0||vente<=0){el.textContent='—';return}
-  const cout=achat+FRAIS_LIVRAISON
-  const marge=vente-cout
-  const pct=cout>0?Math.round((marge/cout)*100):0
-  el.textContent=`${marge.toFixed(2)} € (${pct}%)`
-  el.style.color=marge>0?'var(--ok)':'var(--d)'
-}
-
-function openPanel(piece=null){
-  document.getElementById('panelTitle').textContent=piece?'Modifier la pièce':'Ajouter une pièce'
-  document.getElementById('saveBtn').textContent=piece?'Mettre à jour':'Enregistrer'
-  document.getElementById('f-id').value=piece?.id||''
-  document.getElementById('f-nom').value=piece?.nom||''
-  document.getElementById('f-cat').value=piece?.categorie||''
-  document.getElementById('f-marque').value=piece?.marque||''
-  document.getElementById('f-modele').value=piece?.modele||''
-  document.getElementById('f-qty').value=piece?.quantite??''
-  document.getElementById('f-seuil').value=piece?.seuil_alerte??2
-  document.getElementById('f-achat').value=piece?.prix_achat||''
-  document.getElementById('f-vente').value=piece?.prix_vente||''
-  document.getElementById('f-four').value=piece?.fournisseur||''
-  document.getElementById('f-notes').value=piece?.notes||''
-  // Rafraîchir le helper prix de vente / marge
-  if(typeof onAchatChange==='function')onAchatChange()
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
-  document.getElementById('f-nom').focus()
-}
-
-function closePanel(){
-  document.getElementById('overlay').classList.remove('open')
-  document.getElementById('panel').classList.remove('open')
-}
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()})
 </script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
