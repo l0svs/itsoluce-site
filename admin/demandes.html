@@ -52,62 +52,124 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
 .nhr{height:1px;background:var(--ln);margin:8px 10px;}.sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
+
+/* ═══════════════════════════════════════════════════════════════
+   DEMANDES — « fiches complètes ».
+   Quelques demandes par mois : rien n'est caché derrière un clic.
+   Chaque demande est une fiche entière, description comprise, avec
+   ses actions dessus. Pas de tableau, pas de panneau latéral.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c;
+  --radius:16px;
+}
+body{font-size:14px;}
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
-.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
-.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
-.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.btn-primary{background:var(--a);color:#fff;}.btn-primary:hover{opacity:.85;}
-.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}.btn-secondary:hover{color:var(--t1);}
-.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
-.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
-.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
-.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
-.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;flex-wrap:wrap;}
-.search-wrap{position:relative;flex:1;max-width:300px;}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
-.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}.search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
-.filter-btn{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;white-space:nowrap;}
-.filter-btn:hover{color:var(--t1);}.filter-btn.active{background:var(--a);color:#fff;border-color:var(--a);}
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}.panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;right:0;top:0;bottom:0;width:50vw;min-width:440px;background:var(--bg2);border-left:1px solid var(--ln);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
-.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
-.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}.panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:20px;}.panel-footer{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
-.fg{margin-bottom:13px;}.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.fg-val{font-size:13px;color:var(--t1);padding:2px 0;}
-.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
-.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
-.empty-grid{padding:60px 0;text-align:center;grid-column:1/-1;}
-.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}.empty-sub{font-size:12px;color:var(--t3);}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
-.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
-.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a); font-weight:500;}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
+
+.page-head{padding:26px 28px 0; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; flex-shrink:0;}
+.ph-left h1{font-size:27px; font-weight:600; letter-spacing:-.03em; color:var(--t1);}
+.ph-resume{font-size:13.5px; color:var(--t2); margin-top:4px;}
+.ph-resume b{color:var(--t1); font-weight:600;}
+.ph-resume .alerte{color:var(--w); font-weight:600;}
+.ph-right{display:flex; gap:8px; flex-wrap:wrap;}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; cursor:pointer;
+  font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s;}
+.btn svg{width:14px; height:14px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.btn-secondary:hover{background:var(--bg4);}
+.btn-danger{background:rgba(200,54,44,.1); color:var(--d); border:1px solid rgba(200,54,44,.2);}
+.btn-danger:hover{background:rgba(200,54,44,.18);}
+.btn:disabled{opacity:.45; cursor:default;}
+
+/* ── Barre d'outils ── */
+.tools{display:flex; align-items:center; gap:10px; padding:16px 28px 0; flex-wrap:wrap; flex-shrink:0;}
+.srch-wrap{position:relative; flex:1; min-width:190px; max-width:300px;}
+.srch-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.srch-wrap input{width:100%; background:var(--bg2); border:1px solid transparent; border-radius:11px; padding:9px 12px 9px 34px; font-family:inherit; font-size:13px; color:var(--t1); outline:none; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.14s;}
+.srch-wrap input:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.srch-wrap input::placeholder{color:var(--t3);}
+.segf{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px; max-width:100%; overflow-x:auto; scrollbar-width:none;}
+.segf::-webkit-scrollbar{display:none;}
+.segf button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap; flex-shrink:0;}
+.segf button:hover{color:var(--t1);}
+.segf button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.07);}
+
+/* ── Liste de fiches ── */
+.zone{flex:1; overflow-y:auto; padding:18px 28px 32px;}
+.fl{display:flex; flex-direction:column; gap:13px; max-width:920px;}
+
+.fiche{background:var(--bg2); border-radius:var(--radius); padding:17px 20px 18px; box-shadow:0 1px 2px rgba(0,0,0,.05); border-left:3px solid transparent;}
+.fiche.st-nouveau{border-left-color:var(--a);}
+.fiche.st-converti{border-left-color:var(--ok);}
+.fiche.st-traite{opacity:.82;}
+.fiche.st-traite:hover{opacity:1;}
+
+.fiche-h{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+.fiche-h b{font-size:16px; font-weight:600; letter-spacing:-.02em; color:var(--t1);}
+.fiche-h .quand{margin-left:auto; font-size:12px; color:var(--t3); white-space:nowrap;}
+.tag{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap;}
+.t-nouveau{background:var(--ad); color:var(--a);}
+.t-traite{background:var(--bg3); color:var(--t2);}
+.t-converti{background:rgba(26,138,82,.11); color:var(--ok);}
+[data-mode="dark"] .t-converti{background:rgba(52,211,153,.16);}
+.canal{font-size:11.5px; color:var(--t3);}
+
+.fiche-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:11px 18px; font-size:13px; margin-bottom:12px;}
+.fiche-grid > div{min-width:0;}
+.fiche-grid .k{display:block; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--t3); margin-bottom:2px;}
+.fiche-grid a{color:var(--a); text-decoration:none; word-break:break-word;}
+.fiche-grid a:hover{text-decoration:underline;}
+.fiche-grid .val{color:var(--t1); word-break:break-word;}
+
+.panne{font-size:13.5px; line-height:1.6; color:var(--t1); background:var(--bg3); border-radius:11px; padding:12px 14px; white-space:pre-wrap; word-break:break-word; margin-bottom:13px;}
+.fiche-acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+.fiche-acts .btn{flex:0 1 auto;}
+.fiche-acts .espace{margin-left:auto;}
+.lien-rep{font-size:12.5px; color:var(--ok); font-weight:500; text-decoration:none;}
+.lien-rep:hover{text-decoration:underline;}
+.mail-etat{font-size:12px; color:var(--t3);}
+.mail-etat.ok{color:var(--ok);}
+.mail-etat.ko{color:var(--w);}
+
+/* ── État vide ── */
+.vide{background:var(--bg2); border-radius:var(--radius); padding:50px 24px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.05); max-width:920px;}
+.vide-ico{width:52px; height:52px; border-radius:15px; background:var(--ad); color:var(--a); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+.vide-ico svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+.vide h3{font-size:15px; font-weight:600; color:var(--t1); margin-bottom:6px;}
+.vide p{font-size:13px; color:var(--t2); line-height:1.6; max-width:46ch; margin:0 auto;}
+.vide p a{color:var(--a); text-decoration:none;}
+
+/* ── Toast et chargement ── */
+.toast{position:fixed; bottom:22px; right:22px; background:var(--bg2); border:1px solid var(--ln2); border-radius:12px; padding:11px 17px; font-size:13px; color:var(--t1); box-shadow:0 10px 30px rgba(0,0,0,.14); z-index:999; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; max-width:min(380px,calc(100vw - 44px));}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast.ok{border-color:rgba(26,138,82,.34); color:var(--ok);}
+.toast.err{border-color:rgba(200,54,44,.34); color:var(--d);}
+.loader{display:flex; align-items:center; justify-content:center; height:100%; gap:9px; font-size:13px; color:var(--t3);}
+.spin{width:15px; height:15px; border:1.6px solid var(--ln2); border-top-color:var(--a); border-radius:50%; animation:spin .6s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}}
 
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .page-head{padding:20px 16px 0;}
+  .tools{padding:12px 16px 0;}
+  .zone{padding:14px 16px 24px;}
+  .fiche{padding:15px 16px 16px;}
+  .fiche-h .quand{margin-left:0; flex-basis:100%;}
+  .fiche-grid{grid-template-columns:1fr 1fr;}
+  .fiche-acts .btn{flex:1 1 100%;}
+  .fiche-acts .espace{margin-left:0;}
+}
 
-/* TABLEAU DEMANDES */
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.table{width:100%;border-collapse:collapse;}
-.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table tr{cursor:pointer;}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
-.table td.desc{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t2);}
-.empty{padding:60px 24px;text-align:center;}
-.dem-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;}
-.dem-new{background:rgba(59,130,246,.13);color:#3b82f6;}
-.dem-vue{background:var(--bg4);color:var(--t3);}
-.dem-conv{background:rgba(52,211,153,.13);color:#16a34a;}
-.dem-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
-.mode-badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--bg4);color:var(--t2);white-space:nowrap;}
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
@@ -209,66 +271,77 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.0</div>
+      <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
+
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+
       <div class="page-head">
-        <div class="ph-left"><h1>Demandes</h1><p id="ph-sub">— demandes reçues via le formulaire du site</p></div>
+        <div class="ph-left">
+          <h1>Demandes</h1>
+          <p class="ph-resume" id="ph-resume">—</p>
+        </div>
+        <div class="ph-right">
+          <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+        </div>
       </div>
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Total</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">demandes reçues</div></div>
-        <div class="kpi"><div class="kpi-label">À traiter</div><div class="kpi-val" id="k-nontraitees" style="color:var(--a)">—</div><div class="kpi-sub">non lues</div></div>
-        <div class="kpi"><div class="kpi-label">Traitées</div><div class="kpi-val" id="k-traitees" style="color:var(--t3)">—</div><div class="kpi-sub">lues, non transformées</div></div>
-        <div class="kpi"><div class="kpi-label">Transformées</div><div class="kpi-val" id="k-converties" style="color:var(--ok)">—</div><div class="kpi-sub">devenues un dossier</div></div>
+
+      <div class="tools">
+        <div class="srch-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="searchInput" placeholder="Nom, email, appareil, panne…" oninput="renderTable()"/>
+        </div>
+        <div class="segf" id="filterBtns"></div>
       </div>
-      <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="Nom, email, appareil..." oninput="renderTable()"/></div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-      </div>
-      <div class="table-wrap">
-        <table class="table" id="demTable">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Client</th>
-              <th>Contact</th>
-              <th>Appareil</th>
-              <th>Intervention</th>
-              <th>Description</th>
-              <th>Statut</th>
-            </tr>
-          </thead>
-          <tbody id="demTbody"></tbody>
-        </table>
-      </div>
-      <div class="empty" id="emptyState" style="display:none;"><div class="empty-ico">📭</div><div style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;">Aucune demande</div><div style="font-size:12px;color:var(--t3);">Les demandes soumises via le formulaire du site apparaîtront ici.</div></div>
+
+      <div class="zone"><div class="fl" id="listeDemandes"></div></div>
+
     </div>
   </div>
-</div>
-
-<!-- Panneau détail -->
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-<div class="panel" id="panel">
-  <div class="panel-head">
-    <span class="panel-title">Détail de la demande</span>
-    <button class="panel-close" onclick="closePanel()">&times;</button>
-  </div>
-  <div class="panel-body" id="panelBody"></div>
-  <div class="panel-footer" id="panelFooter"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
-function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
-const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
-setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
+/* Thème et accent — mêmes valeurs que les autres pages refondues. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc';return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
+}
+function applyMode(m){
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'));  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'));  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)')); s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'));  s('--t2', v('#6e6e73','#98989d')); s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'));  s('--w',  v('#b25e09','#fbbf24'));  s('--d',  v('#c8362c','#f87171'))
+  applyAccent(accentBase)
+}
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
+
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='toast show '+(type==='err'?'err':'ok')
+  setTimeout(()=>t.className='toast',3400)
+}
 </script>
 
 <script type="module">
@@ -277,199 +350,305 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('mainContent').innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:24px;">
+      <div style="font-size:15px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
+      <div style="font-size:13px;color:var(--t2);max-width:42ch;text-align:center;line-height:1.6;">${escHtml(msg)}</div>
+      <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:4px;">Réessayer</button>
+    </div>`
+}
+
+const MODE_LABELS={domicile:'À domicile',atelier:"Dépôt à l'atelier"}
+function jours(iso){
+  const d=new Date(iso)
+  return isNaN(d)?null:Math.floor((Date.now()-d.getTime())/86400000)
+}
+function quand(iso){
+  const d=new Date(iso)
+  if(isNaN(d))return '—'
+  const n=jours(iso)
+  const heure=d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
+  const date=d.toLocaleDateString('fr-BE',{day:'numeric',month:'long'})
+  if(n===0)return `aujourd'hui à ${heure}`
+  if(n===1)return `hier à ${heure}`
+  if(n<31)return `${date} · il y a ${n} jours`
+  return d.toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'})
+}
 
 try {
+
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
 
-
-// ── PAGE DEMANDES ──
 let allDemandes=[]
-let activeFilter='Toutes'
-const MODE_LABELS={domicile:'À domicile',atelier:"Dépôt à l'atelier"}
+let activeFilter='a_traiter'
+
+function statutOf(d){
+  if(d.converti_reparation_id)return 'converti'
+  if(!d.vue)return 'nouveau'
+  return 'traite'
+}
 
 async function load(){
-  const {data,error}=await sb.from('demandes_formulaire').select('*').order('created_at',{ascending:false})
-  if(error){showError(error.message);return}
+  const {data,error,count}=await sb.from('demandes_formulaire')
+    .select('*',{count:'exact'})
+    .order('created_at',{ascending:false})
+    .limit(2000)
+  if(error)throw new Error(error.message)
   allDemandes=data||[]
+  if(typeof count==='number'&&count>allDemandes.length){
+    showToast(`Seules ${allDemandes.length} demandes sur ${count} ont été chargées.`,'err')
+  }
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
 }
 
-function statutOf(d){
-  if(d.converti_reparation_id)return'converti'
-  if(!d.vue)return'nouveau'
-  return'traite'
+function renderAll(){majResume();renderFilters();renderTable()}
+
+function majResume(){
+  const el=document.getElementById('ph-resume')
+  const aTraiter=allDemandes.filter(d=>statutOf(d)==='nouveau')
+  const convertis=allDemandes.filter(d=>statutOf(d)==='converti').length
+  const traites=allDemandes.filter(d=>statutOf(d)==='traite').length
+  if(!allDemandes.length){
+    el.textContent='Aucune demande reçue pour le moment. Elles arriveront ici dès qu’un visiteur remplira le formulaire du site.'
+  }else{
+    const bouts=[`<b>${aTraiter.length} demande${aTraiter.length>1?'s':''} à traiter</b>`]
+    if(aTraiter.length){
+      const plusVieille=Math.max(...aTraiter.map(d=>jours(d.created_at)??0))
+      if(plusVieille>=2)bouts.push(`<span class="alerte">la plus ancienne attend depuis ${plusVieille} jours</span>`)
+    }
+    if(convertis)bouts.push(`${convertis} transformée${convertis>1?'s':''} en dossier`)
+    if(traites)bouts.push(`${traites} sans suite`)
+    if(bouts.length===1)bouts.push(`${allDemandes.length} au total`)
+    el.innerHTML=bouts.join(' · ')
+  }
+  // Pastille « Demandes » de la navigation
+  document.querySelectorAll('#nb-dem').forEach(x=>{
+    x.textContent=aTraiter.length
+    x.style.display=aTraiter.length?'':'none'
+  })
 }
 
-function renderAll(){updateKPIs();renderFilters();renderTable()}
-
-function updateKPIs(){
-  const total=allDemandes.length
-  const nonTraitees=allDemandes.filter(d=>statutOf(d)==='nouveau').length
-  const converties=allDemandes.filter(d=>statutOf(d)==='converti').length
-  const traitees=total-nonTraitees-converties
-  document.getElementById('k-total').textContent=total
-  document.getElementById('k-nontraitees').textContent=nonTraitees
-  document.getElementById('k-traitees').textContent=traitees
-  document.getElementById('k-converties').textContent=converties
-  document.getElementById('ph-sub').textContent=`${total} demande${total>1?'s':''} · ${nonTraitees} à traiter`
-  const nbDem=document.querySelectorAll('#nb-dem')
-  nbDem.forEach(el=>el.textContent=nonTraitees)
-}
-
+const FILTRES=[
+  {cle:'a_traiter', label:'À traiter'},
+  {cle:'toutes',    label:'Toutes'},
+  {cle:'traite',    label:'Sans suite'},
+  {cle:'converti',  label:'Transformées'}
+]
 function renderFilters(){
-  const all=['Toutes','À traiter','Traitées','Transformées']
-  document.getElementById('filterBtns').innerHTML=all.map(s=>{
-    const a=activeFilter===s
-    return`<button class="filter-btn ${a?'active':''}" onclick="setFilter('${s}')">${s}</button>`
-  }).join('')
+  document.getElementById('filterBtns').innerHTML=FILTRES.map(f=>
+    `<button class="${activeFilter===f.cle?'on':''}" onclick="setFilter('${f.cle}')">${f.label}</button>`
+  ).join('')
 }
 window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
 
-function badgeFor(d){
-  const s=statutOf(d)
-  if(s==='converti')return`<span class="dem-badge dem-conv"><span class="dem-dot"></span>Transformée</span>`
-  if(s==='nouveau')return`<span class="dem-badge dem-new"><span class="dem-dot"></span>À traiter</span>`
-  return`<span class="dem-badge dem-vue"><span class="dem-dot"></span>Traitée</span>`
+const ETATS={
+  nouveau: {label:'À traiter',  cls:'t-nouveau'},
+  traite:  {label:'Sans suite', cls:'t-traite'},
+  converti:{label:'Transformée',cls:'t-converti'}
 }
 
-function renderTable(){
+function fiche(d){
+  const s=statutOf(d)
+  const e=ETATS[s]
+  const nom=[d.prenom,d.nom].filter(Boolean).join(' ')||'Sans nom'
+  const mode=MODE_LABELS[d.mode_intervention]||d.mode_intervention||'—'
+  const modeComplet=d.mode_intervention==='domicile'&&d.adresse
+    ? `${mode} — ${escHtml(d.adresse)}`
+    : escHtml(mode)
+  const tel=d.telephone?String(d.telephone).replace(/\s/g,''):''
+  const mail=d.email_confirmation_envoye
+    ? '<span class="mail-etat ok">Accusé de réception envoyé</span>'
+    : '<span class="mail-etat ko">Accusé de réception non parti</span>'
+  const actions=s==='converti'
+    ? `<a class="lien-rep" href="/admin/reparations.html">Voir le dossier de réparation</a>
+       <span class="espace"></span>
+       <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
+    : `<button class="btn btn-secondary" onclick="toggleVue(${d.id})">${d.vue?'Remettre à traiter':'Classer sans suite'}</button>
+       <button class="btn btn-primary" onclick="transformer(${d.id})">Transformer en réparation</button>
+       <span class="espace"></span>
+       <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
+  return `<article class="fiche st-${s}">
+    <div class="fiche-h">
+      <span class="tag ${e.cls}">${e.label}</span>
+      <b>${escHtml(nom)}</b>
+      <span class="canal">formulaire du site</span>
+      <span class="quand">${quand(d.created_at)}</span>
+    </div>
+    <div class="fiche-grid">
+      <div><span class="k">Email</span>${d.email?`<a href="mailto:${escHtml(d.email)}">${escHtml(d.email)}</a>`:'<span class="val">—</span>'}</div>
+      <div><span class="k">Téléphone</span>${tel?`<a href="tel:${escHtml(tel)}">${escHtml(d.telephone)}</a>`:'<span class="val">—</span>'}</div>
+      <div><span class="k">Appareil</span><span class="val">${escHtml(d.appareil||'—')}</span></div>
+      <div><span class="k">Intervention</span><span class="val">${modeComplet}</span></div>
+    </div>
+    <div class="panne">${escHtml(d.description||'—')}</div>
+    <div class="fiche-acts">${actions}</div>
+    <div style="margin-top:9px;">${mail}</div>
+  </article>`
+}
+
+// Exposée globalement : la recherche l'appelle depuis un attribut oninput,
+// qui ne voit pas la portée du module.
+window.renderTable=function renderTable(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
-  let rows=allDemandes.filter(d=>{
+  const rows=allDemandes.filter(d=>{
     const s=statutOf(d)
-    let mf=true
-    if(activeFilter==='À traiter')mf=s==='nouveau'
-    else if(activeFilter==='Traitées')mf=s==='traite'
-    else if(activeFilter==='Transformées')mf=s==='converti'
-    const nomComplet=[d.prenom,d.nom].filter(Boolean).join(' ')
-    const ms=!q||[nomComplet,d.email,d.telephone,d.appareil].some(v=>v&&String(v).toLowerCase().includes(q))
-    return mf&&ms
+    let okF=true
+    if(activeFilter==='a_traiter')okF=s==='nouveau'
+    else if(activeFilter!=='toutes')okF=s===activeFilter
+    const nom=[d.prenom,d.nom].filter(Boolean).join(' ')
+    const okQ=!q||[nom,d.email,d.telephone,d.appareil,d.description,d.adresse]
+      .some(v=>v&&String(v).toLowerCase().includes(q))
+    return okF&&okQ
   })
-  const tbody=document.getElementById('demTbody'),empty=document.getElementById('emptyState'),table=document.getElementById('demTable')
-  if(rows.length===0){tbody.innerHTML='';table.style.display='none';empty.style.display='block';return}
-  table.style.display='table';empty.style.display='none'
-  tbody.innerHTML=rows.map(d=>{
-    const nomComplet=[d.prenom,d.nom].filter(Boolean).join(' ')||'—'
-    const dateStr=new Date(d.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})
-    const modeLabel=MODE_LABELS[d.mode_intervention]||d.mode_intervention||'—'
-    return`<tr onclick="openPanel(${d.id})">
-      <td>${dateStr}</td>
-      <td>${escHtml(nomComplet)}</td>
-      <td>${escHtml(d.email||'—')}${d.telephone?'<br><span style="color:var(--t3);font-size:11px;">'+escHtml(d.telephone)+'</span>':''}</td>
-      <td>${escHtml(d.appareil||'—')}</td>
-      <td><span class="mode-badge">${escHtml(modeLabel)}</span></td>
-      <td class="desc" title="${escHtml(d.description||'')}">${escHtml(d.description||'—')}</td>
-      <td>${badgeFor(d)}</td>
-    </tr>`
-  }).join('')
-}
-
-window.openPanel=function(id){
-  const d=allDemandes.find(x=>x.id===id)
-  if(!d)return
-  const nomComplet=[d.prenom,d.nom].filter(Boolean).join(' ')||'—'
-  const dateStr=new Date(d.created_at).toLocaleString('fr-BE',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
-  const modeLabel=MODE_LABELS[d.mode_intervention]||d.mode_intervention||'—'
-  const s=statutOf(d)
-  document.getElementById('panelBody').innerHTML=`
-    <div class="fg"><label>Reçue le</label><div class="fg-val">${dateStr}</div></div>
-    <div class="fg-sep">Contact</div>
-    <div class="fg"><label>Nom</label><div class="fg-val">${escHtml(nomComplet)}</div></div>
-    <div class="fg"><label>Email</label><div class="fg-val">${d.email?`<a href="mailto:${escHtml(d.email)}" style="color:var(--a);">${escHtml(d.email)}</a>`:'—'}</div></div>
-    <div class="fg"><label>Téléphone</label><div class="fg-val">${d.telephone?`<a href="tel:${escHtml(d.telephone)}" style="color:var(--a);">${escHtml(d.telephone)}</a>`:'—'}</div></div>
-    <div class="fg-sep">Demande</div>
-    <div class="fg"><label>Appareil</label><div class="fg-val">${escHtml(d.appareil||'—')}</div></div>
-    <div class="fg"><label>Mode d'intervention</label><div class="fg-val">${escHtml(modeLabel)}</div></div>
-    ${d.adresse?`<div class="fg"><label>Adresse</label><div class="fg-val">${escHtml(d.adresse)}</div></div>`:''}
-    <div class="fg"><label>Description de la panne</label><div class="fg-val" style="white-space:pre-wrap;">${escHtml(d.description||'—')}</div></div>
-    <div class="fg-sep">Statut</div>
-    <div class="fg"><div class="fg-val">${badgeFor(d)}${d.converti_reparation_id?` — <a href="/admin/reparations.html" style="color:var(--a);">voir le dossier</a>`:''}</div></div>
-  `
-  const footerBtns=[]
-  if(s!=='converti'){
-    footerBtns.push(`<button class="btn btn-secondary" onclick="toggleVue(${d.id})">${d.vue?'Marquer non traitée':'Marquer traitée'}</button>`)
-    footerBtns.push(`<button class="btn btn-primary" onclick="transformer(${d.id})">Transformer en réparation</button>`)
+  const wrap=document.getElementById('listeDemandes')
+  if(!rows.length){
+    const vide=allDemandes.length===0
+    wrap.innerHTML=`<div class="vide">
+      <div class="vide-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+      <h3>${vide?'Aucune demande reçue':'Aucune demande ne correspond'}</h3>
+      <p>${vide
+        ? 'Les demandes remplies sur <a href="https://itsoluce.be" target="_blank" rel="noopener">itsoluce.be</a> arrivent directement ici. Rien à faire en attendant.'
+        : 'Essaie un autre terme de recherche ou change de filtre.'}</p>
+    </div>`
+    return
   }
-  footerBtns.push(`<button class="btn btn-danger" onclick="supprimer(${d.id})" style="margin-left:auto;">Supprimer</button>`)
-  document.getElementById('panelFooter').innerHTML=footerBtns.join('')
-  document.getElementById('overlay').classList.add('open')
-  document.getElementById('panel').classList.add('open')
+  wrap.innerHTML=rows.map(fiche).join('')
 }
 
 window.toggleVue=async function(id){
   const d=allDemandes.find(x=>x.id===id)
   if(!d)return
   const {error}=await sb.from('demandes_formulaire').update({vue:!d.vue}).eq('id',id)
-  if(error){showToast(error.message,'err');return}
-  showToast(d.vue?'Demande marquée non traitée':'Demande marquée traitée','ok')
-  closePanel()
-  await load()
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  d.vue=!d.vue
+  renderAll()
+  showToast(d.vue?'Demande classée sans suite':'Demande remise à traiter','ok')
 }
 
 window.supprimer=async function(id){
-  if(!confirm('Supprimer définitivement cette demande ?'))return
+  const d=allDemandes.find(x=>x.id===id)
+  const nom=d?[d.prenom,d.nom].filter(Boolean).join(' '):''
+  if(!confirm(`Supprimer définitivement la demande de ${nom||'ce visiteur'} ?`))return
   const {error}=await sb.from('demandes_formulaire').delete().eq('id',id)
-  if(error){showToast(error.message,'err');return}
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  allDemandes=allDemandes.filter(x=>x.id!==id)
+  renderAll()
   showToast('Demande supprimée','ok')
-  closePanel()
-  await load()
 }
 
-// Transformation manuelle en dossier réparation. Ne se déclenche jamais
-// automatiquement : uniquement sur clic explicite depuis ce panneau.
+/* Numérotation client : même format que partout ailleurs dans l'ERP.
+   Le compteur n'est pas atomique côté PostgREST, le numéro est donc
+   vérifié avant d'être attribué. */
+async function nextNumeroClient(){
+  for(let essai=0;essai<5;essai++){
+    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','client').single()
+    const valeur=(cpt?.valeur||0)+1
+    await sb.from('compteurs').update({valeur}).eq('cle','client')
+    const numero=`CLI-${String(valeur).padStart(4,'0')}`
+    const {count}=await sb.from('clients').select('id',{count:'exact',head:true}).eq('numero',numero)
+    if(!count)return numero
+  }
+  return `CLI-${Date.now().toString().slice(-6)}`
+}
+
+/* Transformation en dossier réparation. Ne se déclenche jamais
+   automatiquement : uniquement sur clic explicite. */
 window.transformer=async function(id){
   const d=allDemandes.find(x=>x.id===id)
   if(!d)return
-  if(!confirm(`Créer un dossier réparation pour ${[d.prenom,d.nom].filter(Boolean).join(' ')} ?`))return
+  if(d.converti_reparation_id){showToast('Cette demande a déjà été transformée','err');return}
+  const nomComplet=[d.prenom,d.nom].filter(Boolean).join(' ')||'Client site web'
+  if(!confirm(`Créer un dossier de réparation pour ${nomComplet} ?`))return
 
+  const boutons=[...document.querySelectorAll(`button[onclick="transformer(${id})"]`)]
+  boutons.forEach(b=>{b.disabled=true;b.textContent='Création…'})
   try{
-    const nomComplet=[d.prenom,d.nom].filter(Boolean).join(' ')||'Client site web'
     let clientId=null
     if(d.email){
       const {data:existant}=await sb.from('clients').select('id').eq('email',d.email).limit(1).maybeSingle()
       if(existant)clientId=existant.id
     }
     if(!clientId){
-      const {data:nouveauClient,error:errClient}=await sb.from('clients').insert({
-        nom:nomComplet, email:d.email||null, telephone:d.telephone||null, type:'particulier'
+      const {data:nouveau,error:errCli}=await sb.from('clients').insert({
+        numero:await nextNumeroClient(),
+        nom:nomComplet,
+        email:d.email||null,
+        telephone:d.telephone||null,
+        type:'particulier',
+        updated_at:new Date().toISOString()
       }).select('id').single()
-      if(errClient)throw errClient
-      clientId=nouveauClient.id
+      if(errCli)throw errCli
+      clientId=nouveau.id
     }
 
     const modeLabel=MODE_LABELS[d.mode_intervention]||d.mode_intervention
-    const notes=[modeLabel?`Intervention souhaitée : ${modeLabel}`:null, d.adresse?`Adresse : ${d.adresse}`:null].filter(Boolean).join('\n')
+    const notes=[
+      modeLabel?`Intervention souhaitée : ${modeLabel}`:null,
+      d.adresse?`Adresse : ${d.adresse}`:null,
+      `Demande reçue via le formulaire du site le ${new Date(d.created_at).toLocaleDateString('fr-BE')}`
+    ].filter(Boolean).join('\n')
 
-    const {data:nouvelleRep,error:errRep}=await sb.from('reparations').insert({
-      client_id:clientId, client_nom:nomComplet, client_email:d.email||null, client_telephone:d.telephone||null,
-      appareil:d.appareil||null, panne_description:d.description||null, statut:'attente_reception',
-      prix_devis:0, prix_final:0, notes:notes||null
+    const {data:rep,error:errRep}=await sb.from('reparations').insert({
+      client_id:clientId,
+      client_nom:nomComplet,
+      client_email:d.email||null,
+      client_telephone:d.telephone||null,
+      appareil:d.appareil||null,
+      panne_description:d.description||null,
+      statut:'attente_reception',
+      prix_devis:0, prix_final:0,
+      notes:notes||null,
+      updated_at:new Date().toISOString()
     }).select('id').single()
     if(errRep)throw errRep
 
-    await sb.from('demandes_formulaire').update({converti_reparation_id:nouvelleRep.id, vue:true}).eq('id',id)
+    const {error:errMaj}=await sb.from('demandes_formulaire')
+      .update({converti_reparation_id:rep.id,vue:true}).eq('id',id)
+    if(errMaj)throw errMaj
+    d.converti_reparation_id=rep.id
+    d.vue=true
 
-    showToast('Dossier réparation créé','ok')
-    closePanel()
-    await load()
-    window.location.href='/admin/reparations.html'
+    renderAll()
+    showToast('Dossier de réparation créé','ok')
+    setTimeout(()=>{window.location.href='/admin/reparations.html'},700)
   }catch(err){
     console.error(err)
-    showToast(err.message||'Erreur lors de la transformation','err')
+    boutons.forEach(b=>{b.disabled=false;b.textContent='Transformer en réparation'})
+    showToast('Erreur : '+(err.message||err),'err')
   }
 }
 
+window.exportCSV=function(){
+  if(!allDemandes.length){showToast('Aucune donnée à exporter','err');return}
+  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','vue','email_confirmation_envoye','converti_reparation_id']
+  const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
+  const csv=[cols.join(';'),...allDemandes.map(d=>cols.map(c=>cell(d[c])).join(';'))].join('\r\n')
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a')
+  const j=new Date()
+  a.href=url
+  a.download=`itsoluce_demandes_${j.getFullYear()}-${String(j.getMonth()+1).padStart(2,'0')}-${String(j.getDate()).padStart(2,'0')}.csv`
+  a.click()
+  setTimeout(()=>URL.revokeObjectURL(url),1000)
+  showToast('Export téléchargé','ok')
+}
+
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
 await load()
 
 } catch(err){
-  console.error(err)
-  showError(err.message||'Erreur inattendue')
+  console.error('Erreur demandes :',err)
+  showError(err.message||'Une erreur inattendue est survenue.')
 }
 </script>
+
 
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
