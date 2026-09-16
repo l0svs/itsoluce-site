@@ -96,6 +96,7 @@
     { label: 'Fournisseurs', href: '/admin/fournisseurs.html' },
     { label: 'Prestations', href: '/admin/prestations.html' },
     { label: 'Planning', href: '/admin/planning.html' },
+    { label: 'Roadmap', href: '/admin/roadmap.html' },
     { label: 'Paramètres', href: '/admin/settings.html' }
   ];
 
