@@ -52,168 +52,192 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
 .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
 .nhr{height:1px;background:var(--ln);margin:8px 10px;}.sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIAGNOSTICS — « atelier de rapport ».
+   Le métier de cette page est d'écrire un rapport : la saisie est au
+   centre en permanence, l'aperçu du document se dessine à droite,
+   et le rail de gauche garde les diagnostics à portée.
+   Pas de bandeau de grands chiffres.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c; --vio:#7c3aed;
+  --radius:16px;
+}
+body{font-size:14px;}
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
-.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
-.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
-.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.btn-primary{background:var(--a);color:#fff;}.btn-primary:hover{opacity:.85;}
-.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}.btn-secondary:hover{color:var(--t1);}
-.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
-.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
-.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
-.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
-.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;}
-.search-wrap{position:relative;flex:1;max-width:300px;}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
-.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}.search-input:focus{border-color:var(--a);}.search-input::placeholder{color:var(--t3);}
-.filter-btn{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;white-space:nowrap;}
-.filter-btn:hover{color:var(--t1);}.filter-btn.active{background:var(--a);color:#fff;border-color:var(--a);}
-/* CARDS FOURNISSEURS */
-.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start;}
-.four-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:18px;transition:border-color .15s;}
-.four-card:hover{border-color:var(--a);}
-.four-card.inactive{opacity:.5;}
-.fc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;}
-.fc-av{width:40px;height:40px;border-radius:8px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
-.fc-info{flex:1;min-width:0;}
-.fc-name{font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fc-cat{font-size:11px;color:var(--t3);margin-top:2px;}
-.fc-actions{display:flex;gap:4px;flex-shrink:0;}
-.act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
-.act-btn:hover{background:var(--bg3);color:var(--t1);}.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
-.act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.stars{display:flex;gap:2px;margin-bottom:12px;}
-.star{font-size:13px;color:var(--w);}.star.off{color:var(--bg4);}
-.fc-fields{display:flex;flex-direction:column;gap:6px;}
-.fc-field{display:flex;align-items:center;gap:8px;font-size:12px;}
-.fc-fl{color:var(--t3);width:80px;flex-shrink:0;font-size:11px;}
-.fc-fv{color:var(--t1);}
-.fc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--ln);}
-.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;}
-.tag-ok{background:rgba(52,211,153,.12);color:var(--ok);}
-.tag-off{background:var(--bg4);color:var(--t3);}
-.toggle-actif{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);cursor:pointer;}
-.tog{width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;}
-.tog.on{background:var(--ok);border-color:var(--ok);}
-.tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
-.tog.on .tog-thumb{transform:translateX(14px);}
-.panel-overlay{display:none;}.panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;left:0;right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;}.panel.open{transform:translateX(0);}
-.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
-.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}.panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:32px 40px;}.panel-footer{padding:16px 40px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-shrink:0;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
-.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:22px 26px;}
-.form-section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-.form-section-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.form-section-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;}
-.form-section-head span{font-size:14px;font-weight:600;color:var(--t1);}
-.form-section .fg{margin-bottom:14px;}
-.form-section .fg:last-child{margin-bottom:0;}
-@media(max-width:1100px){.form-grid{grid-template-columns:1fr;max-width:640px;margin:0 auto;}}
-.fg{margin-bottom:13px;}.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}.fg textarea{resize:vertical;min-height:60px;}.fg select option{background:var(--bg3);}
-.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
-.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
-.star-pick{display:flex;gap:4px;cursor:pointer;}.sp{font-size:20px;color:var(--bg4);transition:color .1s;}.sp.on{color:var(--w);}
-.empty-grid{padding:60px 0;text-align:center;grid-column:1/-1;}
-.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}.empty-sub{font-size:12px;color:var(--t3);}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
-.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
-.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.cards-wrap{grid-template-columns:1fr;}}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a); font-weight:500;}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
 
+.page-head{padding:26px 28px 0; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; flex-shrink:0;}
+.ph-left h1{font-size:27px; font-weight:600; letter-spacing:-.03em; color:var(--t1);}
+.ph-resume{font-size:13.5px; color:var(--t2); margin-top:4px;}
+.ph-resume b{color:var(--t1); font-weight:600;}
+.ph-resume .alerte{color:var(--w); font-weight:600;}
+.ph-right{display:flex; gap:8px; flex-wrap:wrap;}
 
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; cursor:pointer;
+  font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s;}
+.btn svg{width:14px; height:14px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.btn-secondary:hover{background:var(--bg4);}
+.btn-danger{background:rgba(200,54,44,.1); color:var(--d); border:1px solid rgba(200,54,44,.2);}
+.btn-danger:hover{background:rgba(200,54,44,.18);}
+.btn:disabled{opacity:.45; cursor:default;}
 
-/* CHARGES */
-.charge-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--ln);transition:background .1s;}
-.charge-row:hover{background:var(--bg2);}
-.charge-row:last-child{border-bottom:none;}
-.charge-row.inactive{opacity:.45;}
-.cr-ico{width:34px;height:34px;border-radius:8px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.cr-main{flex:1;min-width:0;}
-.cr-lib{font-size:13px;font-weight:500;color:var(--t1);}
-.cr-cat{font-size:11px;color:var(--t3);margin-top:1px;}
-.cr-freq{font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;background:var(--bg4);color:var(--t2);white-space:nowrap;}
-.cr-mensuel{font-size:13px;font-weight:600;color:var(--t1);text-align:right;min-width:90px;}
-.cr-mensuel small{font-size:10px;color:var(--t3);font-weight:400;display:block;}
-.cr-actions{display:flex;gap:3px;opacity:0;transition:opacity .12s;}
-.charge-row:hover .cr-actions{opacity:1;}
-.cr-tog{width:30px;height:16px;border-radius:99px;background:var(--bg4);border:1px solid var(--ln2);position:relative;cursor:pointer;transition:all .2s;flex-shrink:0;}
-.cr-tog.on{background:var(--ok);border-color:var(--ok);}
-.cr-tog-thumb{width:10px;height:10px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;}
-.cr-tog.on .cr-tog-thumb{transform:translateX(14px);}
-.total-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--bg2);border:1px solid var(--ln2);border-radius:10px;margin:0 24px 16px;}
-.tb-lbl{font-size:12px;color:var(--t2);}
-.tb-amount{font-size:24px;font-weight:600;color:var(--t1);letter-spacing:-.5px;}
-.tb-amount small{font-size:13px;color:var(--t3);font-weight:400;}
+/* ── Atelier : rail · formulaire · aperçu ── */
+.at{flex:1; display:grid; grid-template-columns:250px minmax(0,1fr) 330px; gap:16px; padding:18px 28px 28px; overflow:hidden; min-height:0;}
+.at-rail-col{display:flex; flex-direction:column; gap:9px; min-height:0; overflow:hidden;}
+.at-form-col,.at-prev{overflow-y:auto; min-height:0;}
+.at-rail{flex:1; overflow-y:auto; min-height:0; display:flex; flex-direction:column; gap:7px; padding-right:2px;}
+.rail-srch{position:relative; flex-shrink:0;}
+.rail-srch svg{position:absolute; left:11px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.rail-srch input{width:100%; background:var(--bg2); border:1px solid transparent; border-radius:11px; padding:9px 12px 9px 33px; font-family:inherit; font-size:13px; color:var(--t1); outline:none; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.14s;}
+.rail-srch input:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.rail-srch input::placeholder{color:var(--t3);}
 
-/* TABLEAU PRINCIPAL */
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
-.empty{padding:60px 24px;text-align:center;}
-.actions{display:flex;align-items:center;gap:3px;opacity:0;}
-.table tr:hover .actions{opacity:1;}
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.table{width:100%;border-collapse:collapse;}
-.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
+.rail-lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); padding:6px 3px 2px; display:flex; gap:7px; align-items:baseline;}
+.rail-lab i{font-style:normal; font-size:10.5px; font-weight:600; padding:1px 7px; border-radius:980px; background:var(--bg3); color:var(--t3);}
+.rail-lab i.hot{background:rgba(178,94,9,.12); color:var(--w);}
+[data-mode="dark"] .rail-lab i.hot{background:rgba(251,191,36,.16);}
+.rail-item{background:var(--bg2); border:none; border-radius:12px; padding:10px 12px; box-shadow:0 1px 2px rgba(0,0,0,.05); display:flex; flex-direction:column; gap:3px; cursor:pointer; text-align:left; font-family:inherit; border-left:3px solid transparent; transition:.12s; width:100%;}
+.rail-item:hover{background:var(--bg3);}
+.rail-item.on{background:var(--ad); border-left-color:var(--a);}
+.rail-item.v-a_confirmer{border-left-color:var(--w);}
+.rail-item.v-reparable{border-left-color:var(--ok);}
+.rail-item.v-non_reparable{border-left-color:var(--d);}
+.rail-item.on.v-a_confirmer,.rail-item.on.v-reparable,.rail-item.on.v-non_reparable{border-left-color:var(--a);}
+.rail-item b{font-size:12.5px; font-weight:500; color:var(--t1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.rail-item em{font-style:normal; font-size:11.5px; color:var(--t3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.rail-item:focus-visible{outline:2px solid var(--a); outline-offset:2px;}
+.rail-new{border:1px dashed var(--ln2); border-radius:12px; padding:10px; text-align:center; font-size:12.5px; color:var(--a); background:none; font-family:inherit; cursor:pointer; margin-top:4px;}
+.rail-new:hover{background:var(--ad); border-color:var(--a);}
+.rail-vide{font-size:12.5px; color:var(--t3); padding:10px 3px; line-height:1.5;}
 
-/* FACTURES SPÉCIFIQUE */
-.statut-fac{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;white-space:nowrap;}
-.sf-brouillon{background:rgba(139,139,160,0.15);color:#8b8ba0;}
-.sf-envoyee{background:rgba(59,130,246,0.15);color:#3b82f6;}
-.sf-payee{background:rgba(52,211,153,0.15);color:#34d399;}
-.sf-accepte{background:rgba(52,211,153,0.15);color:#34d399;}
-.sf-envoye{background:rgba(59,130,246,0.15);color:#3b82f6;}
-.sf-refuse{background:rgba(248,113,113,0.15);color:#f87171;}
-.sf-expire{background:rgba(251,146,60,0.15);color:#fb923c;}
-.sf-retard{background:rgba(248,113,113,0.15);color:#f87171;}
-.sf-annulee{background:rgba(107,114,128,0.15);color:#6b7280;}
-/* LIGNES DOCUMENT */
-.lignes-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
-.lignes-table th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:6px 8px;border-bottom:1px solid var(--ln);}
-.lignes-table td{padding:4px;}
-.lignes-table input{width:100%;padding:9px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;}
-.lignes-table input:focus{border-color:var(--a);box-shadow:0 0 0 2px rgba(0,82,204,0.15);}
-.lignes-table input.l-total{font-weight:700;background:var(--bg4);color:var(--t1);cursor:default;text-align:right;}
-.lignes-table input.l-qte,.lignes-table input.l-prix{text-align:right;font-weight:500;}
-.ligne-del{width:28px;height:28px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;}
-.ligne-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
-.ligne-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.add-ligne{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px dashed var(--ln2);border-radius:6px;background:none;color:var(--t2);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;}
-.add-ligne:hover{border-color:var(--a);color:var(--a);}
-.add-ligne svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.totaux-box{margin-top:14px;padding:14px;background:var(--bg3);border-radius:8px;}
-.tot-row{display:flex;justify-content:space-between;font-size:13px;color:var(--t2);margin-bottom:6px;}
-.tot-row.final{font-size:17px;font-weight:600;color:var(--t1);border-top:1px solid var(--ln2);padding-top:8px;margin-top:8px;}
-/* APERÇU PDF MODAL */
-.pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:80px 20px 40px;}
-.email-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
-.email-box{background:var(--bg1);border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;}
-.email-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--ln);}
-.email-head span{font-size:15px;font-weight:600;color:var(--t1);}
-.email-close{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;line-height:1;padding:0;}
-.email-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
-.email-body .fg label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
-.email-body input,.email-body textarea{width:100%;padding:9px 11px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;color:var(--t1);font-size:13px;font-family:inherit;box-sizing:border-box;}
-.email-body textarea{resize:vertical;line-height:1.5;}
-.email-attach{font-size:11px;color:var(--t3);}
-.email-foot{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--ln);}
+.ref{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:600; color:var(--a); background:var(--ad); padding:2px 7px; border-radius:6px; white-space:nowrap; align-self:flex-start;}
+
+/* ── Formulaire central ── */
+.at-form{background:var(--bg2); border-radius:var(--radius); padding:16px 20px 20px; box-shadow:0 1px 2px rgba(0,0,0,.05); display:flex; flex-direction:column; gap:13px;}
+.at-form-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.at-form-top h2{font-size:16px; font-weight:600; letter-spacing:-.02em; color:var(--t1); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.at-form-top .spacer{margin-left:auto;}
+.grp-lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); margin-top:3px;}
+.sep{height:1px; background:var(--ln);}
+.fg{margin:0;}
+.fg label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.duo{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+.at-form input[type=text],.at-form input[type=email],.at-form input[type=tel],.at-form input[type=number],.at-form input[type=date],.at-form select,.at-form textarea{
+  width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px;
+  padding:9px 12px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; transition:.14s;
+}
+.at-form input:focus,.at-form select:focus,.at-form textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.at-form textarea{resize:vertical; min-height:74px; line-height:1.55;}
+.at-form input::placeholder,.at-form textarea::placeholder{color:var(--t3);}
+.at-form select option{background:var(--bg2);}
+.at-form input[readonly]{opacity:.6;}
+
+.verdicts{display:flex; gap:8px;}
+.verdicts button{flex:1; font-family:inherit; font-size:12.5px; padding:9px 6px; border-radius:11px; background:var(--bg3); color:var(--t2); border:1px solid transparent; cursor:pointer; transition:.12s;}
+.verdicts button:hover{color:var(--t1);}
+.verdicts button.on{font-weight:600;}
+.verdicts button.on[data-v="a_confirmer"]{background:rgba(178,94,9,.12); color:var(--w); border-color:currentColor;}
+.verdicts button.on[data-v="reparable"]{background:rgba(26,138,82,.11); color:var(--ok); border-color:currentColor;}
+.verdicts button.on[data-v="non_reparable"]{background:rgba(200,54,44,.1); color:var(--d); border-color:currentColor;}
+[data-mode="dark"] .verdicts button.on[data-v="a_confirmer"]{background:rgba(251,191,36,.16);}
+[data-mode="dark"] .verdicts button.on[data-v="reparable"]{background:rgba(52,211,153,.16);}
+[data-mode="dark"] .verdicts button.on[data-v="non_reparable"]{background:rgba(248,113,113,.14);}
+
+.at-acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px;}
+.at-acts .btn{flex:1; min-width:120px;}
+.dirty{font-size:12px; color:var(--w); font-weight:500;}
+
+/* ── Aperçu du rapport ── */
+.at-prev{display:flex; flex-direction:column; gap:10px;}
+.prev-card{background:var(--bg2); border-radius:var(--radius); padding:12px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.prev-lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); margin-bottom:9px; display:flex; align-items:baseline; gap:7px;}
+.prev-lab span{font-weight:400; letter-spacing:0; text-transform:none; font-size:11.5px; color:var(--t3); margin-left:auto;}
+.a4-wrap{width:100%; aspect-ratio:210/297; overflow:hidden; border:1px solid var(--ln); border-radius:6px; background:#fff; position:relative;}
+.a4-scale{position:absolute; top:0; left:0; width:210mm; transform-origin:top left; background:#fff;}
+.prev-acts{display:flex; gap:7px; margin-top:10px;}
+.prev-acts .btn{flex:1; min-width:0; padding:9px 8px; font-size:12.5px;}
+.prev-note{font-size:12px; color:var(--t3); line-height:1.5; padding:0 2px;}
+.prev-ouvrir,.prev-fermer{display:none;}
+.prev-lien{font-size:12.5px; color:var(--ok); font-weight:500;}
+
+/* ── Fenêtres PDF et email ── */
+.pdf-overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); z-index:400; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:78px 20px 40px;}
 .pdf-overlay.open{display:flex;}
-.pdf-modal{background:#fff;width:210mm;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;transform-origin:top center;}
+.pdf-modal{background:#fff; width:210mm; max-width:100%; box-shadow:0 20px 60px rgba(0,0,0,.4); position:relative; transform-origin:top center; border-radius:4px; overflow:hidden;}
 @media(max-width:900px){.pdf-modal{transform:scale(.7);}}
 @media(max-width:680px){.pdf-modal{transform:scale(.45);}}
-.pdf-actions{position:fixed;top:20px;right:30px;display:flex;gap:8px;z-index:401;}
+.pdf-actions{position:fixed; top:18px; right:22px; display:flex; gap:8px; z-index:401; flex-wrap:wrap;}
+
+.email-overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); z-index:500; display:none; align-items:center; justify-content:center; padding:20px;}
+/* Le fond utilisait var(--bg1), un jeton qui n'existe nulle part dans l'ERP :
+   la fenêtre s'affichait donc transparente sur le voile sombre. */
+.email-box{background:var(--bg2); border-radius:var(--radius); width:100%; max-width:540px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,.35);}
+.email-head{display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--ln);}
+.email-head span{font-size:15px; font-weight:600; color:var(--t1);}
+.email-close{background:none; border:none; color:var(--t3); font-size:22px; cursor:pointer; line-height:1; padding:0 4px;}
+.email-close:hover{color:var(--t1);}
+.email-body{padding:20px; display:flex; flex-direction:column; gap:14px;}
+.email-body label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.email-body input,.email-body textarea{width:100%; padding:9px 12px; background:var(--bg3); border:1px solid transparent; border-radius:10px; color:var(--t1); font-size:13.5px; font-family:inherit; box-sizing:border-box; outline:none;}
+.email-body input:focus,.email-body textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.email-body textarea{resize:vertical; line-height:1.55;}
+.email-attach{font-size:12px; color:var(--t3); line-height:1.5;}
+.email-foot{display:flex; gap:8px; padding:14px 20px; border-top:1px solid var(--ln);}
+
+/* ── État vide ── */
+.vide{background:var(--bg2); border-radius:var(--radius); padding:46px 24px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.vide-ico{width:52px; height:52px; border-radius:15px; background:var(--ad); color:var(--a); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+.vide-ico svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+.vide h3{font-size:15px; font-weight:600; color:var(--t1); margin-bottom:6px;}
+.vide p{font-size:13px; color:var(--t2); line-height:1.6; max-width:42ch; margin:0 auto;}
+
+/* ── Toast et chargement ── */
+.toast{position:fixed; bottom:22px; right:22px; background:var(--bg2); border:1px solid var(--ln2); border-radius:12px; padding:11px 17px; font-size:13px; color:var(--t1); box-shadow:0 10px 30px rgba(0,0,0,.14); z-index:999; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; max-width:min(380px,calc(100vw - 44px));}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast.ok{border-color:rgba(26,138,82,.34); color:var(--ok);}
+.toast.err{border-color:rgba(200,54,44,.34); color:var(--d);}
+.loader{display:flex; align-items:center; justify-content:center; height:100%; gap:9px; font-size:13px; color:var(--t3);}
+.spin{width:15px; height:15px; border:1.6px solid var(--ln2); border-top-color:var(--a); border-radius:50%; animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:1180px){
+  .at{grid-template-columns:220px minmax(0,1fr);}
+  .at-prev{display:none;}
+  .at-prev.ouvert{display:flex; position:fixed; inset:52px 0 0; z-index:180; background:var(--bg); padding:16px; overflow-y:auto;}
+  .prev-ouvrir,.prev-fermer{display:inline-flex;}
+}
+@media(max-width:860px){
+  .at{grid-template-columns:minmax(0,1fr); overflow-y:auto; gap:14px;}
+  .at-rail-col{overflow:visible;}
+  .at-rail{flex:none; flex-direction:row; overflow-x:auto; overflow-y:visible; gap:8px; padding-bottom:4px; scrollbar-width:none;}
+  .at-rail::-webkit-scrollbar{display:none;}
+  .at-rail .rail-lab{display:none;}
+  .rail-item{flex:0 0 190px; min-width:190px;}
+  .rail-new{flex:0 0 150px; margin-top:0;}
+  .at-form-col{overflow:visible;}
+}
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .page-head{padding:20px 16px 0;}
+  .at{padding:14px 16px 24px;}
+  .at-prev.ouvert{inset:48px 0 calc(56px + env(safe-area-inset-bottom, 0px)) 0;}
+  .duo{grid-template-columns:1fr;}
+  .at-form{padding:14px 15px 18px;}
+  .verdicts{flex-direction:column;}
+  .pdf-actions{top:auto; bottom:14px; right:14px; left:14px; justify-content:center;}
+}
+
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
@@ -513,139 +537,159 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.0</div>
+      <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
+
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+
       <div class="page-head">
-        <div class="ph-left"><h1>Diagnostics</h1><p id="ph-sub">— diagnostics</p></div>
-        <div style="display:flex;gap:8px;">
+        <div class="ph-left">
+          <h1>Diagnostics</h1>
+          <p class="ph-resume" id="ph-resume">—</p>
+        </div>
+        <div class="ph-right">
           <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
-          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau diagnostic</button>
+          <button class="btn btn-primary" onclick="nouveauDiagnostic()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau diagnostic</button>
         </div>
       </div>
-      <div class="kpi-strip">
-        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
-          <div style="width:32px;height:32px;border-radius:9px;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-          <div><div class="kpi-label" style="margin-bottom:1px;">Ce mois</div><div class="kpi-val" id="k-paye" style="font-size:19px;">—</div></div>
+
+      <div class="at">
+
+        <!-- Rail : les diagnostics à portée -->
+        <div class="at-rail-col">
+          <div class="rail-srch">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="searchInput" placeholder="N°, client, appareil…" oninput="renderRail()" aria-label="Rechercher un diagnostic"/>
+          </div>
+          <div class="at-rail" id="rail"></div>
         </div>
-        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
-          <div style="width:32px;height:32px;border-radius:9px;background:rgba(245,158,11,.15);color:#f59e0b;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div><div class="kpi-label" style="margin-bottom:1px;">En attente</div><div class="kpi-val" id="k-attente" style="font-size:19px;">—</div></div>
+
+        <!-- Saisie du rapport -->
+        <div class="at-form-col">
+          <div class="at-form">
+            <input type="hidden" id="f-id"/>
+            <input type="hidden" id="f-numero"/>
+
+            <div class="at-form-top">
+              <span class="ref" id="ref-courant">Nouveau</span>
+              <h2 id="titre-courant">Nouveau diagnostic</h2>
+              <span class="spacer"></span>
+              <span class="dirty" id="dirty" style="display:none;">Modifications non enregistrées</span>
+            </div>
+
+            <div class="sep"></div>
+            <div class="grp-lab">Client</div>
+            <div class="fg">
+              <label for="f-client-select">Client existant ou nouveau</label>
+              <select id="f-client-select" onchange="onClientSelect()"><option value="">Nouveau client</option></select>
+            </div>
+            <div class="fg"><label for="f-client">Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+            <div class="duo">
+              <div class="fg"><label for="f-email">Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
+              <div class="fg"><label for="f-tel">Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
+            </div>
+            <div class="fg"><label for="f-adresse">Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+
+            <div class="sep"></div>
+            <div class="grp-lab">Appareil</div>
+            <div class="duo">
+              <div class="fg"><label for="f-appareil">Type d'appareil</label><input type="text" id="f-appareil" placeholder="ex : PC portable"/></div>
+              <div class="fg"><label for="f-modele">Modèle</label><input type="text" id="f-modele" placeholder="ex : Dell XPS 15"/></div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="grp-lab">Diagnostic</div>
+            <div class="fg"><label for="f-probleme">Problème signalé par le client</label><textarea id="f-probleme" placeholder="Ce que le client a décrit…"></textarea></div>
+            <div class="fg"><label for="f-constat">Constat technique</label><textarea id="f-constat" placeholder="Ce que tu as constaté après examen…"></textarea></div>
+            <div class="fg">
+              <label>Verdict</label>
+              <div class="verdicts" id="verdicts">
+                <button type="button" data-v="a_confirmer" onclick="setVerdict('a_confirmer')">À confirmer</button>
+                <button type="button" data-v="reparable" onclick="setVerdict('reparable')">Réparable</button>
+                <button type="button" data-v="non_reparable" onclick="setVerdict('non_reparable')">Non réparable</button>
+              </div>
+              <select id="f-verdict" style="display:none;" tabindex="-1" aria-hidden="true">
+                <option value="a_confirmer">À confirmer avec le client</option>
+                <option value="reparable">Réparable</option>
+                <option value="non_reparable">Non réparable</option>
+              </select>
+            </div>
+            <div class="duo">
+              <div class="fg"><label for="f-prix-estime">Prix estimé si réparation (€)</label><input type="number" id="f-prix-estime" placeholder="0.00" min="0" step="0.01"/></div>
+              <div class="fg"><label for="f-date-emission">Date du diagnostic</label><input type="date" id="f-date-emission"/></div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="grp-lab">Suivi</div>
+            <div class="fg">
+              <label for="f-statut">Statut</label>
+              <select id="f-statut">
+                <option value="nouveau">Nouveau</option>
+                <option value="en_cours">En cours</option>
+                <option value="accepte">Accepté (réparation)</option>
+                <option value="refuse">Refusé</option>
+                <option value="sans_suite">Sans suite</option>
+              </select>
+            </div>
+            <div class="fg"><label for="f-notes">Notes internes</label><textarea id="f-notes" placeholder="Observations complémentaires, non reprises dans le rapport…"></textarea></div>
+
+            <div class="at-acts">
+              <button class="btn btn-secondary prev-ouvrir" onclick="ouvrirApercuLateral()">Voir le rapport</button>
+              <button class="btn btn-secondary" onclick="annulerSaisie()" id="cancelBtn">Annuler</button>
+              <button class="btn btn-primary" onclick="saveDiagnostic()" id="saveBtn">Enregistrer</button>
+            </div>
+            <button class="btn btn-danger" onclick="supprimerCourant()" id="delBtn" style="display:none;">Supprimer ce diagnostic</button>
+          </div>
         </div>
-        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
-          <div style="width:32px;height:32px;border-radius:9px;background:rgba(16,185,129,.15);color:#10b981;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
-          <div><div class="kpi-label" style="margin-bottom:1px;">Conversion</div><div class="kpi-val" id="k-retard" style="font-size:19px;">—</div></div>
-        </div>
-        <div class="kpi" style="display:flex;align-items:center;gap:10px;">
-          <div style="width:32px;height:32px;border-radius:9px;background:var(--bg3);color:var(--t3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></div>
-          <div><div class="kpi-label" style="margin-bottom:1px;">Total</div><div class="kpi-val" id="k-total" style="font-size:19px;">—</div></div>
-        </div>
+
+        <!-- Aperçu du rapport remis au client -->
+        <aside class="at-prev" id="prev">
+          <div class="prev-card">
+            <div class="prev-lab">Aperçu du rapport <span id="prev-etat"></span></div>
+            <div class="a4-wrap" id="a4wrap"><div class="a4-scale" id="apercu"></div></div>
+            <div class="prev-acts">
+              <button class="btn btn-secondary" onclick="ouvrirApercu()" id="sidePreviewBtn">Agrandir</button>
+              <button class="btn btn-secondary" onclick="telechargerPdf()" id="sidePdfBtn">PDF</button>
+              <button class="btn btn-secondary" onclick="preparerEmail()" id="sideSendBtn">Envoyer</button>
+            </div>
+            <div class="prev-acts">
+              <button class="btn btn-primary" onclick="convertirEnReparation()" id="sideConvertBtn">Convertir en réparation</button>
+            </div>
+          </div>
+          <div class="prev-note" id="prev-note"></div>
+          <button class="btn btn-secondary prev-fermer" onclick="fermerApercuLateral()">Fermer l'aperçu</button>
+        </aside>
+
       </div>
-      <div class="toolbar">
-        <div class="search-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="search-input" type="text" id="searchInput" placeholder="N°, client..." oninput="renderCards()"/></div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-      </div>
-      <div class="cards-wrap" id="cardsWrap"></div>
-      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;"><div class="empty-ico">🩺</div><div class="empty-title">Aucun diagnostic</div><div class="empty-sub"><button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;">Créer le premier</button></div></div>
     </div>
   </div>
 </div>
 
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-<div class="panel" id="panel">
-  <div class="panel-head">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="panel-close" onclick="closePanel()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-      <span class="panel-title" id="panelTitle">Nouveau diagnostic</span>
-    </div>
-  </div>
-  <div class="panel-body">
-    <input type="hidden" id="f-id"/>
-    <input type="hidden" id="f-numero"/>
-    <div class="form-grid">
-
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></div><span>Client</span></div>
-        <div class="fg">
-          <label>Client existant ou nouveau</label>
-          <select id="f-client-select" onchange="onClientSelect()"><option value="">➕ Nouveau client</option></select>
-        </div>
-        <div class="fg"><label>Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
-        <div class="fg-row">
-          <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
-          <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32..."/></div>
-        </div>
-        <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span>Appareil</span></div>
-        <div class="fg-row">
-          <div class="fg"><label>Type d'appareil</label><input type="text" id="f-appareil" placeholder="ex : PC portable"/></div>
-          <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : Dell XPS 15"/></div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span>Diagnostic</span></div>
-        <div class="fg"><label>Problème signalé par le client</label><textarea id="f-probleme" placeholder="Ce que le client a décrit..."></textarea></div>
-        <div class="fg"><label>Constat technique</label><textarea id="f-constat" placeholder="Ce que tu as constaté après examen..."></textarea></div>
-        <div class="fg"><label>Verdict</label>
-          <select id="f-verdict">
-            <option value="a_confirmer">À confirmer avec le client</option>
-            <option value="reparable">Réparable</option>
-            <option value="non_reparable">Non réparable</option>
-          </select>
-        </div>
-        <div class="fg"><label>Prix estimé si réparation (€)</label><input type="number" id="f-prix-estime" placeholder="0.00" min="0" step="0.01"/></div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(245,158,11,.15);color:#f59e0b;"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Détails</span></div>
-        <div class="fg"><label>Date du diagnostic</label><input type="date" id="f-date-emission"/></div>
-        <div class="fg"><label>Statut</label><select id="f-statut">
-          <option value="nouveau">Nouveau</option>
-          <option value="en_cours">En cours</option>
-          <option value="accepte">Accepté (réparation)</option>
-          <option value="refuse">Refusé</option>
-          <option value="sans_suite">Sans suite</option>
-        </select></div>
-        <div class="fg"><label>Notes internes</label><textarea id="f-notes" placeholder="Observations complémentaires..."></textarea></div>
-      </div>
-
-    </div>
-  </div>
-  <div class="panel-footer">
-    <button class="btn btn-secondary" onclick="closePanel()" style="padding:9px 18px;">Annuler</button>
-    <button class="btn btn-primary" onclick="saveDiagnostic()" style="padding:9px 22px;" id="saveBtn">Enregistrer</button>
-  </div>
-</div>
-
-<!-- APERÇU PDF -->
+<!-- APERÇU PLEIN ÉCRAN DU RAPPORT -->
 <div class="pdf-overlay" id="pdfOverlay">
   <div class="pdf-actions">
-    <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;">Fermer</button>
-    <button class="btn btn-secondary" onclick="downloadPdf()" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
-    <button class="btn btn-secondary" onclick="convertirEnReparation()" id="convertRepBtn" style="background:#fff;"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Convertir en réparation</button>
-    <button class="btn btn-primary" onclick="sendPdf()" id="sendPdfBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
+    <button class="btn btn-secondary" onclick="closePdf()" style="background:#fff;color:#1d1d1f;">Fermer</button>
+    <button class="btn btn-secondary" onclick="telechargerPdf()" style="background:#fff;color:#1d1d1f;"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Télécharger</button>
+    <button class="btn btn-primary" onclick="preparerEmail()" id="pdfSendBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
   <div class="pdf-modal" id="pdfModal"></div>
 </div>
 
+<!-- ENVOI PAR EMAIL -->
 <div class="email-overlay" id="emailOverlay">
   <div class="email-box">
-    <div class="email-head"><span>Aperçu de l'email</span><button class="email-close" onclick="closeEmailModal()">×</button></div>
+    <div class="email-head"><span>Aperçu de l'email</span><button class="email-close" onclick="closeEmailModal()" aria-label="Fermer">×</button></div>
     <div class="email-body">
-      <div class="fg"><label>Destinataire</label><input type="email" id="em-to"/></div>
-      <div class="fg"><label>Objet</label><input type="text" id="em-subject"/></div>
-      <div class="fg"><label>Message</label><textarea id="em-body" rows="9"></textarea></div>
-      <div class="email-attach">📎 Pièce jointe : <span id="em-pdfname"></span> · la signature IT Soluce est ajoutée automatiquement à l'envoi</div>
+      <div class="fg"><label for="em-to">Destinataire</label><input type="email" id="em-to"/></div>
+      <div class="fg"><label for="em-subject">Objet</label><input type="text" id="em-subject"/></div>
+      <div class="fg"><label for="em-body">Message</label><textarea id="em-body" rows="9"></textarea></div>
+      <div class="email-attach">Pièce jointe : <span id="em-pdfname"></span> · la signature IT Soluce est ajoutée automatiquement à l'envoi.</div>
     </div>
     <div class="email-foot">
       <button class="btn btn-secondary" onclick="closeEmailModal()" style="flex:1;">Annuler</button>
-      <button class="btn btn-primary" onclick="confirmerEnvoiEmail()" id="confirmSendBtn" style="flex:2;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer</button>
+      <button class="btn btn-primary" onclick="confirmerEnvoiEmail()" id="confirmSendBtn" style="flex:2;"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer</button>
     </div>
   </div>
 </div>
@@ -653,45 +697,44 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m;document.documentElement.setAttribute('data-mode',e);const lv=e==='light';const v=(a,b)=>lv?a:b;document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'));document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'));document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'));document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'));document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'));document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'));document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'));document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'));document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'));}
-function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m);}
-const sm=localStorage.getItem('erp-m')||'auto';document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm));applyMode(sm);
-setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto');},60000);
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d');
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd);}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3500);}
-
-
-// ─── PANNEAU ───
-function openPanel(f){
-  f=f||null;
-  document.getElementById('panelTitle').textContent=f?'Modifier le diagnostic':'Nouveau diagnostic';
-  document.getElementById('saveBtn').textContent=f?'Mettre à jour':'Enregistrer';
-  document.getElementById('f-id').value=f?f.id:'';
-  document.getElementById('f-numero').value=f?f.numero:'';
-  document.getElementById('f-client').value=f?f.client_nom:'';
-  document.getElementById('f-email').value=f?(f.client_email||''):'';
-  document.getElementById('f-tel').value=f?(f.client_telephone||''):'';
-  document.getElementById('f-adresse').value=f?(f.client_adresse||''):'';
-  document.getElementById('f-appareil').value=f?(f.appareil||''):'';
-  document.getElementById('f-modele').value=f?(f.modele||''):'';
-  document.getElementById('f-probleme').value=f?(f.probleme_signale||''):'';
-  document.getElementById('f-constat').value=f?(f.constat||''):'';
-  document.getElementById('f-verdict').value=f?(f.verdict||'a_confirmer'):'a_confirmer';
-  document.getElementById('f-prix-estime').value=f?(f.prix_estime||''):'';
-  document.getElementById('f-statut').value=f?f.statut:'nouveau';
-  document.getElementById('f-notes').value=f?(f.notes||''):'';
-  document.getElementById('f-date-emission').value=f?(f.date_emission||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10);
-  // Sélecteur client
-  if(window.fillClientSelect)window.fillClientSelect();
-  document.getElementById('f-client-select').value='';
-  ['f-client','f-email','f-tel','f-adresse'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}});
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('panel').classList.add('open');
+/* Thème et accent — mêmes valeurs que les autres pages refondues. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc';return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
 }
-function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open');}
-function closePdf(){document.getElementById('pdfOverlay').classList.remove('open');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();closePdf();}});
+function applyMode(m){
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'));  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'));  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)')); s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'));  s('--t2', v('#6e6e73','#98989d')); s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'));  s('--w',  v('#b25e09','#fbbf24'));  s('--d',  v('#c8362c','#f87171'))
+  s('--vio',v('#7c3aed','#a78bfa'))
+  applyAccent(accentBase)
+}
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
+
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='toast show '+(type==='err'?'err':'ok')
+  setTimeout(()=>t.className='toast',3400)
+}
 </script>
 
 <script type="module">
@@ -700,71 +743,243 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-// Config entreprise (template)
+/* Coordonnées par défaut : uniquement un repli si la table settings est vide.
+   La source de vérité est la page Gestion. */
 const ENTREPRISE={
   nom:'IT Soluce',
-  adresse:'Chaussée d\'Hondzocht 164',
+  adresse:"Chaussée d'Hondzocht 164",
   cp_ville:'1480 Tubize',
   email:'contact@itsoluce.be',
   tel:'+32 474 05 66 59',
   site:'www.itsoluce.be',
   bce:'BE 1027.026.003',
-  iban:'BE02 7320 8265 2640',
   logo:'https://itsoluce.be/img/logo-full.png',
-  mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
-  conditions:'Paiement comptant à réception de la facture.',
-  cgv:[
-    ['Validité de l\'offre','Le présent devis est valable durant la période indiquée ci-dessus. Passé ce délai, IT Soluce se réserve le droit de réviser les prix, notamment en fonction de la disponibilité et du coût des pièces.'],
-    ['Acceptation','Le devis devient ferme et vaut commande dès réception de l\'accord écrit du client (email, signature ou confirmation explicite). Toute intervention ne débute qu\'après cette acceptation.'],
-    ['Prix et pièces','Les prix sont exprimés en euros, TVA non applicable (art. 56bis du Code de la TVA). Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord.'],
-    ['Garantie','Les réparations réalisées bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre), hors casse, oxydation ou mauvaise utilisation. La garantie légale de conformité reste applicable sur les pièces neuves.'],
-    ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne saurait être tenu responsable d\'une perte de données. Sa responsabilité est limitée au montant de la prestation.'],
-    ['Droit applicable','Le présent devis est soumis au droit belge. En cas de litige, les tribunaux du Brabant wallon sont seuls compétents. Le consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
-  ]
+  mention_tva:'TVA non applicable, art. 56bis du Code de la TVA'
 }
 
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;">Réessayer</button></div>`;}
+function showError(msg){
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('mainContent').innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:24px;">
+      <div style="font-size:15px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
+      <div style="font-size:13px;color:var(--t2);max-width:42ch;text-align:center;line-height:1.6;">${escHtml(msg)}</div>
+      <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:4px;">Réessayer</button>
+    </div>`
+}
+
+const EUR=new Intl.NumberFormat('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})
+function eur(v){return EUR.format(Number(v)||0)+' €'}
+function dateCourte(iso){
+  if(!iso)return '—'
+  const d=new Date(iso)
+  return isNaN(d)?'—':d.toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
+}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+const VERDICTS={
+  a_confirmer:  {label:'À confirmer avec le client',court:'À confirmer',couleur:'#d97706'},
+  reparable:    {label:'Réparable',court:'Réparable',couleur:'#16a34a'},
+  non_reparable:{label:'Non réparable',court:'Non réparable',couleur:'#dc2626'}
+}
+const STATUTS={
+  nouveau:{label:'Nouveau'}, en_cours:{label:'En cours'},
+  accepte:{label:'Accepté'}, refuse:{label:'Refusé'}, sans_suite:{label:'Sans suite'}
+}
+const CLOS=['accepte','refuse','sans_suite']
 
 try {
+
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
 
-
-
 let allDiagnostics=[]
 let allClients=[]
-let activeFilter='Tous'
-let currentPdfDoc=null
+let courant=null      // diagnostic en cours d'édition, null = nouveau
+let sale=false        // modifications non enregistrées
+let instantane=''     // état du formulaire au dernier chargement
 
-async function nextNumero(cle, format){
-  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
-  const nouvelle=(cpt?.valeur||0)+1
-  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
-  if(format==='facture'){const an=new Date().getFullYear();return `${an}-${String(nouvelle).padStart(4,'0')}`}
-  if(format==='devis'){return `DEV-${String(nouvelle).padStart(4,'0')}`}
-  if(format==='reparation'){return `REP-${String(nouvelle).padStart(4,'0')}`}
-  if(format==='diagnostic'){return `DIAG-${String(nouvelle).padStart(4,'0')}`}
-  return `${String(nouvelle).padStart(4,'0')}`
+/* ─── Coordonnées de l'entreprise : la page Gestion fait foi ─── */
+try{
+  const {data:_set}=await sb.from('settings').select('cle,valeur')
+  const _c={}
+  ;(_set||[]).forEach(r=>{const v=r.valeur==null?'':String(r.valeur).trim();if(v)_c[r.cle]=v})
+  if(_c.entreprise_nom)ENTREPRISE.nom=_c.entreprise_nom
+  if(_c.entreprise_email)ENTREPRISE.email=_c.entreprise_email
+  if(_c.entreprise_telephone)ENTREPRISE.tel=_c.entreprise_telephone
+  if(_c.entreprise_site)ENTREPRISE.site=_c.entreprise_site.replace(/^https?:\/\//,'')
+  if(_c.entreprise_bce)ENTREPRISE.bce=_c.entreprise_bce
+  if(_c.finance_mention_tva)ENTREPRISE.mention_tva=_c.finance_mention_tva
+  if(_c.entreprise_adresse){
+    const i=_c.entreprise_adresse.lastIndexOf(',')
+    if(i>0){ENTREPRISE.adresse=_c.entreprise_adresse.slice(0,i).trim();ENTREPRISE.cp_ville=_c.entreprise_adresse.slice(i+1).trim()}
+    else{ENTREPRISE.adresse=_c.entreprise_adresse;ENTREPRISE.cp_ville=''}
+  }
+}catch(e){console.warn('Coordonnées entreprise : valeurs par défaut conservées.',e)}
+
+/* ─── Numérotation ─── */
+const FORMATS={client:'CLI',reparation:'REP',devis:'DEV',diagnostic:'DIAG'}
+async function nextNumero(cle){
+  const prefixe=FORMATS[cle]
+  const table=({client:'clients',reparation:'reparations',devis:'devis',diagnostic:'diagnostics'})[cle]
+  for(let essai=0;essai<5;essai++){
+    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+    const valeur=(cpt?.valeur||0)+1
+    await sb.from('compteurs').update({valeur}).eq('cle',cle)
+    const numero=cle==='facture'
+      ? `${new Date().getFullYear()}-${String(valeur).padStart(4,'0')}`
+      : `${prefixe}-${String(valeur).padStart(4,'0')}`
+    if(!table)return numero
+    const {count}=await sb.from(table).select('id',{count:'exact',head:true}).eq('numero',numero)
+    if(!count)return numero
+  }
+  return `${prefixe}-${Date.now().toString().slice(-6)}`
 }
 
+/* ─── Chargement ─── */
 async function load(){
   const [rDiag,rCli]=await Promise.all([
-    sb.from('diagnostics').select('*').order('created_at',{ascending:false}),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom')
+    sb.from('diagnostics').select('*',{count:'exact'}).order('created_at',{ascending:false}).limit(2000),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(5000)
   ])
-  if(rDiag.error){showError(rDiag.error.message);return}
+  if(rDiag.error)throw new Error(rDiag.error.message)
   allDiagnostics=rDiag.data||[]
   allClients=rCli.data||[]
-  renderAll()
+  if(typeof rDiag.count==='number'&&rDiag.count>allDiagnostics.length){
+    showToast(`Seuls ${allDiagnostics.length} diagnostics sur ${rDiag.count} ont été chargés.`,'err')
+  }
+  fillClientSelect()
+  majResume()
+  renderRail()
+  chargerDansFormulaire(allDiagnostics[0]||null)
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
+  brancherEcoute()
+  window.addEventListener('resize',ajusterApercu)
 }
 
-window.fillClientSelect=function(){
+function majResume(){
+  const el=document.getElementById('ph-resume')
+  if(!allDiagnostics.length){
+    el.textContent="Aucun diagnostic pour le moment. Crée le premier rapport avec le formulaire."
+    return
+  }
+  const now=new Date()
+  const ceMois=allDiagnostics.filter(d=>{
+    const x=new Date(d.date_emission||d.created_at)
+    return x.getMonth()===now.getMonth()&&x.getFullYear()===now.getFullYear()
+  }).length
+  const attente=allDiagnostics.filter(d=>!CLOS.includes(d.statut)).length
+  const convertis=allDiagnostics.filter(d=>d.converti_reparation_id).length
+  const potentiel=allDiagnostics
+    .filter(d=>!CLOS.includes(d.statut)&&d.verdict==='reparable')
+    .reduce((a,d)=>a+(Number(d.prix_estime)||0),0)
+  const bouts=[`<b>${ceMois} rapport${ceMois>1?'s':''} ce mois</b>`]
+  if(attente)bouts.push(`<span class="alerte">${attente} en attente de réponse</span>`)
+  if(convertis)bouts.push(`${convertis} converti${convertis>1?'s':''} en réparation`)
+  if(potentiel>0)bouts.push(`${eur(potentiel)} de réparations potentielles`)
+  if(bouts.length===1)bouts.push(`${allDiagnostics.length} au total`)
+  el.innerHTML=bouts.join(' · ')
+}
+
+/* ─── Rail ─── */
+window.renderRail=function renderRail(){
+  const rail=document.getElementById('rail')
+  const q=(document.getElementById('searchInput').value||'').toLowerCase().trim()
+  const visibles=allDiagnostics.filter(d=>!q||[d.numero,d.client_nom,d.client_email,d.appareil,d.modele,d.probleme_signale,d.constat]
+    .some(v=>v&&String(v).toLowerCase().includes(q)))
+  const ouverts=visibles.filter(d=>!CLOS.includes(d.statut))
+  const clos=visibles.filter(d=>CLOS.includes(d.statut))
+  const item=d=>{
+    const v=VERDICTS[d.verdict]||VERDICTS.a_confirmer
+    const app=d.modele||d.appareil||'—'
+    return `<button type="button" class="rail-item v-${escHtml(d.verdict||'a_confirmer')}${courant&&courant.id===d.id?' on':''}" onclick="ouvrirDiagnostic(${d.id})">
+      <span class="ref">${escHtml(d.numero||'—')}</span>
+      <b>${escHtml(d.client_nom||'Client inconnu')}</b>
+      <em>${escHtml(app)} · ${dateCourte(d.date_emission||d.created_at)}</em>
+    </button>`
+  }
+  let html=''
+  if(ouverts.length)html+=`<div class="rail-lab">En attente de réponse <i class="${ouverts.length?'hot':''}">${ouverts.length}</i></div>`+ouverts.map(item).join('')
+  if(clos.length)html+=`<div class="rail-lab">Classés <i>${clos.length}</i></div>`+clos.map(item).join('')
+  if(!visibles.length){
+    html+=`<div class="rail-vide">${allDiagnostics.length
+      ? 'Aucun diagnostic ne correspond à cette recherche.'
+      : 'Aucun diagnostic enregistré. Remplis le formulaire pour créer le premier rapport.'}</div>`
+  }
+  html+=`<button type="button" class="rail-new" onclick="nouveauDiagnostic()">+ Nouveau diagnostic</button>`
+  rail.innerHTML=html
+}
+
+/* ─── Formulaire ─── */
+const CHAMPS=['f-client','f-email','f-tel','f-adresse','f-appareil','f-modele','f-probleme','f-constat','f-verdict','f-prix-estime','f-date-emission','f-statut','f-notes']
+function lireFormulaire(){
+  const g=id=>document.getElementById(id).value
+  return {
+    client_nom:g('f-client').trim(),
+    client_email:g('f-email').trim()||null,
+    client_telephone:g('f-tel').trim()||null,
+    client_adresse:g('f-adresse').trim()||null,
+    appareil:g('f-appareil').trim()||null,
+    modele:g('f-modele').trim()||null,
+    probleme_signale:g('f-probleme').trim()||null,
+    constat:g('f-constat').trim()||null,
+    verdict:g('f-verdict'),
+    prix_estime:g('f-prix-estime')?Number(g('f-prix-estime')):null,
+    date_emission:g('f-date-emission')||ymd(new Date()),
+    statut:g('f-statut'),
+    notes:g('f-notes').trim()||null
+  }
+}
+function signature(){return JSON.stringify(lireFormulaire())+'|'+document.getElementById('f-client-select').value}
+
+function chargerDansFormulaire(d){
+  courant=d||null
+  const set=(id,v)=>{document.getElementById(id).value=v==null?'':v}
+  set('f-id',d?d.id:'')
+  set('f-numero',d?d.numero:'')
+  set('f-client',d?d.client_nom:'')
+  set('f-email',d?d.client_email:'')
+  set('f-tel',d?d.client_telephone:'')
+  set('f-adresse',d?d.client_adresse:'')
+  set('f-appareil',d?d.appareil:'')
+  set('f-modele',d?d.modele:'')
+  set('f-probleme',d?d.probleme_signale:'')
+  set('f-constat',d?d.constat:'')
+  set('f-verdict',d?(d.verdict||'a_confirmer'):'a_confirmer')
+  set('f-prix-estime',d&&d.prix_estime!=null?d.prix_estime:'')
+  set('f-date-emission',d&&d.date_emission?d.date_emission:ymd(new Date()))
+  set('f-statut',d?(d.statut||'nouveau'):'nouveau')
+  set('f-notes',d?d.notes:'')
+
+  // Le sélecteur porte le client du diagnostic ; il n'est plus remis à vide,
+  // ce qui effaçait le lien client à chaque enregistrement.
+  const csel=document.getElementById('f-client-select')
+  const cid=d&&d.client_id?String(d.client_id):''
+  csel.value=[...csel.options].some(o=>o.value===cid)?cid:''
+  verrouillerClient(!!csel.value)
+
+  document.getElementById('ref-courant').textContent=d?(d.numero||'—'):'Nouveau'
+  document.getElementById('titre-courant').textContent=d?(d.client_nom||'Diagnostic'):'Nouveau diagnostic'
+  document.getElementById('saveBtn').textContent=d?'Mettre à jour':'Enregistrer'
+  document.getElementById('delBtn').style.display=d?'inline-flex':'none'
+  majVerdictBoutons()
+  instantane=signature()
+  marquerPropre()
+  renderRail()
+  rafraichirApercu()
+}
+
+function verrouillerClient(verrou){
+  ;['f-client','f-email','f-tel','f-adresse'].forEach(id=>{
+    const el=document.getElementById(id)
+    if(el)el.readOnly=verrou
+  })
+}
+
+function fillClientSelect(){
   const sel=document.getElementById('f-client-select')
-  if(!sel)return
-  sel.innerHTML='<option value="">➕ Nouveau client</option>'+
-    allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-email="${escHtml(c.email)}" data-tel="${escHtml(c.telephone)}" data-adr="${escHtml(c.adresse)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
+  sel.innerHTML='<option value="">Nouveau client</option>'+
+    allClients.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom||'')}" data-email="${escHtml(c.email||'')}" data-tel="${escHtml(c.telephone||'')}" data-adr="${escHtml(c.adresse||'')}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom||'')}</option>`).join('')
 }
 window.onClientSelect=function(){
   const sel=document.getElementById('f-client-select')
@@ -774,192 +989,214 @@ window.onClientSelect=function(){
     document.getElementById('f-email').value=opt.dataset.email||''
     document.getElementById('f-tel').value=opt.dataset.tel||''
     document.getElementById('f-adresse').value=opt.dataset.adr||''
+    verrouillerClient(true)
+  }else{
+    ;['f-client','f-email','f-tel','f-adresse'].forEach(id=>{document.getElementById(id).value=''})
+    verrouillerClient(false)
   }
+  surModification()
 }
 
-function renderAll(){updateKPIs();renderFilters();renderCards()}
-
-function updateKPIs(){
-  const now=new Date()
-  const moisDiag=allDiagnostics.filter(f=>{const d=new Date(f.date_emission||f.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
-  const enAttente=allDiagnostics.filter(f=>['nouveau','en_cours'].includes(f.statut)).length
-  const clotures=allDiagnostics.filter(f=>['accepte','refuse','sans_suite'].includes(f.statut)).length
-  const acceptes=allDiagnostics.filter(f=>f.statut==='accepte').length
-  const taux=clotures>0?Math.round((acceptes/clotures)*100):0
-  document.getElementById('k-paye').textContent=moisDiag.length
-  document.getElementById('k-attente').textContent=enAttente
-  document.getElementById('k-retard').textContent=taux+'%'
-  document.getElementById('k-total').textContent=allDiagnostics.length
-  document.getElementById('ph-sub').textContent=`${allDiagnostics.length} diagnostic${allDiagnostics.length>1?'s':''}`
+window.setVerdict=function(v){
+  document.getElementById('f-verdict').value=v
+  majVerdictBoutons()
+  surModification()
+}
+function majVerdictBoutons(){
+  const v=document.getElementById('f-verdict').value
+  document.querySelectorAll('#verdicts button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))
 }
 
-function renderFilters(){
-  const all=['Tous','nouveau','en_cours','accepte','refuse','sans_suite']
-  const labels={'Tous':'Tous','nouveau':'Nouveaux','en_cours':'En cours','accepte':'Acceptés','refuse':'Refusés','sans_suite':'Sans suite'}
-  const colors={'nouveau':'#8b8ba0','en_cours':'#3b82f6','accepte':'#34d399','refuse':'#f87171','sans_suite':'#fb923c'}
-  document.getElementById('filterBtns').innerHTML=all.map(s=>{
-    const a=activeFilter===s
-    return`<button class="filter-btn ${a?'active':''}" style="${a&&colors[s]?`background:${colors[s]};border-color:${colors[s]};`:''}" onclick="setFilter('${s}')">${labels[s]}</button>`
-  }).join('')
+function marquerPropre(){sale=false;document.getElementById('dirty').style.display='none'}
+function surModification(){
+  sale=signature()!==instantane
+  document.getElementById('dirty').style.display=sale?'':'none'
+  rafraichirApercu()
 }
-window.setFilter=function(f){activeFilter=f;renderFilters();renderCards()}
-
-function renderCards(){
-  const q=document.getElementById('searchInput').value.toLowerCase().trim()
-  const STAT={nouveau:{l:'Nouveau',c:'sf-brouillon'},en_cours:{l:'En cours',c:'sf-envoye'},accepte:{l:'Accepté',c:'sf-accepte'},refuse:{l:'Refusé',c:'sf-refuse'},sans_suite:{l:'Sans suite',c:'sf-expire'}}
-  const VERDICT={
-    reparable:{l:'Réparable',col:'#10b981',ico:'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'},
-    non_reparable:{l:'Non réparable',col:'var(--t3)',ico:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'},
-    a_confirmer:{l:'À confirmer',col:'#f59e0b',ico:'<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'}
-  }
-  let rows=allDiagnostics.filter(f=>{
-    const mf=activeFilter==='Tous'||f.statut===activeFilter
-    const ms=!q||[f.numero,f.client_nom,f.appareil].some(v=>v&&v.toLowerCase().includes(q))
-    return mf&&ms
+function brancherEcoute(){
+  CHAMPS.forEach(id=>{
+    const el=document.getElementById(id)
+    if(!el)return
+    el.addEventListener('input',surModification)
+    el.addEventListener('change',surModification)
   })
-  const wrap=document.getElementById('cardsWrap'),empty=document.getElementById('emptyState')
-  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  wrap.innerHTML=rows.map(f=>{
-    const st=STAT[f.statut]||STAT.nouveau
-    const v=VERDICT[f.verdict]||{l:'—',col:'var(--t3)',ico:''}
-    const dim=(f.statut==='refuse'||f.statut==='sans_suite')?'opacity:.6;':''
-    const appareilLbl=f.modele||f.appareil||'—'
-    return`<div class="four-card" style="border-left:3px solid ${v.col};border-radius:0 10px 10px 0;${dim}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
-        <div style="min-width:0;">
-          <div style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t1);">${escHtml(f.numero)}${f.email_envoye?' <span title="Envoyé par email" style="color:var(--ok);">✉</span>':''}</div>
-          <div style="font-weight:500;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(f.client_nom)}</div>
-        </div>
-        <span class="statut-fac ${st.c}" style="flex-shrink:0;">${st.l}</span>
-      </div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:6px;">${escHtml(appareilLbl)}</div>
-      <div style="display:flex;align-items:center;gap:5px;color:${v.col};">
-        <span style="width:13px;height:13px;display:inline-flex;">${v.ico}</span>
-        <span style="font-size:12px;font-weight:500;">${v.l}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
-        <span style="font-weight:600;">${f.prix_estime?Number(f.prix_estime).toFixed(2).replace('.',',')+' €':'—'}</span>
-        <div class="actions" style="opacity:1;">
-          <button class="act-btn" onclick="event.stopPropagation();previewDiagnostic(${f.id})" title="Aperçu / PDF / Envoyer"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-          <button class="act-btn" onclick="event.stopPropagation();editDiagnostic(${f.id})" title="Modifier"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="act-btn del" onclick="event.stopPropagation();deleteDiagnostic(${f.id},'${escJsAttr(f.numero||'')}')" title="Supprimer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-        </div>
-      </div>
-    </div>`
-  }).join('')
 }
 
-window.editDiagnostic=function(id){const f=allDiagnostics.find(x=>x.id===id);if(f)openPanel(f)}
+/* ─── Aperçu en direct ─── */
+function docCourant(){
+  const base=lireFormulaire()
+  return {...(courant||{}),...base,numero:document.getElementById('f-numero').value||'—',created_at:(courant&&courant.created_at)||new Date().toISOString()}
+}
+let _tick=null
+function rafraichirApercu(){
+  clearTimeout(_tick)
+  _tick=setTimeout(()=>{
+    const cible=document.getElementById('apercu')
+    if(!cible)return
+    cible.innerHTML=buildTemplateHTML(docCourant())
+    ajusterApercu()
+    majEtatApercu()
+  },160)
+}
+window.rafraichirApercu=rafraichirApercu
 
+function ajusterApercu(){
+  const wrap=document.getElementById('a4wrap'), sc=document.getElementById('apercu')
+  if(!wrap||!sc||!sc.firstElementChild)return
+  // offsetWidth donne la largeur de mise en page, insensible au scale déjà
+  // appliqué : getBoundingClientRect renverrait la largeur déjà réduite et
+  // le facteur dériverait vers 1 à chaque recalcul.
+  const ref=sc.firstElementChild.offsetWidth
+  const dispo=wrap.clientWidth
+  if(!ref||!dispo)return
+  sc.style.transform=`scale(${dispo/ref})`
+}
+
+function majEtatApercu(){
+  const d=courant
+  const etat=document.getElementById('prev-etat')
+  const note=document.getElementById('prev-note')
+  const sideSend=document.getElementById('sideSendBtn')
+  const sideConv=document.getElementById('sideConvertBtn')
+  const sidePdf=document.getElementById('sidePdfBtn')
+  const enregistre=!!d
+  ;[sidePdf,sideSend,sideConv].forEach(b=>{if(b)b.disabled=!enregistre})
+  if(!enregistre){
+    etat.textContent='brouillon'
+    note.textContent="Enregistre le diagnostic pour pouvoir le télécharger, l'envoyer ou le convertir."
+    return
+  }
+  etat.textContent=d.email_envoye?'envoyé':'non envoyé'
+  const bouts=[]
+  if(d.email_envoye)bouts.push(`Envoyé au client le ${dateCourte(d.date_envoi)}`)
+  if(d.converti_reparation_id){
+    bouts.push(`Converti en réparation ${d.reparation_numero||''}`)
+    if(sideConv){sideConv.disabled=true;sideConv.textContent='Déjà converti en réparation'}
+  }else if(sideConv){sideConv.textContent='Convertir en réparation'}
+  if(!d.client_id)bouts.push("Aucune fiche client rattachée")
+  note.textContent=bouts.join(' · ')
+}
+
+/* ─── Navigation entre diagnostics ─── */
+function confirmerAbandon(){
+  if(!sale)return true
+  return confirm('Des modifications ne sont pas enregistrées. Les abandonner ?')
+}
+window.ouvrirDiagnostic=function(id){
+  if(!confirmerAbandon())return
+  const d=allDiagnostics.find(x=>x.id===id)
+  if(d)chargerDansFormulaire(d)
+}
+window.nouveauDiagnostic=function(){
+  if(!confirmerAbandon())return
+  chargerDansFormulaire(null)
+  document.getElementById('f-client').focus()
+}
+window.annulerSaisie=function(){
+  if(!confirmerAbandon())return
+  chargerDansFormulaire(courant)
+}
+
+/* ─── Enregistrement ─── */
 window.saveDiagnostic=async function(){
+  const payload=lireFormulaire()
+  if(!payload.client_nom){showToast('Le nom du client est requis','err');return}
   const id=document.getElementById('f-id').value
-  const nom=document.getElementById('f-client').value.trim()
-  if(!nom){showToast('Le nom du client est requis','err');return}
   const clientSelId=document.getElementById('f-client-select').value
-
-  document.getElementById('saveBtn').textContent='Enregistrement...'
-  document.getElementById('saveBtn').disabled=true
-
-  // Gérer le client (créer si nouveau, à la création seulement)
-  let clientLieId = clientSelId?Number(clientSelId):null
-  if(!id && !clientSelId){
-    const email=document.getElementById('f-email').value.trim()
-    let existant=null
-    if(email)existant=allClients.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())
-    if(!existant)existant=allClients.find(c=>c.nom&&c.nom.toLowerCase()===nom.toLowerCase())
-    if(existant){clientLieId=existant.id}
-    else{
-      const numCli=await nextNumero('client','client')
-      const newCli={numero:numCli,nom:nom,email:email||null,telephone:document.getElementById('f-tel').value.trim()||null,adresse:document.getElementById('f-adresse').value.trim()||null,type:'particulier',updated_at:new Date().toISOString()}
-      const rc=await sb.from('clients').insert(newCli).select().single()
-      if(!rc.error&&rc.data){clientLieId=rc.data.id;allClients.unshift(rc.data)}
+  const btn=document.getElementById('saveBtn')
+  btn.textContent='Enregistrement…'
+  btn.disabled=true
+  try{
+    // Le sélecteur fait foi ; sinon on conserve le lien du diagnostic, et pour
+    // un nouveau on retrouve ou on crée la fiche client.
+    let clientLieId=clientSelId?Number(clientSelId):(courant?courant.client_id||null:null)
+    if(!clientSelId&&!clientLieId){
+      const email=payload.client_email
+      let existant=null
+      if(email)existant=allClients.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())
+      if(!existant)existant=allClients.find(c=>c.nom&&c.nom.toLowerCase()===payload.client_nom.toLowerCase())
+      if(existant)clientLieId=existant.id
+      else{
+        const rc=await sb.from('clients').insert({
+          numero:await nextNumero('client'),
+          nom:payload.client_nom,
+          email:email,
+          telephone:payload.client_telephone,
+          adresse:payload.client_adresse,
+          type:'particulier',
+          updated_at:new Date().toISOString()
+        }).select().single()
+        if(!rc.error&&rc.data){clientLieId=rc.data.id;allClients.unshift(rc.data);fillClientSelect()}
+      }
     }
-  }
+    payload.client_id=clientLieId
+    payload.updated_at=new Date().toISOString()
 
-  const payload={
-    client_id:clientLieId,
-    client_nom:nom,
-    client_email:document.getElementById('f-email').value.trim()||null,
-    client_telephone:document.getElementById('f-tel').value.trim()||null,
-    client_adresse:document.getElementById('f-adresse').value.trim()||null,
-    appareil:document.getElementById('f-appareil').value.trim()||null,
-    modele:document.getElementById('f-modele').value.trim()||null,
-    probleme_signale:document.getElementById('f-probleme').value.trim()||null,
-    constat:document.getElementById('f-constat').value.trim()||null,
-    verdict:document.getElementById('f-verdict').value,
-    prix_estime:document.getElementById('f-prix-estime').value?Number(document.getElementById('f-prix-estime').value):null,
-    date_emission:document.getElementById('f-date-emission').value||new Date().toISOString().slice(0,10),
-    statut:document.getElementById('f-statut').value,
-    notes:document.getElementById('f-notes').value.trim()||null,
-    updated_at:new Date().toISOString()
+    let enregistre
+    if(id){
+      const res=await sb.from('diagnostics').update(payload).eq('id',id)
+      if(res.error)throw new Error(res.error.message)
+      const i=allDiagnostics.findIndex(d=>d.id===Number(id))
+      enregistre={...(i>=0?allDiagnostics[i]:{}),...payload,id:Number(id)}
+      if(i>=0)allDiagnostics[i]=enregistre
+    }else{
+      payload.numero=await nextNumero('diagnostic')
+      const res=await sb.from('diagnostics').insert(payload).select().single()
+      if(res.error)throw new Error(res.error.message)
+      enregistre=res.data
+      allDiagnostics.unshift(enregistre)
+    }
+    majResume()
+    chargerDansFormulaire(enregistre)
+    showToast(id?`Diagnostic ${enregistre.numero} mis à jour`:`Diagnostic ${enregistre.numero} créé`,'ok')
+  }catch(e){
+    showToast('Erreur : '+(e.message||e),'err')
+  }finally{
+    btn.textContent=document.getElementById('f-id').value?'Mettre à jour':'Enregistrer'
+    btn.disabled=false
   }
-
-  let error
-  if(id){
-    const res=await sb.from('diagnostics').update(payload).eq('id',id)
-    error=res.error
-    if(!error){const i=allDiagnostics.findIndex(f=>f.id===Number(id));if(i>=0)allDiagnostics[i]={...allDiagnostics[i],...payload,id:Number(id)}}
-  } else {
-    payload.numero=await nextNumero('diagnostic','diagnostic')
-    const res=await sb.from('diagnostics').insert(payload).select().single()
-    error=res.error
-    if(!error&&res.data)allDiagnostics.unshift(res.data)
-  }
-  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
-  document.getElementById('saveBtn').disabled=false
-  if(error){showToast('Erreur : '+error.message,'err');return}
-
-  closePanel()
-  renderAll()
-  showToast(id?`Diagnostic ${payload.numero||''} mis à jour ✓`:`Diagnostic ${payload.numero} créé ✓`,'ok')
 }
 
-window.deleteDiagnostic=async function(id,num){
-  if(!confirm(`Supprimer le diagnostic ${num} ?`))return
-  const {error}=await sb.from('diagnostics').delete().eq('id',id)
+window.supprimerCourant=async function(){
+  if(!courant)return
+  if(!confirm(`Supprimer le diagnostic ${courant.numero} ?`))return
+  const {error}=await sb.from('diagnostics').delete().eq('id',courant.id)
   if(error){showToast('Erreur : '+error.message,'err');return}
-  allDiagnostics=allDiagnostics.filter(f=>f.id!==id)
-  renderAll()
+  const num=courant.numero
+  allDiagnostics=allDiagnostics.filter(d=>d.id!==courant.id)
+  majResume()
+  chargerDansFormulaire(allDiagnostics[0]||null)
   showToast(`Diagnostic ${num} supprimé`,'ok')
 }
 
-// ─── TEMPLATE PDF ───
+/* ─── Rapport ─── */
 function buildTemplateHTML(f,forPdf){
   const dateEm=new Date(f.date_emission||f.created_at).toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'})
-  const VERDICT={reparable:{l:'Réparable',c:'#16a34a'},non_reparable:{l:'Non réparable',c:'#dc2626'},a_confirmer:{l:'À confirmer avec le client',c:'#d97706'}}
-  const v=VERDICT[f.verdict]||VERDICT.a_confirmer
+  const v=VERDICTS[f.verdict]||VERDICTS.a_confirmer
   const appareilLbl=f.modele||f.appareil||'—'
-  // Mode PDF : hauteur fixe = une page A4 pile (210x297mm ratio), pied de page en bas, pas de débordement
   const hauteurStyle=forPdf?'height:296mm;':'min-height:292mm;'
   return `
-  <div style="font-family:'Inter',Arial,sans-serif;color:#1a1a1a;padding:44px 44px;width:210mm;${hauteurStyle}box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;">
+  <div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;padding:44px;width:210mm;${hauteurStyle}box-sizing:border-box;background:#fff;display:flex;flex-direction:column;overflow:hidden;">
     <div style="flex:1;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div>
-          <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="height:44px;width:auto;display:block;" alt="IT Soluce"/>
-          <div style="font-size:11px;color:#666;margin-top:6px;">Réparations informatiques &amp; électroniques</div>
-        </div>
+      <div>
+        <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="height:44px;width:auto;display:block;" alt="IT Soluce"/>
+        <div style="font-size:11px;color:#666;margin-top:6px;">Réparations informatiques &amp; électroniques</div>
       </div>
       <div style="text-align:right;font-size:11px;color:#555;line-height:1.7;">
-        ${ENTREPRISE.adresse}<br>${ENTREPRISE.cp_ville}<br>${ENTREPRISE.email}<br>${ENTREPRISE.tel}<br>BCE : ${ENTREPRISE.bce}
+        ${escHtml(ENTREPRISE.adresse)}<br>${escHtml(ENTREPRISE.cp_ville)}<br>${escHtml(ENTREPRISE.email)}<br>${escHtml(ENTREPRISE.tel)}<br>BCE : ${escHtml(ENTREPRISE.bce)}
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;">
       <div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">RAPPORT DE DIAGNOSTIC</span>
-        </div>
+        <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">RAPPORT DE DIAGNOSTIC</span>
         <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${escHtml(f.numero)}</div>
       </div>
-      <div style="text-align:right;font-size:12px;color:#555;">
-        <div>Date du diagnostic : <strong>${dateEm}</strong></div>
-      </div>
+      <div style="text-align:right;font-size:12px;color:#555;">Date du diagnostic : <strong>${dateEm}</strong></div>
     </div>
     <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:24px;">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Client</div>
-      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${escHtml(f.client_nom)}</div>
+      <div style="font-size:15px;font-weight:600;color:#1a1a1a;">${escHtml(f.client_nom||'—')}</div>
       ${f.client_adresse?`<div style="font-size:12px;color:#555;margin-top:2px;">${escHtml(f.client_adresse)}</div>`:''}
       ${f.client_email?`<div style="font-size:12px;color:#555;margin-top:2px;">${escHtml(f.client_email)}</div>`:''}
       ${f.client_telephone?`<div style="font-size:12px;color:#555;">${escHtml(f.client_telephone)}</div>`:''}
@@ -976,141 +1213,124 @@ function buildTemplateHTML(f,forPdf){
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Constat technique</div>
       <div style="font-size:12.5px;color:#333;line-height:1.6;white-space:pre-wrap;">${escHtml(f.constat)}</div>
     </div>`:''}
-    <div style="display:flex;gap:16px;align-items:center;margin-top:26px;padding:16px 18px;border:2px solid ${v.c};border-radius:10px;">
+    <div style="display:flex;gap:16px;align-items:center;margin-top:26px;padding:16px 18px;border:2px solid ${v.couleur};border-radius:10px;">
       <div>
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:4px;">Verdict</div>
-        <div style="font-size:16px;font-weight:700;color:${v.c};">${v.l}</div>
+        <div style="font-size:16px;font-weight:700;color:${v.couleur};">${v.label}</div>
       </div>
       ${f.prix_estime?`<div style="margin-left:auto;text-align:right;">
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:4px;">Prix estimé si réparation</div>
-        <div style="font-size:18px;font-weight:700;color:#1a1a1a;">${Number(f.prix_estime).toFixed(2).replace('.',',')} €</div>
+        <div style="font-size:18px;font-weight:700;color:#1a1a1a;">${eur(f.prix_estime)}</div>
       </div>`:''}
     </div>
-    ${f.notes?`<div style="margin-top:24px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${escHtml(f.notes)}</div>`:''}
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
-      <div><strong style="color:#555;">Diagnostic gratuit :</strong> Ce diagnostic ne vous engage à rien. Si vous souhaitez donner suite à la réparation, un devis formel vous sera communiqué avant toute intervention.</div>
-      <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
-      <div style="margin-top:10px;text-align:center;color:#aaa;">${ENTREPRISE.nom} · ${ENTREPRISE.site} · Merci de votre confiance</div>
+      <div><strong style="color:#555;">Diagnostic gratuit :</strong> ce diagnostic ne vous engage à rien. Si vous souhaitez donner suite à la réparation, un devis formel vous sera communiqué avant toute intervention.</div>
+      <div style="margin-top:6px;font-style:italic;">${escHtml(ENTREPRISE.mention_tva)}</div>
+      <div style="margin-top:10px;text-align:center;color:#aaa;">${escHtml(ENTREPRISE.nom)} · ${escHtml(ENTREPRISE.site)} · Merci de votre confiance</div>
     </div>
   </div>`
 }
 
-window.previewDiagnostic=function(id){
-  const f=allDiagnostics.find(x=>x.id===id)
-  if(!f)return
-  currentPdfDoc=f
-  document.getElementById('pdfModal').innerHTML=buildTemplateHTML(f)
+window.ouvrirApercu=function(){
+  if(!courant){showToast('Enregistre d\'abord le diagnostic','err');return}
+  document.getElementById('pdfModal').innerHTML=buildTemplateHTML(courant)
   document.getElementById('pdfOverlay').classList.add('open')
 }
+window.closePdf=function(){document.getElementById('pdfOverlay').classList.remove('open')}
+window.fermerApercuLateral=function(){document.getElementById('prev').classList.remove('ouvert')}
+window.ouvrirApercuLateral=function(){
+  document.getElementById('prev').classList.add('ouvert')
+  rafraichirApercu()
+  requestAnimationFrame(ajusterApercu)
+}
 
-async function genererPDFBlob(){
-  // Générer le template en mode PDF (hauteur = contenu réel, pas de min-height)
+async function genererPDF(){
   const wrap=document.createElement('div')
-  wrap.style.position='fixed'
-  wrap.style.left='-99999px'
-  wrap.style.top='0'
-  wrap.style.width='210mm'
-  wrap.style.background='#ffffff'
-  wrap.innerHTML=buildTemplateHTML(currentPdfDoc,true)
+  wrap.style.cssText='position:fixed;left:-99999px;top:0;width:210mm;background:#fff;'
+  wrap.innerHTML=buildTemplateHTML(courant,true)
   document.body.appendChild(wrap)
-  const el=wrap.firstElementChild
-
-  const scale=2
-  const canvas=await html2canvas(el,{scale:scale,useCORS:true,backgroundColor:'#ffffff'})
-  document.body.removeChild(wrap)
-
-  const {jsPDF}=window.jspdf
-  const pdf=new jsPDF('p','mm','a4')
-  const pageW=210, pageH=297
-  const imgWpx=canvas.width
-  const imgHpx=canvas.height
-  // Hauteur totale de l'image rapportée à la largeur d'une page A4
-  const totalHmm=(imgHpx*pageW)/imgWpx
-
-  // Cas normal : tient sur une page → forcer une page A4 exacte (pas de débordement)
-  if(totalHmm<=pageH+10){
-    const imgData=canvas.toDataURL('image/jpeg',0.95)
-    pdf.addImage(imgData,'JPEG',0,0,pageW,pageH,undefined,'FAST')
+  try{
+    const canvas=await html2canvas(wrap.firstElementChild,{scale:2,useCORS:true,backgroundColor:'#ffffff'})
+    const {jsPDF}=window.jspdf
+    const pdf=new jsPDF('p','mm','a4')
+    const pageW=210,pageH=297
+    const totalHmm=(canvas.height*pageW)/canvas.width
+    if(totalHmm<=pageH+10){
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,pageW,pageH,undefined,'FAST')
+      return pdf
+    }
+    const pxParPage=Math.floor((pageH*canvas.width)/pageW)
+    let fait=0,page=0
+    while(fait<canvas.height){
+      const tranche=Math.min(pxParPage,canvas.height-fait)
+      const tmp=document.createElement('canvas')
+      tmp.width=canvas.width;tmp.height=tranche
+      const ctx=tmp.getContext('2d')
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,tmp.width,tmp.height)
+      ctx.drawImage(canvas,0,fait,canvas.width,tranche,0,0,canvas.width,tranche)
+      if(page>0)pdf.addPage()
+      pdf.addImage(tmp.toDataURL('image/jpeg',0.95),'JPEG',0,0,pageW,(tranche*pageW)/canvas.width,undefined,'FAST')
+      fait+=tranche;page++
+    }
     return pdf
+  }finally{
+    document.body.removeChild(wrap)
   }
-
-  // Cas multi-pages : découpage net par tranches d'une page exacte
-  const pxPerPage=Math.floor((pageH*imgWpx)/pageW)
-  let renderedPx=0, pageNum=0
-  while(renderedPx<imgHpx){
-    const slicePx=Math.min(pxPerPage,imgHpx-renderedPx)
-    const tmp=document.createElement('canvas')
-    tmp.width=imgWpx
-    tmp.height=slicePx
-    const ctx=tmp.getContext('2d')
-    ctx.fillStyle='#ffffff'
-    ctx.fillRect(0,0,tmp.width,tmp.height)
-    ctx.drawImage(canvas,0,renderedPx,imgWpx,slicePx,0,0,imgWpx,slicePx)
-    const sliceData=tmp.toDataURL('image/jpeg',0.95)
-    const sliceHmm=(slicePx*pageW)/imgWpx
-    if(pageNum>0)pdf.addPage()
-    pdf.addImage(sliceData,'JPEG',0,0,pageW,sliceHmm,undefined,'FAST')
-    renderedPx+=slicePx
-    pageNum++
-  }
-  return pdf
 }
 
-window.downloadPdf=async function(){
-  if(!currentPdfDoc)return
-  showToast('Génération du PDF...','ok')
-  const pdf=await genererPDFBlob()
-  pdf.save(`Diagnostic_${currentPdfDoc.numero}.pdf`)
+window.telechargerPdf=async function(){
+  if(!courant){showToast('Enregistre d\'abord le diagnostic','err');return}
+  showToast('Génération du PDF…','ok')
+  try{
+    const pdf=await genererPDF()
+    pdf.save(`Diagnostic_${courant.numero}.pdf`)
+  }catch(e){showToast('Erreur PDF : '+(e.message||e),'err')}
 }
 
-let _pendingEmail=null // {doc, pdfBase64, pdfName}
-
-function textToHtml(text){
-  return text.split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')
-}
+/* ─── Envoi par email ─── */
+let _enAttente=null
+function textToHtml(t){return t.split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')}
 const SIGNATURE_HTML=`<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:rgb(18,33,46);margin:0 0 14px;">Bien à vous,</div><table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;max-width:480px;font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:0 0 10px;"><img src="https://itsoluce.be/img/logo-full.png" width="124" height="51" alt="IT Soluce" style="display:block;border:0;"></td></tr><tr><td style="border-top:2px solid rgb(0,82,204);padding:10px 0 0;font-size:13px;color:rgb(18,33,46);line-height:1.6;"><strong style="font-weight:bold;">Réparations informatiques &amp; électroniques</strong></td></tr><tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:rgb(90,107,123);"><a href="tel:+32474056659" style="color:rgb(0,82,204);text-decoration:none;">+32 474 05 66 59</a>&nbsp;·&nbsp;<a href="mailto:contact@itsoluce.be" style="color:rgb(0,82,204);text-decoration:none;">contact@itsoluce.be</a>&nbsp;·&nbsp;<a href="https://itsoluce.be/" style="color:rgb(0,82,204);text-decoration:none;">itsoluce.be</a></td></tr></table>`
 
-window.sendPdf=async function(){
-  if(!currentPdfDoc)return
-  const f=currentPdfDoc
-  if(!f.client_email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
-  const btn=document.getElementById('sendPdfBtn')
-  btn.disabled=true;btn.textContent='Préparation...'
+window.preparerEmail=async function(){
+  if(!courant){showToast('Enregistre d\'abord le diagnostic','err');return}
+  if(!courant.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
+  const btns=[document.getElementById('sideSendBtn'),document.getElementById('pdfSendBtn')].filter(Boolean)
+  btns.forEach(b=>{b.disabled=true})
   try{
-    const pdf=await genererPDFBlob()
+    const pdf=await genererPDF()
     const pdfBase64=pdf.output('datauristring').split(',')[1]
-    const pdfName=`Diagnostic_${f.numero}.pdf`
-    const prenom=(f.client_nom||'').split(' ')[0]||''
-    const messageDefaut=`Bonjour ${prenom},\n\nVous trouverez ci-joint le rapport de votre diagnostic ${f.numero}.\n\nN'hésitez pas à me contacter si vous souhaitez donner suite ou si vous avez la moindre question.`
-    _pendingEmail={doc:f,pdfBase64,pdfName}
-    document.getElementById('em-to').value=f.client_email
-    document.getElementById('em-subject').value=`Diagnostic ${f.numero} — IT Soluce`
-    document.getElementById('em-body').value=messageDefaut
+    const pdfName=`Diagnostic_${courant.numero}.pdf`
+    const prenom=(courant.client_nom||'').split(' ')[0]||''
+    _enAttente={doc:courant,pdfBase64,pdfName}
+    document.getElementById('em-to').value=courant.client_email
+    document.getElementById('em-subject').value=`Diagnostic ${courant.numero} — IT Soluce`
+    document.getElementById('em-body').value=`Bonjour ${prenom},\n\nVous trouverez ci-joint le rapport de votre diagnostic ${courant.numero}.\n\nN'hésitez pas à me contacter si vous souhaitez donner suite ou si vous avez la moindre question.`
     document.getElementById('em-pdfname').textContent=pdfName
     document.getElementById('emailOverlay').style.display='flex'
-  }catch(err){
-    showToast('Erreur de préparation : '+err.message,'err')
+  }catch(e){
+    showToast('Erreur de préparation : '+(e.message||e),'err')
   }
-  btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email'
+  btns.forEach(b=>{b.disabled=false})
 }
 
 window.closeEmailModal=function(){
   document.getElementById('emailOverlay').style.display='none'
-  _pendingEmail=null
+  _enAttente=null
 }
 
 window.confirmerEnvoiEmail=async function(){
-  if(!_pendingEmail)return
-  const {doc:f,pdfBase64,pdfName}=_pendingEmail
+  if(!_enAttente)return
+  const {doc:f,pdfBase64,pdfName}=_enAttente
   const to=document.getElementById('em-to').value.trim()
   const subject=document.getElementById('em-subject').value.trim()
-  const messageTexte=document.getElementById('em-body').value
   if(!to){showToast('Le destinataire est requis','err');return}
   const btn=document.getElementById('confirmSendBtn')
-  btn.disabled=true;btn.textContent='Envoi en cours...'
+  const htmlBtn=btn.innerHTML
+  btn.disabled=true;btn.textContent='Envoi en cours…'
   try{
-    const html=textToHtml(messageTexte)+SIGNATURE_HTML
+    const html=textToHtml(document.getElementById('em-body').value)+SIGNATURE_HTML
     const {data:{session}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-invoice`,{
       method:'POST',
@@ -1118,31 +1338,39 @@ window.confirmerEnvoiEmail=async function(){
       body:JSON.stringify({to,subject,html,pdfBase64,pdfName})
     })
     const result=await res.json()
-    if(!res.ok){throw new Error(result.error||'Échec de l\'envoi')}
-    await sb.from('diagnostics').update({email_envoye:true,date_envoi:new Date().toISOString()}).eq('id',f.id)
+    if(!res.ok)throw new Error(result.error||"Échec de l'envoi")
+    const maj={email_envoye:true,date_envoi:new Date().toISOString()}
+    await sb.from('diagnostics').update(maj).eq('id',f.id)
     const i=allDiagnostics.findIndex(x=>x.id===f.id)
-    if(i>=0){allDiagnostics[i].email_envoye=true;allDiagnostics[i].date_envoi=new Date().toISOString()}
-    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer'
-    closeEmailModal();closePdf();renderAll()
-    showToast(`Diagnostic ${f.numero} envoyé à ${f.client_email} ✓`,'ok')
-  }catch(err){
-    btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer'
-    showToast('Erreur envoi : '+err.message,'err')
+    if(i>=0)Object.assign(allDiagnostics[i],maj)
+    if(courant&&courant.id===f.id)Object.assign(courant,maj)
+    closeEmailModal();closePdf()
+    majEtatApercu();renderRail()
+    showToast(`Diagnostic ${f.numero} envoyé à ${to}`,'ok')
+  }catch(e){
+    showToast('Erreur envoi : '+(e.message||e),'err')
+  }finally{
+    btn.disabled=false;btn.innerHTML=htmlBtn
   }
 }
 
+/* ─── Conversion en réparation ─── */
 window.convertirEnReparation=async function(){
-  const d=currentPdfDoc
-  if(!d)return
-  if(d.converti_reparation_id){showToast('Ce diagnostic a déjà été converti en réparation','err');return}
-  if(!confirm(`Convertir le diagnostic ${d.numero} en réparation ?\n\nUne nouvelle réparation sera créée avec les infos client, l'appareil et le constat. Le statut du diagnostic passera à "Accepté".`))return
-  const btn=document.getElementById('convertRepBtn')
-  const htmlBtn=btn.innerHTML
-  btn.disabled=true;btn.textContent='Conversion...'
+  const d=courant
+  if(!d){showToast('Enregistre d\'abord le diagnostic','err');return}
+  if(d.converti_reparation_id){showToast('Ce diagnostic a déjà été converti','err');return}
+  if(!confirm(`Convertir le diagnostic ${d.numero} en réparation ?\n\nUne réparation sera créée avec le client, l'appareil et le constat. Le statut du diagnostic passera à « Accepté ».`))return
+  const btn=document.getElementById('sideConvertBtn')
+  const htmlBtn=btn?btn.innerHTML:''
+  if(btn){btn.disabled=true;btn.textContent='Conversion…'}
   try{
-    const numRep=await nextNumero('reparation','reparation')
-    const panne=[d.probleme_signale?`Problème signalé : ${d.probleme_signale}`:'',d.constat?`Constat : ${d.constat}`:'',d.notes||''].filter(Boolean).join('\n\n')||'À compléter'
-    const repPayload={
+    const numRep=await nextNumero('reparation')
+    const panne=[
+      d.probleme_signale?`Problème signalé : ${d.probleme_signale}`:'',
+      d.constat?`Constat : ${d.constat}`:'',
+      d.notes||''
+    ].filter(Boolean).join('\n\n')||'À compléter'
+    const res=await sb.from('reparations').insert({
       numero:numRep,
       client_id:d.client_id||null,
       client_nom:d.client_nom,
@@ -1154,45 +1382,59 @@ window.convertirEnReparation=async function(){
       statut:'attente_reception',
       prix_devis:d.prix_estime||0,
       prix_final:0,
-      piece_id:null,
-      cout_pieces:0,
-      pieces:[],
+      piece_id:null, cout_pieces:0, pieces:[],
       notes:`Créé depuis le diagnostic ${d.numero}`,
       updated_at:new Date().toISOString()
-    }
-    const resRep=await sb.from('reparations').insert(repPayload).select().single()
-    if(resRep.error)throw new Error(resRep.error.message)
-    await sb.from('diagnostics').update({statut:'accepte',converti_reparation_id:resRep.data.id,reparation_numero:numRep,updated_at:new Date().toISOString()}).eq('id',d.id)
+    }).select().single()
+    if(res.error)throw new Error(res.error.message)
+    const maj={statut:'accepte',converti_reparation_id:res.data.id,reparation_numero:numRep,updated_at:new Date().toISOString()}
+    await sb.from('diagnostics').update(maj).eq('id',d.id)
     const i=allDiagnostics.findIndex(x=>x.id===d.id)
-    if(i>=0){allDiagnostics[i].statut='accepte';allDiagnostics[i].converti_reparation_id=resRep.data.id;allDiagnostics[i].reparation_numero=numRep}
-    btn.disabled=false;btn.innerHTML=htmlBtn
-    closePdf();renderAll()
-    showToast(`Réparation ${numRep} créée depuis le diagnostic ${d.numero} ✓ — Complète les pièces dans Réparations`,'ok')
-  }catch(err){
-    btn.disabled=false;btn.innerHTML=htmlBtn
-    showToast('Erreur conversion : '+err.message,'err')
+    if(i>=0)Object.assign(allDiagnostics[i],maj)
+    Object.assign(courant,maj)
+    closePdf()
+    majResume()
+    chargerDansFormulaire(courant)
+    showToast(`Réparation ${numRep} créée — complète les pièces dans Réparations`,'ok')
+  }catch(e){
+    if(btn){btn.disabled=false;btn.innerHTML=htmlBtn}
+    showToast('Erreur conversion : '+(e.message||e),'err')
   }
 }
 
+/* ─── Export ─── */
 window.exportCSV=function(){
-  if(!allDiagnostics.length){showToast('Aucune donnée','err');return}
-  const cols=['numero','client_nom','client_email','appareil','modele','verdict','statut','prix_estime','reparation_numero','date_emission','created_at']
-  const csv=[cols.join(','),...allDiagnostics.map(f=>cols.map(k=>`"${String(f[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  if(!allDiagnostics.length){showToast('Aucune donnée à exporter','err');return}
+  const cols=['numero','client_nom','client_email','client_telephone','appareil','modele','probleme_signale','constat','verdict','prix_estime','statut','email_envoye','reparation_numero','date_emission','created_at']
+  const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
+  const csv=[cols.join(';'),...allDiagnostics.map(d=>cols.map(c=>cell(d[c])).join(';'))].join('\r\n')
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob)
   const a=document.createElement('a')
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
-  a.download=`itsoluce_diagnostics_${new Date().toISOString().slice(0,10)}.csv`
+  a.href=url
+  a.download=`itsoluce_diagnostics_${ymd(new Date())}.csv`
   a.click()
-  showToast('Export téléchargé ✓','ok')
+  setTimeout(()=>URL.revokeObjectURL(url),1000)
+  showToast('Export téléchargé','ok')
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return
+  if(document.getElementById('emailOverlay').style.display==='flex'){closeEmailModal();return}
+  if(document.getElementById('pdfOverlay').classList.contains('open')){closePdf();return}
+  fermerApercuLateral()
+})
+
 await load()
 
 } catch(err){
-  console.error(err)
-  showError(err.message||'Erreur inattendue')
+  console.error('Erreur diagnostics :',err)
+  showError(err.message||'Une erreur inattendue est survenue.')
 }
 </script>
+
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
     <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
