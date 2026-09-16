@@ -607,7 +607,6 @@ body{font-size:14px;}
     <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep">0</span></a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert">—</span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
-    <a href="/admin/commandes-foneday.html" class="hnl">Commandes</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
     <a href="/admin/gestion.html" class="hnl active">Gestion</a>
   </nav>
@@ -638,6 +637,7 @@ body{font-size:14px;}
         <div class="sn-group">Activité</div>
         <button class="sn-item active" data-sec="prestations" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations<span class="cnt" id="cnt-prestations"></span></button>
         <button class="sn-item" data-sec="fournisseurs" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="cnt" id="cnt-fournisseurs"></span></button>
+        <button class="sn-item" data-sec="commandes" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Commandes<span class="cnt" id="cnt-commandes"></span></button>
         <button class="sn-item" data-sec="garanties" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties<span class="cnt" id="cnt-garanties"></span></button>
 
         <div class="sn-group">Réglages</div>
@@ -692,6 +692,26 @@ body{font-size:14px;}
             <div class="split">
               <div class="liste" id="liste-four"></div>
               <div class="detail" id="detail-four"></div>
+            </div>
+          </section>
+
+          <!-- ── COMMANDES FONEDAY ── -->
+          <section class="sec large" id="sec-commandes">
+            <h1 class="sec-title">Commandes Foneday</h1>
+            <p class="sec-desc">Tes commandes, tes factures et ton adresse de livraison, lues en direct chez Foneday. Rien n'est stocké dans l'ERP.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-cmd" placeholder="Rechercher un numéro…" oninput="renderCommandes()"/></div>
+              <div class="segf" id="seg-cmd">
+                <button class="on" data-v="commandes" onclick="ongletCmd(this)">Commandes</button>
+                <button data-v="factures" onclick="ongletCmd(this)">Factures</button>
+                <button data-v="adresse" onclick="ongletCmd(this)">Adresse</button>
+              </div>
+              <button class="btn btn-secondary" style="margin-left:auto;" onclick="rafraichirFoneday()" id="btn-cmd-refresh">Actualiser</button>
+            </div>
+            <div class="split">
+              <div class="liste" id="liste-cmd"></div>
+              <div class="detail" id="detail-cmd"></div>
             </div>
           </section>
 
@@ -1294,6 +1314,7 @@ window.chargerSection=async function(id){
   try{
     if(id==='prestations')await loadPrestations()
     else if(id==='fournisseurs')await loadFournisseurs()
+    else if(id==='commandes')await loadCommandes()
     else if(id==='garanties')await loadGaranties()
   }catch(err){
     _charge[id]=false
@@ -1523,6 +1544,163 @@ window.supprimerFournisseur=async function(){
   if(error){showToast('Erreur : '+error.message,'err');return}
   _four=_four.filter(x=>String(x.id)!==String(f.id)); _selFour=null
   renderFournisseurs(); showToast('Fournisseur supprimé','ok')
+}
+
+/* ══════════ COMMANDES FONEDAY ══════════
+   Lecture seule via la fonction Edge foneday-proxy. Les valeurs
+   viennent d'une API externe : elles sont toutes échappées avant
+   affichage, ce qui n'était pas le cas dans l'ancienne page. */
+let _cmd=[], _fac=[], _adr=null, _cmdErr=[]
+let _selCmd=null, _ongletCmd='commandes'
+
+async function appelFoneday(action,extra){
+  const {data:{session:s}}=await sb.auth.getSession()
+  const res=await fetch(`${SB}/functions/v1/foneday-proxy`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${s.access_token}`},
+    body:JSON.stringify(Object.assign({action},extra||{}))
+  })
+  const r=await res.json().catch(()=>({}))
+  if(!res.ok||!r.ok)throw new Error(r.error||'Erreur Foneday')
+  return r.data
+}
+/** Foneday ne nomme pas ses champs de la même façon d'un endpoint à l'autre. */
+function champ(o,cles){for(const c of cles){if(o&&o[c]!=null)return o[c]}return null}
+function estPaye(o){
+  const v=champ(o,['paid','betaald'])
+  return v==null?null:(v===true||v===1||v==='1')
+}
+function dateFr(v){
+  if(!v)return '—'
+  const d=new Date(v)
+  return isNaN(d)?String(v):d.toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})
+}
+
+async function loadCommandes(){
+  const [c,f,a]=await Promise.allSettled([appelFoneday('orders'),appelFoneday('invoices'),appelFoneday('addresses')])
+  _cmdErr=[]
+  if(c.status==='fulfilled'){const d=c.value;_cmd=Array.isArray(d)?d:(d.orders||d.data||[])}
+  else _cmdErr.push(['commandes',c.reason.message])
+  if(f.status==='fulfilled'){const d=f.value;_fac=Array.isArray(d)?d:(d.invoices||d.data||[])}
+  else _cmdErr.push(['factures',f.reason.message])
+  if(a.status==='fulfilled'){const d=a.value;_adr=Array.isArray(d)?(d[0]||null):((d&&d.addresses&&d.addresses[0])||d||null)}
+  else _cmdErr.push(['adresse',a.reason.message])
+  renderCommandes()
+}
+window.rafraichirFoneday=async function(){
+  const b=document.getElementById('btn-cmd-refresh')
+  b.disabled=true; b.textContent='Actualisation…'
+  try{ await loadCommandes(); showToast('Données Foneday actualisées','ok') }
+  catch(err){ showToast('Erreur : '+(err.message||err),'err') }
+  finally{ b.disabled=false; b.textContent='Actualiser' }
+}
+window.ongletCmd=function(btn){
+  _ongletCmd=btn.dataset.v; _selCmd=null
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn))
+  renderCommandes()
+}
+window.voirCommande=function(id){_selCmd=(String(_selCmd)===String(id))?null:id;renderCommandes()}
+
+function erreurBloc(nom){
+  const e=_cmdErr.find(x=>x[0]===nom)
+  if(!e)return ''
+  return `<div class="vide-l"><h4>Données « ${escHtml(nom)} » indisponibles</h4><p>${escHtml(e[1])}</p><button class="btn btn-secondary" style="display:inline-flex;" onclick="rafraichirFoneday()">Réessayer</button></div>`
+}
+
+window.renderCommandes=function(){
+  const q=norm(document.getElementById('q-cmd').value.trim())
+  majCompteur('commandes',_cmd.length,_cmdErr.length>0)
+  const box=document.getElementById('liste-cmd')
+
+  if(_ongletCmd==='adresse'){
+    const err=erreurBloc('adresse')
+    if(err){box.innerHTML=err;document.getElementById('detail-cmd').innerHTML='';return}
+    if(!_adr){box.innerHTML='<div class="vide-l"><h4>Aucune adresse de livraison</h4><p>Foneday n\'a renvoyé aucune adresse pour ton compte.</p></div>';document.getElementById('detail-cmd').innerHTML='';return}
+    const lignes=[
+      champ(_adr,['name']), champ(_adr,['to_company']),
+      [champ(_adr,['streetaddress_1']),champ(_adr,['housenumber'])].filter(Boolean).join(' '),
+      champ(_adr,['streetaddress_2']),
+      [champ(_adr,['zipcode']),champ(_adr,['city'])].filter(Boolean).join(' '),
+      champ(_adr,['country'])
+    ].filter(Boolean)
+    box.innerHTML=`<div style="padding:20px 22px;">
+      <div style="font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;">Adresse de livraison enregistrée chez Foneday</div>
+      ${lignes.map(l=>`<div style="font-size:14px;color:var(--t1);line-height:1.7;">${escHtml(l)}</div>`).join('')}
+    </div>`
+    document.getElementById('detail-cmd').innerHTML='<div class="detail-vide">C\'est l\'adresse que Foneday utilise<br>pour te livrer. Elle se modifie<br>depuis ton compte Foneday.</div>'
+    return
+  }
+
+  const factures=_ongletCmd==='factures'
+  const err=erreurBloc(factures?'factures':'commandes')
+  if(err){box.innerHTML=err;document.getElementById('detail-cmd').innerHTML='';return}
+
+  const src=factures?_fac:_cmd
+  const num=o=>String(champ(o,factures?['invoice_number','number','id']:['order_number','number','id','reference'])||'—')
+  let l=src.slice()
+  if(q)l=l.filter(o=>norm(num(o)).includes(q))
+
+  box.innerHTML=l.length?l.map((o,i)=>{
+    const n=num(o)
+    const d=dateFr(champ(o,['created_at','date',factures?'invoice_date':'order_date']))
+    const t=champ(o,factures?['amount','total','total_incl_vat']:['total_incl_vat','total','amount'])
+    const p=estPaye(o)
+    const tag=p===true?'<span class="tag t-ok">Payée</span>'
+            :p===false?'<span class="tag t-ko">Non payée</span>'
+            :`<span class="tag t-of">${escHtml(champ(o,['status','statut'])||'—')}</span>`
+    return `<div class="lrow ${String(i)===String(_selCmd)?'sel':''}" onclick="voirCommande('${i}')">
+      <div class="lrow-n"><b style="font-variant-numeric:tabular-nums;">${escHtml(n)}</b><em>${escHtml(d)}</em></div>
+      ${t!=null?`<span class="lrow-v">${escHtml(eur(t))}</span>`:''}
+      ${tag}
+    </div>`
+  }).join('')
+    : `<div class="vide-l"><h4>Aucune ${factures?'facture':'commande'}${q?' ne correspond':''}</h4><p>${q?'Vide la recherche pour tout revoir.':'Tes '+(factures?'factures':'commandes')+' Foneday apparaîtront ici.'}</p></div>`
+
+  dessinerDetailCmd(l,factures,num)
+}
+
+function dessinerDetailCmd(liste,factures,num){
+  const box=document.getElementById('detail-cmd')
+  if(_selCmd==null||!liste[_selCmd]){
+    box.innerHTML=`<div class="detail-vide">Choisis une ${factures?'facture':'commande'}<br>pour en voir le détail.</div>`
+    return
+  }
+  const o=liste[_selCmd]
+  const p=estPaye(o)
+  const t=champ(o,factures?['amount','total','total_incl_vat']:['total_incl_vat','total','amount'])
+  const transporteur=champ(o,['shipment_method','carrier','shipping_method'])
+  const suivi=champ(o,['trackandtrace','tracking_number','track_and_trace'])
+  const statut=champ(o,['status','statut'])
+  const n=num(o)
+  box.innerHTML=`
+    <div class="detail-h" style="font-variant-numeric:tabular-nums;">${escHtml(n)}</div>
+    <div class="detail-s">${factures?'Facture Foneday':'Commande Foneday'}</div>
+    <div class="dline"><span>Date</span><b>${escHtml(dateFr(champ(o,['created_at','date',factures?'invoice_date':'order_date'])))}</b></div>
+    ${statut?`<div class="dline"><span>Statut</span><b>${escHtml(statut)}</b></div>`:''}
+    <div class="dline"><span>Paiement</span><b>${p===true?'Payée':p===false?'Non payée':'Inconnu'}</b></div>
+    ${t!=null?`<div class="dline"><span>Montant</span><b>${escHtml(eur(t))}</b></div>`:''}
+    ${transporteur?`<div class="dline"><span>Transporteur</span><b>${escHtml(transporteur)}</b></div>`:''}
+    ${suivi?`<div class="dline"><span>Suivi</span><b style="font-variant-numeric:tabular-nums;">${escHtml(suivi)}</b></div>`:''}
+    ${factures?`<div class="detail-f"><button class="btn btn-primary" onclick="telechargerFactureFoneday('${escJsAttr(n)}')">Télécharger le PDF</button></div>`:''}`
+}
+
+window.telechargerFactureFoneday=async function(numero){
+  try{
+    showToast('Récupération de la facture…','ok')
+    const data=await appelFoneday('invoice-pdf',{invoice_number:numero})
+    const b64=(data&&data.pdf)||data
+    if(typeof b64!=='string')throw new Error('Réponse inattendue de Foneday')
+    // Passer par un Blob plutôt qu'une data: URL : Chrome bloque les
+    // téléchargements data: au-delà de quelques mégaoctets.
+    const bin=atob(b64)
+    const buf=new Uint8Array(bin.length)
+    for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i)
+    const url=URL.createObjectURL(new Blob([buf],{type:'application/pdf'}))
+    const a=document.createElement('a')
+    a.href=url; a.download=`Facture_Foneday_${numero}.pdf`
+    document.body.appendChild(a); a.click(); a.remove()
+    setTimeout(()=>URL.revokeObjectURL(url),2000)
+  }catch(err){ showToast('Erreur : '+(err.message||err),'err') }
 }
 
 /* ══════════ GARANTIES ══════════ */
