@@ -80,128 +80,228 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .nhr{height:1px;background:var(--ln);margin:8px 10px;}
 .sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
 
+
+/* ═══════════════════════════════════════════════════════════════
+   RÉPARATIONS — « plan de travail ».
+   La liste à gauche, le dossier ouvert à droite en permanence.
+   Pas de bandeau de chiffres : le récapitulatif tient en une phrase
+   sous le titre, les compteurs vivent dans les en-têtes de groupe.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c; --vio:#7c3aed;
+  --radius:16px;
+}
+body{font-size:14px;}
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
-.page-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;}
-.ph-left h1{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.3px;}
-.ph-left p{font-size:12px;color:var(--t3);margin-top:2px;}
-.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px;}
-.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.btn-primary{background:var(--a);color:#fff;}
-.btn-primary:hover{opacity:.85;}
-.btn-secondary{background:var(--bg3);color:var(--t2);border:1px solid var(--ln2);}
-.btn-secondary:hover{color:var(--t1);}
-.btn-danger{background:rgba(248,113,113,.12);color:var(--d);border:1px solid rgba(248,113,113,.2);}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a); font-weight:500;}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
 
-.kpi-strip{display:flex;gap:10px;padding:16px 24px 0;flex-shrink:0;}
-.kpi{background:var(--bg2);border:1px solid var(--ln);border-radius:8px;padding:12px 16px;flex:1;}
-.kpi-label{font-size:10px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.kpi-val{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-1px;line-height:1;}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:3px;}
+.page-head{padding:26px 28px 0; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; flex-shrink:0;}
+.ph-left h1{font-size:27px; font-weight:600; letter-spacing:-.03em; color:var(--t1);}
+.ph-resume{font-size:13.5px; color:var(--t2); margin-top:4px;}
+.ph-resume b{color:var(--t1); font-weight:600;}
+.ph-resume .alerte{color:var(--w); font-weight:600;}
+.ph-right{display:flex; gap:8px; flex-wrap:wrap;}
 
-.toolbar{display:flex;align-items:center;gap:8px;padding:12px 24px;flex-shrink:0;flex-wrap:wrap;}
-.search-wrap{position:relative;flex:1;min-width:200px;max-width:300px;}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
-.search-input{width:100%;padding:7px 10px 7px 30px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.search-input:focus{border-color:var(--a);}
-.search-input::placeholder{color:var(--t3);}
-.filter-btn{padding:5px 10px;border-radius:99px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);transition:all .12s;white-space:nowrap;}
-.filter-btn:hover{color:var(--t1);}
-.filter-btn.active{color:#fff;border-color:transparent;}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; cursor:pointer;
+  font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s;}
+.btn svg{width:14px; height:14px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.btn-secondary:hover{background:var(--bg4);}
+.btn-danger{background:rgba(200,54,44,.1); color:var(--d); border:1px solid rgba(200,54,44,.2);}
+.btn-danger:hover{background:rgba(200,54,44,.18);}
+.btn-ghost{background:none; color:var(--t2); padding:8px 12px;}
+.btn-ghost:hover{background:var(--bg3); color:var(--t1);}
 
-.table-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;}
-.cards-wrap{flex:1;overflow-y:auto;padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;align-content:start;}
-.four-card{background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:18px;transition:border-color .15s;}
-.four-card:hover{border-color:var(--a);}
-.four-card.inactive{opacity:.5;}
-@media(max-width:640px){.cards-wrap{grid-template-columns:1fr;}}
-.table{width:100%;border-collapse:collapse;}
-.table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--ln);background:var(--bg);position:sticky;top:0;z-index:10;white-space:nowrap;}
-.table td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:middle;font-size:12px;color:var(--t1);}
-.table tr:hover td{background:var(--bg2);}
-.table tr:last-child td{border-bottom:none;}
+/* ── Barre d'outils ── */
+.tools{display:flex; align-items:center; gap:10px; padding:16px 28px 0; flex-wrap:wrap; flex-shrink:0;}
+.srch-wrap{position:relative; flex:1; min-width:190px; max-width:300px;}
+.srch-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.srch-wrap input{width:100%; background:var(--bg2); border:1px solid transparent; border-radius:11px; padding:9px 12px 9px 34px; font-family:inherit; font-size:13px; color:var(--t1); outline:none; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.14s;}
+.srch-wrap input:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.srch-wrap input::placeholder{color:var(--t3);}
+.segf{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px; max-width:100%; overflow-x:auto; scrollbar-width:none;}
+.segf::-webkit-scrollbar{display:none;}
+.segf button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap; flex-shrink:0;}
+.segf button:hover{color:var(--t1);}
+.segf button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.07);}
 
-/* STATUTS */
-.statut{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;transition:opacity .12s;}
-.statut:hover{opacity:.8;}
-.s-recu{background:rgba(139,139,160,0.15);color:#8b8ba0;}
-.s-attente_reception{background:rgba(168,85,247,0.15);color:#a855f7;}
-.s-attente{background:rgba(251,191,36,0.15);color:#fbbf24;}
-.s-encours{background:rgba(251,146,60,0.15);color:#fb923c;}
-.s-pret{background:rgba(52,211,153,0.15);color:#34d399;}
-.s-rendu{background:rgba(107,114,128,0.15);color:#6b7280;}
-.s-annule{background:rgba(248,113,113,0.15);color:#f87171;}
-.s-non_reparable{background:rgba(251,146,60,0.15);color:#fb923c;}
+/* ── Plan de travail : liste + dossier ouvert ── */
+.plan{flex:1; display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:16px; padding:18px 28px 28px; overflow:hidden; min-height:0;}
+.plan-list{overflow-y:auto; padding-right:2px;}
+.plan-det{overflow-y:auto; background:var(--bg2); border-radius:var(--radius); box-shadow:0 1px 2px rgba(0,0,0,.05);}
 
-/* STATUS MENU */
-.status-menu{position:fixed;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:4px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.3);min-width:160px;display:none;}
-.status-menu.open{display:block;}
-.sm-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:5px;cursor:pointer;font-size:12px;color:var(--t1);transition:background .08s;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.grp{margin-bottom:20px;}
+.grp:last-child{margin-bottom:0;}
+.grp-h{display:flex; align-items:baseline; gap:9px; margin-bottom:9px; padding-left:2px; flex-wrap:wrap;}
+.grp-h b{font-size:13.5px; font-weight:600; color:var(--t1);}
+.grp-h i{font-style:normal; font-size:11px; font-weight:600; border-radius:980px; padding:2px 9px; background:var(--bg3); color:var(--t3);}
+.grp-h i.hot{background:rgba(178,94,9,.12); color:var(--w);}
+[data-mode="dark"] .grp-h i.hot{background:rgba(251,191,36,.16);}
+.grp-h span{font-size:12px; color:var(--t3); margin-left:auto; font-variant-numeric:tabular-nums;}
+
+.liste{background:var(--bg2); border-radius:var(--radius); overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.row{display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--ln); cursor:pointer; transition:background .12s; position:relative;}
+.row:last-child{border-bottom:none;}
+.row:hover{background:var(--bg3);}
+.row.sel{background:var(--ad);}
+.row.sel::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--a);}
+.row:focus-visible{outline:2px solid var(--a); outline-offset:-2px;}
+.ref{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:600; color:var(--a); background:var(--ad); padding:2px 7px; border-radius:6px; white-space:nowrap; flex-shrink:0;}
+.row-who{flex:1; min-width:0;}
+.row-who b{display:block; font-size:13.5px; font-weight:500; color:var(--t1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.row-who em{display:block; font-style:normal; font-size:12px; color:var(--t3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.row-age{font-size:12px; color:var(--t3); white-space:nowrap; flex-shrink:0; font-variant-numeric:tabular-nums;}
+.row-age.old{color:var(--w); font-weight:500;}
+
+/* ── Pastilles de statut ── */
+.statut{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; border:none; font-family:inherit; cursor:pointer; flex-shrink:0; max-width:170px; overflow:hidden; text-overflow:ellipsis;}
+.s-attente_reception{background:rgba(124,58,237,.11); color:var(--vio);}
+.s-recu{background:var(--bg3); color:var(--t2);}
+.s-attente{background:rgba(178,94,9,.12); color:var(--w);}
+.s-encours{background:var(--ad); color:var(--a);}
+.s-pret{background:rgba(26,138,82,.11); color:var(--ok);}
+.s-rendu{background:var(--bg3); color:var(--t3);}
+.s-non_reparable{background:rgba(200,54,44,.1); color:var(--d);}
+.s-annule{background:var(--bg3); color:var(--t3);}
+[data-mode="dark"] .s-attente_reception{background:rgba(167,139,250,.16);}
+[data-mode="dark"] .s-attente{background:rgba(251,191,36,.16);}
+[data-mode="dark"] .s-pret{background:rgba(52,211,153,.16);}
+[data-mode="dark"] .s-non_reparable{background:rgba(248,113,113,.14);}
+
+.status-menu{position:fixed; display:none; flex-direction:column; gap:2px; background:var(--bg2); border:1px solid var(--ln); border-radius:13px; padding:5px; box-shadow:0 12px 34px rgba(0,0,0,.16); z-index:400; min-width:220px;}
+.status-menu.open{display:flex;}
+.sm-item{border:none; background:none; padding:6px; border-radius:9px; cursor:pointer; text-align:left; font-family:inherit;}
 .sm-item:hover{background:var(--bg3);}
 
-.actions{display:flex;align-items:center;gap:3px;opacity:0;}
-.table tr:hover .actions{opacity:1;}
-.act-btn{width:26px;height:26px;border-radius:4px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:all .12s;}
-.act-btn:hover{background:var(--bg3);color:var(--t1);}
-.act-btn.del:hover{background:rgba(248,113,113,.12);color:var(--d);}
-.act-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+/* ── Dossier ouvert ── */
+.det-in{padding:18px 19px; display:flex; flex-direction:column; gap:15px;}
+.det-top{display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+.det-top .statut{max-width:none; white-space:normal; text-align:left;}
+.det-back{display:none;}
+.det-in h2{font-size:18px; font-weight:600; letter-spacing:-.02em; color:var(--t1); margin-top:8px; word-break:break-word;}
+.det-coord{display:flex; flex-direction:column; gap:3px; margin-top:5px;}
+.det-coord a{font-size:12.5px; color:var(--a); text-decoration:none; word-break:break-all;}
+.det-coord a:hover{text-decoration:underline;}
+.det-coord span{font-size:12.5px; color:var(--t3);}
+.sep{height:1px; background:var(--ln);}
+.dl{display:flex; flex-direction:column; gap:8px;}
+.dl div{display:flex; justify-content:space-between; gap:12px; font-size:12.5px; align-items:baseline;}
+.dl dt{color:var(--t3); flex-shrink:0;}
+.dl dd{margin:0; color:var(--t1); text-align:right; word-break:break-word;}
+.dl dd.num{font-variant-numeric:tabular-nums; white-space:nowrap;}
+.det-lab{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3);}
+.det-note{font-size:12.5px; color:var(--t2); line-height:1.55; white-space:pre-wrap; word-break:break-word;}
+.det-motif{font-size:12.5px; color:var(--w); line-height:1.5;}
+.det-prix{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
+.det-prix span{font-size:12.5px; color:var(--t3);}
+.det-prix b{font-size:21px; font-weight:600; letter-spacing:-.02em; color:var(--t1); font-variant-numeric:tabular-nums;}
+.det-marge{font-size:12px; font-variant-numeric:tabular-nums;}
+.det-vide{padding:52px 24px; text-align:center;}
+.det-vide p{font-size:13px; color:var(--t3); line-height:1.6; max-width:30ch; margin:0 auto;}
 
+.steps{display:flex; flex-direction:column;}
+.step{display:flex; gap:10px; align-items:flex-start; font-size:12px; color:var(--t3); padding-bottom:12px; position:relative;}
+.step:last-child{padding-bottom:0;}
+.step:not(:last-child)::after{content:""; position:absolute; left:4px; top:13px; bottom:1px; width:1px; background:var(--ln);}
+.step i{width:9px; height:9px; border-radius:50%; background:var(--bg4); margin-top:4px; flex-shrink:0; font-style:normal; z-index:1;}
+.step.done i{background:var(--ok);}
+.step.now i{background:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.step.ko i{background:var(--d);}
+.step.now,.step.ko{color:var(--t1); font-weight:500;}
+.step em{font-style:normal; color:var(--t3); font-weight:400;}
+
+.det-acts{display:flex; gap:7px; flex-wrap:wrap;}
+.det-acts .btn{flex:1; min-width:120px;}
+
+/* ── État vide ── */
+.vide{background:var(--bg2); border-radius:var(--radius); padding:50px 24px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.vide-ico{width:52px; height:52px; border-radius:15px; background:var(--ad); color:var(--a); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+.vide-ico svg{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+.vide h3{font-size:15px; font-weight:600; color:var(--t1); margin-bottom:6px;}
+.vide p{font-size:13px; color:var(--t2); line-height:1.6; max-width:44ch; margin:0 auto 16px;}
+
+/* ── Panneau d'édition ── */
 .panel-overlay{display:none;}
 .panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;left:0;right:0;top:0;bottom:0;width:auto;min-width:0;background:var(--bg);border-left:none;z-index:201;transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column;}
+.panel{position:fixed; inset:0; width:auto; min-width:0; background:var(--bg); border-left:none; z-index:201; transform:translateX(100%); transition:transform .22s ease; display:flex; flex-direction:column; overflow:hidden;}
 .panel.open{transform:translateX(0);}
-.panel-head{padding:16px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:14px;font-weight:600;color:var(--t1);}
-.panel-close{width:28px;height:28px;border-radius:5px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.panel-close:hover{background:var(--bg4);color:var(--t1);}
-.panel-body{flex:1;overflow-y:auto;padding:32px 40px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
-.form-section{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:22px 26px;}
-.form-section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-.form-section-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.form-section-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;}
-.form-section-head span{font-size:14px;font-weight:600;color:var(--t1);}
-.form-section .fg{margin-bottom:14px;}
-.form-section .fg:last-child{margin-bottom:0;}
-@media(max-width:1100px){.form-grid{grid-template-columns:1fr;max-width:640px;margin:0 auto;}}
-.panel-footer{padding:16px 40px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-shrink:0;}
-
+.panel-head{padding:16px 22px; border-bottom:1px solid var(--ln); display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-shrink:0;}
+.panel-title{font-size:15px; font-weight:600; color:var(--t1);}
+.panel-close{width:32px; height:32px; border-radius:10px; border:none; background:var(--bg3); color:var(--t2); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+.panel-close:hover{background:var(--bg4); color:var(--t1);}
+.panel-body{flex:1; overflow-y:auto; padding:26px 24px; display:flex; justify-content:center;}
+.form-grid{display:flex; flex-direction:column; gap:16px; width:100%; max-width:580px;}
+.form-section{background:var(--bg2); border-radius:var(--radius); padding:6px 22px 16px; box-shadow:0 1px 2px rgba(0,0,0,.045); border:none;}
+.form-section-head{display:flex; align-items:center; gap:10px; padding:17px 0 6px;}
+.form-section-ico{width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.form-section-ico svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2;}
+.form-section-head span{font-size:11.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3);}
 .fg{margin-bottom:13px;}
-.fg label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--ln2);border-radius:5px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:border-color .12s;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);}
-.fg textarea{resize:vertical;min-height:60px;}
-.fg select option{background:var(--bg3);}
-.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.fg-sep{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ln);}
-.fg-sep:first-child{margin-top:0;border-top:none;padding-top:0;}
+.form-section .fg:last-child{margin-bottom:0;}
+.fg label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.fg-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.panel input[type=text],.panel input[type=email],.panel input[type=tel],.panel input[type=number],.panel select,.panel textarea{
+  width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px;
+  padding:9px 12px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; transition:.14s;
+}
+.panel input:focus,.panel select:focus,.panel textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.panel textarea{resize:vertical; min-height:70px; line-height:1.5;}
+.panel input::placeholder,.panel textarea::placeholder{color:var(--t3);}
+.panel select option{background:var(--bg2);}
+.panel-footer{padding:14px 24px; border-top:1px solid var(--ln); display:flex; justify-content:flex-end; gap:9px; flex-shrink:0; background:var(--bg); flex-wrap:wrap;}
 
-.empty{padding:60px 24px;text-align:center;}
-.empty-ico{font-size:32px;margin-bottom:12px;opacity:.4;}
-.empty-title{font-size:14px;font-weight:500;color:var(--t2);margin-bottom:6px;}
-.empty-sub{font-size:12px;color:var(--t3);}
+/* Lignes de pièces */
+.pieces-list{display:flex; flex-direction:column; gap:8px; margin-bottom:9px;}
+.piece-row{display:flex; align-items:center; gap:8px; background:var(--bg3); border-radius:11px; padding:8px 10px;}
+.piece-row select{flex:2; min-width:0; padding:8px 10px; background:var(--bg2); border:1px solid var(--ln); border-radius:9px; color:var(--t1); font-size:13px; font-family:inherit; outline:none;}
+.piece-row input{width:84px; flex-shrink:0; padding:8px 10px; background:var(--bg2); border:1px solid var(--ln); border-radius:9px; color:var(--t1); font-size:13px; font-family:inherit; outline:none; text-align:right; font-weight:500;}
+.piece-row select:focus,.piece-row input:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.piece-del{width:28px; height:28px; border:none; background:none; color:var(--t3); cursor:pointer; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:.12s;}
+.piece-del:hover{background:rgba(200,54,44,.1); color:var(--d);}
+.piece-del svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
+.add-piece-btn{display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 12px; border:1px dashed var(--ln2); border-radius:11px; background:none; color:var(--a); font-size:12.5px; font-family:inherit; cursor:pointer; transition:.12s; width:100%;}
+.add-piece-btn:hover{background:var(--ad); border-color:var(--a);}
+.add-piece-btn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2;}
+.fg-aide{font-size:12px; color:var(--t2); line-height:1.5; padding:10px 12px; background:var(--bg3); border-radius:11px;}
+#marge-rep{font-weight:600; font-variant-numeric:tabular-nums;}
 
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--ln2);border-radius:8px;padding:10px 16px;font-size:12px;color:var(--t1);box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.ok{border-color:rgba(52,211,153,.3);color:var(--ok);}
-.toast.err{border-color:rgba(248,113,113,.3);color:var(--d);}
-
-.loader{display:flex;align-items:center;justify-content:center;height:100%;gap:8px;font-size:12px;color:var(--t3);}
-.spin{width:14px;height:14px;border:1.5px solid var(--ln2);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;}
+/* ── Toast / chargement ── */
+.toast{position:fixed; bottom:22px; right:22px; background:var(--bg2); border:1px solid var(--ln2); border-radius:12px; padding:11px 17px; font-size:13px; color:var(--t1); box-shadow:0 10px 30px rgba(0,0,0,.14); z-index:999; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; max-width:min(380px,calc(100vw - 44px));}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast.ok{border-color:rgba(26,138,82,.34); color:var(--ok);}
+.toast.err{border-color:rgba(200,54,44,.34); color:var(--d);}
+.loader{display:flex; align-items:center; justify-content:center; height:100%; gap:9px; font-size:13px; color:var(--t3);}
+.spin{width:15px; height:15px; border:1.6px solid var(--ln2); border-top-color:var(--a); border-radius:50%; animation:spin .6s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-@media(max-width:640px){.sidebar{display:none;}.panel{width:100%;}.kpi-strip{flex-wrap:wrap;}.kpi{flex:1 1 calc(50% - 5px);}}
-
-.pieces-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
-.piece-row{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--ln);border-radius:7px;padding:8px 10px;}
-.piece-row select{flex:2;min-width:0;padding:9px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;}
-.piece-row input{width:80px;flex-shrink:0;padding:9px 10px;background:var(--bg2);border:1px solid var(--ln2);border-radius:6px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;text-align:right;font-weight:500;}
-.piece-row select:focus,.piece-row input:focus{border-color:var(--a);box-shadow:0 0 0 2px rgba(0,82,204,0.15);}
-.piece-row .piece-del{width:26px;height:26px;border:none;background:none;color:var(--t3);cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;}
-.piece-row .piece-del:hover{background:rgba(248,113,113,.12);color:var(--d);}
-.piece-row .piece-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.add-piece-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px dashed var(--ln2);border-radius:7px;background:none;color:var(--a);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s;width:100%;}
-.add-piece-btn:hover{background:var(--ad);border-color:var(--a);}
-.add-piece-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+@media(max-width:1000px){
+  .plan{grid-template-columns:minmax(0,1fr); }
+  /* Le dossier s'ouvre en feuille plein écran, calée sous la barre du haut
+     pour ne pas masquer la navigation. */
+  .plan-det{position:fixed; left:0; right:0; top:52px; bottom:0; z-index:240; border-radius:0; display:none; overflow-y:auto;}
+  .plan-det.open{display:block;}
+  .det-back{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; border:none; background:var(--bg3); color:var(--t2); cursor:pointer;}
+  .det-back svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+}
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .plan-det{top:48px; bottom:calc(56px + env(safe-area-inset-bottom, 0px));}
+  .page-head{padding:20px 16px 0;}
+  .tools{padding:12px 16px 0;}
+  .plan{padding:14px 16px 20px;}
+  .row{padding:12px 14px;}
+  .statut{max-width:120px;}
+  .fg-row{grid-template-columns:1fr;}
+  .det-in{padding:16px 16px 30px;}
+}
 
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
@@ -510,7 +610,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="nl-group">Organisation</div>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.0</div>
+      <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
 
   <div class="content" id="mainContent">
@@ -520,41 +620,27 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="page-head">
         <div class="ph-left">
           <h1>Réparations</h1>
-          <p id="ph-sub">— dossiers</p>
+          <p class="ph-resume" id="ph-resume">—</p>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-secondary" onclick="exportCSV()">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exporter
-          </button>
-          <button class="btn btn-primary" onclick="openPanel()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nouveau dossier
-          </button>
+        <div class="ph-right">
+          <button class="btn btn-secondary" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+          <button class="btn btn-primary" onclick="openPanel()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau dossier</button>
         </div>
       </div>
 
-      <div class="kpi-strip">
-        <div class="kpi"><div class="kpi-label">Dossiers actifs</div><div class="kpi-val" id="k-actifs">—</div><div class="kpi-sub">en cours</div></div>
-        <div class="kpi"><div class="kpi-label">Dossiers ce mois</div><div class="kpi-val" id="k-mois">—</div><div class="kpi-sub">créés ce mois-ci</div></div>
-      </div>
-
-      <div class="toolbar">
-        <div class="search-wrap">
+      <div class="tools">
+        <div class="srch-wrap">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" id="searchInput" placeholder="Client, appareil, marque..." oninput="renderCards()"/>
+          <input type="search" id="searchInput" placeholder="Client, appareil, n° de dossier…" oninput="renderCards()"/>
         </div>
-        <div id="filterBtns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+        <div class="segf" id="filterBtns"></div>
       </div>
 
-      <div class="cards-wrap" id="cardsWrap"></div>
-      <div class="empty" id="emptyState" style="display:none;margin:0 24px 24px;">
-        <div class="empty-ico">🔧</div>
-        <div class="empty-title">Aucun dossier trouvé</div>
-        <div class="empty-sub">
-          <button onclick="openPanel()" style="background:none;border:none;color:var(--a);cursor:pointer;font-size:12px;padding:0;">Créer un premier dossier</button>
-        </div>
+      <div class="plan">
+        <div class="plan-list" id="listeReps"></div>
+        <aside class="plan-det" id="detail"></aside>
       </div>
+
     </div>
   </div>
 </div>
@@ -618,7 +704,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
             <option>Autre</option>
           </select>
         </div>
-        <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22..."/></div>
+        <div class="fg-row">
+          <div class="fg"><label>Marque</label><input type="text" id="f-marque" placeholder="ex : Apple, Samsung, Sony"/></div>
+          <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : iPhone 13 Pro, Galaxy S22"/></div>
+        </div>
         <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
       </div>
 
@@ -629,8 +718,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
           <div class="pieces-list" id="piecesList"></div>
           <button type="button" class="add-piece-btn" onclick="addPieceLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
         </div>
-        <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
-        <div style="font-size:11px;color:var(--t3);padding:8px 10px;background:var(--bg3);border-radius:5px;">Le stock sera automatiquement décrémenté pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
+        <div class="fg-row">
+          <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
+          <div class="fg"><label>Prix facturé au client (€)</label><input type="number" id="f-prix" placeholder="0.00" min="0" step="0.01" oninput="majMargeRep()"/></div>
+        </div>
+        <div class="fg" id="prix-devis-rappel" style="display:none;font-size:12px;color:var(--t3);margin-top:-6px;"></div>
+        <div class="fg-aide">Marge sur ce dossier : <span id="marge-rep">—</span><br/>Le stock est décrémenté automatiquement pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
       </div>
 
       <div class="form-section">
@@ -667,113 +760,171 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <div class="toast" id="toast"></div>
 
 <script>
-function applyMode(m){
-  const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
-  document.documentElement.setAttribute('data-mode',e)
-  const lv=e==='light'
-  const v=(a,b)=>lv?a:b
-  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
-  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
-  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
-  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
-  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
-  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
-  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
-  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
-  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
+/* Thème et accent — mêmes valeurs que les autres pages refondues. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc';return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
 }
-function setMode(m){localStorage.setItem('erp-m',m);document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));applyMode(m)}
-const sm=localStorage.getItem('erp-m')||'auto'
-document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
-applyMode(sm)
+function applyMode(m){
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'));  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'));  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)')); s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'));  s('--t2', v('#6e6e73','#98989d')); s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'));  s('--w',  v('#b25e09','#fbbf24'));  s('--d',  v('#c8362c','#f87171'))
+  s('--vio',v('#7c3aed','#a78bfa'))
+  applyAccent(accentBase)
+}
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
 setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d')
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd)}
 
 function showToast(msg,type='ok'){
   const t=document.getElementById('toast')
   t.textContent=msg
   t.className='toast show '+(type==='ok'?'ok':'err')
-  setTimeout(()=>t.className='toast',3000)
+  setTimeout(()=>t.className='toast',3200)
 }
+
+/* ─── Statuts ─── */
+const STATUTS={
+  attente_reception:{label:'Nouveau dossier',court:'Nouveau',cls:'s-attente_reception'},
+  recu:            {label:'Appareil reçu',court:'Reçu',cls:'s-recu'},
+  attente:         {label:'Attente de pièce',court:'Attente de pièce',cls:'s-attente'},
+  encours:         {label:'Diagnostic / Réparation en cours',court:'En réparation',cls:'s-encours'},
+  pret:            {label:'Prêt à récupérer',court:'Prêt',cls:'s-pret'},
+  rendu:           {label:'Rendu au client',court:'Rendu',cls:'s-rendu'},
+  non_reparable:   {label:'Non réparable',court:'Non réparable',cls:'s-non_reparable'},
+  annule:          {label:'Annulé',court:'Annulé',cls:'s-annule'}
+}
+window.STATUTS=STATUTS
+const CLOS=['rendu','non_reparable','annule']
+window.CLOS=CLOS
 
 window.toggleMotif=function(){
   const v=document.getElementById('f-statut').value
   document.getElementById('motif-wrap').style.display=(v==='non_reparable'||v==='annule')?'block':'none'
 }
 
-const STATUTS={
-  attente_reception:{label:"Nouveau dossier",cls:'s-attente_reception'},
-  recu:{label:'Appareil reçu',cls:'s-recu'},
-  attente:{label:'Attente de pièce',cls:'s-attente'},
-  encours:{label:'Diagnostic / Réparation en cours',cls:'s-encours'},
-  pret:{label:'Prêt à récupérer',cls:'s-pret'},
-  rendu:{label:'Rendu au client',cls:'s-rendu'},
-  non_reparable:{label:'Non réparable',cls:'s-non_reparable'},
-  annule:{label:'Annulé',cls:'s-annule'}
-}
-window.STATUTS=STATUTS
-
+/* ─── Menu de changement de statut ─── */
 window.currentStatusId=null
-
 function openStatusMenu(id,el){
   window.currentStatusId=id
   const menu=document.getElementById('statusMenu')
-  const rect=el.getBoundingClientRect()
-  menu.style.top=(rect.bottom+4)+'px'
-  menu.style.left=rect.left+'px'
   menu.classList.add('open')
+  const r=el.getBoundingClientRect(), m=menu.getBoundingClientRect()
+  let top=r.bottom+5, left=r.left
+  if(top+m.height>window.innerHeight-8)top=Math.max(8,r.top-m.height-5)
+  if(left+m.width>window.innerWidth-8)left=Math.max(8,window.innerWidth-m.width-8)
+  menu.style.top=top+'px'
+  menu.style.left=left+'px'
 }
 window.openStatusMenu=openStatusMenu
-
 document.addEventListener('click',e=>{
   if(!e.target.closest('#statusMenu')&&!e.target.closest('.statut')){
     document.getElementById('statusMenu').classList.remove('open')
   }
 })
 
+/* ─── Marge affichée dans le panneau ─── */
+function majMargeRep(){
+  const el=document.getElementById('marge-rep')
+  if(!el)return
+  const prix=Number(document.getElementById('f-prix').value)||0
+  const cout=Number(document.getElementById('f-cout').value)||0
+  if(prix<=0){el.textContent='—';el.style.color='var(--t2)';return}
+  const marge=prix-cout
+  el.textContent=marge.toFixed(2).replace('.',',')+' €'
+  el.style.color=marge>=0?'var(--ok)':'var(--d)'
+}
+window.majMargeRep=majMargeRep
+
+/* ─── Panneau d'édition ─── */
 function openPanel(r=null){
   document.getElementById('panelTitle').textContent=r?'Modifier le dossier':'Nouveau dossier'
   document.getElementById('saveBtn').textContent=r?'Mettre à jour':'Enregistrer'
   document.getElementById('f-id').value=r?.id||''
   const fBtn=document.getElementById('factureBtn')
   if(fBtn)fBtn.style.display=r?'inline-flex':'none'
+
+  // Le sélecteur doit être rempli AVANT qu'on y positionne le client du dossier
+  if(window.fillClientSelect)window.fillClientSelect()
+  const csel=document.getElementById('f-client-select')
+  if(csel){
+    const cid=r?.client_id?String(r.client_id):''
+    csel.value=[...csel.options].some(o=>o.value===cid)?cid:''
+  }
+
   document.getElementById('f-client').value=r?.client_nom||''
   document.getElementById('f-email').value=r?.client_email||''
   document.getElementById('f-tel').value=r?.client_telephone||''
   document.getElementById('f-appareil').value=r?.appareil||''
+  document.getElementById('f-marque').value=r?.marque||''
   document.getElementById('f-modele').value=r?.modele||''
   document.getElementById('f-panne').value=r?.panne_description||''
-  // Vider la liste de pièces
-  const _pl=document.getElementById('piecesList');if(_pl)_pl.innerHTML=''
+  document.getElementById('f-prix').value=r?.prix_final?Number(r.prix_final).toFixed(2):''
   document.getElementById('f-statut').value=r?.statut||'attente_reception'
   document.getElementById('f-motif').value=r?.motif||''
   toggleMotif()
   document.getElementById('f-notes').value=r?.notes||''
-  // Remplir le sélecteur de pièces depuis le stock
-  // Charger les pièces (nouveau système multi-pièces)
+
+  // Rappel du montant du devis d'origine, s'il existe
+  const rappel=document.getElementById('prix-devis-rappel')
+  if(rappel){
+    const pd=Number(r?.prix_devis||0)
+    rappel.textContent=pd>0?`Devis d'origine : ${pd.toFixed(2).replace('.',',')} €`:''
+    rappel.style.display=pd>0?'block':'none'
+  }
+
+  // Pièces (multi-pièces), avec compat des anciens dossiers à pièce unique
   window.loadPiecesData(r?.pieces||[])
-  // Compat ancien dossier (piece_id seul)
   if((!r?.pieces||r.pieces.length===0)&&r?.piece_id){
     window.addPieceLigne(`stock-${r.piece_id}`,1,r.cout_pieces||0)
   }
-  // Remplir le sélecteur de clients existants + réinitialiser sur "Nouveau client"
-  if(window.fillClientSelect)window.fillClientSelect()
-  const csel=document.getElementById('f-client-select')
-  if(csel){csel.value='';}
-  // Déverrouiller les champs client (cas nouveau dossier / modification)
-  ;['f-client','f-email','f-tel'].forEach(fid=>{const el=document.getElementById(fid);if(el){el.readOnly=false;el.style.opacity='1';}})
+
+  // Champs client : verrouillés seulement si un client existant est rattaché
+  verrouillerClient(!!(csel&&csel.value))
+  majMargeRep()
+
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   document.getElementById('f-client').focus()
 }
-
+function verrouillerClient(verrou){
+  ;['f-client','f-email','f-tel'].forEach(fid=>{
+    const el=document.getElementById(fid)
+    if(!el)return
+    el.readOnly=verrou
+    el.style.opacity=verrou?'.6':'1'
+  })
+}
+window.verrouillerClient=verrouillerClient
 
 function closePanel(){
   document.getElementById('overlay').classList.remove('open')
   document.getElementById('panel').classList.remove('open')
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanel();document.getElementById('statusMenu').classList.remove('open')}})
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return
+  const menu=document.getElementById('statusMenu')
+  if(menu&&menu.classList.contains('open')){menu.classList.remove('open');return}
+  const panel=document.getElementById('panel')
+  if(panel&&panel.classList.contains('open')){closePanel();return}
+  if(window.fermerDetail)window.fermerDetail()
+})
 </script>
 
 <script type="module">
@@ -782,18 +933,38 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
-
-
 function showError(msg){
   document.getElementById('ldr').style.display='none'
   document.getElementById('mainContent').innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;">
-      <div style="font-size:28px;">⚠️</div>
-      <div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
-      <div style="font-size:12px;color:var(--t3);max-width:360px;text-align:center;">${escHtml(msg)}</div>
-      <button onclick="location.reload()" style="padding:8px 20px;background:var(--ad);color:var(--a);border:1px solid var(--a);border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;margin-top:4px;">Réessayer</button>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:24px;">
+      <div style="font-size:15px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
+      <div style="font-size:13px;color:var(--t2);max-width:42ch;text-align:center;line-height:1.6;">${escHtml(msg)}</div>
+      <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:4px;">Réessayer</button>
     </div>`
 }
+
+const EUR=new Intl.NumberFormat('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})
+function eur(v){return EUR.format(Number(v)||0)+' €'}
+function jours(iso){
+  if(!iso)return null
+  const d=new Date(iso)
+  if(isNaN(d))return null
+  return Math.floor((Date.now()-d.getTime())/86400000)
+}
+function age(iso){
+  const n=jours(iso)
+  if(n===null)return '—'
+  if(n<=0)return "aujourd'hui"
+  if(n===1)return 'hier'
+  if(n<31)return n+' j'
+  return new Date(iso).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
+}
+function dateCourte(iso){
+  if(!iso)return '—'
+  const d=new Date(iso)
+  return isNaN(d)?'—':d.toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'})
+}
+function prixClient(r){return Number(r.prix_final)||Number(r.prix_devis)||0}
 
 try {
 
@@ -803,8 +974,11 @@ if(!session){window.location.href='/admin/login.html'; throw new Error('no sessi
 let allReps=[]
 let allStockPieces=[]
 let allServices=[]
+let allClientsRep=[]
+let activeFilter='ouverts'
+let selectedId=null
 
-// ─── MULTI-PIÈCES ───
+/* ─── Lignes de pièces du panneau ─── */
 window.buildPieceOptions=function buildPieceOptions(selectedValue){
   const stockOpts=allStockPieces.map(p=>`<option value="stock-${p.id}" data-kind="stock" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${selectedValue===`stock-${p.id}`?'selected':''}>${escHtml(p.nom)} (stock: ${p.quantite})</option>`).join('')
   const svcOpts=allServices.map(s=>`<option value="svc-${s.id}" data-kind="service" data-vente="${s.prix||0}" ${selectedValue===`svc-${s.id}`?'selected':''}>${escHtml(s.nom)}</option>`).join('')
@@ -814,14 +988,12 @@ window.buildPieceOptions=function buildPieceOptions(selectedValue){
 }
 window.addPieceLigne=function addPieceLigne(selectedValue='',qte=1,cout=''){
   const list=document.getElementById('piecesList')
-  const idx=list.children.length
   const div=document.createElement('div')
   div.className='piece-row'
-  div.dataset.idx=idx
   div.innerHTML=`
-    <select onchange="onPieceLigneChange(this)" data-idx="${idx}">${buildPieceOptions(selectedValue)}</select>
-    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:64px;" onchange="recalcCout()" oninput="recalcCout()"/>
-    <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" onchange="recalcCout()" oninput="recalcCout()"/>
+    <select onchange="onPieceLigneChange(this)" aria-label="Pièce ou prestation">${buildPieceOptions(selectedValue)}</select>
+    <input type="number" placeholder="Qté" min="1" step="1" value="${qte}" style="width:64px;" oninput="recalcCout()" aria-label="Quantité"/>
+    <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" oninput="recalcCout()" aria-label="Coût unitaire"/>
     <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
   `
   list.appendChild(div)
@@ -831,13 +1003,8 @@ window.onPieceLigneChange=function onPieceLigneChange(sel){
   const row=sel.closest('.piece-row')
   const opt=sel.options[sel.selectedIndex]
   const coutInput=row.querySelectorAll('input')[1]
-  if(opt&&opt.dataset.kind==='stock'){
-    coutInput.value=opt.dataset.achat||0
-    coutInput.disabled=false
-  } else if(opt&&opt.dataset.kind==='service'){
-    // Une prestation n'a pas de coût de pièce associé
-    coutInput.value=0
-  }
+  if(opt&&opt.dataset.kind==='stock')coutInput.value=opt.dataset.achat||0
+  else if(opt&&opt.dataset.kind==='service')coutInput.value=0
   recalcCout()
 }
 window.delPieceLigne=function delPieceLigne(btn){
@@ -848,11 +1015,10 @@ window.recalcCout=function recalcCout(){
   let total=0
   document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
     const inputs=row.querySelectorAll('input')
-    const qte=Number(inputs[0].value)||1
-    const cout=Number(inputs[1].value)||0
-    total+=qte*cout
+    total+=(Number(inputs[0].value)||1)*(Number(inputs[1].value)||0)
   })
   document.getElementById('f-cout').value=total.toFixed(2)
+  majMargeRep()
 }
 window.getPiecesData=function getPiecesData(){
   const pieces=[]
@@ -862,36 +1028,28 @@ window.getPiecesData=function getPiecesData(){
     if(!sel.value)return
     const [kind,rawId]=sel.value.split('-')
     const nom=sel.options[sel.selectedIndex].text.split(' (')[0]
-    if(kind==='stock'){
-      pieces.push({stock_id:Number(rawId),service_id:null,nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
-    } else if(kind==='svc'){
-      pieces.push({stock_id:null,service_id:Number(rawId),nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
-    }
+    if(kind==='stock')pieces.push({stock_id:Number(rawId),service_id:null,nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+    else if(kind==='svc')pieces.push({stock_id:null,service_id:Number(rawId),nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
   })
   return pieces
 }
 window.loadPiecesData=function loadPiecesData(pieces){
   const list=document.getElementById('piecesList')
   list.innerHTML=''
-  if(!pieces||pieces.length===0)return
+  if(!pieces||pieces.length===0){recalcCout();return}
   pieces.forEach(p=>{
     const val=p.service_id?`svc-${p.service_id}`:(p.stock_id?`stock-${p.stock_id}`:'')
     addPieceLigne(val,p.qte,p.cout)
   })
 }
 
-let allClientsRep=[]
-let activeFilter='Tous'
-
-// Remplir le sélecteur de clients existants
+/* ─── Clients ─── */
 window.fillClientSelect=function(){
   const sel=document.getElementById('f-client-select')
   if(!sel)return
-  sel.innerHTML='<option value="">➕ Nouveau client</option>'+
-    allClientsRep.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom)}" data-email="${escHtml(c.email)}" data-tel="${escHtml(c.telephone)}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom)}</option>`).join('')
+  sel.innerHTML='<option value="">Nouveau client</option>'+
+    allClientsRep.map(c=>`<option value="${c.id}" data-nom="${escHtml(c.nom||'')}" data-email="${escHtml(c.email||'')}" data-tel="${escHtml(c.telephone||'')}">${c.numero?escHtml(c.numero)+' · ':''}${escHtml(c.nom||'')}</option>`).join('')
 }
-
-// Quand on sélectionne un client existant, remplir les champs
 window.onClientSelect=function(){
   const sel=document.getElementById('f-client-select')
   const opt=sel.options[sel.selectedIndex]
@@ -899,56 +1057,50 @@ window.onClientSelect=function(){
     document.getElementById('f-client').value=opt.dataset.nom||''
     document.getElementById('f-email').value=opt.dataset.email||''
     document.getElementById('f-tel').value=opt.dataset.tel||''
-    // Verrouiller les champs (lecture seule visuelle) puisque le client existe
-    document.getElementById('f-client').readOnly=true
-    document.getElementById('f-email').readOnly=true
-    document.getElementById('f-tel').readOnly=true
-    document.getElementById('f-client').style.opacity='.6'
-    document.getElementById('f-email').style.opacity='.6'
-    document.getElementById('f-tel').style.opacity='.6'
-  } else {
-    // Nouveau client : vider et déverrouiller
+    verrouillerClient(true)
+  }else{
     document.getElementById('f-client').value=''
     document.getElementById('f-email').value=''
     document.getElementById('f-tel').value=''
-    document.getElementById('f-client').readOnly=false
-    document.getElementById('f-email').readOnly=false
-    document.getElementById('f-tel').readOnly=false
-    document.getElementById('f-client').style.opacity='1'
-    document.getElementById('f-email').style.opacity='1'
-    document.getElementById('f-tel').style.opacity='1'
+    verrouillerClient(false)
   }
 }
 
-// Exposer le remplissage du select de pièces (appelé depuis openPanel)
-// fillPieceSelect remplacé par loadPiecesData pour le multi-pièces
-window.fillPieceSelect=function(selectedId){}
-
-// Génère le prochain numéro séquentiel via le compteur Supabase
-async function nextNumero(cle, prefix){
-  // Lire la valeur actuelle
-  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
-  const nouvelle=(cpt?.valeur||0)+1
-  // Incrémenter
-  await sb.from('compteurs').update({valeur:nouvelle}).eq('cle',cle)
-  return `${prefix}-${String(nouvelle).padStart(4,'0')}`
+/* ─── Numérotation séquentielle ───
+   Le compteur n'est pas atomique côté PostgREST : on vérifie donc que le
+   numéro obtenu n'est pas déjà porté par un dossier avant de le rendre. */
+async function nextNumero(cle,prefix){
+  for(let essai=0;essai<5;essai++){
+    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
+    const valeur=(cpt?.valeur||0)+1
+    await sb.from('compteurs').update({valeur}).eq('cle',cle)
+    const numero=`${prefix}-${String(valeur).padStart(4,'0')}`
+    const table=cle==='client'?'clients':'reparations'
+    const {count}=await sb.from(table).select('id',{count:'exact',head:true}).eq('numero',numero)
+    if(!count)return numero
+  }
+  return `${prefix}-${Date.now().toString().slice(-6)}`
 }
 window.nextNumero=nextNumero
 
+/* ─── Chargement ─── */
 async function loadReps(){
   const [rRep,rStock,rCli,rSvc]=await Promise.all([
-    sb.from('reparations').select('*').order('created_at',{ascending:false}),
-    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom'),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom'),
+    sb.from('reparations').select('*',{count:'exact'}).order('created_at',{ascending:false}).limit(2000),
+    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom').limit(5000),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(5000),
     sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true})
   ])
-  if(rRep.error){console.error(rRep.error);return}
+  if(rRep.error)throw new Error(rRep.error.message)
   allReps=rRep.data||[]
   allStockPieces=rStock.data||[]
   allClientsRep=rCli.data||[]
   allServices=rSvc.data||[]
+  if(typeof rRep.count==='number'&&rRep.count>allReps.length){
+    showToast(`Seuls ${allReps.length} dossiers sur ${rRep.count} ont été chargés.`,'err')
+  }
 
-  // Attribution rétroactive des numéros aux dossiers existants sans numéro
+  // Dossiers créés ailleurs sans numéro (page Demandes) : on leur en attribue un
   const sansNumero=allReps.filter(r=>!r.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
   for(const r of sansNumero){
     const num=await nextNumero('reparation','REP')
@@ -956,325 +1108,475 @@ async function loadReps(){
     r.numero=num
   }
 
-  allStockPieces=rStock.data||[]
   renderAll()
   document.getElementById('ldr').style.display='none'
-  const pb=document.getElementById('pageBody')
-  pb.style.display='flex'
+  document.getElementById('pageBody').style.display='flex'
 }
 
-function renderAll(){updateKPIs();renderFilters();renderCards()}
+function renderAll(){
+  majResume()
+  renderFilters()
+  renderCards()
+  renderDetail()
+}
 
-function updateKPIs(){
-  const now=new Date()
-  const actifs=allReps.filter(r=>!['rendu','annule','non_reparable'].includes(r.statut)).length
-  const moisReps=allReps.filter(r=>{
-    const d=new Date(r.created_at)
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&!['annule','non_reparable'].includes(r.statut)
+/* ─── Groupes ─── */
+const GROUPES=[
+  {cle:'reception',titre:'À réceptionner',statuts:['attente_reception']},
+  {cle:'atelier',  titre:'En atelier',    statuts:['recu','attente','encours']},
+  {cle:'pret',     titre:'Prêt à récupérer',statuts:['pret']},
+  {cle:'clos',     titre:'Clos',          statuts:CLOS}
+]
+function groupeDe(r){
+  const g=GROUPES.find(g=>g.statuts.includes(r.statut))
+  return g?g.cle:'atelier'
+}
+
+function majResume(){
+  const ouverts=allReps.filter(r=>!CLOS.includes(r.statut))
+  const enAttente=ouverts.filter(r=>r.statut==='attente')
+  const prets=ouverts.filter(r=>r.statut==='pret')
+  const engage=ouverts.reduce((a,r)=>a+prixClient(r),0)
+  const bouts=[]
+  if(!allReps.length){
+    document.getElementById('ph-resume').textContent='Aucun dossier pour le moment.'
+  }else{
+    bouts.push(`<b>${ouverts.length} dossier${ouverts.length>1?'s':''} ouvert${ouverts.length>1?'s':''}</b>`)
+    if(enAttente.length){
+      const plusVieux=Math.max(...enAttente.map(r=>jours(r.updated_at||r.created_at)??0))
+      bouts.push(`<span class="alerte">${enAttente.length} attente de pièce${plusVieux>=3?` (la plus ancienne : ${plusVieux} jours)`:''}</span>`)
+    }
+    if(prets.length)bouts.push(`${prets.length} prêt${prets.length>1?'s':''} à récupérer`)
+    if(engage>0)bouts.push(`${eur(engage)} engagés`)
+    if(bouts.length===1)bouts.push(`${allReps.length} dossier${allReps.length>1?'s':''} au total`)
+    document.getElementById('ph-resume').innerHTML=bouts.join(' · ')
+  }
+  // Pastille « Réparations » de la navigation
+  document.querySelectorAll('#nb-rep').forEach(el=>{
+    el.textContent=ouverts.length
+    el.style.display=ouverts.length?'':'none'
   })
-  document.getElementById('k-actifs').textContent=actifs
-  document.getElementById('k-mois').textContent=moisReps.length
-  document.getElementById('ph-sub').textContent=`${allReps.length} dossier${allReps.length>1?'s':''}`
 }
 
+const FILTRES=[
+  {cle:'ouverts',   label:'Ouverts'},
+  {cle:'reception', label:'À réceptionner'},
+  {cle:'atelier',   label:'En atelier'},
+  {cle:'pret',      label:'Prêts'},
+  {cle:'clos',      label:'Clos'},
+  {cle:'tous',      label:'Tous'}
+]
 function renderFilters(){
-  const all=['Tous','Actifs','attente_reception','recu','attente','encours','pret','rendu','non_reparable','annule']
-  const labels={'Tous':'Tous','Actifs':'Actifs','attente_reception':"Nouveau dossier",'recu':'Appareil reçu','attente':'Attente de pièce','encours':'Diagnostic / Réparation','pret':'Prêt à récupérer','rendu':'Rendu au client','non_reparable':'Non réparable','annule':'Annulé'}
-  const colors={'Actifs':'#3b82f6','attente_reception':'#a855f7','recu':'#8b8ba0','attente':'#fbbf24','encours':'#fb923c','pret':'#34d399','rendu':'#6b7280','non_reparable':'#fb923c','annule':'#f87171'}
-  document.getElementById('filterBtns').innerHTML=all.map(s=>{
-    const isActive=activeFilter===s
-    const color=colors[s]
-    return`<button class="filter-btn ${isActive?'active':''}" style="${isActive&&color?`background:${color};`:''}" onclick="setFilter('${s}')">${labels[s]||s}</button>`
-  }).join('')
+  document.getElementById('filterBtns').innerHTML=FILTRES.map(f=>
+    `<button class="${activeFilter===f.cle?'on':''}" onclick="setFilter('${f.cle}')">${f.label}</button>`
+  ).join('')
 }
+// Exposée globalement : la recherche l'appelle depuis un attribut oninput,
+// qui ne voit pas la portée du module.
+window.renderCards=renderCards
 
-function setFilter(f){activeFilter=f;renderFilters();renderCards()}
-window.setFilter=setFilter
+window.setFilter=function(f){
+  activeFilter=f
+  renderFilters()
+  renderCards()
+}
 
 function getFiltered(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   return allReps.filter(r=>{
-    let matchFilter=true
-    if(activeFilter==='Actifs')matchFilter=!['rendu','annule','non_reparable'].includes(r.statut)
-    else if(activeFilter!=='Tous')matchFilter=r.statut===activeFilter
-    const matchSearch=!q||[r.client_nom,r.client_email,r.appareil,r.marque,r.modele,r.panne_description].some(v=>v&&v.toLowerCase().includes(q))
-    return matchFilter&&matchSearch
+    let okF=true
+    if(activeFilter==='ouverts')okF=!CLOS.includes(r.statut)
+    else if(activeFilter!=='tous')okF=groupeDe(r)===activeFilter
+    const okQ=!q||[r.numero,r.client_nom,r.client_email,r.client_telephone,r.appareil,r.marque,r.modele,r.panne_description]
+      .some(v=>v&&String(v).toLowerCase().includes(q))
+    return okF&&okQ
   })
+}
+
+function ligne(r){
+  const st=STATUTS[r.statut]||{court:r.statut,cls:'s-recu'}
+  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+  const sous=[appareil,r.panne_description].filter(Boolean).join(' · ')
+  const n=jours(r.updated_at||r.created_at)
+  const vieux=!CLOS.includes(r.statut)&&n!==null&&n>=7
+  return `<div class="row${selectedId===r.id?' sel':''}" tabindex="0" role="button"
+      onclick="selectRep(${r.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRep(${r.id})}">
+    <span class="ref">${escHtml(r.numero||'—')}</span>
+    <span class="row-who">
+      <b>${escHtml(r.client_nom||'Client inconnu')}</b>
+      <em>${escHtml(sous||'—')}</em>
+    </span>
+    <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" title="Changer le statut">${escHtml(st.court)}</button>
+    <span class="row-age${vieux?' old':''}">${age(r.created_at)}</span>
+  </div>`
 }
 
 function renderCards(){
   const rows=getFiltered()
-  const wrap=document.getElementById('cardsWrap')
-  const empty=document.getElementById('emptyState')
-  if(rows.length===0){wrap.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none'
-  wrap.innerHTML=rows.map(r=>{
-    const st=window.STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
-    const date=new Date(r.created_at).toLocaleDateString('fr-BE',{day:'numeric',month:'short'})
-    return`<div class="four-card" data-id="${r.id}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
-        <div style="min-width:0;">
-          <span style="font-family:monospace;font-size:11px;font-weight:600;color:var(--a);background:var(--ad);padding:2px 6px;border-radius:4px;white-space:nowrap;">${escHtml(r.numero)||'—'}</span>
-          <div style="font-weight:500;font-size:14px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(r.client_nom)}</div>
-        </div>
-        <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" style="flex-shrink:0;">${escHtml(st.label)} ▾</button>
+  const wrap=document.getElementById('listeReps')
+  if(!rows.length){
+    const vide=allReps.length===0
+    wrap.innerHTML=`<div class="vide">
+      <div class="vide-ico"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+      <h3>${vide?'Aucun dossier de réparation':'Aucun dossier ne correspond'}</h3>
+      <p>${vide?'Crée un premier dossier pour suivre un appareil de sa réception à sa restitution.':'Essaie un autre terme de recherche ou change de filtre.'}</p>
+      ${vide?'<button class="btn btn-primary" onclick="openPanel()" style="margin:0 auto;">Nouveau dossier</button>':''}
+    </div>`
+    return
+  }
+  wrap.innerHTML=GROUPES.map(g=>{
+    const items=rows.filter(r=>groupeDe(r)===g.cle)
+    if(!items.length)return ''
+    const montant=items.reduce((a,r)=>a+prixClient(r),0)
+    const chaud=g.cle==='atelier'&&items.some(r=>r.statut==='attente')
+    return `<div class="grp">
+      <div class="grp-h">
+        <b>${g.titre}</b>
+        <i class="${chaud?'hot':''}">${items.length}</i>
+        ${montant>0?`<span>${eur(montant)}</span>`:''}
       </div>
-      <div style="font-size:12px;color:var(--t2);">${escHtml(r.modele||r.appareil)||'—'}</div>
-      <div style="font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${escHtml(r.panne_description)||'—'}</div>
-      ${r.motif?`<div style="font-size:11px;color:#fb923c;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Motif : ${escHtml(r.motif)}</div>`:''}
-      <div style="font-size:11px;color:var(--t3);margin-top:8px;">Reçu le ${date}</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid var(--ln);">
-        <div>
-          <span style="font-size:11px;color:var(--t3);">${r.cout_pieces?'Coût pièces : '+Number(r.cout_pieces).toFixed(2)+'€':'Aucune pièce'}</span>
-        </div>
-        <div class="actions" style="opacity:1;">
-          <button class="act-btn" onclick="event.stopPropagation();editRep(${r.id})" title="Modifier">
-            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="act-btn del" onclick="event.stopPropagation();deleteRep(${r.id},'${escJsAttr(r.client_nom||'')}')" title="Supprimer">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          </button>
-        </div>
-      </div>
+      <div class="liste">${items.map(ligne).join('')}</div>
     </div>`
   }).join('')
 }
 
-window.renderTable=renderCards
+/* ─── Dossier ouvert ─── */
+window.selectRep=function(id){
+  selectedId=id
+  renderCards()
+  renderDetail()
+  document.getElementById('detail').classList.add('open')
+  document.getElementById('detail').scrollTop=0
+}
+window.fermerDetail=function(){
+  document.getElementById('detail').classList.remove('open')
+}
+
+const PARCOURS=[
+  {cle:'attente_reception',label:'Dossier créé'},
+  {cle:'recu',label:'Appareil reçu'},
+  {cle:'encours',label:'Diagnostic / réparation'},
+  {cle:'pret',label:'Prêt à récupérer'},
+  {cle:'rendu',label:'Rendu au client'}
+]
+function etapes(r){
+  if(r.statut==='non_reparable'||r.statut==='annule'){
+    const st=STATUTS[r.statut]
+    return `<div class="steps">
+      <div class="step done"><i></i>Dossier créé <em>· ${dateCourte(r.created_at)}</em></div>
+      <div class="step ko"><i></i>${escHtml(st.label)}${r.motif?` <em>· ${escHtml(r.motif)}</em>`:''}</div>
+    </div>`
+  }
+  const courant=r.statut==='attente'?'encours':r.statut
+  const idx=PARCOURS.findIndex(e=>e.cle===courant)
+  return `<div class="steps">${PARCOURS.map((e,i)=>{
+    const cls=i<idx?'done':i===idx?'now':''
+    let detail=''
+    if(e.cle==='attente_reception')detail=` <em>· ${dateCourte(r.created_at)}</em>`
+    if(e.cle==='rendu'&&r.date_fin&&idx>=3)detail=` <em>· ${dateCourte(r.date_fin)}</em>`
+    if(i===idx&&r.statut==='attente')detail=` <em>· en attente d'une pièce</em>`
+    return `<div class="step ${cls}"><i></i>${e.label}${detail}</div>`
+  }).join('')}</div>`
+}
+
+function renderDetail(){
+  const box=document.getElementById('detail')
+  const r=allReps.find(x=>x.id===selectedId)
+  if(!r){
+    selectedId=null
+    box.classList.remove('open')
+    box.innerHTML=`<div class="det-vide"><p>Sélectionne un dossier dans la liste pour voir l'appareil, la panne, les pièces montées et le prix.</p></div>`
+    return
+  }
+  const st=STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
+  const cout=Number(r.cout_pieces)||0
+  const prix=prixClient(r)
+  const marge=prix-cout
+  const pieces=Array.isArray(r.pieces)?r.pieces:[]
+  const appareil=[r.marque,r.modele].filter(Boolean).join(' ')
+  box.innerHTML=`
+  <div class="det-in">
+    <div class="det-top">
+      <button class="det-back" onclick="fermerDetail()" aria-label="Retour à la liste"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <span class="ref">${escHtml(r.numero||'—')}</span>
+      <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" title="Changer le statut">${escHtml(st.label)}</button>
+    </div>
+    <div>
+      <h2>${escHtml(r.client_nom||'Client inconnu')}</h2>
+      <div class="det-coord">
+        ${r.client_telephone?`<a href="tel:${escHtml(String(r.client_telephone).replace(/\s/g,''))}">${escHtml(r.client_telephone)}</a>`:''}
+        ${r.client_email?`<a href="mailto:${escHtml(r.client_email)}">${escHtml(r.client_email)}</a>`:''}
+        ${!r.client_telephone&&!r.client_email?'<span>Aucune coordonnée enregistrée</span>':''}
+        ${!r.client_id?'<span>Non rattaché à une fiche client</span>':''}
+      </div>
+    </div>
+    <div class="sep"></div>
+    <dl class="dl">
+      <div><dt>Appareil</dt><dd>${escHtml(r.appareil||'—')}</dd></div>
+      ${appareil?`<div><dt>Modèle</dt><dd>${escHtml(appareil)}</dd></div>`:''}
+      <div><dt>Reçu le</dt><dd>${dateCourte(r.created_at)}</dd></div>
+      ${r.date_fin?`<div><dt>Terminé le</dt><dd>${dateCourte(r.date_fin)}</dd></div>`:''}
+    </dl>
+    <div>
+      <div class="det-lab" style="margin-bottom:5px;">Panne</div>
+      <div class="det-note">${escHtml(r.panne_description||'—')}</div>
+    </div>
+    ${r.motif?`<div class="det-motif">Motif : ${escHtml(r.motif)}</div>`:''}
+    <div class="sep"></div>
+    <div>
+      <div class="det-lab" style="margin-bottom:7px;">Pièces et prestations</div>
+      ${pieces.length?`<dl class="dl">${pieces.map(p=>
+        `<div><dt>${escHtml(p.nom||'—')}${p.qte>1?` ×${p.qte}`:''}</dt><dd class="num">${eur((Number(p.qte)||1)*(Number(p.cout)||0))}</dd></div>`
+      ).join('')}</dl>`:'<div class="det-note">Aucune pièce enregistrée</div>'}
+    </div>
+    <dl class="dl">
+      <div><dt>Coût des pièces</dt><dd class="num">${eur(cout)}</dd></div>
+    </dl>
+    <div class="det-prix">
+      <span>Prix client</span>
+      <b>${prix>0?eur(prix):'à définir'}</b>
+    </div>
+    ${prix>0?`<div class="det-marge" style="color:${marge>=0?'var(--ok)':'var(--d)'};text-align:right;">Marge : ${eur(marge)}</div>`:''}
+    ${r.notes?`<div class="sep"></div><div><div class="det-lab" style="margin-bottom:5px;">Notes internes</div><div class="det-note">${escHtml(r.notes)}</div></div>`:''}
+    <div class="sep"></div>
+    ${etapes(r)}
+    <div class="sep"></div>
+    <div class="det-acts">
+      <button class="btn btn-secondary" onclick="editRep(${r.id})">Modifier</button>
+      ${r.converti_facture_id
+        ? '<button class="btn btn-ghost" disabled style="flex:1;">Facture déjà créée</button>'
+        : `<button class="btn btn-primary" onclick="factureDepuisDossier(${r.id})">Créer une facture</button>`}
+    </div>
+    <button class="btn btn-danger" onclick="deleteRep(${r.id},'${escJsAttr(r.client_nom||'')}')">Supprimer le dossier</button>
+  </div>`
+}
 
 window.editRep=function(id){
   const r=allReps.find(r=>r.id===id)
   if(r)openPanel(r)
 }
 
+/* ─── Facturation ─── */
+async function creerFactureDepuis(r){
+  if(r.converti_facture_id){showToast('Une facture existe déjà pour ce dossier','err');return}
+  const prix=prixClient(r)
+  if(!confirm(`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}\n\nElle sera créée en brouillon, à compléter dans Factures.`))return
+  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
+  const seq=(cpt?.valeur||0)+1
+  await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
+  const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
+  const app=[r.appareil,[r.marque,r.modele].filter(Boolean).join(' ')].filter(Boolean).join(' ').trim()
+  const desc=`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
+  const res=await sb.from('factures').insert({
+    numero:numFacture,
+    reparation_id:r.id,
+    reparation_numero:r.numero,
+    client_id:r.client_id||null,
+    client_nom:r.client_nom,
+    client_email:r.client_email||null,
+    client_telephone:r.client_telephone||null,
+    client_adresse:r.client_adresse||null,
+    date_emission:new Date().toISOString().slice(0,10),
+    statut:'brouillon',
+    lignes:[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''}],
+    total:prix, remise:0, notes:null, stock_decremente:true,
+    updated_at:new Date().toISOString()
+  }).select().single()
+  if(res.error)throw new Error(res.error.message)
+  await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
+  r.converti_facture_id=res.data.id
+  renderDetail()
+  showToast(`Facture ${numFacture} créée — à compléter dans Factures`,'ok')
+}
+window.factureDepuisDossier=async function(id){
+  const r=allReps.find(x=>x.id===id)
+  if(!r){showToast('Dossier introuvable','err');return}
+  try{await creerFactureDepuis(r)}catch(e){showToast('Erreur : '+(e.message||e),'err')}
+}
 window.creerFacture=async function(){
   const id=document.getElementById('f-id').value
-  if(!id){showToast("Enregistre d'abord la réparation",'err');return}
+  if(!id){showToast("Enregistre d'abord le dossier",'err');return}
   const r=allReps.find(x=>String(x.id)===String(id))
-  if(!r){showToast('Réparation introuvable','err');return}
-  if(r.converti_facture_id){showToast('Une facture a déjà été créée pour cette réparation','err');return}
-  const prix=Number(r.prix_final||r.prix_devis||0)
-  if(!confirm(`Créer une facture pour la réparation ${r.numero} ?\n\nMontant : ${prix.toFixed(2)} €\n\nLa facture sera créée en brouillon, tu pourras la compléter dans Factures.`))return
-  const fBtn=document.getElementById('factureBtn')
-  fBtn.disabled=true
-  try{
-    // Numéro de facture (format année-séquence, comme partout)
-    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
-    const seq=(cpt?.valeur||0)+1
-    await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
-    const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
-    const app=[r.appareil,[r.marque,r.modele].filter(Boolean).join(' ')].filter(Boolean).join(' ').trim()
-    const desc=`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
-    const facturePayload={
-      numero:numFacture,
-      reparation_id:r.id,
-      reparation_numero:r.numero,
-      client_id:r.client_id||null,
-      client_nom:r.client_nom,
-      client_email:r.client_email||null,
-      client_telephone:r.client_telephone||null,
-      client_adresse:r.client_adresse||null,
-      date_emission:new Date().toISOString().slice(0,10),
-      statut:'brouillon',
-      lignes:[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''}],
-      total:prix,
-      remise:0,
-      notes:null,
-      stock_decremente:true,
-      updated_at:new Date().toISOString()
-    }
-    const res=await sb.from('factures').insert(facturePayload).select().single()
-    if(res.error)throw new Error(res.error.message)
-    await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
-    r.converti_facture_id=res.data.id
-    fBtn.disabled=false
-    showToast(`Facture ${numFacture} créée ✓ — À compléter dans Factures`,'ok')
-  }catch(e){
-    fBtn.disabled=false
-    showToast('Erreur : '+(e.message||e),'err')
-  }
+  if(!r){showToast('Dossier introuvable','err');return}
+  const btn=document.getElementById('factureBtn')
+  btn.disabled=true
+  try{await creerFactureDepuis(r)}catch(e){showToast('Erreur : '+(e.message||e),'err')}
+  btn.disabled=false
 }
 
+/* ─── Changement de statut ─── */
 window.changeStatut=async function(statut){
   if(!window.currentStatusId)return
   const id=window.currentStatusId
   document.getElementById('statusMenu').classList.remove('open')
   window.currentStatusId=null
   const r=allReps.find(r=>r.id===id)
+  if(!r)return
 
-  // Faut-il décrémenter le stock ? (passage en pret/rendu + pièce liée + pas déjà fait)
   const statutAvance=['pret','rendu'].includes(statut)
-  const doitDecrementer = r && statutAvance && (r.pieces?.length>0||r.piece_id) && r.stock_decremente!==true
+  const pieces=(Array.isArray(r.pieces)&&r.pieces.length)?r.pieces:(r.piece_id?[{stock_id:r.piece_id,qte:1}]:[])
+  const doitDecrementer=statutAvance&&pieces.length>0&&r.stock_decremente!==true
 
   const maj={statut,updated_at:new Date().toISOString()}
   if(doitDecrementer)maj.stock_decremente=true
-  // Enregistrer la date de fin au premier passage en prêt/rendu (pour la garantie)
-  if(statutAvance && r && !r.date_fin)maj.date_fin=new Date().toISOString()
+  if(statutAvance&&!r.date_fin)maj.date_fin=new Date().toISOString()
 
   const {error}=await sb.from('reparations').update(maj).eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
-  if(r){r.statut=statut;if(doitDecrementer)r.stock_decremente=true;if(maj.date_fin)r.date_fin=maj.date_fin}
+  Object.assign(r,maj)
 
-  // Décrémenter le stock (multi-pièces)
-  if(doitDecrementer){
-    const pcs=r.pieces&&r.pieces.length>0?r.pieces:[{stock_id:r.piece_id,qte:1}]
-    let toastMsg=`${window.STATUTS[statut]?.label} · Stock mis à jour`
-    for(const pd of pcs){
-      const piece=allStockPieces.find(p=>p.id===Number(pd.stock_id||pd))
-      if(!piece||Number(piece.quantite)<=0)continue
-      const newQty=Math.max(0,Number(piece.quantite)-(pd.qte||1))
-      const stockRes=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',piece.id)
-      if(!stockRes.error)piece.quantite=newQty
-    }
-    renderAll()
-    showToast(toastMsg,'ok')
-    return
-  }
-
+  if(doitDecrementer)await decrementerStock(pieces)
   renderAll()
-  showToast(`Statut mis à jour : ${window.STATUTS[statut]?.label||statut}`,'ok')
+  showToast(`${escHtml(r.client_nom||'Dossier')} · ${STATUTS[statut]?.label||statut}`,'ok')
+}
+
+async function decrementerStock(pieces){
+  for(const pd of pieces){
+    const sid=Number(pd.stock_id)
+    if(!sid)continue
+    const piece=allStockPieces.find(p=>p.id===sid)
+    if(!piece||Number(piece.quantite)<=0)continue
+    const nouvelle=Math.max(0,Number(piece.quantite)-(Number(pd.qte)||1))
+    const res=await sb.from('stock').update({quantite:nouvelle,updated_at:new Date().toISOString()}).eq('id',sid)
+    if(!res.error){
+      piece.quantite=nouvelle
+      if(nouvelle===0)showToast(`Rupture de stock : ${piece.nom}`,'err')
+    }
+  }
 }
 
 window.deleteRep=async function(id,nom){
-  if(!confirm(`Supprimer le dossier de "${nom}" ?`))return
+  if(!confirm(`Supprimer le dossier de « ${nom} » ?`))return
   const {error}=await sb.from('reparations').delete().eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   allReps=allReps.filter(r=>r.id!==id)
+  if(selectedId===id)selectedId=null
   renderAll()
-  showToast(`Dossier "${nom}" supprimé`,'ok')
+  showToast(`Dossier de « ${nom} » supprimé`,'ok')
 }
 
-
+/* ─── Enregistrement ─── */
 window.saveDossier=async function(){
   const id=document.getElementById('f-id').value
   const nom=document.getElementById('f-client').value.trim()
   const appareil=document.getElementById('f-appareil').value
   const panne=document.getElementById('f-panne').value.trim()
   if(!nom){showToast('Le nom du client est requis','err');return}
-  if(!appareil){showToast('Le type d\'appareil est requis','err');return}
+  if(!appareil){showToast("Le type d'appareil est requis",'err');return}
   if(!panne){showToast('La description de la panne est requise','err');return}
 
   const piecesData=getPiecesData()
-  const pieceVal=piecesData.length>0?String(piecesData[0].stock_id):''  // compat legacy
   const nouveauStatut=document.getElementById('f-statut').value
   const clientSelId=document.getElementById('f-client-select').value
+  const ancien=id?allReps.find(r=>r.id===Number(id)):null
 
-  // Gestion du client : créer si nouveau (seulement à la création d'un dossier)
-  let clientLieId = clientSelId ? Number(clientSelId) : null
-  if(!id){
-    if(clientSelId){
-      // Client existant sélectionné → on le lie
-      clientLieId=Number(clientSelId)
-    } else {
-      // Nouveau client : vérifier s'il existe déjà par email/nom, sinon le créer
+  const btn=document.getElementById('saveBtn')
+  btn.textContent='Enregistrement…'
+  btn.disabled=true
+
+  try{
+    // Rattachement client : le sélecteur fait foi ; sinon on conserve le lien
+    // existant du dossier, et pour un nouveau dossier on crée / retrouve la fiche.
+    let clientLieId=clientSelId?Number(clientSelId):(ancien?ancien.client_id||null:null)
+    if(!clientSelId&&!clientLieId){
       const email=document.getElementById('f-email').value.trim()
       let existant=null
       if(email)existant=allClientsRep.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())
       if(!existant)existant=allClientsRep.find(c=>c.nom&&c.nom.toLowerCase()===nom.toLowerCase())
-      if(existant){
-        clientLieId=existant.id
-      } else {
-        // Créer le nouveau client avec un numéro
-        const numCli=await nextNumero('client','CLI')
-        const newCli={
-          numero:numCli,
-          nom:nom,
+      if(existant)clientLieId=existant.id
+      else{
+        const resCli=await sb.from('clients').insert({
+          numero:await nextNumero('client','CLI'),
+          nom,
           email:email||null,
           telephone:document.getElementById('f-tel').value.trim()||null,
           type:'particulier',
           updated_at:new Date().toISOString()
-        }
-        const resCli=await sb.from('clients').insert(newCli).select().single()
+        }).select().single()
         if(!resCli.error&&resCli.data){
           clientLieId=resCli.data.id
           allClientsRep.unshift(resCli.data)
         }
       }
     }
-  }
 
-  const payload={
-    client_id:clientLieId,
-    client_nom:nom,
-    client_email:document.getElementById('f-email').value.trim()||null,
-    client_telephone:document.getElementById('f-tel').value.trim()||null,
-    appareil,
-    modele:document.getElementById('f-modele').value.trim()||null,
-    panne_description:panne,
-    statut:nouveauStatut,
-    piece_id:piecesData.length>0?piecesData[0].stock_id:null,
-    cout_pieces:piecesData.reduce((a,p)=>a+p.qte*p.cout,0),
-    pieces:piecesData,
-    motif:document.getElementById('f-motif').value.trim()||null,
-    notes:document.getElementById('f-notes').value.trim()||null,
-    updated_at:new Date().toISOString()
-  }
-
-  document.getElementById('saveBtn').textContent='Enregistrement...'
-  document.getElementById('saveBtn').disabled=true
-
-  const ancien = id ? allReps.find(r=>r.id===Number(id)) : null
-  const dejaDecremente = ancien && ancien.stock_decremente === true
-  const statutAvance = ['pret','rendu'].includes(nouveauStatut)
-  const doitDecrementer = statutAvance && piecesData.length>0 && !dejaDecremente
-  if(doitDecrementer) payload.stock_decremente = true
-  // Enregistrer la date de fin au premier passage en prêt/rendu (pour la garantie)
-  if(statutAvance && !(ancien && ancien.date_fin)) payload.date_fin = new Date().toISOString()
-
-  let error
-  if(id){
-    const res=await sb.from('reparations').update(payload).eq('id',id)
-    error=res.error
-    if(!error){const idx=allReps.findIndex(r=>r.id===Number(id));if(idx>=0)allReps[idx]={...allReps[idx],...payload,id:Number(id)}}
-  } else {
-    payload.numero=await nextNumero('reparation','REP')
-    const res=await sb.from('reparations').insert(payload).select().single()
-    error=res.error
-    if(!error&&res.data)allReps.unshift(res.data)
-  }
-
-  if(!error && doitDecrementer){
-    for(const pd of piecesData){
-      const piece=allStockPieces.find(p=>p.id===pd.stock_id)
-      if(!piece)continue
-      const newQty=Math.max(0,Number(piece.quantite)-pd.qte)
-      const stockRes=await sb.from('stock').update({quantite:newQty,updated_at:new Date().toISOString()}).eq('id',piece.id)
-      if(!stockRes.error){
-        piece.quantite=newQty
-        if(newQty===0)showToast(`⚠️ Rupture : ${piece.nom}`,'err')
-        else showToast(`Stock mis à jour : ${piece.nom} (${newQty} restant${newQty>1?'s':''})`,'ok')
-      }
+    const payload={
+      client_id:clientLieId,
+      client_nom:nom,
+      client_email:document.getElementById('f-email').value.trim()||null,
+      client_telephone:document.getElementById('f-tel').value.trim()||null,
+      appareil,
+      marque:document.getElementById('f-marque').value.trim()||null,
+      modele:document.getElementById('f-modele').value.trim()||null,
+      panne_description:panne,
+      statut:nouveauStatut,
+      prix_final:Number(document.getElementById('f-prix').value)||0,
+      piece_id:piecesData.length>0?piecesData[0].stock_id:null,
+      cout_pieces:piecesData.reduce((a,p)=>a+p.qte*p.cout,0),
+      pieces:piecesData,
+      motif:document.getElementById('f-motif').value.trim()||null,
+      notes:document.getElementById('f-notes').value.trim()||null,
+      updated_at:new Date().toISOString()
     }
+
+    const statutAvance=['pret','rendu'].includes(nouveauStatut)
+    const doitDecrementer=statutAvance&&piecesData.length>0&&!(ancien&&ancien.stock_decremente===true)
+    if(doitDecrementer)payload.stock_decremente=true
+    if(statutAvance&&!(ancien&&ancien.date_fin))payload.date_fin=new Date().toISOString()
+
+    if(id){
+      const res=await sb.from('reparations').update(payload).eq('id',id)
+      if(res.error)throw new Error(res.error.message)
+      const idx=allReps.findIndex(r=>r.id===Number(id))
+      if(idx>=0)allReps[idx]={...allReps[idx],...payload,id:Number(id)}
+      selectedId=Number(id)
+    }else{
+      payload.numero=await nextNumero('reparation','REP')
+      const res=await sb.from('reparations').insert(payload).select().single()
+      if(res.error)throw new Error(res.error.message)
+      if(res.data){allReps.unshift(res.data);selectedId=res.data.id}
+    }
+
+    if(doitDecrementer)await decrementerStock(piecesData)
+
+    closePanel()
+    renderAll()
+    showToast(id?`Dossier de « ${nom} » mis à jour`:`Dossier de « ${nom} » créé`,'ok')
+  }catch(e){
+    showToast('Erreur : '+(e.message||e),'err')
+  }finally{
+    btn.textContent=id?'Mettre à jour':'Enregistrer'
+    btn.disabled=false
   }
-
-  document.getElementById('saveBtn').textContent=id?'Mettre à jour':'Enregistrer'
-  document.getElementById('saveBtn').disabled=false
-
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  closePanel()
-  renderAll()
-  if(!doitDecrementer)showToast(id?`Dossier "${nom}" mis à jour ✓`:`Dossier "${nom}" créé ✓`,'ok')
 }
 
+/* ─── Export ─── */
 window.exportCSV=function(){
   if(!allReps.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['numero','id','client_nom','client_email','client_telephone','appareil','modele','panne_description','statut','cout_pieces','notes','created_at']
-  const csv=[cols.join(','),...allReps.map(r=>cols.map(c=>`"${String(r[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n')
+  const cols=['numero','client_nom','client_email','client_telephone','appareil','marque','modele','panne_description','statut','cout_pieces','prix_final','motif','notes','created_at','date_fin']
+  const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
+  const csv=[cols.join(';'),...allReps.map(r=>cols.map(c=>cell(r[c])).join(';'))].join('\r\n')
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob)
   const a=document.createElement('a')
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
-  a.download=`itsoluce_reparations_${new Date().toISOString().slice(0,10)}.csv`
+  const d=new Date()
+  a.href=url
+  a.download=`itsoluce_reparations_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.csv`
   a.click()
-  showToast('Export téléchargé ✓','ok')
+  setTimeout(()=>URL.revokeObjectURL(url),1000)
+  showToast('Export téléchargé','ok')
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
 await loadReps()
 
 } catch(err) {
-  console.error('Erreur réparations:', err)
+  console.error('Erreur réparations :',err)
   showError(err.message||'Une erreur inattendue est survenue.')
 }
 </script>
+
 
 
 <div class="mobile-bottombar">
