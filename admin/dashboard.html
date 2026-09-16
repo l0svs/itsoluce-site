@@ -760,7 +760,7 @@ else cardRdv=rdvAvenir.map(r=>{
 let cardReps=''
 if(repsActives.length===0)cardReps=emptyCard('🔧','Aucune réparation en cours')
 else cardReps=repsActives.slice(0,6).map(r=>{
-  const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+  const app=r.modele||r.appareil||'—'
   return `<a href="/admin/reparations.html" class="drow"><div class="drow-dot" style="background:#3b82f6"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)||'—'} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-blue">${escHtml(STATUT_REP[r.statut]||r.statut)}</span></div></a>`
 }).join('')
 
@@ -801,7 +801,7 @@ document.getElementById('grid').innerHTML=grid
 let extra=''
 if(garExpire.length>0){
   const rows=garExpire.slice(0,5).map(r=>{
-    const app=[r.marque,r.modele].filter(Boolean).join(' ')||r.appareil||'—'
+    const app=r.modele||r.appareil||'—'
     return `<a href="/admin/gestion.html#garanties" class="drow"><div class="drow-dot" style="background:#f59e0b"></div><div class="drow-main"><div class="drow-t">${escHtml(r.client_nom)} ${r.numero?`<span class="dnum">${escHtml(r.numero)}</span>`:''}</div><div class="drow-s">${escHtml(app)}</div></div><div class="drow-r"><span class="dtag dtag-orange">Expire dans ${r._jours} j</span></div></a>`
   }).join('')
   extra+=`<div class="dcard warn"><div class="dcard-head"><div class="dcard-title"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties qui expirent bientôt</div><a href="/admin/gestion.html#garanties" class="dcard-link">Garanties →</a></div><div class="dcard-body">${rows}</div></div>`

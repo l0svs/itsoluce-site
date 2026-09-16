@@ -604,10 +604,6 @@ body{font-size:14px;}
               <option>Autre</option>
             </select>
           </div>
-          <div class="fg">
-            <label>Marque</label>
-            <input type="text" id="f-marque" placeholder="ex : Apple"/>
-          </div>
         </div>
         <div class="fg">
           <label>Modèle compatible</label>
@@ -774,7 +770,6 @@ function openPanel(piece=null){
   document.getElementById('f-id').value=piece?.id||''
   document.getElementById('f-nom').value=piece?.nom||''
   document.getElementById('f-cat').value=piece?.categorie||''
-  document.getElementById('f-marque').value=piece?.marque||''
   document.getElementById('f-modele').value=piece?.modele||''
   document.getElementById('f-qty').value=piece?.quantite??''
   document.getElementById('f-seuil').value=piece?.seuil_alerte??2
@@ -906,7 +901,7 @@ function getFiltered(){
   const q=document.getElementById('searchInput').value.toLowerCase().trim()
   return allStock.filter(p=>{
     const okCat=activeFilter==='Tous'||p.categorie===activeFilter
-    const okQ=!q||[p.nom,p.categorie,p.marque,p.modele,p.fournisseur].some(v=>v&&String(v).toLowerCase().includes(q))
+    const okQ=!q||[p.nom,p.categorie,p.modele,p.fournisseur].some(v=>v&&String(v).toLowerCase().includes(q))
     return okCat&&okQ
   })
 }
@@ -918,7 +913,7 @@ function ligne(p){
   const e=etat(p)
   const qty=Number(p.quantite)||0
   const seuil=Number(p.seuil_alerte)||0
-  const sousTitre=[p.categorie,p.marque,p.modele].filter(Boolean).join(' · ')
+  const sousTitre=[p.categorie,p.modele].filter(Boolean).join(' · ')
   const four=p.fournisseur?' · '+escHtml(p.fournisseur):''
   const tag=e==='ko'?'<span class="tag t-ko">Rupture</span>'
     :e==='wn'?`<span class="tag t-wn">Seuil ${seuil}</span>`
@@ -1020,7 +1015,6 @@ window.savePiece=async function(){
   const payload={
     nom,
     categorie:cat,
-    marque:document.getElementById('f-marque').value.trim()||null,
     modele:document.getElementById('f-modele').value.trim()||null,
     quantite:Number(qty),
     seuil_alerte:Number(document.getElementById('f-seuil').value)||2,
@@ -1060,7 +1054,7 @@ window.savePiece=async function(){
 
 window.exportCSV=function(){
   if(!allStock.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['id','nom','categorie','marque','modele','quantite','seuil_alerte','prix_achat','prix_vente','fournisseur','notes']
+  const cols=['id','nom','categorie','modele','quantite','seuil_alerte','prix_achat','prix_vente','fournisseur','notes']
   const cell=v=>{
     if(v===null||v===undefined)return '""'
     return '"'+String(v).replace(/"/g,'""')+'"'
@@ -1109,8 +1103,7 @@ if(new URLSearchParams(location.search).get('prefill')==='1'){
       const set=(id,v)=>{const el=document.getElementById(id);if(el&&v!=null&&v!=='')el.value=v}
       set('f-nom',pf.nom)
       set('f-cat',pf.categorie)
-      set('f-marque',(pf.marque||'').trim())
-      set('f-modele',pf.modele)
+      set('f-modele',[(pf.marque||'').trim(),pf.modele].filter(Boolean).join(' '))
       set('f-achat',pf.prix_achat)
       set('f-vente',pf.prix_vente)
       if(pf.fournisseur){

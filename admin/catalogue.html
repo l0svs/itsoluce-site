@@ -989,8 +989,7 @@ window.ajouterAuStock=async function(sku){
   const prefill={
     nom:data.title,
     categorie:data.category,
-    marque:(data.model_brand||'').replace('For ',''),
-    modele:data.suitable_for,
+    modele:[(data.model_brand||'').replace('For ','').trim(),data.suitable_for].filter(Boolean).join(' '),
     prix_achat:data.prix_achat,
     prix_vente:calcPrixVente(Number(data.prix_achat)||0).toFixed(2),
     fournisseur:'Foneday',
