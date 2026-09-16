@@ -216,129 +216,120 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 
 
-/* CATALOGUE FONEDAY */
-.cat-search-zone{padding:14px 24px 10px;flex-shrink:0;}
-.cat-search-big{position:relative;max-width:600px;}
-.cat-search-big svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;}
-.cat-search-big input{width:100%;padding:13px 16px 13px 46px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:12px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
-.cat-search-big input:focus{border-color:var(--a);}
-.cat-hint{font-size:12px;color:var(--t3);margin-top:10px;}
-.cat-filters{margin-top:12px;position:relative;display:inline-block;}
-.cat-filter-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:99px;padding:9px 14px;cursor:pointer;font-family:inherit;transition:border-color .15s;}
-.cat-filter-btn:hover{border-color:var(--a);}
-.cat-filter-btn.open{border-color:var(--a);}
-.cat-filter-btn-label{font-size:13px;font-weight:500;color:var(--a);}
-.cat-filter-btn-count{background:var(--ad);color:var(--a);font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;}
-.cat-filter-btn-chev{width:13px;height:13px;stroke:var(--a);fill:none;stroke-width:2.3;transition:transform .2s;}
-.cat-filter-btn.open .cat-filter-btn-chev{transform:rotate(180deg);}
-.cat-filter-menu{position:absolute;top:calc(100% + 8px);left:0;background:var(--bg2);border:1px solid var(--ln2);border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.2);padding:6px;min-width:260px;max-height:340px;overflow-y:auto;z-index:120;display:none;flex-direction:column;gap:1px;}
-.cat-filter-menu.open{display:flex;animation:catFilterMenuIn .16s cubic-bezier(.16,1,.3,1);}
-@keyframes catFilterMenuIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
-.cat-filter-opt{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--t2);transition:background .12s;}
-.cat-filter-opt:hover{background:var(--bg3);}
-.cat-filter-opt.active{background:var(--ad);color:var(--a);font-weight:500;}
-.cat-filter-opt-count{font-size:11px;color:var(--t3);}
-.cat-filter-opt.active .cat-filter-opt-count{color:var(--a);}
-.cat-filter-opt-check{width:14px;height:14px;stroke:var(--a);fill:none;stroke-width:2.4;flex-shrink:0;margin-left:6px;}
-.cat-filter{padding:6px 14px;border-radius:8px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;font-family:inherit;display:flex;align-items:center;gap:6px;flex-shrink:0;white-space:nowrap;}
-.cat-filter:hover{border-color:var(--a);color:var(--a);}
-.cat-filter.on{background:var(--a);color:#fff;border-color:var(--a);}
-.cat-filter .cat-filter-n{font-size:10px;opacity:.7;}
-.cat-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
-.cat-chip{padding:6px 13px;border-radius:99px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t2);font-size:12px;cursor:pointer;transition:all .12s;}
-.cat-chip:hover{border-color:var(--a);color:var(--a);}
-.cat-results{flex:1;overflow-y:auto;padding:0 24px 24px;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--a) transparent;}
-.cat-results::-webkit-scrollbar{width:9px;}
-.cat-results::-webkit-scrollbar-track{background:transparent;}
-.cat-results::-webkit-scrollbar-thumb{background:var(--ad);border-radius:99px;border:2px solid transparent;background-clip:padding-box;}
-.cat-results::-webkit-scrollbar-thumb:hover{background:var(--a);background-clip:padding-box;}
-html{scroll-behavior:smooth;}
-.cat-piece-group{margin-bottom:28px;}
-.cat-piece-head{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--ln);}
-.cat-piece-head .cat-cat-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--t2);}
-.cat-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
-.cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s cubic-bezier(.16,1,.3,1),border-color .2s;opacity:0;}
-.cat-opt:hover{transform:translateY(-5px);box-shadow:0 16px 32px rgba(0,82,204,.16);border-color:var(--a);}
-.cat-piece-group.revealed .cat-opt{animation:catCardIn .5s cubic-bezier(.16,1,.3,1) both;}
-.cat-piece-group.revealed .cat-opt.rupture{animation-name:catCardInDim;}
-@keyframes catCardIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-@keyframes catCardInDim{from{opacity:0;transform:translateY(16px);}to{opacity:.6;transform:translateY(0);}}
-@media(prefers-reduced-motion:reduce){.cat-opt{opacity:1;animation:none;}.cat-opt:hover{transform:none;}}
-.cat-opt-head{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.cat-opt-head.niv-eco{background:linear-gradient(135deg,#0a8050,#34d399);}
-.cat-opt-head.niv-recommande{background:linear-gradient(135deg,#2563eb,#3b82f6);}
-.cat-opt-head.niv-recommande_plus{background:linear-gradient(135deg,#7c3aed,#a855f7);}
-.cat-opt-head.niv-premium{background:linear-gradient(135deg,#b45309,#f59e0b);}
-.cat-opt-head.niv-a_valider{background:var(--bg3);}
-.cat-opt-head-label{color:#fff;font-size:11px;font-weight:700;letter-spacing:.3px;}
-.cat-opt-head.niv-a_valider .cat-opt-head-label{color:var(--t2);}
-.cat-opt-head-stock{display:inline-flex;align-items:center;gap:3px;color:#fff;font-size:10px;font-weight:500;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:99px;white-space:nowrap;}
-.cat-opt-head-stock svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.4;}
-.cat-opt-head.niv-a_valider .cat-opt-head-stock{background:var(--bg4);color:var(--t2);}
-.cat-opt-price-big{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;}
-.cat-opt-price-big .prix{font-size:22px;font-weight:700;color:var(--a);}
-.cat-opt-price-big .marge{font-size:12px;font-weight:600;color:var(--ok);}
-.cat-opt-price-sub{font-size:10px;color:var(--t3);margin-bottom:10px;}
-.cat-opt-detail{background:var(--bg3);border-radius:8px;padding:8px 11px;display:flex;flex-direction:column;gap:4px;}
-.cat-opt-detail .cat-price-row{font-size:11px;}
-.cat-synth{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.cat-synth-item{flex:1;min-width:110px;background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:11px 14px;}
-.cat-synth-label{font-size:11px;color:var(--t3);margin-bottom:3px;}
-.cat-synth-val{font-size:19px;font-weight:700;color:var(--t1);}
-.cat-synth-val.ok{color:var(--ok);}
-@media(max-width:640px){.cat-synth{gap:6px;}.cat-synth-item{min-width:90px;padding:9px 11px;}.cat-synth-val{font-size:16px;}}
-.cat-niveau{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;}
-.cat-niveau.eco{background:rgba(52,211,153,.14);color:#0a8050;}
-.cat-niveau.recommande{background:rgba(59,130,246,.14);color:#2563eb;}
-.cat-niveau.recommande_plus{background:rgba(124,58,237,.14);color:#7c3aed;}
-.cat-niveau.premium{background:rgba(251,191,36,.16);color:#b45309;}
-.cat-niveau.a_valider{background:var(--bg3);color:var(--t3);}
-.cat-stock-dot{font-size:11px;color:var(--ok);display:flex;align-items:center;gap:4px;}
-.cat-stock-dot.out{color:var(--d);}
-.cat-opt-body{padding:12px 14px;}
-.cat-opt-title{font-size:12px;color:var(--t1);font-weight:500;line-height:1.4;margin-bottom:3px;}
-.cat-opt-qual{font-size:11px;color:var(--t3);margin-bottom:12px;}
-.cat-prices{display:flex;flex-direction:column;gap:6px;}
-.cat-price-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;}
-.cat-price-row .lbl{color:var(--t3);}
-.cat-price-row .val{font-weight:500;color:var(--t1);}
-.cat-price-row.vente .val{color:var(--a);font-weight:600;font-size:14px;}
-.cat-price-row.marge .val{color:var(--ok);}
-.cat-opt-foot{padding:10px 14px;border-top:1px solid var(--ln);display:flex;gap:6px;}
-.cat-btn{flex:1;padding:7px;border-radius:6px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--ln2);background:var(--bg3);color:var(--t2);transition:all .12s;display:flex;align-items:center;justify-content:center;gap:5px;}
-.cat-btn:hover{color:var(--a);border-color:var(--a);}
-.cat-btn.primary{background:var(--ad);color:var(--a);border-color:var(--a);}
-.cat-ref{font-size:10px;color:var(--t3);font-family:monospace;margin-top:8px;}
-.cat-empty{text-align:center;padding:60px 20px;color:var(--t3);}
-.cat-empty-ico{font-size:40px;margin-bottom:14px;opacity:.4;}
-.cat-empty-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;}
-.cat-welcome{text-align:center;padding:50px 20px;color:var(--t3);}
-.cat-welcome-ico{font-size:44px;margin-bottom:16px;opacity:.5;}
-.cat-welcome h2{font-size:16px;color:var(--t1);margin-bottom:8px;font-weight:600;}
-.cat-welcome p{font-size:13px;max-width:440px;margin:0 auto;line-height:1.6;}
-.cat-count{font-size:12px;color:var(--t3);margin-bottom:16px;}
-.cat-sync-info{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:6px;}
-.cat-loading{text-align:center;padding:40px;color:var(--t3);font-size:13px;}
+/* ═══════════════════════════════════════════════════════════════
+   CATALOGUE FONEDAY — direction « continuité itsoluce.be »
+   Page de recherche : la barre porte l'écran, les variantes se
+   comparent en cartes côte à côte.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c;
+  --radius:16px;
+}
+body{font-size:14px;}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a); font-weight:500;}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
+.page-head{padding:26px 28px 0;}
+.ph-left h1{font-size:27px; font-weight:600; letter-spacing:-.03em;}
+.ph-left p{font-size:13.5px; color:var(--t2); margin-top:3px;}
+.btn{border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
 
-/* ═══ CATALOGUE MOBILE ═══ */
+/* ── Zone de recherche ── */
+.cat-zone{padding:18px 28px 0; flex-shrink:0;}
+.cat-box{position:relative; max-width:640px;}
+.cat-box > svg{position:absolute; left:17px; top:50%; transform:translateY(-50%); width:18px; height:18px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.cat-box input{
+  width:100%; background:var(--bg2); border:1px solid transparent; border-radius:14px;
+  padding:14px 16px 14px 46px; font-family:inherit; font-size:15px; color:var(--t1);
+  outline:none; box-shadow:0 1px 2px rgba(0,0,0,.05); transition:.14s;
+}
+.cat-box input:focus{border-color:var(--a); box-shadow:0 0 0 4px var(--ad);}
+.cat-box input::placeholder{color:var(--t3);}
+.cat-meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:11.5px; color:var(--t3); margin-top:10px;}
+.cat-sugg{display:flex; gap:7px; flex-wrap:wrap; margin-top:12px;}
+.cat-sugg button{
+  border:1px solid var(--ln); background:var(--bg2); color:var(--t2); font-family:inherit;
+  font-size:12.5px; padding:6px 13px; border-radius:980px; cursor:pointer; transition:.12s;
+}
+.cat-sugg button:hover{color:var(--a); border-color:var(--a); background:var(--ad);}
+
+.cat-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px;}
+.cat-count{font-size:13px; color:var(--t2);}
+.cat-count b{color:var(--t1); font-weight:600;}
+.segf{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px; max-width:100%; overflow-x:auto; scrollbar-width:none;}
+.segf::-webkit-scrollbar{display:none;}
+.segf button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap; flex-shrink:0;}
+.segf button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.07);}
+.segf button i{font-style:normal; color:var(--t3); margin-left:5px; font-size:11px;}
+.segf button.on i{color:var(--a);}
+
+/* Avertissement de troncature */
+.cat-tronque{
+  display:flex; align-items:flex-start; gap:10px; margin-top:14px; padding:12px 16px;
+  background:rgba(178,94,9,.07); border:1px solid rgba(178,94,9,.2); border-radius:12px;
+  font-size:12.5px; color:var(--t1); line-height:1.5;
+}
+.cat-tronque b{color:var(--w);}
+[data-mode="dark"] .cat-tronque{background:rgba(251,191,36,.09); border-color:rgba(251,191,36,.25);}
+
+/* ── Résultats ── */
+.cat-results{flex:1; overflow-y:auto; padding:16px 28px 32px;}
+.grp{margin-bottom:22px;}
+.grp-h{display:flex; align-items:center; gap:10px; margin-bottom:10px; padding-left:2px;}
+.grp-cat{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--a); background:var(--ad); border-radius:980px; padding:4px 11px;}
+.grp-n{font-size:12.5px; color:var(--t3);}
+.opts{display:grid; grid-template-columns:repeat(auto-fill,minmax(282px,1fr)); gap:12px;}
+.opt{background:var(--bg2); border-radius:14px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.045); display:flex; flex-direction:column; transition:box-shadow .15s;}
+.opt:hover{box-shadow:0 3px 14px rgba(0,0,0,.09);}
+.opt.rupture{opacity:.62;}
+.opt-h{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 15px; font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;}
+.niv-eco{background:rgba(110,110,115,.1); color:var(--t2);}
+.niv-recommande{background:rgba(0,82,204,.1); color:#0052CC;}
+.niv-recommande_plus{background:rgba(109,40,217,.1); color:#6d28d9;}
+.niv-premium{background:rgba(217,164,0,.14); color:#8a6a00;}
+.niv-a_valider{background:var(--bg3); color:var(--t3);}
+[data-mode="dark"] .niv-recommande{background:rgba(91,155,255,.16); color:#7fb2ff;}
+[data-mode="dark"] .niv-recommande_plus{background:rgba(167,139,250,.16); color:#c4b0ff;}
+[data-mode="dark"] .niv-premium{background:rgba(251,191,36,.16); color:#fbbf24;}
+.opt-stock{display:inline-flex; align-items:center; gap:5px; font-weight:500; letter-spacing:0; text-transform:none; font-size:11.5px;}
+.opt-stock s{width:6px; height:6px; border-radius:50%; text-decoration:none; background:currentColor;}
+.opt-b{padding:14px 15px 15px; display:flex; flex-direction:column; flex:1;}
+.opt-t{font-size:13.5px; font-weight:500; line-height:1.4; color:var(--t1); word-break:break-word;}
+.opt-q{font-size:11.5px; color:var(--t3); margin-top:4px; line-height:1.45; word-break:break-word;}
+.opt-p{display:flex; align-items:baseline; gap:9px; margin-top:12px; flex-wrap:wrap;}
+.opt-p .px{font-size:21px; font-weight:700; letter-spacing:-.5px; color:var(--t1); font-variant-numeric:tabular-nums;}
+.opt-p .mg{font-size:12.5px; font-weight:600; color:var(--ok); font-variant-numeric:tabular-nums;}
+.opt-sub{font-size:11px; color:var(--t3); margin-top:2px;}
+.opt-a{display:flex; gap:8px; margin-top:14px;}
+.opt-a button{flex:1; justify-content:center; border-radius:980px; padding:8px 12px; font-size:12.5px; font-weight:500; font-family:inherit; cursor:pointer; border:none; display:inline-flex; align-items:center; gap:5px;}
+.opt-a .b-stock{background:var(--a); color:#fff;}
+.opt-a .b-stock:hover{opacity:.88;}
+.opt-a .b-panier{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.opt-a .b-panier:hover{background:var(--bg4);}
+.opt-a button:disabled{opacity:.6; cursor:default;}
+.opt-a svg{width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+
+/* ── États ── */
+.cat-etat{padding:56px 24px; text-align:center;}
+.cat-etat-ico{width:54px; height:54px; border-radius:16px; background:var(--ad); color:var(--a); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;}
+.cat-etat-ico svg{width:25px; height:25px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;}
+.cat-etat h2{font-size:17px; font-weight:600; color:var(--t1); margin-bottom:7px; letter-spacing:-.02em;}
+.cat-etat p{font-size:13.5px; color:var(--t2); line-height:1.6; max-width:48ch; margin:0 auto;}
+.cat-chargement{display:flex; align-items:center; justify-content:center; gap:9px; padding:44px; color:var(--t3); font-size:13px;}
+
 @media(max-width:640px){
-  .cat-search-zone{padding:14px 14px 12px;}
-  .cat-search-big{max-width:100%;}
-  .cat-search-big input{font-size:16px;padding:12px 14px 12px 42px;}
-  .cat-hint{font-size:11px;line-height:1.5;}
-  .cat-results{padding:0 14px 24px;}
-  .cat-options{grid-template-columns:1fr;gap:10px;}
-  .cat-opt{border-radius:10px;}
-  .cat-opt:hover{transform:none;}
-  .cat-piece-group{margin-bottom:22px;}
-  .cat-piece-head{font-size:13px;}
-  /* Filtres scrollables horizontalement */
-  .cat-filters{margin-top:12px;padding-top:12px;}
-  .cat-filter{flex-shrink:0;}
-  .cat-chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
-  .cat-chip{flex-shrink:0;}
-  .cat-welcome{padding:36px 16px;}
-  .cat-welcome-ico{font-size:38px;}
+  .sidebar{display:none;}
+  .cat-zone{padding:14px 16px 0;}
+  .cat-results{padding:14px 16px 24px;}
+  .cat-box input{font-size:16px; padding:13px 14px 13px 42px;}
+  .opts{grid-template-columns:1fr;}
 }
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
@@ -606,436 +597,343 @@ html{scroll-behavior:smooth;}
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.0</div>
+      <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
     <div id="pageBody" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+
       <div class="page-head">
-        <div class="ph-left"><h1>Catalogue Foneday</h1><p id="ph-sub">Recherchez une pièce par modèle d'appareil</p></div>
+        <div class="ph-left"><h1>Catalogue Foneday</h1><p>Cherche une pièce par modèle d'appareil, compare les variantes et leur marge.</p></div>
       </div>
-      <div class="cat-search-zone">
-        <div class="cat-search-big">
+
+      <div class="cat-zone">
+        <div class="cat-box">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="catSearch" placeholder="Rechercher un modèle… ex : iPhone 13, Galaxy S23, iPad Air" oninput="catSearchDebounce()"/>
+          <input type="search" id="catSearch" autocomplete="off" spellcheck="false"
+                 placeholder="iPhone 13, Galaxy S23, iPad Air…" oninput="catSearchDebounce()"/>
         </div>
-        <div class="cat-hint"><span class="cat-sync-info" id="sync-info"></span> · <span id="cat-total">—</span> pièces dans le catalogue</div>
-        <div class="cat-filters" id="cat-filters" style="display:none;"></div>
+        <div class="cat-meta"><span id="sync-info"></span><span id="cat-total"></span></div>
+        <div class="cat-sugg" id="cat-sugg"></div>
+        <div class="cat-bar" id="cat-bar" style="display:none;">
+          <span class="cat-count" id="cat-count"></span>
+          <div class="segf" id="cat-filters"></div>
+        </div>
+        <div class="cat-tronque" id="cat-tronque" style="display:none;"></div>
       </div>
+
       <div class="cat-results" id="cat-results"></div>
     </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
-<script>
-function applyMode(m){
-  const e=(m==='auto')?(new Date().getHours()>=7&&new Date().getHours()<20?'light':'dark'):m
-  document.documentElement.setAttribute('data-mode',e)
-  const lv=e==='light'
-  const v=(a,b)=>lv?a:b
-  document.documentElement.style.setProperty('--bg',v('#f8f8f8','#0c0d0f'))
-  document.documentElement.style.setProperty('--bg2',v('#ffffff','#111214'))
-  document.documentElement.style.setProperty('--bg3',v('#f2f2f4','#18191c'))
-  document.documentElement.style.setProperty('--bg4',v('#eaeaec','#1f2023'))
-  document.documentElement.style.setProperty('--ln',v('rgba(0,0,0,0.06)','rgba(255,255,255,0.06)'))
-  document.documentElement.style.setProperty('--ln2',v('rgba(0,0,0,0.1)','rgba(255,255,255,0.1)'))
-  document.documentElement.style.setProperty('--t1',v('#111114','#e8e8e8'))
-  document.documentElement.style.setProperty('--t2',v('#52525b','#8a8f98'))
-  document.documentElement.style.setProperty('--t3',v('#a1a1aa','#4b5059'))
-}
-function setMode(m){
-  localStorage.setItem('erp-m',m)
-  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m))
-  applyMode(m)
-}
-const sm=localStorage.getItem('erp-m')||'auto'
-document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===sm))
-applyMode(sm)
-setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
 
-const sa=localStorage.getItem('erp-a'),sd=localStorage.getItem('erp-d')
-if(sa){document.documentElement.style.setProperty('--a',sa);document.documentElement.style.setProperty('--ad',sd)}
+<div class="toast" id="toast"></div>
+
+<script>
+/* Thème et accent — mêmes valeurs que les autres pages refondues. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc';return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
+}
+function applyMode(m){
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'));  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'));  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)')); s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'));  s('--t2', v('#6e6e73','#98989d')); s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'));  s('--w',  v('#b25e09','#fbbf24'));  s('--d',  v('#c8362c','#f87171'))
+  applyAccent(accentBase)
+}
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
 
 function showToast(msg,type='ok'){
   const t=document.getElementById('toast')
   t.textContent=msg
   t.className='toast show '+(type==='ok'?'ok':'err')
-  setTimeout(()=>t.className='toast',3000)
-}
-
-// ─── CALCUL PRIX DE VENTE — GRILLE DÉGRESSIVE ───
-const GRILLE_DEFAUT=[
-  {min:0,max:30,coef:2.2,fixe:25},
-  {min:30,max:80,coef:1.8,fixe:25},
-  {min:80,max:150,coef:1.45,fixe:35},
-  {min:150,max:250,coef:1.25,fixe:45},
-  {min:250,max:999999,coef:1.15,fixe:55}
-]
-const FRAIS_LIVRAISON=6.50 // frais de livraison Foneday, ajoutés au coût de chaque pièce
-function getGrille(){
-  try{
-    const stored=localStorage.getItem('erp-grille')
-    if(stored){const g=JSON.parse(stored);if(Array.isArray(g)&&g.length)return g}
-  }catch(e){}
-  return GRILLE_DEFAUT
-}
-function getPalier(achat){
-  const grille=getGrille()
-  return grille.find(p=>achat>=p.min&&achat<p.max)||grille[grille.length-1]
-}
-function calcPrixVente(achat){
-  if(achat<=0)return 0
-  const cout=achat+FRAIS_LIVRAISON
-  const p=getPalier(cout)
-  return cout*p.coef+p.fixe
+  setTimeout(()=>t.className='toast',3200)
 }
 </script>
+
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
-function showError(msg){document.getElementById('ldr').style.display='none';document.getElementById('mainContent').innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">'+escHtml(msg)+'</div></div>';}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type==='err'?'err':'ok');setTimeout(()=>t.className='toast',3000);}
-window.showToast=showToast
+
+function showError(msg){
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('mainContent').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;"><div style="font-size:28px;">⚠️</div><div style="font-size:14px;font-weight:600;color:var(--t1);">Erreur</div><div style="font-size:12px;color:var(--t3);">${escHtml(msg)}</div><button onclick="location.reload()" style="padding:9px 20px;background:var(--a);color:#fff;border:none;border-radius:980px;cursor:pointer;font-family:inherit;font-size:13px;">Réessayer</button></div>`
+}
+
 try {
+
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
 
-// ── Grille tarifaire : source de vérité = Supabase ──
-// getGrille() lit le localStorage, qui n'était alimenté qu'en ouvrant la page
-// Paramètres : sur un navigateur neuf, cette page calculait donc avec la
-// grille par défaut au lieu de la grille réellement enregistrée.
-try{
-  const {data:_g}=await sb.from('settings').select('valeur').eq('cle','finance_grille').maybeSingle()
-  if(_g&&_g.valeur){
-    const _parsed=JSON.parse(_g.valeur)
-    if(Array.isArray(_parsed)&&_parsed.length)localStorage.setItem('erp-grille',_g.valeur)
-  }
-}catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
-window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
-document.getElementById('ldr').style.display='none'
-document.getElementById('pageBody').style.display='flex'
-
-let _timer=null
+const LIMITE=500
+const QUALITES_RETENUES=['OEM-Equivalent','Service Pack','Pulled A','Refurbished']
 const NIVEAU_LABEL={eco:'Compatible neuf',recommande:'Reconditionné',recommande_plus:'Occasion contrôlée',premium:"Pièce d'origine",a_valider:'À valider'}
 const NIVEAU_ORDRE={eco:0,recommande:1,recommande_plus:2,premium:3,a_valider:4}
+const SUGGESTIONS=['iPhone 13','iPhone 15','Galaxy S23','Galaxy A54','iPad Air','Redmi Note 12','PlayStation 5','Switch']
+const FRAIS_LIVRAISON=6.50
+const GRILLE_DEFAUT=[
+  {min:0,max:30,coef:2.2,fixe:25},{min:30,max:80,coef:1.8,fixe:25},
+  {min:80,max:150,coef:1.45,fixe:35},{min:150,max:250,coef:1.25,fixe:45},
+  {min:250,max:999999,coef:1.15,fixe:55}
+]
+function getGrille(){
+  try{const s=localStorage.getItem('erp-grille');if(s){const g=JSON.parse(s);if(Array.isArray(g)&&g.length)return g}}catch(e){}
+  return GRILLE_DEFAUT
+}
+function getPalier(c){const g=getGrille();return g.find(p=>c>=p.min&&c<p.max)||g[g.length-1]}
+function calcPrixVente(achat){
+  if(achat<=0)return 0
+  const cout=achat+FRAIS_LIVRAISON
+  const p=getPalier(cout)
+  return cout*(Number(p.coef)||0)+(Number(p.fixe)||0)
+}
+const eur=n=>Number(n||0).toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'
 
-// Info dernière synchro
-async function loadSyncInfo(){
-  const {data}=await sb.from('foneday_produits').select('synced_at').order('synced_at',{ascending:false}).limit(1)
-  if(data&&data[0]){
-    const d=new Date(data[0].synced_at)
-    const el=document.getElementById('sync-info')
-    if(el)el.innerHTML=`Dernière synchro Foneday : ${d.toLocaleDateString('fr-BE',{day:'numeric',month:'long'})} à ${d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})}`
-  }
-  const {count}=await sb.from('foneday_produits').select('*',{count:'exact',head:true})
-  const el2=document.getElementById('cat-total')
-  if(el2&&count!=null)el2.textContent=count.toLocaleString('fr-BE')
+// La grille tarifaire vit dans Supabase ; le localStorage n'en est qu'un cache.
+try{
+  const {data:g}=await sb.from('settings').select('valeur').eq('cle','finance_grille').maybeSingle()
+  if(g&&g.valeur){const p=JSON.parse(g.valeur);if(Array.isArray(p)&&p.length)localStorage.setItem('erp-grille',g.valeur)}
+}catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
+
+/* ── Recherche ───────────────────────────────────────────────── */
+let _timer=null, _seq=0
+let _res=[], _q='', _filtre='all', _tronque=0
+
+/** PostgREST découpe le paramètre or= sur les virgules : une valeur qui en
+ *  contient doit être mise entre guillemets, sinon le filtre part en
+ *  morceaux. Taper « iPhone 13, écran » cassait donc la recherche. */
+function motifPostgrest(v){
+  return '"%'+String(v).replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'%"'
 }
 
-function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-
-function animateCount(el,target,opts){
-  opts=opts||{}
-  const decimals=opts.decimals||0
-  const suffix=opts.suffix||''
-  const prefix=opts.prefix||''
-  const duration=550
-  const start=performance.now()
-  function fmt(v){return prefix+v.toFixed(decimals).replace('.',',')+suffix}
-  function tick(now){
-    const p=Math.min(1,(now-start)/duration)
-    const eased=1-Math.pow(1-p,3)
-    el.textContent=fmt(target*eased)
-    if(p<1)requestAnimationFrame(tick)
-    else el.textContent=fmt(target)
-  }
-  requestAnimationFrame(tick)
-}
-
-let _resultatsActuels=[]
-let _filtreActif='all'
-let _qActuel=''
-
-// Empeche "iPhone 15" de remonter aussi "iPhone 15 Plus/Pro/Pro Max" etc,
-// sauf si ce complement est explicitement demande dans la recherche.
-const MODELE_MODIFIERS=['pro max','pro','plus','ultra','mini','max','fe','note','edge','lite','se']
-function correspondModeleExact(texte,requete){
+const MODIFIERS=['pro max','pro','plus','ultra','mini','max','fe','note','edge','lite','se']
+function modeleExact(texte,requete){
   if(!texte||!requete)return true
-  const t=texte.toLowerCase()
-  const q=requete.toLowerCase().trim()
-  const idx=t.indexOf(q)
-  if(idx===-1)return true // ne contient meme pas la requete, laisse passer (matche via un autre champ)
-  const suite=t.slice(idx+q.length).trim()
-  if(!suite)return true // rien apres = correspondance exacte
-  for(const mod of MODELE_MODIFIERS){
-    if(suite.startsWith(mod)&&!q.includes(mod))return false
-  }
-  return true
+  const t=texte.toLowerCase(), q=requete.toLowerCase().trim()
+  const i=t.indexOf(q)
+  if(i===-1)return true
+  const suite=t.slice(i+q.length).trim()
+  if(!suite)return true
+  return !MODIFIERS.some(m=>suite.startsWith(m)&&!q.includes(m))
 }
-function filtrerModeleExact(rows,qModele){
-  if(!qModele||qModele.length<2)return rows
-  return rows.filter(r=>correspondModeleExact(r.suitable_for||r.title||'',qModele))
+/** Variantes écartées même quand leur qualité brute passe le filtre. */
+function retenue(r){
+  const t=(r.title||'').toLowerCase()
+  if(t.includes('fdx'))return false
+  if(r.category==='Battery'&&(t.includes('without bms')||t.includes('high capacity')))return false
+  return true
 }
 
-// Exclusions de variantes non retenues par Linton, meme quand leur "quality"
-// brute passe le filtre global (ex: Batterie "Without BMS" est classee
-// OEM-Equivalent mais ne doit jamais s'afficher).
-function exclusionsQualite(row){
-  const t=(row.title||'').toLowerCase()
-  if(t.includes('fdx'))return false // marque interne Foneday, jamais retenue
-  if(row.category==='Battery'){
-    if(t.includes('without bms')||t.includes('high capacity'))return false
-  }
-  return true
-}
+const QUALITY_MAP=[['service pack','Service Pack'],['pulled a','Pulled A'],['refurbished','Refurbished'],
+                   ['oem-equivalent','OEM-Equivalent'],['oem equivalent','OEM-Equivalent'],['oem','OEM-Equivalent']]
 
 async function rechercher(){
-  const qRaw=document.getElementById('catSearch').value.trim()
-  const qLower=qRaw.toLowerCase()
-  const results=document.getElementById('cat-results')
-  const filtersBar=document.getElementById('cat-filters')
+  const brut=document.getElementById('catSearch').value.trim()
+  const res=document.getElementById('cat-results')
+  const bas=brut.toLowerCase()
 
-  // Detecter un mot de qualite dans la recherche (ex: "iphone 16 pro refurbished")
-  const QUALITY_MAP=[
-    ['service pack','Service Pack'],
-    ['pulled a','Pulled A'],
-    ['pulled b','Pulled B'],
-    ['pulled c','Pulled C'],
-    ['refurbished','Refurbished'],
-    ['oem-equivalent','OEM-Equivalent'],
-    ['oem equivalent','OEM-Equivalent'],
-    ['oem','OEM-Equivalent']
-  ]
-  let qualiteDetectee=null
-  let qModele=qRaw
+  let qualite=null, modele=brut
   for(const [kw,val] of QUALITY_MAP){
-    const idx=qLower.indexOf(kw)
-    if(idx!==-1){
-      qualiteDetectee=val
-      qModele=(qRaw.slice(0,idx)+qRaw.slice(idx+kw.length)).trim()
-      break
-    }
+    const i=bas.indexOf(kw)
+    if(i!==-1){qualite=val;modele=(brut.slice(0,i)+brut.slice(i+kw.length)).trim();break}
   }
+  if(modele.length<2&&!qualite){ accueil(); return }
 
-  if(qModele.length<2 && !qualiteDetectee){
-    results.innerHTML=welcomeHtml()
-    filtersBar.style.display='none'
-    return
+  const seq=++_seq
+  res.innerHTML='<div class="cat-chargement"><div class="spin"></div>Recherche en cours…</div>'
+
+  let req=sb.from('foneday_produits').select('*',{count:'exact'}).in('quality',QUALITES_RETENUES)
+  if(modele.length>=2){
+    const m=motifPostgrest(modele)
+    req=req.or(`suitable_for.ilike.${m},title.ilike.${m},sku.ilike.${m}`)
   }
-  results.innerHTML='<div class="cat-loading">Recherche en cours…</div>'
-  // Recherche sur suitable_for + title + sku, limitee aux qualites retenues par Linton
-  const QUALITES_RETENUES=['OEM-Equivalent','Service Pack','Pulled A','Refurbished']
-  let query=sb.from('foneday_produits').select('*').in('quality',QUALITES_RETENUES)
-  if(qModele.length>=2){
-    query=query.or(`suitable_for.ilike.%${qModele}%,title.ilike.%${qModele}%,sku.ilike.%${qModele}%`)
+  if(qualite)req=req.eq('quality',qualite)
+
+  const {data,error,count}=await req.order('category').limit(LIMITE)
+  // Une frappe rapide lance plusieurs requêtes : seule la dernière compte.
+  if(seq!==_seq)return
+  if(error){
+    res.innerHTML=`<div class="cat-etat"><div class="cat-etat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><h2>La recherche a échoué</h2><p>${escHtml(error.message)}</p></div>`
+    barre(false); return
   }
-  if(qualiteDetectee){
-    query=query.eq('quality',qualiteDetectee)
+  _res=(data||[]).filter(r=>modeleExact(r.suitable_for||r.title||'',modele)).filter(retenue)
+  _q=brut
+  _filtre='all'
+  _tronque=(count!=null&&count>LIMITE)?count-LIMITE:0
+
+  if(!_res.length){
+    res.innerHTML=`<div class="cat-etat"><div class="cat-etat-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h2>Aucun résultat pour « ${escHtml(brut)} »</h2><p>Essaie un autre modèle, une référence SKU, ou ajoute un mot de qualité — par exemple « iPhone 13 refurbished ».</p></div>`
+    barre(false); return
   }
-  const {data:dataRaw,error}=await query.order('category').limit(500)
-  const data=dataRaw?filtrerModeleExact(dataRaw,qModele).filter(exclusionsQualite):dataRaw
-  if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
-  if(!data||data.length===0){
-    results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(qRaw)}"</div><div>Essayez un autre modèle, une référence SKU, ou associez un mot de qualité (ex : iPhone 13 refurbished).</div></div>`
-    filtersBar.style.display='none'
-    return
-  }
-  _resultatsActuels=data
-  _qActuel=qRaw
-  _filtreActif='all'
+  barre(true)
   renderFiltres()
-  renderResults()
+  renderResultats()
+}
+
+function barre(visible){
+  document.getElementById('cat-bar').style.display=visible?'flex':'none'
+  const t=document.getElementById('cat-tronque')
+  if(visible&&_tronque>0){
+    // Sans cet avertissement, une recherche large perdait des centaines de
+    // variantes sans que rien ne l'indique.
+    t.style.display='flex'
+    t.innerHTML=`<span>⚠️</span><span><b>Résultats incomplets.</b> Ta recherche correspond à ${escHtml((LIMITE+_tronque).toLocaleString('fr-BE'))} pièces, seules les ${LIMITE} premières sont affichées. Précise le modèle — « iPhone 13 » plutôt que « iPhone » — pour tout voir.</span>`
+  } else t.style.display='none'
 }
 
 function renderFiltres(){
-  const bar=document.getElementById('cat-filters')
-  // Compter par catégorie
   const compte={}
-  _resultatsActuels.forEach(p=>{
-    const c=p.category||'Autre'
-    compte[c]=(compte[c]||0)+1
-  })
+  _res.forEach(p=>{const c=p.category||'Autre';compte[c]=(compte[c]||0)+1})
   const cats=Object.keys(compte).sort()
-  const labelActif=_filtreActif==='all'?'Toutes les catégories':_filtreActif
-  const countActif=_filtreActif==='all'?_resultatsActuels.length:(compte[_filtreActif]||0)
-  const checkSvg='<svg class="cat-filter-opt-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
-  let html=`<button type="button" class="cat-filter-btn" id="catFilterBtn" onclick="toggleCatFilterMenu()">
-    <span class="cat-filter-btn-label">${escapeHtml(labelActif)}</span>
-    <span class="cat-filter-btn-count">${countActif}</span>
-    <svg class="cat-filter-btn-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-  </button>
-  <div class="cat-filter-menu" id="catFilterMenu">
-    <div class="cat-filter-opt ${_filtreActif==='all'?'active':''}" onclick="setFiltre('all')"><span>Toutes les catégories</span><span style="display:flex;align-items:center;">${_filtreActif==='all'?checkSvg:`<span class="cat-filter-opt-count">${_resultatsActuels.length}</span>`}</span></div>`
-  cats.forEach(c=>{
-    const actif=_filtreActif===c
-    html+=`<div class="cat-filter-opt ${actif?'active':''}" onclick="setFiltre('${escapeJs(c)}')"><span>${escapeHtml(c)}</span><span style="display:flex;align-items:center;">${actif?checkSvg:`<span class="cat-filter-opt-count">${compte[c]}</span>`}</span></div>`
-  })
-  html+=`</div>`
-  bar.innerHTML=html
-  bar.style.display='inline-block'
+  document.getElementById('cat-count').innerHTML=
+    `<b>${_res.length}</b> variante${_res.length>1?'s':''} pour « ${escHtml(_q)} »`
+  document.getElementById('cat-filters').innerHTML=
+    `<button class="${_filtre==='all'?'on':''}" onclick="setFiltre('all')">Toutes<i>${_res.length}</i></button>`+
+    cats.map(c=>`<button class="${_filtre===c?'on':''}" onclick="setFiltre('${escJsAttr(c)}')">${escHtml(c)}<i>${compte[c]}</i></button>`).join('')
 }
+window.setFiltre=function(c){_filtre=c;renderFiltres();renderResultats()}
 
-window.toggleCatFilterMenu=function(){
-  document.getElementById('catFilterBtn').classList.toggle('open')
-  document.getElementById('catFilterMenu').classList.toggle('open')
-}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.cat-filters')){
-    const btn=document.getElementById('catFilterBtn'),menu=document.getElementById('catFilterMenu')
-    if(btn)btn.classList.remove('open')
-    if(menu)menu.classList.remove('open')
-  }
-})
-
-window.setFiltre=function(cat){
-  _filtreActif=cat
-  renderFiltres()
-  const results=document.getElementById('cat-results')
-  results.style.transition='opacity .15s ease'
-  results.style.opacity='0'
-  setTimeout(()=>{renderResults();results.style.opacity='1'},130)
-}
-
-function renderResults(){
-  const results=document.getElementById('cat-results')
-  const q=_qActuel
-  // Filtrer selon la catégorie active
-  const data=_filtreActif==='all'?_resultatsActuels:_resultatsActuels.filter(p=>(p.category||'Autre')===_filtreActif)
-  // Grouper par catégorie (Display, Battery...)
+function renderResultats(){
+  const data=_filtre==='all'?_res:_res.filter(p=>(p.category||'Autre')===_filtre)
   const groupes={}
-  data.forEach(p=>{
-    const cat=p.category||'Autre'
-    if(!groupes[cat])groupes[cat]=[]
-    groupes[cat].push(p)
-  })
-  let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
-  // Pour chaque catégorie, trier par niveau puis prix
+  data.forEach(p=>{const c=p.category||'Autre';(groupes[c]=groupes[c]||[]).push(p)})
+
+  let html=''
   Object.keys(groupes).sort().forEach(cat=>{
-    let cardIdx=0
     const items=groupes[cat].sort((a,b)=>{
       const na=NIVEAU_ORDRE[a.niveau]??9, nb=NIVEAU_ORDRE[b.niveau]??9
       if(na!==nb)return na-nb
       return (a.prix_achat||0)-(b.prix_achat||0)
     })
-    html+=`<div class="cat-piece-group"><div class="cat-piece-head"><span class="cat-cat-badge">${escapeHtml(cat)}</span> ${items.length} option${items.length>1?'s':''}</div><div class="cat-options">`
-    items.forEach(p=>{
+    html+=`<div class="grp"><div class="grp-h"><span class="grp-cat">${escHtml(cat)}</span><span class="grp-n">${items.length} option${items.length>1?'s':''}</span></div><div class="opts">`
+    html+=items.map(p=>{
       const achat=Number(p.prix_achat)||0
       const vente=calcPrixVente(achat)
-      const cout=achat+FRAIS_LIVRAISON
-      const marge=vente-cout
+      const marge=vente-(achat+FRAIS_LIVRAISON)
       const niv=p.niveau||'a_valider'
-      const stockIco=p.instock?'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
-      const etoile=niv==='recommande'?'★ ':''
-      const delai=Math.min(cardIdx*35,560)
-      cardIdx++
-      html+=`<div class="cat-opt ${p.instock?'':'rupture'}" style="animation-delay:${delai}ms;">
-        <div class="cat-opt-head niv-${niv}">
-          <span class="cat-opt-head-label">${etoile}${(NIVEAU_LABEL[niv]||niv).toUpperCase()}</span>
-          <span class="cat-opt-head-stock">${stockIco}${p.instock?'En stock':'Rupture'}</span>
+      return `<div class="opt ${p.instock?'':'rupture'}">
+        <div class="opt-h niv-${escHtml(niv)}">
+          <span>${niv==='recommande'?'★ ':''}${escHtml(NIVEAU_LABEL[niv]||niv)}</span>
+          <span class="opt-stock" style="color:${p.instock?'var(--ok)':'var(--t3)'}"><s></s>${p.instock?'En stock':'Rupture'}</span>
         </div>
-        <div class="cat-opt-body">
-          <div class="cat-opt-title">${escapeHtml(p.title||'')}</div>
-          <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')} · Réf. ${escapeHtml(p.sku||'')}</div>
-          <div class="cat-opt-price-big"><span class="prix">${vente.toFixed(2)} €</span><span class="marge">+${marge.toFixed(2)} €</span></div>
-          <div class="cat-opt-price-sub">prix conseillé · marge estimée</div>
-          <div class="cat-opt-detail">
-            <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
-            <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${FRAIS_LIVRAISON.toFixed(2)} €</span></div>
+        <div class="opt-b">
+          <div class="opt-t">${escHtml(p.title||'')}</div>
+          <div class="opt-q">${escHtml(p.quality||'—')} · réf. ${escHtml(p.sku||'')}</div>
+          <div class="opt-p"><span class="px">${escHtml(eur(vente))}</span><span class="mg">+${escHtml(eur(marge))}</span></div>
+          <div class="opt-sub">prix conseillé · marge estimée, livraison comprise</div>
+          <div class="opt-a">
+            <button class="b-stock" onclick="ajouterAuStock('${escJsAttr(p.sku||'')}')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Stock</button>
+            <button class="b-panier" onclick="ajouterAuPanier('${escJsAttr(p.sku||'')}','${escJsAttr(p.title||'')}',this)"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Panier</button>
           </div>
         </div>
-        <div class="cat-opt-foot" style="display:flex;gap:6px;">
-          <button class="cat-btn primary" onclick="ajouterAuStock('${escapeJs(p.sku)}')" style="flex:1;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Stock</button>
-          <button class="cat-btn" onclick="ajouterAuPanierFoneday('${escapeJs(p.sku)}','${escapeJs(p.title||'')}',this)" style="flex:1;background:var(--bg2);border:1px solid var(--ln2);color:var(--t2);" title="Ajouter au panier Foneday (paiement sur leur site)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Panier</button>
-        </div>
       </div>`
-    })
-    html+=`</div></div>`
+    }).join('')
+    html+='</div></div>'
   })
-  results.innerHTML=html
-  observerRevelation()
+  document.getElementById('cat-results').innerHTML=html
 }
 
-let _catRevealObserver=null
-function observerRevelation(){
-  if(_catRevealObserver)_catRevealObserver.disconnect()
-  const groupes=document.querySelectorAll('.cat-piece-group')
-  if(!('IntersectionObserver' in window)){
-    groupes.forEach(g=>g.classList.add('revealed'))
-    return
-  }
-  _catRevealObserver=new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add('revealed')
-        _catRevealObserver.unobserve(entry.target)
-      }
-    })
-  },{root:document.getElementById('cat-results'),rootMargin:'0px 0px -40px 0px',threshold:0.08})
-  groupes.forEach(g=>_catRevealObserver.observe(g))
+function accueil(){
+  _res=[]; _tronque=0
+  barre(false)
+  document.getElementById('cat-results').innerHTML=
+    `<div class="cat-etat"><div class="cat-etat-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+     <h2>Cherche une pièce</h2>
+     <p>Tape un modèle d'appareil pour voir toutes les variantes disponibles, classées par niveau, avec leur prix de vente conseillé et ta marge, livraison comprise.</p></div>`
 }
 
-function escapeJs(s){return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-
-function welcomeHtml(){
-  return `<div class="cat-welcome"><div class="cat-welcome-ico">🔧</div><h2>Catalogue Foneday</h2><p>Recherchez un modèle d'appareil pour voir toutes les variantes de pièces disponibles, classées par niveau (économique, recommandé, premium) avec leur prix de vente conseillé et votre marge.</p></div>`
-}
-
+/* ── Actions ─────────────────────────────────────────────────── */
 window.ajouterAuStock=async function(sku){
   const {data,error}=await sb.from('foneday_produits').select('*').eq('sku',sku).maybeSingle()
   if(error||!data){showToast('Pièce introuvable','err');return}
-  // Pré-remplir via localStorage et rediriger vers stock
   const prefill={
-    nom:data.title,
-    categorie:data.category,
-    marque:(data.model_brand||'').replace('For ',''),
-    modele:data.suitable_for,
+    nom:data.title, categorie:data.category,
+    marque:(data.model_brand||'').replace('For ',''), modele:data.suitable_for,
     prix_achat:data.prix_achat,
     prix_vente:calcPrixVente(Number(data.prix_achat)||0).toFixed(2),
     fournisseur:'Foneday',
     notes:'Réf. Foneday : '+data.sku+' — '+(data.quality||'')
   }
-  localStorage.setItem('erp-prefill-stock',JSON.stringify(prefill))
+  try{localStorage.setItem('erp-prefill-stock',JSON.stringify(prefill))}catch(e){}
   showToast('Redirection vers le stock…','ok')
   setTimeout(()=>{window.location.href='/admin/stock.html?prefill=1'},600)
 }
 
-window.ajouterAuPanierFoneday=async function(sku,titre,btn){
-  const original=btn.innerHTML
-  btn.disabled=true
-  btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Ajout…'
+window.ajouterAuPanier=async function(sku,titre,btn){
+  const avant=btn.innerHTML
+  btn.disabled=true; btn.textContent='Ajout…'
   try{
-    const {data:{session}}=await sb.auth.getSession()
+    const {data:{session:s}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/foneday-proxy`,{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${s.access_token}`},
       body:JSON.stringify({action:'cart-add',articles:[{sku,quantity:1,note:null}]})
     })
-    const result=await res.json()
-    if(!res.ok||!result.ok)throw new Error(result.error||'Échec de l\'ajout au panier')
-    showToast(`${titre||sku} ajouté au panier Foneday ✓`,'ok')
+    const r=await res.json().catch(()=>({}))
+    if(!res.ok||!r.ok)throw new Error(r.error||'Échec de l\'ajout au panier')
+    showToast(`${titre||sku} ajouté au panier Foneday`,'ok')
   }catch(err){
-    showToast('Erreur panier Foneday : '+err.message,'err')
+    showToast('Erreur panier Foneday : '+(err.message||err),'err')
   }
-  btn.disabled=false
-  btn.innerHTML=original
+  btn.disabled=false; btn.innerHTML=avant
 }
 
-window.catSearchDebounce=function(){
-  clearTimeout(_timer)
-  _timer=setTimeout(rechercher,350)
-}
+window.catSearchDebounce=function(){clearTimeout(_timer);_timer=setTimeout(rechercher,350)}
 window.catSet=function(v){document.getElementById('catSearch').value=v;rechercher()}
 
-document.getElementById('cat-results').innerHTML=welcomeHtml()
-await loadSyncInfo()
+/* ── Amorçage ────────────────────────────────────────────────── */
+document.getElementById('cat-sugg').innerHTML=
+  SUGGESTIONS.map(s=>`<button onclick="catSet('${escJsAttr(s)}')">${escHtml(s)}</button>`).join('')
+accueil()
+
+try{
+  const [{data:sync},{count}]=await Promise.all([
+    sb.from('foneday_produits').select('synced_at').order('synced_at',{ascending:false}).limit(1),
+    sb.from('foneday_produits').select('sku',{count:'exact',head:true})
+  ])
+  if(sync&&sync[0]&&sync[0].synced_at){
+    const d=new Date(sync[0].synced_at)
+    document.getElementById('sync-info').textContent=
+      `Synchronisé le ${d.toLocaleDateString('fr-BE',{day:'numeric',month:'long'})} à ${d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})}`
+  }
+  // Le séparateur n'a de sens que si la date de synchro a pu être lue.
+  if(count!=null){
+    const sep=document.getElementById('sync-info').textContent?'\u00b7 ':''
+    document.getElementById('cat-total').textContent=
+      sep+count.toLocaleString('fr-BE')+' pi\u00e8ces au catalogue'
+  }
+}catch(e){console.warn('Informations de synchronisation indisponibles.',e)}
+
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+document.getElementById('ldr').style.display='none'
+document.getElementById('pageBody').style.display='flex'
 
 } catch(err){
   console.error(err)
   showError(err.message||'Erreur inattendue')
 }
 </script>
+
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
     <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
