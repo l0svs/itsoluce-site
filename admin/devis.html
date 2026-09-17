@@ -1610,11 +1610,18 @@ window.preparerEmail=async function(){
     const pdfName=`Devis_${courant.numero}.pdf`
     const prenom=(courant.client_nom||'').split(' ')[0]||''
     const validite=courant.date_validite?new Date(courant.date_validite).toLocaleDateString('fr-BE'):null
+    // L'acompte figurait dans le PDF sans jamais être annoncé dans le message :
+    // le client lisait un montant global et découvrait la condition en pièce jointe.
+    // Formulation reprise telle quelle du PDF, pour ne pas créer une seconde version
+    // des conditions.
+    const acompte=Number(courant.acompte||0)
+    const solde=Math.max(0,Number(courant.total||0)-acompte)
     _enAttente={doc:courant,pdfBase64,pdfName}
     document.getElementById('em-to').value=courant.client_email
     document.getElementById('em-subject').value=`Devis ${courant.numero} — IT Soluce`
     document.getElementById('em-body').value=
       `Bonjour ${prenom},\n\nVous trouverez ci-joint le devis ${courant.numero} d'un montant de ${eur(courant.total)}.`+
+      (acompte>0?`\n\nUn acompte de ${eur(acompte)} sera demandé à l'acceptation du devis. Solde restant : ${eur(solde)}.`:'')+
       (validite?`\n\nIl est valable jusqu'au ${validite}.`:'')+
       `\n\nPour l'accepter, il vous suffit de me répondre par email. N'hésitez pas à me contacter pour toute question.`
     document.getElementById('em-pdfname').textContent=pdfName
