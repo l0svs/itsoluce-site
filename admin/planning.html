@@ -855,6 +855,17 @@ const TYPE_COULEUR={domicile:'var(--a)',depot:'#6d28d9',retrait:'#1a8a52',autre:
 const DUREES=[30,60,90,120,180]
 
 let allRdv=[],allClients=[],allReps=[]
+
+/* Coordonnées de l'entreprise : la page Gestion fait foi. Elles étaient
+   écrites en dur dans la signature du rappel, donc insensibles aux
+   Paramètres, contrairement aux devis et aux factures. */
+const ENTREPRISE={
+  nom:'IT Soluce',
+  email:'contact@itsoluce.be',
+  tel:'+32 474 05 66 59',
+  site:'itsoluce.be',
+  logo:'https://itsoluce.be/img/logo-full.png'
+}
 let _vue='agenda'
 let _filtre='avenir'
 let _jourSel=null              // jour choisi dans le mini-calendrier
@@ -907,11 +918,20 @@ function sousTitre(r){
 
 /* ── Chargement ───────────────────────────────────────────────── */
 async function load(){
-  const [rRdv,rCli,rRep]=await Promise.all([
+  const [rRdv,rCli,rRep,rSet]=await Promise.all([
     sb.from('rendezvous').select('*').order('date_debut',{ascending:false}).limit(2000),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(2000),
-    sb.from('reparations').select('id,numero,client_nom,appareil,modele,statut').order('created_at',{ascending:false}).limit(2000)
+    sb.from('reparations').select('id,numero,client_nom,appareil,modele,statut').order('created_at',{ascending:false}).limit(2000),
+    sb.from('settings').select('cle,valeur')
   ])
+  ;(rSet&&rSet.data||[]).forEach(r=>{
+    const v=r.valeur==null?'':String(r.valeur).trim()
+    if(!v)return
+    if(r.cle==='entreprise_nom')ENTREPRISE.nom=v
+    if(r.cle==='entreprise_email')ENTREPRISE.email=v
+    if(r.cle==='entreprise_telephone')ENTREPRISE.tel=v
+    if(r.cle==='entreprise_site')ENTREPRISE.site=v.replace(/^https?:\/\//,'').replace(/\/$/,'')
+  })
   if(rRdv.error)throw rRdv.error
   allRdv=rRdv.data||[]
   allClients=rCli.data||[]
@@ -1332,7 +1352,20 @@ window.envoyerRappel=async function(){
     const d=new Date(r.date_debut)
     const dateLbl=d.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long'})
     const lieuLigne=r.lieu?`<p>Lieu : ${escHtml(r.lieu)}</p>`:''
-    const signature=`<p style="margin-top:18px;">Bien à vous,<br>Linton</p><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:14px;"><tr><td colspan="2" style="border-top:2px solid #0052CC;font-size:0;line-height:0;height:12px;">&nbsp;</td></tr><tr><td style="vertical-align:top;padding-right:16px;"><img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" width="54" height="54" style="border-radius:9px;display:block;" alt="IT Soluce"></td><td style="vertical-align:top;border-left:1px solid #d2d2d7;padding-left:16px;"><div style="font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3;">IT Soluce</div><div style="font-size:12px;color:#6e6e73;line-height:1.5;">Réparations informatiques &amp; électroniques</div><div style="font-size:11px;color:#6e6e73;line-height:1.9;margin-top:8px;"><span style="color:#0052CC;font-weight:600;">E</span>&nbsp;&nbsp;contact@itsoluce.be<br><span style="color:#0052CC;font-weight:600;">T</span>&nbsp;&nbsp;+32 474 05 66 59<br><span style="color:#0052CC;font-weight:600;">W</span>&nbsp;&nbsp;<a href="https://itsoluce.be/" style="color:#0052CC;text-decoration:none;">itsoluce.be</a></div></td></tr></table>`
+    /* Signature compacte, identique à celle de l'accusé de réception.
+       Le logo est affiché à 78 px : le fichier source fait 156 px de large,
+       au-delà il perdrait sa netteté sur un écran retina. */
+    const telLien=(ENTREPRISE.tel||'').replace(/[^0-9+]/g,'')
+    const L=(href,txt)=>`<a href="${href}" style="color:#0052CC;text-decoration:none;">${escHtml(txt)}</a>`
+    const signature=`<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>`+
+      `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">`+
+      `<tr><td style="padding:0 0 10px;"><img src="${ENTREPRISE.logo}" width="78" height="32" alt="${escHtml(ENTREPRISE.nom)}" style="display:block;border:0;"></td></tr>`+
+      `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>`+
+      `<tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:#5a6b7b;">`+
+      [ENTREPRISE.tel?L('tel:'+telLien,ENTREPRISE.tel):'',
+       ENTREPRISE.email?L('mailto:'+ENTREPRISE.email,ENTREPRISE.email):'',
+       ENTREPRISE.site?L('https://'+ENTREPRISE.site+'/',ENTREPRISE.site):''].filter(Boolean).join('&nbsp;&middot;&nbsp;')+
+      `</td></tr></table>`
     const html=`<p>Bonjour ${escHtml(prenom)},</p><p>Je vous confirme notre rendez-vous prévu <strong>${escHtml(dateLbl)}</strong> à <strong>${hm(d)}</strong>.</p>${lieuLigne}<p>N'hésitez pas à me recontacter si vous avez un empêchement.</p>${signature}`
     const {data:{session:s2}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-reminder`,{
