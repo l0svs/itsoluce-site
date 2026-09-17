@@ -1949,7 +1949,11 @@ window.confirmerEnvoiEmail=async function(){
   try{
     const corps=textToHtml(document.getElementById('em-body').value)
     const sig=signatureHTML('complete')
-    const html=type==='acompte'?corps+sig:corps+AVIS_HTML+sig
+    /* L'avis Google n'a de sens qu'une fois la prestation réglée. Il était
+       ajouté à toutes les factures : réclamer le paiement et un avis dans
+       le même message n'aide ni l'un ni l'autre. */
+    const avis=(type!=='acompte'&&f.statut==='payee')?AVIS_HTML:''
+    const html=corps+avis+sig
     const {data:{session}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-invoice`,{
       method:'POST',

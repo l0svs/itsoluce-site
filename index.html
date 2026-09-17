@@ -1568,6 +1568,12 @@ button { cursor: pointer; font: inherit; }
 /* Résumé en direct */
 .recap { margin: 2px 0 18px; font-size: 12.5px; color: #aeaeb2; }
 .recap b { color: #0052CC; font-weight: 600; }
+/* Mention de protection des données, sous le bouton d'envoi. Le formulaire
+   collecte nom, e-mail, téléphone et parfois l'adresse du domicile : la
+   page Confidentialité existait, mais rien n'y renvoyait depuis ici. */
+.f-rgpd { margin: 14px 0 0; font-size: 12px; line-height: 1.6; color: #aeaeb2; }
+.f-rgpd button { background: none; border: none; padding: 0; font: inherit; color: #0052CC; cursor: pointer; text-decoration: underline; }
+.f-rgpd button:hover { opacity: .75; }
 
 .btn-send {
   position: relative;
@@ -2762,7 +2768,6 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
         <div class="c-form">
           <form id="cForm" onsubmit="submitForm(event)">
             <input type="hidden" name="_subject" value="Nouvelle demande — IT Soluce">
-            <input type="hidden" name="_language" value="fr">
             <!-- Piège anti-bot (honeypot) : champ invisible pour un humain, souvent rempli par les bots -->
             <div style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden;" aria-hidden="true">
               <label for="website">Ne pas remplir ce champ</label>
@@ -2863,6 +2868,13 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
               <span class="btn-send__label">Envoyer</span>
               <span class="btn-send__spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 0 1 10 10"/></svg></span>
             </button>
+
+            <p class="f-rgpd">
+              Vos données ne servent qu'à traiter votre demande de réparation et ne sont jamais transmises à des tiers.
+              Vous pouvez à tout moment demander à les consulter, les corriger ou les supprimer en écrivant à
+              <a href="mailto:contact@itsoluce.be" style="color:#0052CC;">contact@itsoluce.be</a>.
+              <button type="button" data-m="privacy">En savoir plus</button>
+            </p>
 
             <div class="f-ok" id="fOk">
               <svg class="f-ok__check" viewBox="0 0 52 52">
