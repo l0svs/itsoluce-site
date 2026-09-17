@@ -1411,11 +1411,16 @@ window.preparerRappel=function(){
   // L'année manquait : « jeudi 17 septembre » sans millésime prête à confusion
   // pour un rendez-vous pris de longue date.
   const dateLbl=d.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})
+  // Le lieu et la réparation formaient chacun leur propre paragraphe : trois
+  // lignes courtes séparées par du blanc, alors qu'elles décrivent le même
+  // rendez-vous. Elles sont regroupées en un seul bloc, une information par
+  // ligne, et « Objet » répond à « Lieu » au lieu d'une phrase isolée.
+  const bloc=[`Je vous confirme notre rendez-vous prévu ${dateLbl} à ${hm(d)}.`]
+  if(r.lieu)bloc.push(`Lieu : ${r.lieu}`)
+  if(r.reparation_numero)bloc.push(`Objet : réparation ${r.reparation_numero}`)
   const lignes=[`Bonjour ${prenom},`,
-    `Je vous confirme notre rendez-vous prévu ${dateLbl} à ${hm(d)}.`]
-  if(r.lieu)lignes.push(`Lieu : ${r.lieu}`)
-  if(r.reparation_numero)lignes.push(`Concernant la réparation ${r.reparation_numero}.`)
-  lignes.push("N'hésitez pas à me recontacter si vous avez un empêchement.")
+    bloc.join('\n'),
+    "N'hésitez pas à me recontacter si vous avez un empêchement."]
   _rappelEnAttente={rdv:r,email:client.email}
   document.getElementById('em-to').value=client.email
   document.getElementById('em-subject').value=`Rappel de rendez-vous — ${ENTREPRISE.nom}`
