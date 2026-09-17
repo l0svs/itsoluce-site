@@ -249,6 +249,8 @@ body{font-size:14px;}
 .stars{color:#d9a400; font-size:12.5px; letter-spacing:1.5px; white-space:nowrap; flex-shrink:0;}
 [data-mode="dark"] .stars{color:#ffce3d;}
 .tag{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; flex-shrink:0;}
+/* « En ligne » : la prestation est publiée dans la grille des tarifs du site. */
+.t-on{background:var(--ad); color:var(--a);}
 .t-ok{background:rgba(26,138,82,.11); color:var(--ok);}
 .t-wn{background:rgba(178,94,9,.12); color:var(--w);}
 .t-of{background:var(--bg4); color:var(--t3);}
@@ -280,6 +282,7 @@ body{font-size:14px;}
 .detail-vide{padding:40px 12px; text-align:center; font-size:13px; color:var(--t3); line-height:1.6;}
 
 .toggle-l{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--ln); font-size:13.5px; color:var(--t1);}
+.toggle-l em{display:block; margin-top:2px; font-style:normal; font-size:11.5px; line-height:1.45; color:var(--t3);}
 .tog{width:44px; height:26px; border-radius:980px; background:var(--bg4); border:1px solid var(--ln2); position:relative; cursor:pointer; transition:.18s; flex-shrink:0;}
 .tog.on{background:var(--ok); border-color:var(--ok);}
 .tog i{position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .18s; box-shadow:0 1px 2px rgba(0,0,0,.2);}
@@ -1350,6 +1353,7 @@ window.renderPrestations=function(){
       <div class="lrow-n"><b>${escHtml(s.nom)}</b>${s.detail?`<em>${escHtml(s.detail)}</em>`:''}</div>
       <span class="lrow-v">${escHtml(prixLabel(s))}</span>
       ${s.actif===false?'<span class="tag t-of">Inactive</span>':''}
+      ${s.vitrine===true?'<span class="tag t-on">En ligne</span>':''}
     </div>`).join('')
     : `<div class="vide-l"><h4>Aucune prestation${q||_fPrest?' ne correspond':''}</h4><p>${_prest.length?'Change de filtre ou vide la recherche.':'Ajoute ta première prestation pour la retrouver dans tes devis.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvellePrestation()">Ajouter une prestation</button></div>`
   if(_selPrest&&!_prest.some(s=>String(s.id)===String(_selPrest)))_selPrest=null
@@ -1364,7 +1368,7 @@ function dessinerDetailPrest(){
     return
   }
   const neuf=_selPrest==='__neuf'
-  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true}:_prest.find(x=>String(x.id)===String(_selPrest))
+  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true,vitrine:false}:_prest.find(x=>String(x.id)===String(_selPrest))
   if(!s){_selPrest=null;return dessinerDetailPrest()}
   box.innerHTML=`
     <div class="detail-h">${neuf?'Nouvelle prestation':escHtml(s.nom)}</div>
@@ -1377,6 +1381,10 @@ function dessinerDetailPrest(){
     <div class="fg"><label for="p-unite">Unité</label><input type="text" id="p-unite" value="${escHtml(s.unite||'')}" placeholder="/h — laisser vide si forfait"/></div>
     <div class="fg"><label for="p-detail">Détail</label><textarea id="p-detail" placeholder="Ce qui est inclus">${escHtml(s.detail||'')}</textarea></div>
     <div class="toggle-l"><span>Prestation active</span><div class="tog ${s.actif!==false?'on':''}" id="p-actif" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
+    <!-- La colonne « Service supplémentaire » du site vitrine lit cette table.
+         Décoché par défaut : une prestation nouvellement créée ne part pas
+         en ligne sans décision explicite. -->
+    <div class="toggle-l"><span>Afficher sur le site<em>Dans la colonne « Service supplémentaire » des tarifs publics</em></span><div class="tog ${s.vitrine===true?'on':''}" id="p-vitrine" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
     <div class="detail-f">
       ${neuf?'':'<button class="btn btn-danger" onclick="supprimerPrestation()">Supprimer</button>'}
       <button class="btn btn-primary" onclick="enregistrerPrestation()">${neuf?'Créer':'Enregistrer'}</button>
@@ -1394,7 +1402,8 @@ window.enregistrerPrestation=async function(){
     prix_max:(pmax!==null&&!isNaN(pmax))?pmax:null,
     unite:document.getElementById('p-unite').value.trim()||null,
     detail:document.getElementById('p-detail').value.trim()||null,
-    actif:document.getElementById('p-actif').classList.contains('on')
+    actif:document.getElementById('p-actif').classList.contains('on'),
+    vitrine:document.getElementById('p-vitrine').classList.contains('on')
   }
   try{
     if(_selPrest==='__neuf'){
