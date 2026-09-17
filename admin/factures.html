@@ -1924,11 +1924,14 @@ window.envoyerRecu=async function(){
   const prenom=(f.client_nom||'').split(' ')[0]||''
   const acompte=Number(f.acompte||0)
   const solde=Math.max(0,Number(f.total||0)-acompte)
+  // Le message annonçait un solde sans dire ni quand ni comment le régler,
+  // et affirmait « reçu ce jour » même envoyé deux jours après l'encaissement.
+  const ech=f.date_echeance?`, à régler pour le ${dateLongue(f.date_echeance)}`:''
   await ouvrirModaleEmail({
     html:buildRecuHTML(f),
     pdfName:`Recu_acompte_${f.numero}.pdf`,
-    sujet:`Reçu d'acompte — Facture ${f.numero} — ${ENTREPRISE.nom}`,
-    message:`Bonjour ${prenom},\n\nMerci pour votre acompte de ${eur(acompte)} reçu ce jour.\n\nVous trouverez ci-joint le reçu lié à la facture ${f.numero}. Le solde restant dû s'élève à ${eur(solde)}.\n\nJe reste à votre disposition pour toute question.`,
+    sujet:`Reçu d'acompte — Facture ${f.numero}`,
+    message:`Bonjour ${prenom},\n\nMerci pour votre acompte de ${eur(acompte)}.\n\nVous trouverez ci-joint le reçu lié à la facture ${f.numero}. Le solde restant dû s'élève à ${eur(solde)}${ech}.\n\nLe règlement se fait par virement sur le compte ${ENTREPRISE.iban}.\n\nJe reste à votre disposition pour toute question.`,
     type:'acompte'
   })
 }
