@@ -1563,7 +1563,41 @@ window.telechargerPdf=async function(){
 /* ─── Envoi par email ─── */
 let _enAttente=null
 function textToHtml(t){return t.split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')}
-const SIGNATURE_HTML=`<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:rgb(18,33,46);margin:0 0 14px;">Bien à vous,</div><table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;max-width:480px;font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:0 0 10px;"><img src="https://itsoluce.be/img/logo-full.png" width="124" height="51" alt="IT Soluce" style="display:block;border:0;"></td></tr><tr><td style="border-top:2px solid rgb(0,82,204);padding:10px 0 0;font-size:13px;color:rgb(18,33,46);line-height:1.6;"><strong style="font-weight:bold;">Réparations informatiques &amp; électroniques</strong></td></tr><tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:rgb(90,107,123);"><a href="tel:+32474056659" style="color:rgb(0,82,204);text-decoration:none;">+32 474 05 66 59</a>&nbsp;·&nbsp;<a href="mailto:contact@itsoluce.be" style="color:rgb(0,82,204);text-decoration:none;">contact@itsoluce.be</a>&nbsp;·&nbsp;<a href="https://itsoluce.be/" style="color:rgb(0,82,204);text-decoration:none;">itsoluce.be</a></td></tr></table>`
+/* ─── Signature e-mail ───
+   Deux variantes du même bloc : « compacte » pour les échanges courants,
+   « complete » pour les documents commerciaux. Les coordonnées viennent des
+   Paramètres : elles étaient écrites en dur dans trois fichiers différents.
+   Le logo est affiché à 78 px de large parce que le fichier source fait
+   156 px : au-delà, il perdrait sa netteté sur un écran retina. */
+function signatureHTML(variante){
+  const nom=ENTREPRISE.nom||'IT Soluce'
+  const tel=ENTREPRISE.tel||''
+  const telLien=tel.replace(/[^0-9+]/g,'')
+  const mail=ENTREPRISE.email||''
+  const site=String(ENTREPRISE.site||'').replace(/^https?:\/\//,'').replace(/\/$/,'')
+  const logo=ENTREPRISE.logo||'https://itsoluce.be/img/logo-full.png'
+  const L=(href,txt,coul)=>`<a href="${href}" style="color:${coul};text-decoration:none;">${escHtml(txt)}</a>`
+  const entete=`<tr><td style="padding:0 0 10px;"><img src="${logo}" width="78" height="32" alt="${escHtml(nom)}" style="display:block;border:0;"></td></tr>`+
+    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>`
+  let corps
+  if(variante==='complete'){
+    const adresse=[ENTREPRISE.adresse,ENTREPRISE.cp_ville].filter(Boolean).join(', ')
+    const pied=[adresse,ENTREPRISE.bce?'BCE '+ENTREPRISE.bce:''].filter(Boolean).join(' &middot; ')
+    corps=`<tr><td style="padding:8px 0 0;font-size:12.5px;line-height:1.9;color:#5a6b7b;">`+
+      (tel?`<span style="color:#0052CC;font-weight:bold;">T</span>&nbsp;&nbsp;${L('tel:'+telLien,tel,'#5a6b7b')}<br>`:'')+
+      (mail?`<span style="color:#0052CC;font-weight:bold;">E</span>&nbsp;&nbsp;${L('mailto:'+mail,mail,'#5a6b7b')}<br>`:'')+
+      (site?`<span style="color:#0052CC;font-weight:bold;">W</span>&nbsp;&nbsp;${L('https://'+site+'/',site,'#0052CC')}`:'')+
+      `</td></tr>`+
+      (pied?`<tr><td style="padding:9px 0 0;font-size:11.5px;line-height:1.6;color:#8a97a3;">${escHtml(pied).replace('&amp;middot;','&middot;')}</td></tr>`:'')
+  }else{
+    corps=`<tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:#5a6b7b;">`+
+      [tel?L('tel:'+telLien,tel,'#0052CC'):'',mail?L('mailto:'+mail,mail,'#0052CC'):'',site?L('https://'+site+'/',site,'#0052CC'):'']
+        .filter(Boolean).join('&nbsp;&middot;&nbsp;')+
+      `</td></tr>`
+  }
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>`+
+    `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">${entete}${corps}</table>`
+}
 
 window.preparerEmail=async function(){
   if(!courant){showToast("Enregistre d'abord le devis",'err');return}
@@ -1602,7 +1636,7 @@ window.confirmerEnvoiEmail=async function(){
   const htmlBtn=btn.innerHTML
   btn.disabled=true;btn.textContent='Envoi en cours…'
   try{
-    const html=textToHtml(document.getElementById('em-body').value)+SIGNATURE_HTML
+    const html=textToHtml(document.getElementById('em-body').value)+signatureHTML('complete')
     const {data:{session}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-invoice`,{
       method:'POST',
