@@ -831,8 +831,7 @@ button { cursor: pointer; font: inherit; }
 }
 .svc:hover { background: #ffffff; }
 
-.svc:nth-child(3n)   { border-right: none; }
-.svc:nth-child(4),
+.svc:nth-child(4)    { border-right: none; }
 .svc:nth-child(5),
 .svc:nth-child(6)    { border-bottom: none; }
 
@@ -2283,14 +2282,13 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   height: 100%;
   display: block;
 }
-  .svc--featured { grid-column: span 2; }
-  .svc:nth-child(3n) { border-right: 1px solid #d2d2d7; }
-  .svc:nth-child(2n) { border-right: none; }
-  .svc:nth-child(4),
-  .svc:nth-child(5),
-  .svc:nth-child(6) { border-bottom: 1px solid #d2d2d7; }
-  .svc:nth-last-child(-n+2) { border-bottom: none; }
-}
+
+/* Les quatre règles .svc qui se trouvaient ici n'étaient dans aucun bloc :
+   leur @media avait disparu, il ne restait qu'une accolade orpheline. Posées
+   au niveau racine et plus loin dans la feuille, elles s'appliquaient à toutes
+   les largeurs et écrasaient silencieusement les bordures définies plus haut.
+   Les bordures des cartes Services sont désormais réglées à un seul endroit,
+   avec le reste de « .svc ». */
 
 @media (max-width: 480px) {
   .services__grid { grid-template-columns: 1fr; }
@@ -2584,6 +2582,17 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
         </div>
         <div class="svc__name">Tablettes</div>
         <div class="svc__desc">iPad, Galaxy Tab — écran tactile, batterie, connectique et autres.</div>
+      </div>
+
+      <div class="svc">
+        <div class="svc__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+        </div>
+        <div class="svc__name">Service supplémentaire</div>
+        <div class="svc__desc">Transfert et sauvegarde de données, configuration d'un nouvel appareil, assistance et autres.</div>
       </div>
 
     </div>
