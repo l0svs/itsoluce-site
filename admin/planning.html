@@ -611,6 +611,23 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+
+/* ─── Fenêtre d'aperçu avant envoi ───
+   Le rappel partait au clic, seul des cinq e-mails de l'ERP à ne pas
+   passer par une relecture : impossible de corriger ou d'annuler. */
+.email-overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); z-index:500; display:none; align-items:center; justify-content:center; padding:20px;}
+.email-box{background:var(--bg2); border-radius:16px; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,.35);}
+.email-head{display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--ln);}
+.email-head span{font-size:15px; font-weight:600; color:var(--t1);}
+.email-close{background:none; border:none; color:var(--t3); font-size:22px; cursor:pointer; line-height:1; padding:0 4px; font-family:inherit;}
+.email-close:hover{color:var(--t1);}
+.email-body{padding:20px; display:flex; flex-direction:column; gap:14px;}
+.email-body label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.email-body input,.email-body textarea{width:100%; padding:9px 12px; background:var(--bg3); border:1px solid transparent; border-radius:10px; color:var(--t1); font-size:13.5px; font-family:inherit; box-sizing:border-box; outline:none;}
+.email-body input:focus,.email-body textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.email-body textarea{resize:vertical; line-height:1.55;}
+.email-note{font-size:12px; color:var(--t3); line-height:1.5;}
+.email-foot{display:flex; gap:8px; padding:14px 20px; border-top:1px solid var(--ln);}
 </style>
 </head>
 <body>
@@ -764,9 +781,26 @@ body{font-size:14px;}
 
   <div class="panel-footer">
     <button class="btn btn-danger" id="delBtn" onclick="deleteRdv()" style="display:none;">Supprimer</button>
-    <button class="btn btn-secondary" id="rappelBtn" onclick="envoyerRappel()" style="display:none;"></button>
+    <button class="btn btn-secondary" id="rappelBtn" onclick="preparerRappel()" style="display:none;"></button>
     <button class="btn btn-secondary" onclick="closePanel()">Annuler</button>
     <button class="btn btn-primary" id="saveBtn" onclick="saveRdv()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- APERÇU DU RAPPEL AVANT ENVOI -->
+<div class="email-overlay" id="emailOverlay">
+  <div class="email-box">
+    <div class="email-head"><span>Aperçu du rappel</span><button class="email-close" onclick="closeEmailModal()" aria-label="Fermer">×</button></div>
+    <div class="email-body">
+      <div><label for="em-to">Destinataire</label><input type="email" id="em-to"/></div>
+      <div><label for="em-subject">Objet</label><input type="text" id="em-subject"/></div>
+      <div><label for="em-body">Message</label><textarea id="em-body" rows="8"></textarea></div>
+      <div class="email-note">La signature IT Soluce est ajoutée automatiquement à l'envoi.</div>
+    </div>
+    <div class="email-foot">
+      <button class="btn btn-secondary" onclick="closeEmailModal()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmerEnvoiRappel()" id="confirmSendBtn" style="flex:2;">Envoyer le rappel</button>
+    </div>
   </div>
 </div>
 
@@ -1339,39 +1373,77 @@ window.deleteRdv=async function(){
   showToast('Rendez-vous supprimé','ok')
 }
 
-window.envoyerRappel=async function(){
+/* ─── Rappel de rendez-vous ───
+   Le rappel partait au clic, seul des cinq e-mails de l'ERP à ne pas passer
+   par une relecture : ni correction ni annulation possibles. Il ouvre
+   désormais la même fenêtre d'aperçu que les devis et les factures. */
+let _rappelEnAttente=null
+
+function signatureRappel(){
+  /* Signature compacte, identique à celle de l'accusé de réception.
+     Le logo est affiché à 78 px : le fichier source fait 156 px de large,
+     au-delà il perdrait sa netteté sur un écran retina. */
+  const telLien=(ENTREPRISE.tel||'').replace(/[^0-9+]/g,'')
+  const L=(href,txt)=>`<a href="${href}" style="color:#0052CC;text-decoration:none;">${escHtml(txt)}</a>`
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>`+
+    `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">`+
+    `<tr><td style="padding:0 0 10px;"><img src="${ENTREPRISE.logo}" width="78" height="32" alt="${escHtml(ENTREPRISE.nom)}" style="display:block;border:0;"></td></tr>`+
+    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>`+
+    `<tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:#5a6b7b;">`+
+    [ENTREPRISE.tel?L('tel:'+telLien,ENTREPRISE.tel):'',
+     ENTREPRISE.email?L('mailto:'+ENTREPRISE.email,ENTREPRISE.email):'',
+     ENTREPRISE.site?L('https://'+ENTREPRISE.site+'/',ENTREPRISE.site):''].filter(Boolean).join('&nbsp;&middot;&nbsp;')+
+    `</td></tr></table>`
+}
+
+function texteEnHtml(t){
+  return String(t||'').split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')
+}
+
+window.preparerRappel=function(){
   const id=document.getElementById('f-id').value
   const r=allRdv.find(x=>Number(x.id)===Number(id))
   if(!r)return
   const client=allClients.find(c=>Number(c.id)===Number(r.client_id))
   if(!client||!client.email){showToast('Ce client n\'a pas d\'email renseigné','err');return}
-  const btn=document.getElementById('rappelBtn')
+  const prenom=(client.nom||'').split(' ')[0]||''
+  const d=new Date(r.date_debut)
+  // L'année manquait : « jeudi 17 septembre » sans millésime prête à confusion
+  // pour un rendez-vous pris de longue date.
+  const dateLbl=d.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})
+  const lignes=[`Bonjour ${prenom},`,
+    `Je vous confirme notre rendez-vous prévu ${dateLbl} à ${hm(d)}.`]
+  if(r.lieu)lignes.push(`Lieu : ${r.lieu}`)
+  if(r.reparation_numero)lignes.push(`Concernant la réparation ${r.reparation_numero}.`)
+  lignes.push("N'hésitez pas à me recontacter si vous avez un empêchement.")
+  _rappelEnAttente={rdv:r,email:client.email}
+  document.getElementById('em-to').value=client.email
+  document.getElementById('em-subject').value=`Rappel de rendez-vous — ${ENTREPRISE.nom}`
+  document.getElementById('em-body').value=lignes.join('\n\n')
+  document.getElementById('emailOverlay').style.display='flex'
+}
+
+window.closeEmailModal=function(){
+  document.getElementById('emailOverlay').style.display='none'
+  _rappelEnAttente=null
+}
+
+window.confirmerEnvoiRappel=async function(){
+  if(!_rappelEnAttente)return
+  const {rdv:r}=_rappelEnAttente
+  const to=document.getElementById('em-to').value.trim()
+  const subject=document.getElementById('em-subject').value.trim()
+  if(!to){showToast('Le destinataire est requis','err');return}
+  const btn=document.getElementById('confirmSendBtn')
+  const lbl=btn.textContent
   btn.disabled=true; btn.textContent='Envoi en cours…'
   try{
-    const prenom=(client.nom||'').split(' ')[0]||''
-    const d=new Date(r.date_debut)
-    const dateLbl=d.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long'})
-    const lieuLigne=r.lieu?`<p>Lieu : ${escHtml(r.lieu)}</p>`:''
-    /* Signature compacte, identique à celle de l'accusé de réception.
-       Le logo est affiché à 78 px : le fichier source fait 156 px de large,
-       au-delà il perdrait sa netteté sur un écran retina. */
-    const telLien=(ENTREPRISE.tel||'').replace(/[^0-9+]/g,'')
-    const L=(href,txt)=>`<a href="${href}" style="color:#0052CC;text-decoration:none;">${escHtml(txt)}</a>`
-    const signature=`<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>`+
-      `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">`+
-      `<tr><td style="padding:0 0 10px;"><img src="${ENTREPRISE.logo}" width="78" height="32" alt="${escHtml(ENTREPRISE.nom)}" style="display:block;border:0;"></td></tr>`+
-      `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>`+
-      `<tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:#5a6b7b;">`+
-      [ENTREPRISE.tel?L('tel:'+telLien,ENTREPRISE.tel):'',
-       ENTREPRISE.email?L('mailto:'+ENTREPRISE.email,ENTREPRISE.email):'',
-       ENTREPRISE.site?L('https://'+ENTREPRISE.site+'/',ENTREPRISE.site):''].filter(Boolean).join('&nbsp;&middot;&nbsp;')+
-      `</td></tr></table>`
-    const html=`<p>Bonjour ${escHtml(prenom)},</p><p>Je vous confirme notre rendez-vous prévu <strong>${escHtml(dateLbl)}</strong> à <strong>${hm(d)}</strong>.</p>${lieuLigne}<p>N'hésitez pas à me recontacter si vous avez un empêchement.</p>${signature}`
+    const html=texteEnHtml(document.getElementById('em-body').value)+signatureRappel()
     const {data:{session:s2}}=await sb.auth.getSession()
     const res=await fetch(`${SB}/functions/v1/send-reminder`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${s2.access_token}`},
-      body:JSON.stringify({to:client.email,subject:'Rappel de rendez-vous — IT Soluce',html})
+      body:JSON.stringify({to,subject,html})
     })
     const result=await res.json().catch(()=>({}))
     if(!res.ok)throw new Error(result.error||'Échec de l\'envoi')
@@ -1379,15 +1451,24 @@ window.envoyerRappel=async function(){
     await sb.from('rendezvous').update({rappel_envoye_le:now}).eq('id',r.id)
     const i=allRdv.findIndex(x=>Number(x.id)===Number(r.id))
     if(i>=0)allRdv[i].rappel_envoye_le=now
-    btn.textContent='Rappel envoyé le '+new Date(now).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
-    btn.style.opacity='.6'
+    const bRappel=document.getElementById('rappelBtn')
+    if(bRappel){
+      bRappel.textContent='Rappel envoyé le '+new Date(now).toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})
+      bRappel.style.opacity='.6'
+    }
+    closeEmailModal()
     render()   // la coche n'apparaissait qu'au rechargement de la page
-    showToast('Rappel envoyé','ok')
+    showToast(`Rappel envoyé à ${to}`,'ok')
   }catch(err){
-    btn.disabled=false; btn.textContent='Envoyer le rappel'
     showToast('Erreur : '+(err.message||err),'err')
+  }finally{
+    btn.disabled=false; btn.textContent=lbl
   }
 }
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('emailOverlay').style.display==='flex')closeEmailModal()
+})
 
 document.addEventListener('visibilitychange',()=>{
   if(!document.hidden&&!document.querySelector('.panel.open'))load()
