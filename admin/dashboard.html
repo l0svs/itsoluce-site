@@ -673,6 +673,13 @@ if(MES_PAGES){
     if(m&&!MES_PAGES.includes(m[1]))a.remove()
   })
 }
+/* La vue financière suit la page Factures : un compte à qui on donne le
+   Dashboard sans les Factures voit l'activité, pas les montants. Le
+   propriétaire (MES_PAGES vaut null) voit tout, toujours.
+   Les politiques RLS refusent déjà ces tables côté serveur ; ici on évite
+   d'afficher des cartes vides et des zéros, qui seraient plus trompeurs
+   qu'une absence. */
+const VOIT_ARGENT = MES_PAGES===null || MES_PAGES.includes('factures')
 const _voile=document.getElementById('voile-nav')
 if(_voile)_voile.remove()
 if(new URLSearchParams(location.search).get('acces')){
@@ -816,9 +823,12 @@ const garanties=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
   const bouts=[]
   bouts.push(maintenant.toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))
   const suite=[]
-  suite.push(`<b>${eur(resultat)}</b> de résultat sur six mois`)
-  if(facturesRetard.length)suite.push(`<span class="grave">${facturesRetard.length} ${pluriel(facturesRetard.length,'facture')} en retard</span>`)
-  else if(facturesAEncaisser.length)suite.push(`<b>${eur(montantAEncaisser)}</b> à encaisser`)
+  if(VOIT_ARGENT){
+    suite.push(`<b>${eur(resultat)}</b> de résultat sur six mois`)
+    if(facturesRetard.length)suite.push(`<span class="grave">${facturesRetard.length} ${pluriel(facturesRetard.length,'facture')} en retard</span>`)
+    else if(facturesAEncaisser.length)suite.push(`<b>${eur(montantAEncaisser)}</b> à encaisser`)
+  }
+  if(!VOIT_ARGENT&&rdvFuturs.length)suite.push(`${rdvFuturs.length} ${pluriel(rdvFuturs.length,'rendez-vous')} à venir`)
   if(demandesATraiter.length)suite.push(`<span class="alerte">${demandesATraiter.length} ${pluriel(demandesATraiter.length,'demande')} à traiter</span>`)
   if(repsActives.length)suite.push(`${repsActives.length} ${pluriel(repsActives.length,'réparation')} en cours`)
   document.getElementById('ph-resume').innerHTML=bouts[0]+' — '+suite.join(', ')
@@ -865,6 +875,13 @@ function rendreFinances(){
   if(chargeMensuelle>0)notes.push(`Charges récurrentes actives : ${eur(chargeMensuelle)} par mois, non comptées ici (ce sont des prévisions, pas des mouvements constatés).`)
   if(chargesInactives)notes.push(`${chargesInactives} ${pluriel(chargesInactives,'charge désactivée','charges désactivées')} dans Gestion, donc ignorée${chargesInactives>1?'s':''}.`)
 
+  // Sans accès aux factures, la carte n'aurait que des zéros : on la retire
+  // pour que la carte du jour occupe toute la largeur.
+  if(!VOIT_ARGENT){
+    const _cf=document.getElementById('carte-finances')
+    if(_cf)_cf.remove()
+    return
+  }
   document.getElementById('carte-finances').innerHTML=`
     <div class="dcard-head"><b>Six derniers mois</b><a href="/admin/gestion.html">Gestion →</a></div>
     <div class="dcard-body">
@@ -1013,7 +1030,7 @@ function rendreGrille(){
       sous:retard?`${ech} — en retard`:ech,
       droite:`<span class="drow-r"${retard?' style="color:var(--d);"':''}>${escHtml(eur(f.total))}</span>`})
   }).join('')
-  grid.appendChild(carte('c-fac','Factures à encaisser','/admin/factures.html',
+  if(VOIT_ARGENT)grid.appendChild(carte('c-fac','Factures à encaisser','/admin/factures.html',
     facturesAEncaisser.length?eurCourt(montantAEncaisser):0,facturesRetard.length?'bad':'hot',
     corpsFac,'Aucune facture en attente de paiement.'))
 
@@ -1025,7 +1042,7 @@ function rendreGrille(){
       sous:expire?'Validité dépassée':`Envoyé il y a ${j} ${pluriel(j,'jour')}`,
       droite:`<span class="drow-r">${escHtml(eur(d.total))}</span>`})
   }).join('')
-  grid.appendChild(carte('c-dev','Devis en attente de réponse','/admin/devis.html',devisAttente.length,
+  if(VOIT_ARGENT)grid.appendChild(carte('c-dev','Devis en attente de réponse','/admin/devis.html',devisAttente.length,
     devisExpires.length?'hot':'',corpsDev,'Aucun devis en attente de réponse.'))
 
   if(demandesATraiter.length){

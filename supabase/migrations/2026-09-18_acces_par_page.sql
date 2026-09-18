@@ -68,18 +68,19 @@ create policy profils_lire_tous on public.profils for select to authenticated us
 --  │ clients             │ clients demandes devis factures planning repar.   │
 --  │ compteurs           │ clients demandes devis factures reparations       │
 --  │ demandes_formulaire │ demandes dashboard                               │
---  │ devis               │ clients devis factures dashboard                  │
---  │ factures            │ clients devis factures gestion repar. dashboard   │
+--  │ devis               │ clients devis factures                            │
+--  │ factures            │ clients devis factures gestion reparations        │
 --  │ reparations         │ + gestion planning dashboard                      │
 --  │ rendezvous          │ planning dashboard                                │
 --  │ stock               │ devis factures reparations stock dashboard        │
 --  │ services            │ devis factures gestion reparations                │
 --  │ fournisseurs        │ gestion stock                                     │
---  │ charges, depenses   │ gestion dashboard                                 │
+--  │ charges, depenses   │ gestion                                           │
 --  │ foneday_*           │ catalogue                                         │
 --  │ mouvements, pockets │ propriétaire seul — aucune page ne s'en sert      │
 --  │ publications, taches│ idem                                              │
---  │ settings            │ tout compte actif (coordonnées, logo, mention TVA)│
+--  │ settings            │ tout compte actif — sauf finance_grille, réservée  │
+--  │                     │ à gestion catalogue stock (coefficients de marge)  │
 --  └─────────────────────┴──────────────────────────────────────────────────┘
 --
 --  L'écriture est plus étroite que la lecture : la page Devis lit les clients
@@ -93,15 +94,18 @@ begin
       ('clients',             array['clients','demandes','devis','factures','planning','reparations'],                       array['clients','demandes','devis','factures','reparations']),
       ('compteurs',           array['clients','demandes','devis','factures','reparations'],                                  array['clients','demandes','devis','factures','reparations']),
       ('demandes_formulaire', array['demandes','dashboard'],                                                                 array['demandes']),
-      ('devis',               array['clients','devis','factures','dashboard'],                                               array['devis']),
-      ('factures',            array['clients','devis','factures','gestion','reparations','dashboard'],                       array['devis','factures','reparations']),
+      -- Le Dashboard ne figure pas dans ces quatre listes : sa vue financière
+      -- suit la page Factures. Un compte à qui on donne Dashboard sans
+      -- Factures voit l'activité, pas les montants.
+      ('devis',               array['clients','devis','factures'],                                                           array['devis']),
+      ('factures',            array['clients','devis','factures','gestion','reparations'],                                   array['devis','factures','reparations']),
       ('reparations',         array['clients','demandes','devis','factures','gestion','planning','reparations','dashboard'], array['demandes','devis','reparations']),
       ('rendezvous',          array['planning','dashboard'],                                                                 array['planning']),
       ('stock',               array['devis','factures','reparations','stock','dashboard'],                                   array['devis','factures','reparations','stock']),
       ('services',            array['devis','factures','gestion','reparations'],                                             array['gestion']),
       ('fournisseurs',        array['gestion','stock'],                                                                      array['gestion']),
-      ('charges',             array['gestion','dashboard'],                                                                  array['gestion']),
-      ('depenses',            array['gestion','dashboard'],                                                                  array['gestion']),
+      ('charges',             array['gestion'],                                                                              array['gestion']),
+      ('depenses',            array['gestion'],                                                                              array['gestion']),
       ('foneday_produits',    array['catalogue'],                                                                            array[]::text[]),
       ('foneday_historique',  array['catalogue'],                                                                            array[]::text[]),
       -- Un tableau vide ne recoupe aucune page : seul le propriétaire passe.
@@ -132,8 +136,19 @@ end $$;
 -- pages, y compris pour composer un e-mail. Les réserver à quelques pages
 -- casserait l'affichage ailleurs sans rien protéger. La modification reste
 -- à Gestion.
+-- Une seule clé de settings n'est pas anodine : « finance_grille » porte les
+-- coefficients de marge, la formule qui transforme un prix de pièce en prix
+-- de vente. Elle n'est lue que par les trois pages qui calculent un prix.
+-- Le filtrage se fait à la ligne, puisqu'ici une ligne est un réglage.
 drop policy if exists settings_lire on public.settings;
-create policy settings_lire      on public.settings for select to authenticated using (public.compte_actif());
+create policy settings_lire on public.settings
+  for select to authenticated
+  using (
+    case
+      when cle = 'finance_grille' then public.a_acces(array['gestion','catalogue','stock'])
+      else public.compte_actif()
+    end
+  );
 create policy settings_creer     on public.settings for insert to authenticated with check (public.a_acces(array['gestion']));
 create policy settings_modifier  on public.settings for update to authenticated using (public.a_acces(array['gestion'])) with check (public.a_acces(array['gestion']));
 create policy settings_supprimer on public.settings for delete to authenticated using (public.a_acces(array['gestion']));
