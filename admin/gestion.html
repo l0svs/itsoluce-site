@@ -646,6 +646,7 @@ body{font-size:14px;}
         <button class="sn-item" data-sec="apparence" onclick="showSec(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>Apparence</button>
         <button class="sn-item" data-sec="compte" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Compte</button>
 
+        <button class="sn-item" data-sec="utilisateurs" id="sn-utilisateurs" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utilisateurs<span class="cnt" id="cnt-utilisateurs"></span></button>
         <button class="sn-item" data-sec="facturation" onclick="showSec(this)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Facturation</button>
         <button class="sn-item" data-sec="grille" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Grille tarifaire</button>
 
@@ -819,6 +820,21 @@ body{font-size:14px;}
           </section>
 
           <!-- ── FACTURATION ── -->
+          <!-- ── UTILISATEURS ── -->
+          <section class="sec large" id="sec-utilisateurs">
+            <h1 class="sec-title">Utilisateurs</h1>
+            <p class="sec-desc">Les comptes qui peuvent ouvrir l'ERP, et les pages auxquelles chacun accède. Seul ton compte propriétaire voit cette section et peut y modifier quoi que ce soit&nbsp;: la vérification est faite sur le serveur, pas dans le navigateur.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-users" placeholder="Rechercher un utilisateur…" oninput="renderUtilisateurs()"/></div>
+              <button class="btn btn-primary" style="margin-left:auto;" onclick="nouvelUtilisateur()">Ajouter</button>
+            </div>
+            <div class="split">
+              <div class="liste" id="liste-users"></div>
+              <div class="detail" id="detail-users"></div>
+            </div>
+          </section>
+
           <section class="sec" id="sec-facturation">
             <h1 class="sec-title">Facturation</h1>
             <p class="sec-desc">Mentions et coordonnées bancaires reprises en pied de tes devis et de tes factures.</p>
@@ -1116,6 +1132,53 @@ const TABLES=[
 /* ── Session ─────────────────────────────────────────────────── */
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+/* ─── Accès par page ──────────────────────────────────────────────
+   La fiche profil dit quelles pages ce compte peut ouvrir. Le contrôle
+   est refait à chaque chargement : taper l'adresse à la main ne donne
+   pas l'accès. C'est un garde d'interface — les données elles-mêmes
+   restent protégées par les politiques RLS de Supabase.
+   ────────────────────────────────────────────────────────────────── */
+const PAGE_COURANTE='gestion'
+const {data:_profil}=await sb.from('profils').select('role,pages,actif').eq('id',session.user.id).maybeSingle()
+if(!_profil||_profil.actif!==true){
+  await sb.auth.signOut()
+  window.location.href='/admin/login.html?acces=compte'
+  throw new Error('compte desactive')
+}
+/* Le propriétaire passe partout, quoi que contienne sa liste : c'est lui
+   qui administre les accès, il ne doit pas pouvoir se verrouiller dehors. */
+const MES_PAGES=_profil.role==='proprietaire'?null:(Array.isArray(_profil.pages)?_profil.pages:[])
+window.MES_PAGES=MES_PAGES
+if(MES_PAGES&&!MES_PAGES.includes(PAGE_COURANTE)){
+  const repli=MES_PAGES[0]
+  if(repli){window.location.href='/admin/'+repli+'.html?acces='+PAGE_COURANTE}
+  /* Aucune page autorisée : on ferme la session avant de renvoyer vers
+     l'écran de connexion, sinon celui-ci renverrait aussitôt vers l'ERP
+     et les deux se relanceraient sans fin. */
+  else{await sb.auth.signOut();window.location.href='/admin/login.html?acces=aucune'}
+  throw new Error('page non autorisee')
+}
+if(MES_PAGES){
+  /* Le menu mobile est un clone de la barre latérale : la filtrer ici
+     suffit pour les deux. Le lien du logo est épargné — il porte la même
+     adresse que le Dashboard sans être un élément de navigation. */
+  document.querySelectorAll('.hnav a.hnl[href], .sidebar a.nl[href]').forEach(a=>{
+    const m=(a.getAttribute('href')||'').match(/\/admin\/([a-z-]+)\.html/)
+    if(m&&!MES_PAGES.includes(m[1]))a.remove()
+  })
+}
+if(new URLSearchParams(location.search).get('acces')){
+  setTimeout(()=>{try{showToast("Tu n'as pas accès à cette page",'err')}catch(e){}},700)
+}
+
+/* L'entrée « Utilisateurs » n'apparaît que pour le propriétaire. Ce n'est
+   qu'un confort d'affichage : la fonction edge refuse de toute façon toute
+   requête venant d'un autre compte, quel que soit ce qui est visible ici. */
+if(_profil.role==='proprietaire'){
+  const _bu=document.getElementById('sn-utilisateurs')
+  if(_bu)_bu.style.display=''
+}
+
 
 document.getElementById('s-compte-email').value=session.user.email||''
 document.getElementById('s-last-login').value=new Date(session.user.last_sign_in_at||Date.now()).toLocaleString('fr-BE')
@@ -1314,6 +1377,7 @@ window.chargerSection=async function(id){
   _charge[id]=true
   try{
     if(id==='prestations')await loadPrestations()
+    else if(id==='utilisateurs')await loadUtilisateurs()
     else if(id==='fournisseurs')await loadFournisseurs()
     else if(id==='commandes')await loadCommandes()
     else if(id==='garanties')await loadGaranties()
@@ -1321,6 +1385,144 @@ window.chargerSection=async function(id){
     _charge[id]=false
     showToast('Erreur de chargement : '+(err.message||err),'err')
   }
+}
+
+/* ══════════ UTILISATEURS ══════════
+   Créer un compte exige la clé de service, qui n'a rien à faire dans un
+   navigateur : tout passe par la fonction edge gestion-utilisateurs, qui
+   revérifie le rôle avant d'agir. Masquer la section ici n'est qu'un confort
+   d'affichage — ce n'est pas ce qui protège quoi que ce soit.
+   ══════════════════════════════════════════ */
+const PAGES_ERP=[
+  ['dashboard','Dashboard'],['clients','Clients'],['demandes','Demandes'],
+  ['devis','Devis'],['factures','Factures'],['reparations','Réparations'],
+  ['stock','Stock'],['catalogue','Catalogue'],['planning','Planning'],
+  ['gestion','Gestion']
+]
+let _users=[], _selUser=null
+
+async function appelUtilisateurs(corps){
+  const {data:{session:s}}=await sb.auth.getSession()
+  if(!s)throw new Error('Session expirée')
+  const res=await fetch(`${SB}/functions/v1/gestion-utilisateurs`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${s.access_token}`},
+    body:JSON.stringify(corps)
+  })
+  const r=await res.json().catch(()=>({}))
+  if(!res.ok)throw new Error(r.error||'Échec de la requête')
+  return r
+}
+
+async function loadUtilisateurs(){
+  const r=await appelUtilisateurs({action:'lister'})
+  _users=r.utilisateurs||[]
+  renderUtilisateurs()
+}
+
+window.renderUtilisateurs=function(){
+  const q=norm(document.getElementById('q-users').value)
+  let l=_users.filter(u=>u.role!=='proprietaire')
+  if(q)l=l.filter(u=>norm(u.nom).includes(q)||norm(u.email).includes(q))
+  const cnt=document.getElementById('cnt-utilisateurs')
+  if(cnt)cnt.textContent=_users.filter(u=>u.role!=='proprietaire').length||''
+  const box=document.getElementById('liste-users')
+  box.innerHTML=l.length?l.map(u=>`
+    <div class="lrow ${u.actif===false?'off':''} ${String(u.id)===String(_selUser)?'sel':''}" onclick="voirUtilisateur('${escJsAttr(u.id)}')">
+      <div class="lrow-n"><b>${escHtml(u.nom||u.email)}</b><em>${escHtml(u.email)}</em></div>
+      <span class="lrow-v">${(u.pages||[]).length} page${(u.pages||[]).length>1?'s':''}</span>
+      ${u.actif===false?'<span class="tag t-of">Désactivé</span>':''}
+    </div>`).join('')
+    : `<div class="vide-l"><h4>Aucun utilisateur${q?' ne correspond':''}</h4><p>${_users.length>1?'Vide la recherche.':'Tu es seul sur l\'ERP. Ajoute un compte quand quelqu\'un te rejoint.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvelUtilisateur()">Ajouter un utilisateur</button></div>`
+  if(_selUser&&_selUser!=='__neuf'&&!_users.some(u=>String(u.id)===String(_selUser)))_selUser=null
+  dessinerDetailUser()
+}
+
+window.nouvelUtilisateur=function(){_selUser='__neuf';renderUtilisateurs()}
+window.voirUtilisateur=function(id){_selUser=(String(_selUser)===String(id))?null:id;renderUtilisateurs()}
+
+function casesPages(actives){
+  return PAGES_ERP.map(([slug,nom])=>
+    `<label class="toggle-l" style="cursor:pointer;">
+       <span>${escHtml(nom)}</span>
+       <div class="tog ${actives.includes(slug)?'on':''}" data-page="${slug}" onclick="event.preventDefault();this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div>
+     </label>`).join('')
+}
+
+function dessinerDetailUser(){
+  const box=document.getElementById('detail-users')
+  if(!_selUser){
+    box.innerHTML=`<div class="vide-d"><h4>Aucun utilisateur sélectionné</h4><p>Choisis un compte dans la liste, ou ajoutes-en un.</p></div>`
+    return
+  }
+  const neuf=_selUser==='__neuf'
+  const u=neuf?{nom:'',email:'',pages:[],actif:true}:_users.find(x=>String(x.id)===String(_selUser))
+  if(!u){_selUser=null;return dessinerDetailUser()}
+  const pages=Array.isArray(u.pages)?u.pages:[]
+  box.innerHTML=`
+    <div class="fg"><label for="u-nom">Nom</label><input type="text" id="u-nom" value="${escHtml(u.nom||'')}" placeholder="Prénom Nom"/></div>
+    ${neuf
+      ? `<div class="fg"><label for="u-email">Adresse e-mail *</label><input type="email" id="u-email" value="" placeholder="prenom@exemple.be" autocomplete="off"/></div>
+         <div class="fg"><label for="u-mdp">Mot de passe *</label><input type="password" id="u-mdp" placeholder="8 caractères minimum" autocomplete="new-password"/></div>`
+      : `<div class="fg"><label>Adresse e-mail</label><input type="text" value="${escHtml(u.email||'')}" disabled/></div>`}
+    <div class="form-section">
+      <div class="fl-name" style="margin:14px 0 2px;">Pages accessibles</div>
+      <em style="display:block;font-size:11.5px;color:var(--t3);margin-bottom:6px;">Les pages décochées disparaissent de sa navigation et lui sont refusées à l'ouverture.</em>
+      ${casesPages(pages)}
+    </div>
+    ${neuf?'':`<div class="toggle-l"><span>Compte actif<em>Désactivé, il ne peut plus se connecter</em></span><div class="tog ${u.actif!==false?'on':''}" id="u-actif" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
+    <div class="fg" style="margin-top:14px;"><label for="u-mdp2">Nouveau mot de passe</label><input type="password" id="u-mdp2" placeholder="Laisser vide pour ne pas changer" autocomplete="new-password"/></div>`}
+    <div class="detail-f">
+      ${neuf?'':'<button class="btn btn-danger" onclick="supprimerUtilisateur()">Supprimer</button>'}
+      <button class="btn btn-primary" onclick="enregistrerUtilisateur()">${neuf?'Créer le compte':'Enregistrer'}</button>
+    </div>`
+}
+
+function pagesCochees(){
+  return [...document.querySelectorAll('#detail-users .tog[data-page].on')].map(t=>t.dataset.page)
+}
+
+window.enregistrerUtilisateur=async function(){
+  const neuf=_selUser==='__neuf'
+  const nom=document.getElementById('u-nom').value.trim()
+  const pages=pagesCochees()
+  try{
+    if(neuf){
+      const email=document.getElementById('u-email').value.trim()
+      const mdp=document.getElementById('u-mdp').value
+      if(!email){showToast("L'adresse e-mail est obligatoire",'err');return}
+      if(mdp.length<8){showToast('Le mot de passe doit faire au moins 8 caractères','err');return}
+      if(!pages.length){showToast('Coche au moins une page, sinon ce compte ne pourra rien ouvrir','err');return}
+      const r=await appelUtilisateurs({action:'creer',email,mot_de_passe:mdp,nom,pages})
+      _users.push(r.utilisateur); _selUser=r.utilisateur.id
+      showToast(`Compte créé pour ${email}`,'ok')
+    }else{
+      const actif=document.getElementById('u-actif').classList.contains('on')
+      if(!pages.length&&actif){showToast('Coche au moins une page, ou désactive le compte','err');return}
+      const r=await appelUtilisateurs({action:'modifier',id:_selUser,nom,pages,actif})
+      const i=_users.findIndex(x=>String(x.id)===String(_selUser))
+      if(i>=0)_users[i]=r.utilisateur
+      const mdp2=document.getElementById('u-mdp2').value
+      if(mdp2){
+        if(mdp2.length<8){showToast('Modifications enregistrées, mais le mot de passe fait moins de 8 caractères','err');renderUtilisateurs();return}
+        await appelUtilisateurs({action:'mot_de_passe',id:_selUser,mot_de_passe:mdp2})
+        showToast('Compte et mot de passe mis à jour','ok')
+      }else showToast('Compte mis à jour','ok')
+    }
+    renderUtilisateurs()
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
+}
+
+window.supprimerUtilisateur=async function(){
+  const u=_users.find(x=>String(x.id)===String(_selUser))
+  if(!u)return
+  if(!confirm(`Supprimer définitivement le compte de ${u.nom||u.email} ?\n\nIl ne pourra plus se connecter. Les devis, factures et réparations qu'il a saisis sont conservés.`))return
+  try{
+    await appelUtilisateurs({action:'supprimer',id:u.id})
+    _users=_users.filter(x=>String(x.id)!==String(u.id)); _selUser=null
+    renderUtilisateurs()
+    showToast('Compte supprimé','ok')
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
 }
 
 /* ══════════ PRESTATIONS ══════════ */
