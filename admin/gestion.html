@@ -658,6 +658,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <button class="sn-item" data-sec="compte" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Compte</button>
 
         <button class="sn-item" data-sec="utilisateurs" id="sn-utilisateurs" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utilisateurs<span class="cnt" id="cnt-utilisateurs"></span></button>
+        <button class="sn-item" data-sec="corbeille" id="sn-corbeille" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>Corbeille<span class="cnt" id="cnt-corbeille"></span></button>
         <button class="sn-item" data-sec="facturation" onclick="showSec(this)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Facturation</button>
         <button class="sn-item" data-sec="grille" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Grille tarifaire</button>
 
@@ -844,6 +845,18 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="liste" id="liste-users"></div>
               <div class="detail" id="detail-users"></div>
             </div>
+          </section>
+
+          <!-- ── CORBEILLE ── -->
+          <section class="sec large" id="sec-corbeille">
+            <h1 class="sec-title">Corbeille</h1>
+            <p class="sec-desc">Ce qui a été supprimé dans l'ERP n'est pas perdu : tout atterrit ici. Restaurer remet la ligne exactement où elle était, avec son numéro. Seul ton compte propriétaire voit cette section.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-corb" placeholder="Rechercher…" oninput="renderCorbeille()"/></div>
+              <button class="btn btn-danger" style="margin-left:auto;" onclick="viderCorbeille()">Vider ce qui dépasse 30 jours</button>
+            </div>
+            <div class="liste" id="liste-corb" style="max-width:none;"></div>
           </section>
 
           <section class="sec" id="sec-facturation">
@@ -1188,8 +1201,10 @@ if(new URLSearchParams(location.search).get('acces')){
    qu'un confort d'affichage : la fonction edge refuse de toute façon toute
    requête venant d'un autre compte, quel que soit ce qui est visible ici. */
 if(_profil.role==='proprietaire'){
-  const _bu=document.getElementById('sn-utilisateurs')
-  if(_bu)_bu.style.display=''
+  for(const _id of ['sn-utilisateurs','sn-corbeille']){
+    const _b=document.getElementById(_id)
+    if(_b)_b.style.display=''
+  }
 }
 
 
@@ -1391,6 +1406,7 @@ window.chargerSection=async function(id){
   try{
     if(id==='prestations')await loadPrestations()
     else if(id==='utilisateurs')await loadUtilisateurs()
+    else if(id==='corbeille')await loadCorbeille()
     else if(id==='fournisseurs')await loadFournisseurs()
     else if(id==='commandes')await loadCommandes()
     else if(id==='garanties')await loadGaranties()
@@ -1398,6 +1414,72 @@ window.chargerSection=async function(id){
     _charge[id]=false
     showToast('Erreur de chargement : '+(err.message||err),'err')
   }
+}
+
+/* ══════════ CORBEILLE ══════════
+   Une suppression lancée depuis n'importe quelle page est convertie en mise
+   en corbeille par un déclencheur : la ligne reste en base, marquée, et sort
+   des résultats. Rien n'est réellement effacé tant que personne ne vide.
+   Les trois fonctions appelées ici vérifient elles-mêmes le rôle.
+   ══════════════════════════════════════════ */
+const NOMS_TABLES={clients:'Client',devis:'Devis',factures:'Facture',reparations:'Réparation',
+  rendezvous:'Rendez-vous',stock:'Article de stock',services:'Prestation',
+  fournisseurs:'Fournisseur',demandes_formulaire:'Demande du site'}
+let _corb=[]
+
+async function loadCorbeille(){
+  const {data,error}=await sb.rpc('corbeille_lister')
+  if(error)throw error
+  _corb=data||[]
+  renderCorbeille()
+}
+
+window.renderCorbeille=function(){
+  const q=norm(document.getElementById('q-corb').value)
+  let l=_corb.slice()
+  if(q)l=l.filter(x=>norm(x.etiquette).includes(q)||norm(NOMS_TABLES[x.table_nom]||x.table_nom).includes(q))
+  const cnt=document.getElementById('cnt-corbeille')
+  if(cnt)cnt.textContent=_corb.length||''
+  const box=document.getElementById('liste-corb')
+  if(!l.length){
+    box.innerHTML=`<div class="vide-l"><h4>${_corb.length?'Rien ne correspond':'La corbeille est vide'}</h4><p>${_corb.length?'Vide la recherche.':'Tout ce qui sera supprimé dans l\'ERP apparaîtra ici, récupérable.'}</p></div>`
+    return
+  }
+  box.innerHTML=l.map(x=>{
+    const d=new Date(x.supprime_le)
+    const jours=Math.floor((Date.now()-d.getTime())/86400000)
+    // Au-delà de trente jours la ligne est éligible à la purge : on le dit
+    // avant que quelqu'un clique sur « Vider », pas après.
+    const bientot=jours>=23
+    return `
+    <div class="lrow">
+      <div class="lrow-n"><b>${escHtml(x.etiquette||'—')}</b><em>${escHtml(NOMS_TABLES[x.table_nom]||x.table_nom)} · supprimé ${jours===0?'aujourd\'hui':'il y a '+jours+' '+(jours>1?'jours':'jour')}${x.supprime_par_nom?' par '+escHtml(x.supprime_par_nom):''}</em></div>
+      ${bientot?`<span class="tag t-of">${jours>=30?'purgeable':'bientôt purgé'}</span>`:''}
+      <button class="btn btn-secondary" onclick="restaurerLigne('${escJsAttr(x.table_nom)}','${escJsAttr(x.ligne_id)}',event)">Restaurer</button>
+    </div>`}).join('')
+}
+
+window.restaurerLigne=async function(table,id,ev){
+  if(ev)ev.stopPropagation()
+  try{
+    const {error}=await sb.rpc('corbeille_restaurer',{p_table:table,p_id:String(id)})
+    if(error)throw error
+    _corb=_corb.filter(x=>!(x.table_nom===table&&String(x.ligne_id)===String(id)))
+    renderCorbeille()
+    showToast('Restauré — la ligne est de retour dans sa page','ok')
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
+}
+
+window.viderCorbeille=async function(){
+  const vieux=_corb.filter(x=>(Date.now()-new Date(x.supprime_le).getTime())/86400000>=30).length
+  if(!vieux){showToast('Rien ne dépasse 30 jours pour le moment','ok');return}
+  if(!confirm(`Supprimer définitivement ${vieux} ${vieux>1?'lignes':'ligne'} de plus de 30 jours ?\n\nCette fois c'est irréversible.`))return
+  try{
+    const {data,error}=await sb.rpc('corbeille_purger',{p_jours:30})
+    if(error)throw error
+    await loadCorbeille()
+    showToast(`${data||0} ${(data||0)>1?'lignes supprimées':'ligne supprimée'} définitivement`,'ok')
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
 }
 
 /* ══════════ UTILISATEURS ══════════
