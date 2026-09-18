@@ -481,6 +481,17 @@ body{font-size:14px;}
   .hnav .hnl{flex-shrink:0;}
 }
 </style>
+<style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
+<script>
+/* Les liens de navigation sont écrits dans le HTML, mais les pages
+   autorisées ne sont connues qu'après un aller-retour avec Supabase.
+   Sans ce voile, l'utilisateur voit fugitivement toutes les pages, y compris
+   celles qui lui sont interdites, avant qu'elles ne disparaissent.
+   La navigation garde sa place (visibility, pas display) : rien ne saute.
+   Le délai est un filet de sécurité — si le script de page ne s'exécute
+   jamais, la navigation réapparaît quand même plutôt que de rester vide. */
+setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()},4000);
+</script>
 </head>
 <body>
 <header class="topbar">
@@ -662,6 +673,8 @@ if(MES_PAGES){
     if(m&&!MES_PAGES.includes(m[1]))a.remove()
   })
 }
+const _voile=document.getElementById('voile-nav')
+if(_voile)_voile.remove()
 if(new URLSearchParams(location.search).get('acces')){
   setTimeout(()=>{try{showToast("Tu n'as pas accès à cette page",'err')}catch(e){}},700)
 }

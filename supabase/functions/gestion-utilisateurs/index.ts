@@ -31,6 +31,7 @@ const PAGES = [
   "reparations", "stock", "catalogue", "planning", "gestion",
 ];
 
+const ROLES = ["equipe", "proprietaire"];
 const MDP_MIN = 8;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -78,6 +79,24 @@ async function estProprietaire(id: string): Promise<boolean> {
   return !!p && p.role === "proprietaire" && p.actif === true;
 }
 
+/**
+ * Nombre de propriétaires actifs. Sert à refuser la dernière rétrogradation :
+ * sans propriétaire, plus personne ne peut créer ni modifier de compte, et
+ * l'ERP devient impossible à administrer sans passer par le portail Supabase.
+ */
+async function compterProprietaires(): Promise<number> {
+  const res = await admin("/rest/v1/profils?role=eq.proprietaire&actif=is.true&select=id");
+  if (!res.ok) return 0;
+  return (await res.json()).length;
+}
+
+async function profilDe(id: string): Promise<{ role: string; actif: boolean } | null> {
+  const res = await admin(`/rest/v1/profils?id=eq.${id}&select=role,actif`);
+  if (!res.ok) return null;
+  const [p] = await res.json();
+  return p ?? null;
+}
+
 function nettoyerPages(v: unknown): string[] {
   if (!Array.isArray(v)) return [];
   return [...new Set(v.map(String))].filter((p) => PAGES.includes(p));
@@ -108,7 +127,7 @@ Deno.serve(async (req) => {
     if (action === "lister") {
       const res = await admin("/rest/v1/profils?select=*&order=created_at.asc");
       if (!res.ok) return json({ error: "Lecture impossible." }, 500);
-      return json({ utilisateurs: await res.json() }, 200);
+      return json({ utilisateurs: await res.json(), moi: moi.id }, 200);
     }
 
     // ── Créer ──
@@ -117,6 +136,8 @@ Deno.serve(async (req) => {
       const mdp = String(corps.mot_de_passe ?? "");
       const nom = String(corps.nom ?? "").trim();
       const pages = nettoyerPages(corps.pages);
+      // Un propriétaire accède à tout : sa liste de pages n'est jamais consultée.
+      const role = ROLES.includes(String(corps.role)) ? String(corps.role) : "equipe";
 
       if (!EMAIL_RE.test(email)) return json({ error: "Adresse e-mail invalide." }, 400);
       if (mdp.length < MDP_MIN) {
@@ -143,7 +164,7 @@ Deno.serve(async (req) => {
       const profil = await admin("/rest/v1/profils", {
         method: "POST",
         headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ id: cree.id, nom: nom || email.split("@")[0], email, role: "equipe", pages, actif: true }),
+        body: JSON.stringify({ id: cree.id, nom: nom || email.split("@")[0], email, role, pages, actif: true }),
       });
       if (!profil.ok) {
         console.error("Profil non créé, compte Auth retiré", await profil.text());
@@ -157,19 +178,32 @@ Deno.serve(async (req) => {
     const cible = String(corps.id ?? "");
     if (!cible) return json({ error: "Utilisateur non précisé." }, 400);
 
-    // ── Modifier nom, pages, activation ──
+    // ── Modifier nom, rôle, pages, activation ──
     if (action === "modifier") {
       // Le propriétaire ne peut pas se retirer ses propres droits : il n'y a
       // personne d'autre pour les lui rendre.
       if (cible === moi.id) {
         return json({ error: "Ton propre compte ne se modifie pas ici." }, 400);
       }
+      const avant = await profilDe(cible);
+      if (!avant) return json({ error: "Compte introuvable." }, 404);
+
       const maj: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (corps.nom !== undefined) maj.nom = String(corps.nom).trim();
       if (corps.pages !== undefined) maj.pages = nettoyerPages(corps.pages);
       if (corps.actif !== undefined) maj.actif = corps.actif === true;
+      if (corps.role !== undefined && ROLES.includes(String(corps.role))) maj.role = String(corps.role);
 
-      const res = await admin(`/rest/v1/profils?id=eq.${cible}&role=eq.equipe`, {
+      // Retirer le dernier propriétaire actif — en le rétrogradant ou en le
+      // désactivant — laisserait l'ERP sans personne pour administrer les
+      // comptes. On refuse plutôt que de réparer après coup.
+      const perdSonRang = avant.role === "proprietaire" &&
+        ((maj.role !== undefined && maj.role !== "proprietaire") || maj.actif === false);
+      if (perdSonRang && (await compterProprietaires()) <= 1) {
+        return json({ error: "C'est le dernier compte propriétaire actif : nomme quelqu'un d'autre avant." }, 400);
+      }
+
+      const res = await admin(`/rest/v1/profils?id=eq.${cible}`, {
         method: "PATCH",
         headers: { Prefer: "return=representation" },
         body: JSON.stringify(maj),
@@ -189,9 +223,7 @@ Deno.serve(async (req) => {
       if (mdp.length < MDP_MIN) {
         return json({ error: `Le mot de passe doit faire au moins ${MDP_MIN} caractères.` }, 400);
       }
-      const verif = await admin(`/rest/v1/profils?id=eq.${cible}&select=role`);
-      const [p] = verif.ok ? await verif.json() : [];
-      if (!p || p.role !== "equipe") return json({ error: "Compte introuvable." }, 404);
+      if (!(await profilDe(cible))) return json({ error: "Compte introuvable." }, 404);
 
       const res = await admin(`/auth/v1/admin/users/${cible}`, {
         method: "PUT",
@@ -207,9 +239,11 @@ Deno.serve(async (req) => {
     // ── Supprimer ──
     if (action === "supprimer") {
       if (cible === moi.id) return json({ error: "Ton propre compte ne se supprime pas." }, 400);
-      const verif = await admin(`/rest/v1/profils?id=eq.${cible}&select=role`);
-      const [p] = verif.ok ? await verif.json() : [];
-      if (!p || p.role !== "equipe") return json({ error: "Compte introuvable." }, 404);
+      const avant = await profilDe(cible);
+      if (!avant) return json({ error: "Compte introuvable." }, 404);
+      if (avant.role === "proprietaire" && (await compterProprietaires()) <= 1) {
+        return json({ error: "C'est le dernier compte propriétaire actif : nomme quelqu'un d'autre avant." }, 400);
+      }
 
       // La suppression du compte Auth emporte le profil (clé étrangère
       // on delete cascade) : pas de ligne orpheline à nettoyer.
