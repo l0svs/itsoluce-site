@@ -659,6 +659,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 
         <button class="sn-item" data-sec="utilisateurs" id="sn-utilisateurs" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utilisateurs<span class="cnt" id="cnt-utilisateurs"></span></button>
         <button class="sn-item" data-sec="corbeille" id="sn-corbeille" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>Corbeille<span class="cnt" id="cnt-corbeille"></span></button>
+        <button class="sn-item" data-sec="journal" id="sn-journal" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Journal</button>
         <button class="sn-item" data-sec="facturation" onclick="showSec(this)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Facturation</button>
         <button class="sn-item" data-sec="grille" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Grille tarifaire</button>
 
@@ -857,6 +858,26 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <button class="btn btn-danger" style="margin-left:auto;" onclick="viderCorbeille()">Vider ce qui dépasse 30 jours</button>
             </div>
             <div class="liste" id="liste-corb" style="max-width:none;"></div>
+          </section>
+
+          <!-- ── JOURNAL ── -->
+          <section class="sec large" id="sec-journal">
+            <h1 class="sec-title">Journal</h1>
+            <p class="sec-desc">Qui a créé, modifié, supprimé ou restauré quoi, et quand. Clique sur une ligne pour voir ce qui a changé exactement. Lisible par les comptes propriétaires, et par personne d'autre&nbsp;: il n'existe aucun moyen d'y écrire ni d'en effacer une ligne, pas même les siennes.</p>
+            <div class="sec-bar">
+              <div class="srch-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" id="q-jour" placeholder="Nom, numéro, auteur…" oninput="renderJournal()"/></div>
+              <div class="segf" id="seg-jour">
+                <button class="on" data-v="" onclick="filtreJournal(this)">Tout</button>
+                <button data-v="creation" onclick="filtreJournal(this)">Créations</button>
+                <button data-v="modification" onclick="filtreJournal(this)">Modifications</button>
+                <button data-v="suppression" onclick="filtreJournal(this)">Suppressions</button>
+              </div>
+            </div>
+            <div class="split">
+              <div class="liste" id="liste-jour"></div>
+              <div class="detail" id="detail-jour"></div>
+            </div>
           </section>
 
           <section class="sec" id="sec-facturation">
@@ -1201,7 +1222,7 @@ if(new URLSearchParams(location.search).get('acces')){
    qu'un confort d'affichage : la fonction edge refuse de toute façon toute
    requête venant d'un autre compte, quel que soit ce qui est visible ici. */
 if(_profil.role==='proprietaire'){
-  for(const _id of ['sn-utilisateurs','sn-corbeille']){
+  for(const _id of ['sn-utilisateurs','sn-corbeille','sn-journal']){
     const _b=document.getElementById(_id)
     if(_b)_b.style.display=''
   }
@@ -1407,6 +1428,7 @@ window.chargerSection=async function(id){
     if(id==='prestations')await loadPrestations()
     else if(id==='utilisateurs')await loadUtilisateurs()
     else if(id==='corbeille')await loadCorbeille()
+    else if(id==='journal')await loadJournal()
     else if(id==='fournisseurs')await loadFournisseurs()
     else if(id==='commandes')await loadCommandes()
     else if(id==='garanties')await loadGaranties()
@@ -1416,15 +1438,120 @@ window.chargerSection=async function(id){
   }
 }
 
+/* ══════════ JOURNAL ══════════
+   La table est en lecture seule pour les propriétaires et n'a aucune
+   politique d'écriture : un journal que son sujet peut retoucher ne vaut
+   rien. On lit donc directement, sans passer par une fonction.
+   ══════════════════════════════════════════ */
+const NOMS_TABLES={clients:'Client',devis:'Devis',factures:'Facture',reparations:'Réparation',
+  rendezvous:'Rendez-vous',stock:'Article de stock',services:'Prestation',
+  fournisseurs:'Fournisseur',demandes_formulaire:'Demande du site'}
+const ACTIONS={creation:['Créé','t-on'],modification:['Modifié',''],
+               suppression:['Supprimé','t-of'],restauration:['Restauré','t-on']}
+/* Champs de tuyauterie : les montrer noierait le vrai changement. */
+const BRUIT=new Set(['modifie_le','modifie_par','updated_at','created_at','supprime_le','supprime_par'])
+let _jour=[], _fJour='', _selJour=null
+
+async function loadJournal(){
+  const {data,error}=await sb.from('journal').select('*').order('quand',{ascending:false}).limit(300)
+  if(error)throw error
+  _jour=data||[]
+  renderJournal()
+}
+
+window.filtreJournal=function(btn){
+  _fJour=btn.dataset.v
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn))
+  renderJournal()
+}
+
+function libelleLigne(e){
+  const src=e.apres||e.avant||{}
+  return src.numero||src.nom||src.titre||src.client_nom||src.cle||('#'+e.ligne_id)
+}
+
+window.renderJournal=function(){
+  const q=norm(document.getElementById('q-jour').value)
+  let l=_jour.slice()
+  if(_fJour)l=l.filter(e=>e.action===_fJour)
+  if(q)l=l.filter(e=>norm(libelleLigne(e)).includes(q)||norm(e.auteur_nom).includes(q)
+                   ||norm(NOMS_TABLES[e.table_nom]||e.table_nom).includes(q))
+  const box=document.getElementById('liste-jour')
+  if(!l.length){
+    box.innerHTML=`<div class="vide-l"><h4>${_jour.length?'Rien ne correspond':'Le journal est vide'}</h4><p>${_jour.length?'Change de filtre ou vide la recherche.':'Il se remplira dès la première création ou modification.'}</p></div>`
+    document.getElementById('detail-jour').innerHTML=''
+    return
+  }
+  box.innerHTML=l.map(e=>{
+    const [mot,cls]=ACTIONS[e.action]||[e.action,'']
+    const d=new Date(e.quand)
+    return `
+    <div class="lrow ${String(e.id)===String(_selJour)?'sel':''}" onclick="voirJournal('${escJsAttr(e.id)}')">
+      <div class="lrow-n"><b>${escHtml(libelleLigne(e))}</b><em>${escHtml(NOMS_TABLES[e.table_nom]||e.table_nom)} · ${escHtml(e.auteur_nom||'compte supprimé')}</em></div>
+      <span class="lrow-v">${escHtml(d.toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'}))}</span>
+      <span class="tag ${cls}">${escHtml(mot)}</span>
+    </div>`}).join('')
+  dessinerDetailJournal()
+}
+
+window.voirJournal=function(id){_selJour=(String(_selJour)===String(id))?null:id;renderJournal()}
+
+function valeurCourte(v){
+  if(v===null||v===undefined)return '—'
+  if(typeof v==='object')return JSON.stringify(v).slice(0,120)
+  const t=String(v)
+  return t.length>120?t.slice(0,120)+'…':(t||'—')
+}
+
+function dessinerDetailJournal(){
+  const box=document.getElementById('detail-jour')
+  if(!_selJour){
+    box.innerHTML=`<div class="vide-d"><h4>Aucune entrée sélectionnée</h4><p>Choisis une ligne pour voir ce qui a changé.</p></div>`
+    return
+  }
+  const e=_jour.find(x=>String(x.id)===String(_selJour))
+  if(!e){_selJour=null;return dessinerDetailJournal()}
+  const a=e.avant||{}, b=e.apres||{}
+  const cles=[...new Set([...Object.keys(a),...Object.keys(b)])]
+    .filter(k=>!BRUIT.has(k)&&JSON.stringify(a[k])!==JSON.stringify(b[k]))
+  const d=new Date(e.quand)
+  const [mot]=ACTIONS[e.action]||[e.action]
+
+  let corps
+  if(e.action==='modification'&&cles.length){
+    corps=`<table class="fin-table" style="display:table;width:100%;">
+      <tr><th style="text-align:left;">Champ</th><th style="text-align:left;">Avant</th><th style="text-align:left;">Après</th></tr>
+      ${cles.map(k=>`<tr><td><b>${escHtml(k)}</b></td><td style="color:var(--t3);">${escHtml(valeurCourte(a[k]))}</td><td>${escHtml(valeurCourte(b[k]))}</td></tr>`).join('')}
+    </table>`
+  }else if(e.action==='modification'){
+    corps=`<p class="sec-desc">Aucun champ visible n'a changé — seule la date de modification a bougé.</p>`
+  }else{
+    // Création, suppression, restauration : l'état complet parle mieux
+    // qu'une comparaison avec du vide.
+    const src=e.apres||e.avant||{}
+    const champs=Object.keys(src).filter(k=>!BRUIT.has(k)&&src[k]!==null&&src[k]!=='')
+    corps=champs.length
+      ? `<table class="fin-table" style="display:table;width:100%;">
+           ${champs.map(k=>`<tr><td><b>${escHtml(k)}</b></td><td>${escHtml(valeurCourte(src[k]))}</td></tr>`).join('')}
+         </table>`
+      : `<p class="sec-desc">Aucun détail enregistré.</p>`
+  }
+
+  box.innerHTML=`
+    <div class="fg"><label>Quoi</label><input type="text" value="${escHtml(mot+' — '+libelleLigne(e))}" disabled/></div>
+    <div class="fg"><label>Où</label><input type="text" value="${escHtml(NOMS_TABLES[e.table_nom]||e.table_nom)}" disabled/></div>
+    <div class="fg"><label>Par qui</label><input type="text" value="${escHtml(e.auteur_nom||'compte supprimé depuis')}" disabled/></div>
+    <div class="fg"><label>Quand</label><input type="text" value="${escHtml(d.toLocaleDateString('fr-BE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+' à '+d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'}))}" disabled/></div>
+    <div class="fl-name" style="margin:16px 0 6px;">${e.action==='modification'?'Ce qui a changé':'État enregistré'}</div>
+    ${corps}`
+}
+
 /* ══════════ CORBEILLE ══════════
    Une suppression lancée depuis n'importe quelle page est convertie en mise
    en corbeille par un déclencheur : la ligne reste en base, marquée, et sort
    des résultats. Rien n'est réellement effacé tant que personne ne vide.
    Les trois fonctions appelées ici vérifient elles-mêmes le rôle.
    ══════════════════════════════════════════ */
-const NOMS_TABLES={clients:'Client',devis:'Devis',factures:'Facture',reparations:'Réparation',
-  rendezvous:'Rendez-vous',stock:'Article de stock',services:'Prestation',
-  fournisseurs:'Fournisseur',demandes_formulaire:'Demande du site'}
 let _corb=[]
 
 async function loadCorbeille(){
