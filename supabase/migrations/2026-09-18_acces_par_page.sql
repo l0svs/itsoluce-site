@@ -161,3 +161,34 @@ create policy services_vitrine_lecture_publique on public.services
 -- Une politique filtre les lignes, pas les colonnes : le droit de lecture est
 -- restreint aux seules colonnes que le site affiche.
 grant select (id, nom, prix, prix_max, unite, ordre) on public.services to anon;
+
+-- ═══════════════════════════════════════════════════════════
+--  Suite — journal, garde-fous, corbeille (18 septembre 2026)
+--
+--  Tout est posé par des déclencheurs : les pages n'ont rien à changer.
+--  Une suppression lancée depuis n'importe quelle page devient une mise en
+--  corbeille, et la ligne sort des résultats sans qu'aucune requête n'ait
+--  été retouchée — la politique de lecture exclut supprime_le non nul.
+--
+--  Deux drapeaux sur profils remplacent une matrice de droits :
+--    lecture_seule   → consulte sans modifier
+--    peut_supprimer  → autorise la mise en corbeille
+--  Ni l'un ni l'autre ne s'applique au propriétaire.
+--
+--  Le journal enregistre création, modification, suppression et
+--  restauration, avec l'auteur et l'état avant/après. Il est lisible par le
+--  propriétaire seul et n'a aucune politique d'écriture : un journal que son
+--  sujet peut effacer ne vaut rien.
+--
+--  Fonctions utilitaires, réservées au propriétaire :
+--    corbeille_lister()                  → ce qui est récupérable
+--    corbeille_restaurer(table, id)      → remet une ligne en service
+--    corbeille_purger(jours default 30)  → supprime pour de bon
+--
+--  ATTENTION : corbeille_purger n'est PAS programmée. pg_cron n'a pas été
+--  branché. Tant que personne ne l'appelle, la corbeille ne se vide jamais —
+--  ce qui est sans danger, juste à savoir.
+--
+--  Le SQL complet appliqué se trouve dans l'historique des migrations
+--  Supabase sous le nom « journal_drapeaux_corbeille ».
+-- ═══════════════════════════════════════════════════════════
