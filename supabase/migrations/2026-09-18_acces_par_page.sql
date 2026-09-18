@@ -185,9 +185,16 @@ grant select (id, nom, prix, prix_max, unite, ordre) on public.services to anon;
 --    corbeille_restaurer(table, id)      → remet une ligne en service
 --    corbeille_purger(jours default 30)  → supprime pour de bon
 --
---  ATTENTION : corbeille_purger n'est PAS programmée. pg_cron n'a pas été
---  branché. Tant que personne ne l'appelle, la corbeille ne se vide jamais —
---  ce qui est sans danger, juste à savoir.
+--  La purge est programmée : pg_cron lance corbeille_purge_planifiee(30)
+--  chaque nuit à 03h17 UTC. Cette variante existe parce que la purge
+--  manuelle exige d'être propriétaire — auth.uid() doit désigner un compte —
+--  alors qu'une tâche planifiée n'a aucune session et échouerait sur ce
+--  contrôle. Son droit d'exécution est retiré à anon et authenticated : un
+--  navigateur ne peut pas court-circuiter le contrôle de rôle par cette
+--  porte. Une purge non vide laisse une trace au journal.
+--
+--  Le journal est lisible par TOUT compte propriétaire, pas par le seul
+--  créateur de l'ERP — la politique s'appuie sur est_proprietaire().
 --
 --  Le SQL complet appliqué se trouve dans l'historique des migrations
 --  Supabase sous le nom « journal_drapeaux_corbeille ».
