@@ -138,6 +138,10 @@ Deno.serve(async (req) => {
       const pages = nettoyerPages(corps.pages);
       // Un propriétaire accède à tout : sa liste de pages n'est jamais consultée.
       const role = ROLES.includes(String(corps.role)) ? String(corps.role) : "equipe";
+      // Deux garde-fous simples plutôt qu'une matrice de droits : consulter
+      // sans modifier, et modifier sans pouvoir mettre à la corbeille.
+      const lecture_seule = corps.lecture_seule === true;
+      const peut_supprimer = corps.peut_supprimer !== false;
 
       if (!EMAIL_RE.test(email)) return json({ error: "Adresse e-mail invalide." }, 400);
       if (mdp.length < MDP_MIN) {
@@ -164,7 +168,7 @@ Deno.serve(async (req) => {
       const profil = await admin("/rest/v1/profils", {
         method: "POST",
         headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ id: cree.id, nom: nom || email.split("@")[0], email, role, pages, actif: true }),
+        body: JSON.stringify({ id: cree.id, nom: nom || email.split("@")[0], email, role, pages, actif: true, lecture_seule, peut_supprimer }),
       });
       if (!profil.ok) {
         console.error("Profil non créé, compte Auth retiré", await profil.text());
@@ -193,6 +197,8 @@ Deno.serve(async (req) => {
       if (corps.pages !== undefined) maj.pages = nettoyerPages(corps.pages);
       if (corps.actif !== undefined) maj.actif = corps.actif === true;
       if (corps.role !== undefined && ROLES.includes(String(corps.role))) maj.role = String(corps.role);
+      if (corps.lecture_seule !== undefined) maj.lecture_seule = corps.lecture_seule === true;
+      if (corps.peut_supprimer !== undefined) maj.peut_supprimer = corps.peut_supprimer === true;
 
       // Retirer le dernier propriétaire actif — en le rétrogradant ou en le
       // désactivant — laisserait l'ERP sans personne pour administrer les
