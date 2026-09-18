@@ -894,6 +894,45 @@ try {
 
 const {data:{session}}=await sb.auth.getSession()
 if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+/* ─── Accès par page ──────────────────────────────────────────────
+   La fiche profil dit quelles pages ce compte peut ouvrir. Le contrôle
+   est refait à chaque chargement : taper l'adresse à la main ne donne
+   pas l'accès. C'est un garde d'interface — les données elles-mêmes
+   restent protégées par les politiques RLS de Supabase.
+   ────────────────────────────────────────────────────────────────── */
+const PAGE_COURANTE='factures'
+const {data:_profil}=await sb.from('profils').select('role,pages,actif').eq('id',session.user.id).maybeSingle()
+if(!_profil||_profil.actif!==true){
+  await sb.auth.signOut()
+  window.location.href='/admin/login.html?acces=compte'
+  throw new Error('compte desactive')
+}
+/* Le propriétaire passe partout, quoi que contienne sa liste : c'est lui
+   qui administre les accès, il ne doit pas pouvoir se verrouiller dehors. */
+const MES_PAGES=_profil.role==='proprietaire'?null:(Array.isArray(_profil.pages)?_profil.pages:[])
+window.MES_PAGES=MES_PAGES
+if(MES_PAGES&&!MES_PAGES.includes(PAGE_COURANTE)){
+  const repli=MES_PAGES[0]
+  if(repli){window.location.href='/admin/'+repli+'.html?acces='+PAGE_COURANTE}
+  /* Aucune page autorisée : on ferme la session avant de renvoyer vers
+     l'écran de connexion, sinon celui-ci renverrait aussitôt vers l'ERP
+     et les deux se relanceraient sans fin. */
+  else{await sb.auth.signOut();window.location.href='/admin/login.html?acces=aucune'}
+  throw new Error('page non autorisee')
+}
+if(MES_PAGES){
+  /* Le menu mobile est un clone de la barre latérale : la filtrer ici
+     suffit pour les deux. Le lien du logo est épargné — il porte la même
+     adresse que le Dashboard sans être un élément de navigation. */
+  document.querySelectorAll('.hnav a.hnl[href], .sidebar a.nl[href]').forEach(a=>{
+    const m=(a.getAttribute('href')||'').match(/\/admin\/([a-z-]+)\.html/)
+    if(m&&!MES_PAGES.includes(m[1]))a.remove()
+  })
+}
+if(new URLSearchParams(location.search).get('acces')){
+  setTimeout(()=>{try{showToast("Tu n'as pas accès à cette page",'err')}catch(e){}},700)
+}
+
 
 let allFactures=[]
 let allClients=[]
