@@ -586,6 +586,17 @@ body{font-size:14px;}
   .hnav .hnl{flex-shrink:0;}
 }
 </style>
+<style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
+<script>
+/* Les liens de navigation sont écrits dans le HTML, mais les pages
+   autorisées ne sont connues qu'après un aller-retour avec Supabase.
+   Sans ce voile, l'utilisateur voit fugitivement toutes les pages, y compris
+   celles qui lui sont interdites, avant qu'elles ne disparaissent.
+   La navigation garde sa place (visibility, pas display) : rien ne saute.
+   Le délai est un filet de sécurité — si le script de page ne s'exécute
+   jamais, la navigation réapparaît quand même plutôt que de rester vide. */
+setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()},4000);
+</script>
 </head>
 <body>
 
@@ -1167,6 +1178,8 @@ if(MES_PAGES){
     if(m&&!MES_PAGES.includes(m[1]))a.remove()
   })
 }
+const _voile=document.getElementById('voile-nav')
+if(_voile)_voile.remove()
 if(new URLSearchParams(location.search).get('acces')){
   setTimeout(()=>{try{showToast("Tu n'as pas accès à cette page",'err')}catch(e){}},700)
 }
@@ -1399,7 +1412,7 @@ const PAGES_ERP=[
   ['stock','Stock'],['catalogue','Catalogue'],['planning','Planning'],
   ['gestion','Gestion']
 ]
-let _users=[], _selUser=null
+let _users=[], _selUser=null, _moiId=null
 
 async function appelUtilisateurs(corps){
   const {data:{session:s}}=await sb.auth.getSession()
@@ -1417,23 +1430,29 @@ async function appelUtilisateurs(corps){
 async function loadUtilisateurs(){
   const r=await appelUtilisateurs({action:'lister'})
   _users=r.utilisateurs||[]
+  _moiId=r.moi||null
   renderUtilisateurs()
 }
 
 window.renderUtilisateurs=function(){
   const q=norm(document.getElementById('q-users').value)
-  let l=_users.filter(u=>u.role!=='proprietaire')
+  let l=_users.slice()
   if(q)l=l.filter(u=>norm(u.nom).includes(q)||norm(u.email).includes(q))
   const cnt=document.getElementById('cnt-utilisateurs')
-  if(cnt)cnt.textContent=_users.filter(u=>u.role!=='proprietaire').length||''
+  if(cnt)cnt.textContent=_users.length||''
   const box=document.getElementById('liste-users')
-  box.innerHTML=l.length?l.map(u=>`
+  box.innerHTML=l.length?l.map(u=>{
+    const moi=String(u.id)===String(_moiId)
+    // Un propriétaire accède à tout : compter ses pages n'aurait aucun sens.
+    const portee=u.role==='proprietaire'?'Toutes les pages':`${(u.pages||[]).length} page${(u.pages||[]).length>1?'s':''}`
+    return `
     <div class="lrow ${u.actif===false?'off':''} ${String(u.id)===String(_selUser)?'sel':''}" onclick="voirUtilisateur('${escJsAttr(u.id)}')">
-      <div class="lrow-n"><b>${escHtml(u.nom||u.email)}</b><em>${escHtml(u.email)}</em></div>
-      <span class="lrow-v">${(u.pages||[]).length} page${(u.pages||[]).length>1?'s':''}</span>
+      <div class="lrow-n"><b>${escHtml(u.nom||u.email)}${moi?' <span style="font-weight:400;color:var(--t3);">(toi)</span>':''}</b><em>${escHtml(u.email)}</em></div>
+      <span class="lrow-v">${escHtml(portee)}</span>
+      ${u.role==='proprietaire'?'<span class="tag t-on">Propriétaire</span>':''}
       ${u.actif===false?'<span class="tag t-of">Désactivé</span>':''}
-    </div>`).join('')
-    : `<div class="vide-l"><h4>Aucun utilisateur${q?' ne correspond':''}</h4><p>${_users.length>1?'Vide la recherche.':'Tu es seul sur l\'ERP. Ajoute un compte quand quelqu\'un te rejoint.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvelUtilisateur()">Ajouter un utilisateur</button></div>`
+    </div>`}).join('')
+    : `<div class="vide-l"><h4>Aucun utilisateur${q?' ne correspond':''}</h4><p>Vide la recherche.</p></div>`
   if(_selUser&&_selUser!=='__neuf'&&!_users.some(u=>String(u.id)===String(_selUser)))_selUser=null
   dessinerDetailUser()
 }
@@ -1456,16 +1475,32 @@ function dessinerDetailUser(){
     return
   }
   const neuf=_selUser==='__neuf'
-  const u=neuf?{nom:'',email:'',pages:[],actif:true}:_users.find(x=>String(x.id)===String(_selUser))
+  const u=neuf?{nom:'',email:'',pages:[],actif:true,role:'equipe'}:_users.find(x=>String(x.id)===String(_selUser))
   if(!u){_selUser=null;return dessinerDetailUser()}
   const pages=Array.isArray(u.pages)?u.pages:[]
+  const proprio=u.role==='proprietaire'
+
+  // Son propre compte ne se modifie pas d'ici : personne d'autre ne pourrait
+  // rendre des droits qu'on se serait retirés à soi-même. Le serveur refuse
+  // de toute façon, autant l'expliquer plutôt que d'afficher un formulaire
+  // qui échouerait.
+  if(!neuf&&String(u.id)===String(_moiId)){
+    box.innerHTML=`
+      <div class="fg"><label>Nom</label><input type="text" value="${escHtml(u.nom||'')}" disabled/></div>
+      <div class="fg"><label>Adresse e-mail</label><input type="text" value="${escHtml(u.email||'')}" disabled/></div>
+      <div class="fg"><label>Rôle</label><input type="text" value="Propriétaire — accès à toutes les pages" disabled/></div>
+      <p class="sec-desc" style="margin-top:14px;">C'est ton compte. Il ne se modifie pas depuis cette liste : si tu pouvais t'y retirer des droits, plus personne ne pourrait te les rendre. Ton mot de passe se change dans la section <b>Compte</b>.</p>`
+    return
+  }
+
   box.innerHTML=`
     <div class="fg"><label for="u-nom">Nom</label><input type="text" id="u-nom" value="${escHtml(u.nom||'')}" placeholder="Prénom Nom"/></div>
     ${neuf
       ? `<div class="fg"><label for="u-email">Adresse e-mail *</label><input type="email" id="u-email" value="" placeholder="prenom@exemple.be" autocomplete="off"/></div>
          <div class="fg"><label for="u-mdp">Mot de passe *</label><input type="password" id="u-mdp" placeholder="8 caractères minimum" autocomplete="new-password"/></div>`
       : `<div class="fg"><label>Adresse e-mail</label><input type="text" value="${escHtml(u.email||'')}" disabled/></div>`}
-    <div class="form-section">
+    <div class="toggle-l"><span>Propriétaire<em>Accède à tout et peut gérer les utilisateurs</em></span><div class="tog ${proprio?'on':''}" id="u-role" onclick="this.classList.toggle('on');basculerRole()" role="switch" tabindex="0"><i></i></div></div>
+    <div class="form-section" id="bloc-pages" style="${proprio?'display:none;':''}">
       <div class="fl-name" style="margin:14px 0 2px;">Pages accessibles</div>
       <em style="display:block;font-size:11.5px;color:var(--t3);margin-bottom:6px;">Les pages décochées disparaissent de sa navigation et lui sont refusées à l'ouverture.</em>
       ${casesPages(pages)}
@@ -1476,6 +1511,19 @@ function dessinerDetailUser(){
       ${neuf?'':'<button class="btn btn-danger" onclick="supprimerUtilisateur()">Supprimer</button>'}
       <button class="btn btn-primary" onclick="enregistrerUtilisateur()">${neuf?'Créer le compte':'Enregistrer'}</button>
     </div>`
+}
+
+/* Un propriétaire accède à tout : sa liste de pages n'est jamais consultée,
+   l'afficher laisserait croire le contraire. */
+window.basculerRole=function(){
+  const proprio=document.getElementById('u-role').classList.contains('on')
+  const bloc=document.getElementById('bloc-pages')
+  if(bloc)bloc.style.display=proprio?'none':''
+}
+
+function roleChoisi(){
+  const t=document.getElementById('u-role')
+  return t&&t.classList.contains('on')?'proprietaire':'equipe'
 }
 
 function pagesCochees(){
@@ -1492,14 +1540,16 @@ window.enregistrerUtilisateur=async function(){
       const mdp=document.getElementById('u-mdp').value
       if(!email){showToast("L'adresse e-mail est obligatoire",'err');return}
       if(mdp.length<8){showToast('Le mot de passe doit faire au moins 8 caractères','err');return}
-      if(!pages.length){showToast('Coche au moins une page, sinon ce compte ne pourra rien ouvrir','err');return}
-      const r=await appelUtilisateurs({action:'creer',email,mot_de_passe:mdp,nom,pages})
+      const role=roleChoisi()
+      if(role==='equipe'&&!pages.length){showToast('Coche au moins une page, sinon ce compte ne pourra rien ouvrir','err');return}
+      const r=await appelUtilisateurs({action:'creer',email,mot_de_passe:mdp,nom,pages,role})
       _users.push(r.utilisateur); _selUser=r.utilisateur.id
       showToast(`Compte créé pour ${email}`,'ok')
     }else{
       const actif=document.getElementById('u-actif').classList.contains('on')
-      if(!pages.length&&actif){showToast('Coche au moins une page, ou désactive le compte','err');return}
-      const r=await appelUtilisateurs({action:'modifier',id:_selUser,nom,pages,actif})
+      const role=roleChoisi()
+      if(role==='equipe'&&!pages.length&&actif){showToast('Coche au moins une page, ou désactive le compte','err');return}
+      const r=await appelUtilisateurs({action:'modifier',id:_selUser,nom,pages,actif,role})
       const i=_users.findIndex(x=>String(x.id)===String(_selUser))
       if(i>=0)_users[i]=r.utilisateur
       const mdp2=document.getElementById('u-mdp2').value
