@@ -1,0 +1,19 @@
+# ═══════════════════════════════════════════════════════════
+#  IT Soluce — ce que GitHub Pages a le droit de publier
+#
+#  Pages publie la TOTALITÉ du dépôt, pas seulement les pages HTML : sans
+#  cette liste, le code des fonctions edge et l'audit interne de l'ERP sont
+#  servis en clair sur itsoluce.be, à des adresses devinables du type
+#  itsoluce.be/supabase/functions/send-invoice/index.ts
+#
+#  Ces fichiers ne contiennent aucune clé — elles sont lues par
+#  Deno.env.get() côté serveur — mais ils décrivent le modèle de sécurité :
+#  comment l'authentification est vérifiée, où sont les plafonds d'envoi,
+#  comment fonctionne le verrou anti-rejeu. Aucune raison de l'offrir.
+#
+#  Ils restent versionnés dans le dépôt : c'est la source de référence des
+#  fonctions déployées, on ne la retire pas de Git, on la retire du web.
+# ═══════════════════════════════════════════════════════════
+exclude:
+  - supabase/
+  - docs/
