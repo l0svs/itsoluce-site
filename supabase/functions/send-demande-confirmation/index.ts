@@ -133,6 +133,20 @@ function signatureHtml(ent: Entreprise): string {
     `</table>`;
 }
 
+// ── Congés — temporaire ────────────────────────────────────────────────
+// La même date que le bandeau du site. Passé ce moment, la phrase disparaît
+// d'elle-même : personne n'a à se souvenir de la retirer. Supprimer ces
+// quelques lignes rend le retrait définitif.
+const RETOUR_CONGES = new Date("2026-10-05T00:00:00+02:00");
+
+function encadreConges(): string {
+  if (Date.now() >= RETOUR_CONGES.getTime()) return "";
+  return `<p style="background:#fff6e8;border-left:3px solid #b25e09;padding:11px 14px;margin:0 0 14px;color:#7a4206;">` +
+    `<b>Je suis actuellement en cong&eacute; jusqu'au 4 octobre.</b> Je reprends les r&eacute;parations le ` +
+    `lundi 5 octobre et je traite les demandes re&ccedil;ues entre-temps par ordre d'arriv&eacute;e — la v&ocirc;tre ` +
+    `est enregistr&eacute;e, vous n'avez rien d'autre &agrave; faire.</p>`;
+}
+
 function buildEmailHtml(prenom: string, appareil: string, ent: Entreprise): string {
   // Sans prénom, on salue sans nom plutôt que d'écrire « Bonjour bonjour ».
   const salut = prenom ? `Bonjour ${escHtml(prenom)},` : "Bonjour,";
@@ -140,7 +154,8 @@ function buildEmailHtml(prenom: string, appareil: string, ent: Entreprise): stri
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#111;line-height:1.6;">
   <p>${salut}</p>
   <p>Votre demande concernant ${a} est bien arriv&eacute;e jusqu'&agrave; moi.</p>
-  <p>Je reviens vers vous d&egrave;s que possible avec un premier retour ou pour convenir d'un cr&eacute;neau.</p>
+  ${encadreConges()}
+  ${encadreConges() ? "" : "<p>Je reviens vers vous d&egrave;s que possible avec un premier retour ou pour convenir d'un cr&eacute;neau.</p>"}
   <p>En attendant, si votre appareil est en &eacute;tat de marche, pensez &agrave; sauvegarder vos donn&eacute;es importantes.</p>
   ${signatureHtml(ent)}
 </div>`;
