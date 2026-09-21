@@ -2425,8 +2425,87 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 }
 
 </style>
+<style id="mode-vacances">
+/* ═══ Mode vacances — temporaire ═══
+   Tout est piloté par la classe « vac » posée sur <html> par le script
+   ci-dessous, uniquement avant la date de retour. Passé cette date rien ne
+   s'applique : le site redevient normal sans intervention. Supprimer ce bloc,
+   le script et les éléments .vac-only rend le retrait définitif. */
+.vac-only{display:none}
+.vac .vac-only{display:block}
+/* « display:block » ci-dessus écrase la mise en page d'origine des éléments
+   qui n'étaient pas des blocs. Une ligne de disponibilité doit rester une
+   grille flexible, sinon ses deux libellés se collent. */
+.vac .vac-only.hrow{display:flex}
+.vac .vac-hide{display:none}
+
+.vac-bandeau{
+  position:fixed;top:0;left:0;right:0;z-index:150;
+  padding:12px 18px;background:#b25e09;color:#fff;
+  font-size:14px;line-height:1.45;
+}
+/* La mise en page du bandeau est réservée au mode actif. Déclarer
+   « display:flex » sur .vac-bandeau l'emporterait sur .vac-only à
+   spécificité égale, et le bandeau resterait affiché après le retour. */
+.vac .vac-bandeau{display:flex;align-items:center;gap:11px}
+.vac-bandeau__pin{font-size:17px;flex-shrink:0;line-height:1}
+.vac-bandeau b{font-weight:600}
+.vac-bandeau__x{
+  margin-left:auto;flex-shrink:0;background:none;border:none;color:#fff;
+  opacity:.65;font-size:21px;line-height:1;cursor:pointer;padding:0 2px;
+}
+.vac-bandeau__x:hover{opacity:1}
+/* La barre de navigation est fixée en haut : elle descend de la hauteur
+   réelle du bandeau, mesurée après rendu pour tenir compte du retour à la
+   ligne sur petit écran. */
+.vac .nav{top:var(--vac-h,52px)}
+.vac body{padding-top:var(--vac-h,52px)}
+
+/* Téléphone neutralisé : affiché, barré, non cliquable. Le masquer
+   donnerait l'impression d'une activité fermée. */
+.vac .irow--off{cursor:default}
+.vac .irow--off .irow__v{text-decoration:line-through;text-decoration-thickness:1px;opacity:.55}
+.vac-note{font-size:12.5px;color:#b25e09;font-weight:500;margin-top:2px}
+.vac-note--ok{color:#1a8a52}
+@media (max-width:600px){.vac-bandeau{font-size:13px;padding:10px 14px}}
+</style>
+<script>
+/* La date de retour vit ici, en un seul endroit. Le mode s'éteint tout seul :
+   si personne ne touche à rien, le site est normal le 5 octobre au matin. */
+(function(){
+  var RETOUR = new Date('2026-10-05T00:00:00+02:00');
+  if (Date.now() >= RETOUR.getTime()) return;
+  document.documentElement.classList.add('vac');
+  function mesurer(){
+    var b = document.querySelector('.vac-bandeau');
+    if (b) document.documentElement.style.setProperty('--vac-h', b.offsetHeight + 'px');
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    mesurer();
+    window.addEventListener('resize', mesurer);
+    /* Un numéro cliquable reste un appel en un geste, bandeau ou pas. */
+    document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
+      a.removeAttribute('href');
+      a.classList.add('irow--off');
+    });
+    var x = document.getElementById('vacFermer');
+    if (x) x.addEventListener('click', function(){
+      var b = document.querySelector('.vac-bandeau');
+      if (b) b.remove();
+      document.documentElement.style.setProperty('--vac-h','0px');
+    });
+  });
+})();
+</script>
 </head>
 <body>
+
+<!-- Mode vacances — temporaire, s'efface seul le 5 octobre 2026 -->
+<div class="vac-bandeau vac-only" role="status">
+  <span class="vac-bandeau__pin" aria-hidden="true">🌴</span>
+  <span>Je suis en congé jusqu'au <b>dimanche 4 octobre</b>. Les demandes envoyées par le formulaire sont traitées dès mon retour, le <b>lundi 5 octobre</b>.</span>
+  <button class="vac-bandeau__x" id="vacFermer" type="button" aria-label="Fermer l'annonce">&times;</button>
+</div>
 
 <header class="nav">
   <div class="nav__inner">
@@ -2739,6 +2818,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <h3>Dépôt d'appareil — Tubize</h3>
           <p>Chaussée d'Hondzocht<br>1480 Tubize</p>
           <p>Dépôt et retrait sur rendez-vous.<br><a href="tel:+32474056659">+32 474 05 66 59</a></p>
+          <p class="vac-only" style="color:#b25e09;font-weight:500;">Dépôts suspendus jusqu'au 4 octobre.</p>
         </div>
       </div>
 
@@ -2909,7 +2989,8 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
                 <path d="M14 27l7 7 16-16"/>
               </svg>
               <div class="f-ok__title">Message envoyé !</div>
-              <div class="f-ok__text">Merci, votre demande a bien été reçue.<br>Je reviens vers vous dès que possible.</div>
+              <div class="f-ok__text vac-hide">Merci, votre demande a bien été reçue.<br>Je reviens vers vous dès que possible.</div>
+              <div class="f-ok__text vac-only">Merci, votre demande a bien été reçue.<br>Je suis en congé jusqu'au 4 octobre&nbsp;: je la traite dès mon retour, le lundi 5.</div>
             </div>
           </form>
         </div>
@@ -2928,6 +3009,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <div>
             <div class="irow__l">Téléphone & WhatsApp</div>
             <div class="irow__v">+32 474 05 66 59</div>
+            <div class="vac-note vac-only">Ligne rouverte le lundi 5 octobre</div>
           </div>
         </a>
 
@@ -2941,6 +3023,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <div>
             <div class="irow__l">Email</div>
             <div class="irow__v">contact@itsoluce.be</div>
+            <div class="vac-note vac-only">Réponse à partir du 5 octobre</div>
           </div>
         </a>
 
@@ -2951,10 +3034,12 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           </svg>
           Contacter via WhatsApp
         </a>
+        <div class="vac-note vac-only" style="margin:8px 0 0;">Vos messages sont lus, sans garantie de réponse avant le 5 octobre.</div>
 
         <div class="hours">
           <div class="hours__title">Disponibilités</div>
-          <div class="hrow"><span>Disponibilité</span><span>Sur rendez-vous</span></div>
+          <div class="hrow vac-hide"><span>Disponibilité</span><span>Sur rendez-vous</span></div>
+          <div class="hrow vac-only" style="gap:14px;"><span>Disponibilité</span><span style="color:#b25e09;font-weight:600;text-align:right;">En congé jusqu'au 4&nbsp;octobre</span></div>
         </div>
 
       </div>
