@@ -2448,7 +2448,6 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
    « display:flex » sur .vac-bandeau l'emporterait sur .vac-only à
    spécificité égale, et le bandeau resterait affiché après le retour. */
 .vac .vac-bandeau{display:flex;align-items:center;gap:11px}
-.vac-bandeau__pin{font-size:17px;flex-shrink:0;line-height:1}
 .vac-bandeau b{font-weight:600}
 .vac-bandeau__x{
   margin-left:auto;flex-shrink:0;background:none;border:none;color:#fff;
@@ -2502,7 +2501,6 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 
 <!-- Mode vacances — temporaire, s'efface seul le 5 octobre 2026 -->
 <div class="vac-bandeau vac-only" role="status">
-  <span class="vac-bandeau__pin" aria-hidden="true">🌴</span>
   <span>Je suis en congé jusqu'au <b>dimanche 4 octobre</b>. Les demandes envoyées par le formulaire sont traitées dès mon retour, le <b>lundi 5 octobre</b>.</span>
   <button class="vac-bandeau__x" id="vacFermer" type="button" aria-label="Fermer l'annonce">&times;</button>
 </div>
