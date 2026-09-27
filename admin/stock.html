@@ -725,6 +725,16 @@ const GRILLE_DEFAUT=[
   {min:150,max:250,coef:1.25,fixe:45},
   {min:250,max:999999,coef:1.15,fixe:55}
 ]
+// Frais de livraison Foneday, ajoutés au coût de chaque pièce (réglés dans Gestion).
+const LIVRAISON_DEFAUT=6.95 // valeur par défaut tant que rien n'est enregistré dans Gestion
+function fraisLivraison(){
+  try{
+    const v=localStorage.getItem('erp-livraison')
+    const n=Number(String(v??'').replace(',','.'))
+    if(String(v??'').trim()!==''&&Number.isFinite(n)&&n>=0)return n
+  }catch(e){}
+  return LIVRAISON_DEFAUT
+}
 function getGrille(){
   try{
     const stored=localStorage.getItem('erp-grille')
@@ -738,15 +748,17 @@ function getPalier(achat){
 }
 function calcPrixVente(achat){
   if(achat<=0)return 0
-  const p=getPalier(achat)
-  return achat*p.coef+p.fixe
+  const cout=achat+fraisLivraison()
+  const p=getPalier(cout)
+  return cout*p.coef+p.fixe
 }
 function onAchatChange(){
   const achat=Number(document.getElementById('f-achat').value)||0
   const helper=document.getElementById('prix-helper')
   if(achat<=0){helper.style.display='none';return}
-  const p=getPalier(achat)
-  document.getElementById('formule-rappel').textContent=`Palier ${p.min}–${p.max>=999999?'∞':p.max}€ : × ${p.coef} + ${p.fixe}€`
+  const liv=fraisLivraison()
+  const p=getPalier(achat+liv)
+  document.getElementById('formule-rappel').textContent=`(achat + ${liv.toFixed(2).replace('.',',')}€ livraison) × ${p.coef} + ${p.fixe}€`
   helper.style.display='block'
   const suggere=calcPrixVente(achat)
   document.getElementById('prix-suggere').textContent=suggere.toFixed(2).replace('.',',')+' €'
@@ -766,8 +778,9 @@ function updateMargeStock(){
   const el=document.getElementById('marge-affichee')
   if(!el)return
   if(achat<=0||vente<=0){el.textContent='—';el.style.color='var(--t2)';return}
-  const marge=vente-achat
-  const pct=Math.round((marge/achat)*100)
+  const cout=achat+fraisLivraison()
+  const marge=vente-cout
+  const pct=Math.round((marge/cout)*100)
   el.textContent=`${marge.toFixed(2).replace('.',',')} € (${pct} %)`
   el.style.color=marge>0?'var(--ok)':'var(--d)'
 }
@@ -878,6 +891,14 @@ try{
     if(Array.isArray(_parsed)&&_parsed.length)localStorage.setItem('erp-grille',_g.valeur)
   }
 }catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
+// ── Frais de livraison Foneday : réglés dans Gestion › Grille tarifaire ──
+try{
+  const {data:_l,error:_le}=await sb.from('settings').select('valeur').eq('cle','finance_frais_livraison').maybeSingle()
+  if(!_le){
+    if(_l&&String(_l.valeur??'').trim()!=='')localStorage.setItem('erp-livraison',String(_l.valeur))
+    else localStorage.removeItem('erp-livraison')
+  }
+}catch(e){console.warn('Frais de livraison : valeur locale conservée.',e)}
 
 // ── État ──
 let allStock=[]

@@ -900,7 +900,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <!-- ── GRILLE TARIFAIRE ── -->
           <section class="sec" id="sec-grille">
             <h1 class="sec-title">Grille tarifaire</h1>
-            <p class="sec-desc">Le prix de vente conseillé d'une pièce est calculé selon son prix d'achat : <strong>prix d'achat × coefficient + frais fixes</strong>. Plus la pièce est chère, plus le coefficient diminue, pour rester compétitif sur les appareils récents.</p>
+            <p class="sec-desc">Le prix de vente conseillé d'une pièce est calculé selon son prix d'achat : <strong>(prix d'achat + livraison) × coefficient + frais fixes</strong>. Plus la pièce est chère, plus le coefficient diminue, pour rester compétitif sur les appareils récents.</p>
 
             <p class="note">Cette grille est utilisée par <b>Stock</b> et <b>Catalogue Foneday</b> pour proposer un prix de vente. Elle est enregistrée dans Supabase : elle te suit d'un appareil à l'autre.</p>
 
@@ -908,9 +908,14 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="card-lbl">Paliers</div>
               <div id="grille-rows"></div>
               <div class="grille-foot">
-                <span>Exemple : une pièce à 50 € se revend <b id="grille-ex">—</b></span>
+                <span>Exemple : une pièce achetée 50 € se revend <b id="grille-ex">—</b></span>
                 <button type="button" class="btn btn-secondary" onclick="resetGrille()">Réinitialiser</button>
               </div>
+            </div>
+
+            <div class="card">
+              <div class="card-lbl">Livraison</div>
+              <div class="row"><div class="row-l"><b>Frais de livraison Foneday</b><em>Ajoutés au prix d'achat de chaque pièce avant d'appliquer la grille, dans Stock et Catalogue.</em></div><div class="row-f"><input type="number" id="s-livraison" data-cle="finance_frais_livraison" min="0" step="0.01" value="6.95" oninput="majExemple()" aria-label="Frais de livraison Foneday en euros"/></div></div>
             </div>
           </section>
 
@@ -1135,9 +1140,16 @@ function onGrilleInput(){
   majExemple()
   markDirty()
 }
+// Même lecture que Stock et Catalogue : vide ou invalide -> valeur par défaut.
+const LIVRAISON_DEFAUT=6.95
+function lireLivraison(v){
+  const n=Number(String(v??'').replace(',','.'))
+  return String(v??'').trim()!==''&&Number.isFinite(n)&&n>=0?n:LIVRAISON_DEFAUT
+}
 function majExemple(){
   const el=document.getElementById('grille-ex')
-  if(el)el.textContent=calcVente(50).toFixed(2).replace('.',',')+' €'
+  const liv=lireLivraison(document.getElementById('s-livraison')?.value)
+  if(el)el.textContent=calcVente(50+liv).toFixed(2).replace('.',',')+' €'
 }
 function resetGrille(){
   if(!confirm('Réinitialiser la grille aux valeurs par défaut ?'))return
@@ -1300,6 +1312,7 @@ window.saveSettings=async function(){
 
     const {error}=await sb.from('settings').upsert(lignes,{onConflict:'cle'})
     if(error)throw error
+    try{localStorage.setItem('erp-livraison',String(lireLivraison(document.getElementById('s-livraison')?.value)))}catch(e){}
 
     lignes.forEach(l=>{
       const el=document.querySelector(`[data-cle="${l.cle}"]`)
