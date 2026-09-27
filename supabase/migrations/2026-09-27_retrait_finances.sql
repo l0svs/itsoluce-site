@@ -7,7 +7,9 @@ drop policy if exists justificatifs_lire on storage.objects;
 drop policy if exists justificatifs_creer on storage.objects;
 drop policy if exists justificatifs_modifier on storage.objects;
 drop policy if exists justificatifs_supprimer on storage.objects;
-delete from storage.buckets where id = 'justificatifs';  -- bucket vide
+-- Le bucket « justificatifs » (vide, privé, sans politique) ne peut pas être
+-- supprimé en SQL (storage.protect_delete) : à retirer depuis le tableau de
+-- bord Supabase, Storage › justificatifs › Delete bucket.
 
 drop table if exists public.entrees;
 drop table if exists public.depenses;
