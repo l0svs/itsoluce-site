@@ -299,6 +299,10 @@ body{font-size:14px;}
 .dep-resume{display:flex; flex-wrap:wrap; gap:8px 18px; align-items:baseline; margin:-4px 0 14px; font-size:13px; color:var(--t2);}
 .dep-resume b{font-size:18px; color:var(--t1); font-weight:600; font-variant-numeric:tabular-nums;}
 .dep-resume span{font-variant-numeric:tabular-nums;}
+.dep-pj{display:inline-flex; color:var(--t3); flex-shrink:0;}
+.dep-pj svg{width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.dep-fichier{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13px; margin-bottom:8px;}
+.dep-fichier span{flex:1; min-width:0; word-break:break-all; color:var(--t2);}
 .lrow-m{font-variant-numeric:tabular-nums; font-weight:500; white-space:nowrap; flex-shrink:0;}
 .vide-l h4{font-size:14px; font-weight:600; margin-bottom:5px;}
 .vide-l p{font-size:12.5px; color:var(--t3); margin:0 auto 14px; max-width:38ch; line-height:1.55;}
@@ -1988,6 +1992,7 @@ window.renderDepenses=function(){
     const sous=[dateDep(d.date),LIB_DEP[d.categorie]||d.categorie,d.fournisseur].filter(Boolean).join(' · ')
     return `<div class="lrow ${String(d.id)===String(_selDep)?'sel':''}" onclick="voirDepense('${escJsAttr(d.id)}')">
       <div class="lrow-n"><b>${escHtml(d.libelle)}</b><em>${escHtml(sous)}</em></div>
+      ${d.justificatif?'<span class="dep-pj" title="Justificatif joint" aria-label="Justificatif joint"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>':''}
       <span class="lrow-m">${escHtml(eur(d.montant))}</span>
     </div>`
   }).join('')
@@ -1997,6 +2002,35 @@ window.renderDepenses=function(){
 }
 window.nouvelleDepense=function(){_brouillonDep=null;_selDep='__neuf';renderDepenses()}
 window.voirDepense=function(id){_brouillonDep=null;_selDep=(String(_selDep)===String(id))?null:id;renderDepenses()}
+/* ── Justificatifs : bucket privé « justificatifs », chemin depenses/<id>/<horodatage>-<nom> ── */
+const BUCKET_PJ='justificatifs'
+const TYPES_PJ=['application/pdf','image/jpeg','image/png','image/webp','image/heic','image/heif']
+const TAILLE_MAX_PJ=10*1024*1024
+let _retirerPj=false
+function nomPj(chemin){return String(chemin||'').split('/').pop().replace(/^\d+-/,'')}
+function nomFichierSur(n){
+  const s=String(n||'justificatif').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9._-]+/g,'_').replace(/_+/g,'_')
+  return s.slice(-80)||'justificatif'
+}
+function verifierPj(f){
+  if(!f)return null
+  if(!TYPES_PJ.includes(f.type))return 'Format non accepté : PDF, JPG, PNG, WEBP ou HEIC uniquement'
+  if(f.size>TAILLE_MAX_PJ)return 'Fichier trop lourd : 10 Mo maximum'
+  return null
+}
+/* Ouvre la fenêtre avant l'appel réseau : sinon Safari (iPhone) la bloque. */
+window.voirJustificatif=async function(chemin){
+  const w=window.open('','_blank')
+  const {data,error}=await sb.storage.from(BUCKET_PJ).createSignedUrl(chemin,300)
+  if(error||!data?.signedUrl){if(w)w.close();showToast('Impossible d\'ouvrir le justificatif : '+(error?.message||'lien indisponible'),'err');return}
+  if(w)w.location.href=data.signedUrl
+  else window.location.href=data.signedUrl
+}
+window.retirerJustificatif=function(){
+  _retirerPj=true
+  const b=document.getElementById('d-pj-actuel')
+  if(b)b.innerHTML='<span>Le justificatif sera retiré à l\'enregistrement.</span>'
+}
 /* Recopie une dépense au mois suivant, sans l'enregistrer : tu vérifies le montant avant. */
 window.dupliquerDepense=function(){
   const d=_dep.find(x=>String(x.id)===String(_selDep))
@@ -2008,6 +2042,7 @@ window.dupliquerDepense=function(){
   showToast('Copie prête pour le mois suivant — vérifie puis enregistre','ok')
 }
 function dessinerDetailDep(){
+  _retirerPj=false
   const box=document.getElementById('detail-dep')
   if(!_selDep){
     box.innerHTML='<div class="detail-vide">Choisis une dépense pour la modifier,<br>ou clique sur « Ajouter ».</div>'
@@ -2031,6 +2066,11 @@ function dessinerDetailDep(){
     </select></div>
     <div class="fg"><label for="d-four">Fournisseur / organisme</label><input type="text" id="d-four" value="${escHtml(d.fournisseur||'')}" placeholder="Foneday, UCM…"/></div>
     <div class="fg"><label for="d-notes">Remarques</label><textarea id="d-notes" placeholder="N° de facture, détail…">${escHtml(d.notes||'')}</textarea></div>
+    <div class="fg"><label for="d-pj">Justificatif (facture, ticket)</label>
+      ${!neuf&&d.justificatif?`<div class="dep-fichier" id="d-pj-actuel"><span>${escHtml(nomPj(d.justificatif))}</span><button type="button" class="btn btn-secondary" onclick="voirJustificatif('${escJsAttr(d.justificatif)}')">Voir</button><button type="button" class="btn btn-secondary" onclick="retirerJustificatif()">Retirer</button></div>`:''}
+      <input type="file" id="d-pj" accept="application/pdf,image/*"/>
+      <div style="font-size:12px;color:var(--t3);margin-top:4px;">PDF ou photo, 10 Mo maximum.${!neuf&&d.justificatif?' Un nouveau fichier remplace l\'actuel.':''}</div>
+    </div>
     <div class="detail-f">
       ${neuf?'':'<button class="btn btn-danger" onclick="supprimerDepense()">Supprimer</button><button class="btn btn-secondary" onclick="dupliquerDepense()">Dupliquer au mois suivant</button>'}
       <button class="btn btn-primary" onclick="enregistrerDepense()">${neuf?'Créer':'Enregistrer'}</button>
@@ -2044,6 +2084,10 @@ window.enregistrerDepense=async function(){
   if(!date){showToast('La date est obligatoire','err');return}
   if(!libelle){showToast('Le libellé est obligatoire','err');return}
   if(mTxt===''||!Number.isFinite(montant)||montant<=0){showToast('Montant invalide','err');return}
+  const fichier=document.getElementById('d-pj')?.files?.[0]||null
+  const errPj=verifierPj(fichier)
+  if(errPj){showToast(errPj,'err');return}
+  const ancienPj=_selDep==='__neuf'?null:(_dep.find(x=>String(x.id)===String(_selDep))?.justificatif||null)
   const data={
     date, libelle, montant:Math.round(montant*100)/100,
     categorie:document.getElementById('d-cat').value||'autre',
@@ -2062,17 +2106,40 @@ window.enregistrerDepense=async function(){
       if(i>=0)_dep[i]={..._dep[i],...data}
     }
     _brouillonDep=null
+    // Justificatif : la dépense est déjà enregistrée ; un échec d'envoi ne la perd pas.
+    const id=_selDep
+    const ligne=()=>_dep.find(x=>String(x.id)===String(id))
+    let avertPj=''
+    if(fichier){
+      const chemin=`depenses/${id}/${Date.now()}-${nomFichierSur(fichier.name)}`
+      const up=await sb.storage.from(BUCKET_PJ).upload(chemin,fichier,{contentType:fichier.type,upsert:false})
+      if(up.error)avertPj='Dépense enregistrée, mais le justificatif n\'a pas pu être envoyé : '+up.error.message
+      else{
+        const {error:e2}=await sb.from('depenses').update({justificatif:chemin}).eq('id',id)
+        if(e2){await sb.storage.from(BUCKET_PJ).remove([chemin]);avertPj='Dépense enregistrée, mais le justificatif n\'a pas pu être lié : '+e2.message}
+        else{
+          if(ligne())ligne().justificatif=chemin
+          if(ancienPj&&ancienPj!==chemin)await sb.storage.from(BUCKET_PJ).remove([ancienPj])
+        }
+      }
+    } else if(_retirerPj&&ancienPj){
+      const {error:e3}=await sb.from('depenses').update({justificatif:null}).eq('id',id)
+      if(e3)avertPj='Le justificatif n\'a pas pu être retiré : '+e3.message
+      else{if(ligne())ligne().justificatif=null;await sb.storage.from(BUCKET_PJ).remove([ancienPj])}
+    }
     _dep.sort((a,b)=>String(b.date).localeCompare(String(a.date))||(Number(b.id)||0)-(Number(a.id)||0))
     document.getElementById('dep-mois').value=date.slice(0,7)
-    renderDepenses(); showToast('Dépense enregistrée','ok')
+    renderDepenses()
+    if(avertPj)showToast(avertPj,'err'); else showToast('Dépense enregistrée','ok')
   }catch(err){showToast('Erreur : '+(err.message||err),'err')}
 }
 window.supprimerDepense=async function(){
   const d=_dep.find(x=>String(x.id)===String(_selDep))
   if(!d)return
-  if(!confirm(`Supprimer la dépense « ${d.libelle} » (${eur(d.montant)}) ? Cette action est définitive.`))return
+  if(!confirm(`Supprimer la dépense « ${d.libelle} » (${eur(d.montant)})${d.justificatif?' et son justificatif':''} ? Cette action est définitive.`))return
   const {error}=await sb.from('depenses').delete().eq('id',d.id)
   if(error){showToast('Erreur : '+error.message,'err');return}
+  if(d.justificatif)await sb.storage.from(BUCKET_PJ).remove([d.justificatif])
   _dep=_dep.filter(x=>String(x.id)!==String(d.id)); _selDep=null
   renderDepenses(); showToast('Dépense supprimée','ok')
 }
