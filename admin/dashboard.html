@@ -91,12 +91,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .nhr{height:1px;background:var(--ln);margin:8px 10px;}
 .sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
 /* ═══════════════════════════════════════════════════════════════
-   DASHBOARD — « argent et activité ».
-   À gauche l'argent sur six mois glissants, à droite la journée.
-   Pas de bandeau de chiffres : le récapitulatif tient en une phrase
-   sous la salutation, et les compteurs vivent dans les en-têtes de
-   carte. Le cadrage « mois en cours » laissait la page vide dès
-   qu'aucune facture n'était payée dans le mois.
+   DASHBOARD — activité de l'entreprise.
+   La journée en tête, puis les cartes de suivi. Pas de bilan financier :
+   la comptabilité est tenue dans Accountable. Le récapitulatif tient en
+   une phrase sous la salutation, et les compteurs vivent dans les
+   en-têtes de carte.
    ═══════════════════════════════════════════════════════════════ */
 :root{
   --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
@@ -130,7 +129,7 @@ body{font-size:14px;}
 [data-mode="dark"] .avis{background:rgba(248,113,113,.13);}
 
 .dash-wrap{padding:18px 28px 28px; display:flex; flex-direction:column; gap:16px;}
-.dash-top{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:16px; align-items:start;}
+.dash-top{display:grid; grid-template-columns:minmax(0,1fr); gap:16px; align-items:start;}
 .dash-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:16px; align-items:start;}
 
 .dcard{background:var(--bg2); border:none; border-radius:var(--radius); box-shadow:0 1px 2px rgba(0,0,0,.05); overflow:hidden;}
@@ -183,30 +182,6 @@ body{font-size:14px;}
 [data-mode="dark"] .p-vio{background:rgba(167,139,250,.16);}
 
 /* Bloc financier */
-.res{display:flex; gap:26px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px;}
-.res div span{display:block; font-size:10.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3); margin-bottom:3px;}
-.res div b{font-size:23px; font-weight:600; letter-spacing:-.02em; color:var(--t1); font-variant-numeric:tabular-nums;}
-.res div b.pos{color:var(--ok);}
-.res div b.neg{color:var(--d);}
-.legend{display:flex; gap:16px; align-items:center; flex-wrap:wrap; font-size:11.5px; color:var(--t2); margin-bottom:8px;}
-.legend i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px; vertical-align:-1px;}
-.chart-wrap{position:relative;}
-.chart{width:100%; display:block; overflow:visible;}
-.chart rect.bar{transition:opacity .12s;}
-.chart g.mois:hover rect.bar{opacity:.72;}
-.chart g.mois rect.hit{fill:transparent;}
-.tip{position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-100%); background:var(--t1); color:var(--bg2);
-  border-radius:9px; padding:7px 10px; font-size:11.5px; line-height:1.5; white-space:nowrap; transition:opacity .1s; z-index:5;}
-.tip.on{opacity:1;}
-.tip b{font-weight:600;}
-.fin-note{font-size:12px; color:var(--t3); line-height:1.55; margin-top:12px;}
-.fin-table{width:100%; border-collapse:collapse; font-size:12px; margin-top:12px;}
-.fin-table th{text-align:right; font-size:10px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3); padding:5px 0 5px 10px;}
-.fin-table th:first-child{text-align:left; padding-left:0;}
-.fin-table td{text-align:right; padding:5px 0 5px 10px; border-top:1px solid var(--ln); font-variant-numeric:tabular-nums; color:var(--t1);}
-.fin-table td:first-child{text-align:left; color:var(--t2); padding-left:0;}
-.fin-toggle{background:none; border:none; padding:0; margin-top:10px; font-family:inherit; font-size:12px; color:var(--a); cursor:pointer;}
-.fin-toggle:hover{text-decoration:underline;}
 
 .toast{position:fixed; bottom:22px; right:22px; background:var(--bg2); border:1px solid var(--ln2); border-radius:12px; padding:11px 17px; font-size:13px; color:var(--t1);
   box-shadow:0 10px 30px rgba(0,0,0,.16); z-index:999; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; max-width:min(420px,calc(100vw - 44px));}
@@ -226,8 +201,6 @@ body{font-size:14px;}
   .avis{margin:12px 16px 0;}
   .dash-wrap{padding:14px 16px 24px; gap:14px;}
   .dash-grid{grid-template-columns:1fr;}
-  .res{gap:18px;}
-  .res div b{font-size:20px;}
 }
 
 /* ═══ SYSTÈME MOBILE ERP ═══ */
@@ -544,7 +517,6 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <div class="avis" id="avis" style="display:none;"></div>
       <div class="dash-wrap">
         <div class="dash-top">
-          <div class="dcard" id="carte-finances"></div>
           <div class="dcard" id="carte-jour"></div>
         </div>
         <div class="dash-grid" id="grid"></div>
@@ -700,8 +672,6 @@ const tables=[
   ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
   ['stock','id,nom,modele,quantite,seuil_alerte',5000],
-  ['depenses','id,libelle,montant,categorie,date',3000],
-  ['entrees','id,libelle,montant,categorie,date',3000],
   ['demandes_formulaire','id,prenom,nom,appareil,description,vue,converti_reparation_id,created_at',3000],
   ['settings','cle,valeur',500]
 ]
@@ -718,7 +688,7 @@ tables.forEach(([t],i)=>{
 })
 const reps=donnees.reparations, factures=donnees.factures, devis=donnees.devis
 const rdvs=donnees.rendezvous, stock=donnees.stock
-const depenses=donnees.depenses, entrees=donnees.entrees, demandes=donnees.demandes_formulaire
+const demandes=donnees.demandes_formulaire
 
 const reglages={}
 ;(donnees.settings||[]).forEach(r=>{const v=r.valeur==null?'':String(r.valeur).trim();if(v)reglages[r.cle]=v})
@@ -740,45 +710,6 @@ if(echecs.length||tronques.length){
 /* ─── Salutation ─── */
 const h=maintenant.getHours()
 document.getElementById('hello').textContent=`${h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir'} ${prenom}`
-
-/* ─── Six mois glissants ─── */
-const MOIS=[]
-for(let i=5;i>=0;i--){
-  const d=new Date(maintenant.getFullYear(),maintenant.getMonth()-i,1)
-  MOIS.push({cle:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
-    label:d.toLocaleDateString('fr-BE',{month:'short'}).replace('.',''),
-    date:d, encaisse:0, apports:0, depenses:0, nb:0})
-}
-const parMois=new Map(MOIS.map(m=>[m.cle,m]))
-const cleMois=v=>{const d=new Date(v);return isNaN(d)?null:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
-
-factures.filter(f=>f.statut==='payee').forEach(f=>{
-  const m=parMois.get(cleMois(f.date_paiement||f.date_emission||f.created_at))
-  if(!m)return
-  m.encaisse+=Number(f.total)||0
-  m.nb++
-})
-/* Sorties = uniquement les paiements saisis dans Gestion › Dépenses.
-   Le coût des pièces des réparations n'y entre plus : un achat de pièce
-   déjà saisi en dépense était compté une seconde fois. */
-depenses.forEach(d=>{
-  const m=parMois.get(cleMois(d.date||d.created_at))
-  if(m)m.depenses+=Number(d.montant)||0
-})
-/* Entrées hors factures (apports personnels…) : affichées à part. Elles
-   alimentent la trésorerie, pas le résultat de l'activité. */
-entrees.forEach(e=>{
-  const m=parMois.get(cleMois(e.date||e.created_at))
-  if(m)m.apports+=Number(e.montant)||0
-})
-MOIS.forEach(m=>{m.sorties=m.depenses})
-const totalEncaisse=MOIS.reduce((a,m)=>a+m.encaisse,0)
-const totalSorties=MOIS.reduce((a,m)=>a+m.sorties,0)
-const nbDepenses=depenses.filter(d=>parMois.has(cleMois(d.date||d.created_at))).length
-const totalApports=MOIS.reduce((a,m)=>a+m.apports,0)
-const resultat=totalEncaisse-totalSorties
-const tresorerie=totalEncaisse+totalApports-totalSorties
-const nbFactPayees=MOIS.reduce((a,m)=>a+m.nb,0)
 
 /* ─── Listes ─── */
 const CLOS=['rendu','annule','non_reparable']
@@ -815,7 +746,6 @@ const garanties=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
   bouts.push(maintenant.toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))
   const suite=[]
   if(VOIT_ARGENT){
-    suite.push(`<b>${eur(resultat)}</b> de résultat sur six mois`)
     if(facturesRetard.length)suite.push(`<span class="grave">${facturesRetard.length} ${pluriel(facturesRetard.length,'facture')} en retard</span>`)
     else if(facturesAEncaisser.length)suite.push(`<b>${eur(montantAEncaisser)}</b> à encaisser`)
   }
@@ -824,104 +754,6 @@ const garanties=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
   if(repsActives.length)suite.push(`${repsActives.length} ${pluriel(repsActives.length,'réparation')} en cours`)
   document.getElementById('ph-resume').innerHTML=bouts[0]+' — '+suite.join(', ')
 })()
-
-/* ─── Carte finances ─── */
-function rendreFinances(){
-  const maxi=Math.max(1,...MOIS.map(m=>Math.max(m.encaisse,m.sorties)))
-  // Échelle arrondie à la centaine supérieure pour des repères lisibles.
-  const haut=Math.max(100,Math.ceil(maxi/100)*100)
-  const H=104, W=420, x0=40, dispo=W-x0-8
-  const pas=dispo/MOIS.length
-  const larg=Math.min(18,pas/3)
-  const y=v=>H-(v/haut)*H
-  const barres=MOIS.map((m,i)=>{
-    const cx=x0+pas*i+pas/2
-    // 2 px de fond entre les deux barres d'un même mois.
-    const xe=cx-larg-1, xs=cx+1
-    const he=Math.max(m.encaisse>0?2:0,(m.encaisse/haut)*H)
-    const hs=Math.max(m.sorties>0?2:0,(m.sorties/haut)*H)
-    const courant=i===MOIS.length-1
-    const tip=`${m.label} ${m.date.getFullYear()} — encaissé ${eur(m.encaisse)}${m.apports?' · apports '+eur(m.apports):''} · sorties ${eur(m.sorties)}`
-    return `<g class="mois" data-tip="${escHtml(tip)}" data-x="${cx}">
-      ${m.encaisse>0?`<rect class="bar" x="${xe.toFixed(1)}" y="${(H-he).toFixed(1)}" width="${larg.toFixed(1)}" height="${he.toFixed(1)}" rx="4" fill="var(--serie1)"/>`:''}
-      ${m.sorties>0?`<rect class="bar" x="${xs.toFixed(1)}" y="${(H-hs).toFixed(1)}" width="${larg.toFixed(1)}" height="${hs.toFixed(1)}" rx="4" fill="var(--serie2)"/>`:''}
-      <rect class="hit" x="${(cx-pas/2).toFixed(1)}" y="0" width="${pas.toFixed(1)}" height="${H}"/>
-      <text x="${cx.toFixed(1)}" y="${H+15}" text-anchor="middle" font-size="10" ${courant?'font-weight="600"':''} fill="${courant?'var(--t1)':'var(--t3)'}">${escHtml(m.label)}</text>
-      ${m.encaisse===maxi&&m.encaisse>0?`<text x="${xe+larg/2}" y="${(H-he-5).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="600" fill="var(--t1)">${escHtml(eurCourt(m.encaisse))}</text>`:''}
-      ${courant&&m.encaisse===0&&m.sorties===0?`<text x="${cx.toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="9.5" fill="var(--t3)">en cours</text>`:''}
-    </g>`
-  }).join('')
-  const grilles=[0,.5,1].map(p=>{
-    const yy=y(haut*p)
-    return `<line x1="${x0}" y1="${yy}" x2="${W}" y2="${yy}" stroke="var(--ln)" stroke-width="1"/>
-      <text x="${x0-7}" y="${yy+3.5}" text-anchor="end" font-size="9" fill="var(--t3)">${p===1?escHtml(eurCourt(haut)):Math.round(haut*p)}</text>`
-  }).join('')
-
-  const lignes=MOIS.filter(m=>m.encaisse||m.sorties||m.apports).map(m=>
-    `<tr><td>${escHtml(m.label)} ${m.date.getFullYear()}</td><td>${escHtml(eur(m.encaisse))}</td><td>${escHtml(eur(m.apports))}</td><td>${escHtml(eur(m.sorties))}</td><td>${escHtml(eur(m.encaisse-m.sorties))}</td></tr>`).join('')
-
-  const notes=[]
-  if(totalApports>0)notes.push(`Apports = argent reçu hors factures (Gestion › Dépenses & entrées). Résultat = encaissé − sorties ; trésorerie = encaissé + apports − sorties.`)
-  notes.push(nbDepenses
-    ?`Sorties = ${nbDepenses} ${pluriel(nbDepenses,'dépense saisie','dépenses saisies')} dans Gestion › Dépenses (pièces, livraison, cotisations, abonnements…). Le résultat n'est juste que si toutes tes dépenses y sont.`
-    :`Aucune dépense saisie sur la période : le résultat est égal à l'encaissé. Saisis tes paiements dans Gestion › Dépenses.`)
-
-  // Sans accès aux factures, la carte n'aurait que des zéros : on la retire
-  // pour que la carte du jour occupe toute la largeur.
-  if(!VOIT_ARGENT){
-    const _cf=document.getElementById('carte-finances')
-    if(_cf)_cf.remove()
-    return
-  }
-  document.getElementById('carte-finances').innerHTML=`
-    <div class="dcard-head"><b>Six derniers mois</b><a href="/admin/gestion.html#depenses">Dépenses & entrées →</a></div>
-    <div class="dcard-body">
-      <div class="res">
-        <div><span>Encaissé</span><b>${escHtml(eur(totalEncaisse))}</b></div>
-        <div><span>Apports</span><b>${escHtml(eur(totalApports))}</b></div>
-        <div><span>Sorties</span><b>${escHtml(eur(totalSorties))}</b></div>
-        <div><span>Résultat</span><b class="${resultat>=0?'pos':'neg'}">${resultat>=0?'+ ':''}${escHtml(eur(resultat))}</b></div>
-        <div><span>Trésorerie</span><b class="${tresorerie>=0?'pos':'neg'}">${tresorerie>=0?'+ ':''}${escHtml(eur(tresorerie))}</b></div>
-      </div>
-      <div class="legend">
-        <span><i style="background:var(--serie1)"></i>Encaissé</span>
-        <span><i style="background:var(--serie2)"></i>Sorties — dépenses saisies</span>
-        <span style="margin-left:auto;color:var(--t3);">${nbFactPayees} ${pluriel(nbFactPayees,'facture payée','factures payées')}</span>
-      </div>
-      <div class="chart-wrap">
-        <svg class="chart" id="chart" viewBox="0 -14 ${W} ${H+36}" role="img" aria-label="Encaissé et sorties par mois sur six mois">${grilles}${barres}</svg>
-        <div class="tip" id="tip"></div>
-      </div>
-      <div class="fin-note">${escHtml(notes.join(' '))}</div>
-      ${lignes?`<button class="fin-toggle" onclick="basculerTableau()" id="finToggle">Voir le détail chiffré</button>
-      <table class="fin-table" id="finTable" style="display:none;">
-        <thead><tr><th>Mois</th><th>Encaissé</th><th>Apports</th><th>Sorties</th><th>Résultat</th></tr></thead>
-        <tbody>${lignes}</tbody>
-      </table>`:''}
-    </div>`
-
-  // Survol : une info-bulle par mois, cible plus large que les barres.
-  const svg=document.getElementById('chart'), tip=document.getElementById('tip')
-  if(svg&&tip){
-    svg.querySelectorAll('g.mois').forEach(g=>{
-      g.addEventListener('mouseenter',()=>{
-        tip.textContent=g.dataset.tip
-        const r=svg.getBoundingClientRect()
-        tip.style.left=(Number(g.dataset.x)/W*r.width)+'px'
-        tip.style.top='-6px'
-        tip.classList.add('on')
-      })
-      g.addEventListener('mouseleave',()=>tip.classList.remove('on'))
-    })
-  }
-}
-window.basculerTableau=function(){
-  const t=document.getElementById('finTable'), b=document.getElementById('finToggle')
-  if(!t||!b)return
-  const ouvert=t.style.display!=='none'
-  t.style.display=ouvert?'none':''
-  b.textContent=ouvert?'Voir le détail chiffré':'Masquer le détail'
-}
 
 /* ─── Carte du jour ─── */
 const ICONES={
@@ -1066,7 +898,6 @@ function rendreGrille(){
   }
 }
 
-rendreFinances()
 rendreJour()
 rendreGrille()
 
