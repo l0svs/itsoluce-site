@@ -658,7 +658,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><span>Fournisseur & Notes</span></div>
         <div class="fg">
           <label>Fournisseur</label>
-          <select id="f-four">
+          <select id="f-four" onchange="onAchatChange()">
             <option value="">Choisir...</option>
           </select>
         </div>
@@ -725,15 +725,13 @@ const GRILLE_DEFAUT=[
   {min:150,max:250,coef:1.25,fixe:45},
   {min:250,max:999999,coef:1.15,fixe:55}
 ]
-// Frais de livraison Foneday, ajoutés au coût de chaque pièce (réglés dans Gestion).
-const LIVRAISON_DEFAUT=6.95 // valeur par défaut tant que rien n'est enregistré dans Gestion
+// Frais de livraison par fournisseur, réglés dans Gestion › Fournisseurs.
+// Clé = nom du fournisseur en minuscules. Sans frais renseignés : 0 €.
+const LIV_PAR_FOUR={}
+const cleFour=n=>String(n||'').trim().toLowerCase()
 function fraisLivraison(){
-  try{
-    const v=localStorage.getItem('erp-livraison')
-    const n=Number(String(v??'').replace(',','.'))
-    if(String(v??'').trim()!==''&&Number.isFinite(n)&&n>=0)return n
-  }catch(e){}
-  return LIVRAISON_DEFAUT
+  const v=LIV_PAR_FOUR[cleFour(document.getElementById('f-four')?.value)]
+  return Number.isFinite(v)&&v>=0?v:0
 }
 function getGrille(){
   try{
@@ -757,8 +755,11 @@ function onAchatChange(){
   const helper=document.getElementById('prix-helper')
   if(achat<=0){helper.style.display='none';return}
   const liv=fraisLivraison()
+  const four=document.getElementById('f-four')?.value||''
   const p=getPalier(achat+liv)
-  document.getElementById('formule-rappel').textContent=`(achat + ${liv.toFixed(2).replace('.',',')}€ livraison) × ${p.coef} + ${p.fixe}€`
+  document.getElementById('formule-rappel').textContent=liv>0
+    ?`(achat + ${liv.toFixed(2).replace('.',',')}€ livraison ${four}) × ${p.coef} + ${p.fixe}€`
+    :`achat × ${p.coef} + ${p.fixe}€ (sans livraison)`
   helper.style.display='block'
   const suggere=calcPrixVente(achat)
   document.getElementById('prix-suggere').textContent=suggere.toFixed(2).replace('.',',')+' €'
@@ -891,14 +892,6 @@ try{
     if(Array.isArray(_parsed)&&_parsed.length)localStorage.setItem('erp-grille',_g.valeur)
   }
 }catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
-// ── Frais de livraison Foneday : réglés dans Gestion › Grille tarifaire ──
-try{
-  const {data:_l,error:_le}=await sb.from('settings').select('valeur').eq('cle','finance_frais_livraison').maybeSingle()
-  if(!_le){
-    if(_l&&String(_l.valeur??'').trim()!=='')localStorage.setItem('erp-livraison',String(_l.valeur))
-    else localStorage.removeItem('erp-livraison')
-  }
-}catch(e){console.warn('Frais de livraison : valeur locale conservée.',e)}
 
 // ── État ──
 let allStock=[]
@@ -1150,8 +1143,13 @@ async function loadFournisseurs(){
   const sel=document.getElementById('f-four')
   if(!sel)return
   try{
-    const {data,error}=await sb.from('fournisseurs').select('nom,actif').order('nom')
+    const {data,error}=await sb.from('fournisseurs').select('nom,actif,frais_livraison').order('nom')
     if(error){console.warn('Fournisseurs :',error);return}
+    // Tous les fournisseurs, inactifs compris : une pièce déjà en stock garde ses frais.
+    ;(data||[]).forEach(f=>{
+      const v=Number(f.frais_livraison)
+      if(f.nom&&f.frais_livraison!=null&&Number.isFinite(v))LIV_PAR_FOUR[cleFour(f.nom)]=v
+    })
     const actifs=(data||[]).filter(f=>f.actif!==false&&f.nom)
     const valeurCourante=sel.value
     sel.innerHTML='<option value="">Choisir…</option>'
