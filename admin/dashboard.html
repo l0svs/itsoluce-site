@@ -700,7 +700,6 @@ const tables=[
   ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
   ['stock','id,nom,modele,quantite,seuil_alerte',5000],
-  ['charges','id,libelle,montant,frequence,actif',500],
   ['depenses','id,libelle,montant,categorie,date',3000],
   ['demandes_formulaire','id,prenom,nom,appareil,description,vue,converti_reparation_id,created_at',3000],
   ['settings','cle,valeur',500]
@@ -717,7 +716,7 @@ tables.forEach(([t],i)=>{
   if(typeof r.count==='number'&&r.count>donnees[t].length)tronques.push(t)
 })
 const reps=donnees.reparations, factures=donnees.factures, devis=donnees.devis
-const rdvs=donnees.rendezvous, stock=donnees.stock, charges=donnees.charges
+const rdvs=donnees.rendezvous, stock=donnees.stock
 const depenses=donnees.depenses, demandes=donnees.demandes_formulaire
 
 const reglages={}
@@ -747,47 +746,30 @@ for(let i=5;i>=0;i--){
   const d=new Date(maintenant.getFullYear(),maintenant.getMonth()-i,1)
   MOIS.push({cle:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
     label:d.toLocaleDateString('fr-BE',{month:'short'}).replace('.',''),
-    date:d, encaisse:0, pieces:0, depenses:0, nb:0})
+    date:d, encaisse:0, depenses:0, nb:0})
 }
 const parMois=new Map(MOIS.map(m=>[m.cle,m]))
 const cleMois=v=>{const d=new Date(v);return isNaN(d)?null:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
 
-const parRep=new Map(reps.map(r=>[r.id,r]))
-let facturesSansRep=0
 factures.filter(f=>f.statut==='payee').forEach(f=>{
   const m=parMois.get(cleMois(f.date_paiement||f.date_emission||f.created_at))
   if(!m)return
   m.encaisse+=Number(f.total)||0
   m.nb++
-  const rep=f.reparation_id?parRep.get(f.reparation_id):null
-  // Sans réparation liée, le coût des pièces est inconnu : on ne le compte
-  // pas pour zéro en silence, on le signale sous le graphe.
-  if(rep)m.pieces+=Number(rep.cout_pieces)||0
-  else facturesSansRep++
 })
+/* Sorties = uniquement les paiements saisis dans Gestion › Dépenses.
+   Le coût des pièces des réparations n'y entre plus : un achat de pièce
+   déjà saisi en dépense était compté une seconde fois. */
 depenses.forEach(d=>{
   const m=parMois.get(cleMois(d.date||d.created_at))
   if(m)m.depenses+=Number(d.montant)||0
 })
-MOIS.forEach(m=>{m.sorties=m.pieces+m.depenses})
+MOIS.forEach(m=>{m.sorties=m.depenses})
 const totalEncaisse=MOIS.reduce((a,m)=>a+m.encaisse,0)
 const totalSorties=MOIS.reduce((a,m)=>a+m.sorties,0)
-const totalPieces=MOIS.reduce((a,m)=>a+m.pieces,0)
-const totalDepenses=MOIS.reduce((a,m)=>a+m.depenses,0)
+const nbDepenses=depenses.filter(d=>parMois.has(cleMois(d.date||d.created_at))).length
 const resultat=totalEncaisse-totalSorties
 const nbFactPayees=MOIS.reduce((a,m)=>a+m.nb,0)
-
-/* Charges récurrentes : rapportées au mois, et à part du graphe. Ce sont
-   des prévisions, pas des mouvements constatés. */
-const chargesActives=charges.filter(c=>c.actif!==false)
-const chargesInactives=charges.length-chargesActives.length
-const chargeMensuelle=chargesActives.reduce((a,c)=>{
-  const m=Number(c.montant)||0
-  if(c.frequence==='annuelle')return a+m/12
-  if(c.frequence==='trimestrielle')return a+m/3
-  if(c.frequence==='ponctuelle')return a
-  return a+m
-},0)
 
 /* ─── Listes ─── */
 const CLOS=['rendu','annule','non_reparable']
@@ -870,10 +852,9 @@ function rendreFinances(){
     `<tr><td>${escHtml(m.label)} ${m.date.getFullYear()}</td><td>${escHtml(eur(m.encaisse))}</td><td>${escHtml(eur(m.sorties))}</td><td>${escHtml(eur(m.encaisse-m.sorties))}</td></tr>`).join('')
 
   const notes=[]
-  notes.push(`Sorties = ${eur(totalPieces)} de pièces sur les réparations facturées et ${eur(totalDepenses)} de dépenses enregistrées.`)
-  if(facturesSansRep)notes.push(`${facturesSansRep} ${pluriel(facturesSansRep,'facture payée','factures payées')} sans réparation liée : leur coût de pièces est inconnu et n'entre pas dans les sorties.`)
-  if(chargeMensuelle>0)notes.push(`Charges récurrentes actives : ${eur(chargeMensuelle)} par mois, non comptées ici (ce sont des prévisions, pas des mouvements constatés).`)
-  if(chargesInactives)notes.push(`${chargesInactives} ${pluriel(chargesInactives,'charge désactivée','charges désactivées')} dans Gestion, donc ignorée${chargesInactives>1?'s':''}.`)
+  notes.push(nbDepenses
+    ?`Sorties = ${nbDepenses} ${pluriel(nbDepenses,'dépense saisie','dépenses saisies')} dans Gestion › Dépenses (pièces, livraison, cotisations, abonnements…). Le résultat n'est juste que si toutes tes dépenses y sont.`
+    :`Aucune dépense saisie sur la période : le résultat est égal à l'encaissé. Saisis tes paiements dans Gestion › Dépenses.`)
 
   // Sans accès aux factures, la carte n'aurait que des zéros : on la retire
   // pour que la carte du jour occupe toute la largeur.
@@ -883,7 +864,7 @@ function rendreFinances(){
     return
   }
   document.getElementById('carte-finances').innerHTML=`
-    <div class="dcard-head"><b>Six derniers mois</b><a href="/admin/gestion.html">Gestion →</a></div>
+    <div class="dcard-head"><b>Six derniers mois</b><a href="/admin/gestion.html#depenses">Dépenses →</a></div>
     <div class="dcard-body">
       <div class="res">
         <div><span>Encaissé</span><b>${escHtml(eur(totalEncaisse))}</b></div>
@@ -892,7 +873,7 @@ function rendreFinances(){
       </div>
       <div class="legend">
         <span><i style="background:var(--serie1)"></i>Encaissé</span>
-        <span><i style="background:var(--serie2)"></i>Sorties — pièces et dépenses</span>
+        <span><i style="background:var(--serie2)"></i>Sorties — dépenses saisies</span>
         <span style="margin-left:auto;color:var(--t3);">${nbFactPayees} ${pluriel(nbFactPayees,'facture payée','factures payées')}</span>
       </div>
       <div class="chart-wrap">
