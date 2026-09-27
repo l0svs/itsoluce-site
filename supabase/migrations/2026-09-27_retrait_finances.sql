@@ -2,7 +2,7 @@
 -- Accountable. Annule 2026-09-27_depenses_identifiant_auto,
 -- 2026-09-27_justificatifs_depenses et 2026-09-27_entrees, et supprime la
 -- table depenses (plus aucun écran ne l'utilise).
--- La table charges est conservée telle quelle (non lue par l'ERP).
+-- La table charges (2 lignes inactives, plus lue par l'ERP) est supprimée aussi.
 drop policy if exists justificatifs_lire on storage.objects;
 drop policy if exists justificatifs_creer on storage.objects;
 drop policy if exists justificatifs_modifier on storage.objects;
@@ -13,3 +13,4 @@ drop policy if exists justificatifs_supprimer on storage.objects;
 
 drop table if exists public.entrees;
 drop table if exists public.depenses;
+drop table if exists public.charges;
