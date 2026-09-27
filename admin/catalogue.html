@@ -680,16 +680,10 @@ const GRILLE_DEFAUT=[
   {min:150,max:250,coef:1.25,fixe:45},
   {min:250,max:999999,coef:1.15,fixe:55}
 ]
-// Frais de livraison Foneday, ajoutés au coût de chaque pièce (réglés dans Gestion).
-const LIVRAISON_DEFAUT=6.95 // valeur par défaut tant que rien n'est enregistré dans Gestion
-function fraisLivraison(){
-  try{
-    const v=localStorage.getItem('erp-livraison')
-    const n=Number(String(v??'').replace(',','.'))
-    if(String(v??'').trim()!==''&&Number.isFinite(n)&&n>=0)return n
-  }catch(e){}
-  return LIVRAISON_DEFAUT
-}
+// Frais de livraison de la fiche fournisseur « Foneday » (Gestion › Fournisseurs).
+// null = fiche introuvable ou frais non renseignés : on compte 0 € et on le signale.
+let LIV_FONEDAY=null
+function fraisLivraison(){return LIV_FONEDAY??0}
 function getGrille(){
   try{
     const stored=localStorage.getItem('erp-grille')
@@ -772,14 +766,14 @@ try{
     if(Array.isArray(_parsed)&&_parsed.length)localStorage.setItem('erp-grille',_g.valeur)
   }
 }catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
-// ── Frais de livraison Foneday : réglés dans Gestion › Grille tarifaire ──
+// ── Frais de livraison : fiche fournisseur Foneday ──
 try{
-  const {data:_l,error:_le}=await sb.from('settings').select('valeur').eq('cle','finance_frais_livraison').maybeSingle()
-  if(!_le){
-    if(_l&&String(_l.valeur??'').trim()!=='')localStorage.setItem('erp-livraison',String(_l.valeur))
-    else localStorage.removeItem('erp-livraison')
-  }
-}catch(e){console.warn('Frais de livraison : valeur locale conservée.',e)}
+  const {data:_f,error:_fe}=await sb.from('fournisseurs').select('nom,frais_livraison')
+  if(_fe)throw _fe
+  const fon=(_f||[]).find(f=>String(f.nom||'').trim().toLowerCase()==='foneday')
+  const v=Number(fon?.frais_livraison)
+  LIV_FONEDAY=fon&&fon.frais_livraison!=null&&Number.isFinite(v)&&v>=0?v:null
+}catch(e){console.warn('Frais de livraison Foneday :',e)}
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 document.getElementById('ldr').style.display='none'
 document.getElementById('pageBody').style.display='flex'
@@ -1009,7 +1003,7 @@ function renderResults(){
           <div class="cat-opt-price-sub">prix conseillé · marge estimée</div>
           <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
-            <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${fraisLivraison().toFixed(2)} €</span></div>
+            <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${LIV_FONEDAY==null?'0.00 € · à renseigner dans Gestion › Fournisseurs':fraisLivraison().toFixed(2)+' €'}</span></div>
           </div>
         </div>
         <div class="cat-opt-foot" style="display:flex;gap:6px;">
