@@ -211,6 +211,10 @@ body{font-size:14px;}
 .a4-wrap{width:100%; aspect-ratio:210/297; overflow:hidden; border:1px solid var(--ln); border-radius:6px; background:#fff; position:relative;}
 .a4-scale{position:absolute; top:0; left:0; width:210mm; transform-origin:top left; background:#fff;}
 .prev-acts{display:flex; gap:7px; margin-top:10px; flex-wrap:wrap;}
+.frais-devis{margin-top:12px; padding:11px 13px; border-radius:10px; background:var(--ad); font-size:13px;}
+.fd-ligne{display:flex; align-items:center; gap:9px; cursor:pointer; color:var(--t1);}
+.fd-ligne input{width:16px; height:16px; margin:0; accent-color:var(--a); flex-shrink:0;}
+.fd-etat{font-size:12px; color:var(--t3); margin-top:5px; padding-left:25px; line-height:1.45;}
 .prev-acts .btn{flex:1; min-width:0; padding:9px 8px; font-size:12.5px;}
 .prev-note{font-size:12px; color:var(--t3); line-height:1.5; padding:0 2px;}
 .prev-ouvrir,.prev-fermer{display:none;}
@@ -682,6 +686,14 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="trow solde" id="row-solde" style="display:none;"><span>Solde après acompte</span><span class="v" id="t-solde">0,00 €</span></div>
             </div>
 
+            <!-- Frais de devis : montant de la prestation « Frais de devis »
+                 (Gestion › Prestations), facturé à part puis déduit de la
+                 facture finale si le devis est accepté. -->
+            <div class="frais-devis" id="bloc-frais-devis" style="display:none;">
+              <label class="fd-ligne"><input type="checkbox" id="f-frais-devis" onchange="surModification()"/><span>Frais de devis facturés au client : <b id="fd-montant">—</b></span></label>
+              <div class="fd-etat" id="fd-etat"></div>
+            </div>
+
             <div class="sep"></div>
             <div class="grp-lab">Suivi</div>
             <div class="duo">
@@ -719,6 +731,9 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             </div>
             <div class="prev-acts">
               <button class="btn btn-primary" onclick="convertirEnFacture()" id="sideFactureBtn">Convertir en facture</button>
+            </div>
+            <div class="prev-acts">
+              <button class="btn btn-secondary" onclick="facturerFraisDevis()" id="sideFraisBtn" style="display:none;">Facturer les frais de devis</button>
             </div>
             <div class="prev-acts">
               <button class="btn btn-secondary" onclick="convertirEnReparation()" id="sideRepBtn">Créer la réparation</button>
@@ -1248,7 +1263,95 @@ function lireFormulaire(){
     // alors non ambigu pour le PDF et pour la conversion en facture.
     acompte:Math.min(Number(window._acompteEuros)||0,total),
     acompte_type:'euro',
+    frais_devis:fraisDevisSaisi(),
     notes:g('f-notes').trim()||null
+  }
+}
+
+/* ─── Frais de devis ───
+   Le montant vient de la prestation « Frais de devis » (Gestion ›
+   Prestations). Une fois les frais facturés, le montant enregistré sur le
+   devis fait foi : changer le tarif ensuite ne modifie pas un devis passé. */
+function prestaFraisDevis(){
+  return (window.allServices||[]).find(s=>s.frais_devis===true&&s.actif!==false)||null
+}
+function montantFraisDevis(){
+  const n=Number(prestaFraisDevis()?.prix)
+  return Number.isFinite(n)&&n>0?n:0
+}
+function fraisDevisSaisi(){
+  const cb=document.getElementById('f-frais-devis')
+  if(!cb||!cb.checked)return 0
+  if(courant&&Number(courant.frais_devis)>0)return Number(courant.frais_devis)
+  return montantFraisDevis()
+}
+function majBlocFraisDevis(d){
+  const bloc=document.getElementById('bloc-frais-devis'), cb=document.getElementById('f-frais-devis')
+  const montant=d&&Number(d.frais_devis)>0?Number(d.frais_devis):montantFraisDevis()
+  const facture=!!(d&&d.frais_devis_facture_id)
+  bloc.style.display=(montant>0||facture)?'':'none'
+  // Nouveau devis : coché par défaut, chaque demande de devis est facturée.
+  cb.checked=d?Number(d.frais_devis)>0:montant>0
+  cb.disabled=facture
+  document.getElementById('fd-montant').textContent=eur(montant)
+  document.getElementById('fd-etat').textContent=
+    !d?'À facturer après l\'enregistrement du devis, puis déduits de la facture finale si le client accepte.'
+    :d.frais_devis_deduit?'Déduits de la facture finale.'
+    :facture?'Facturés. Ils seront déduits automatiquement de la facture finale.'
+    :Number(d.frais_devis)>0?'Pas encore facturés : bouton « Facturer les frais de devis » à côté de l\'aperçu.'
+    :'Aucun frais de devis sur ce devis.'
+}
+/* Ligne de déduction à ajouter à la facture finale, ou null si les frais
+   n'ont pas été facturés, ont déjà été déduits ou si leur facture est annulée. */
+async function deductionFraisDevis(d){
+  const m=Number(d&&d.frais_devis)||0
+  if(m<=0||!d.frais_devis_facture_id||d.frais_devis_deduit)return null
+  const {data:f,error}=await sb.from('factures').select('numero,statut').eq('id',d.frais_devis_facture_id).maybeSingle()
+  if(error||!f||f.statut==='annulee')return null
+  return {montant:m,numero:f.numero,
+    ligne:{description:`Déduction frais de devis (facture ${f.numero})`,quantite:1,prix_unitaire:-m,total:-m,stock_id:null}}
+}
+window.facturerFraisDevis=async function(){
+  const d=courant
+  if(!d){showToast("Enregistre d'abord le devis",'err');return}
+  if(sale){showToast("Enregistre d'abord les modifications du devis",'err');return}
+  const m=Number(d.frais_devis)||0
+  if(m<=0){showToast('Aucun frais de devis sur ce devis','err');return}
+  if(d.frais_devis_facture_id){showToast('Les frais de devis sont déjà facturés','err');return}
+  if(!confirm(`Créer la facture des frais de devis pour ${d.numero} ?\n\nMontant : ${eur(m)}\n\nIls seront déduits automatiquement de la facture finale si le client accepte.`))return
+  const btn=document.getElementById('sideFraisBtn')
+  btn.disabled=true
+  try{
+    const numFacture=await nextNumero('facture')
+    const res=await sb.from('factures').insert({
+      numero:numFacture,
+      client_id:d.client_id||null,
+      client_nom:d.client_nom,
+      client_email:d.client_email||null,
+      client_telephone:d.client_telephone||null,
+      client_adresse:d.client_adresse||null,
+      client_societe:d.client_societe||null,
+      client_tva:d.client_tva||null,
+      date_emission:ymd(new Date()),
+      statut:'brouillon',
+      lignes:[{description:`Frais de devis — ${d.numero}`,quantite:1,prix_unitaire:m,total:m,stock_id:null}],
+      total:m, remise:0, acompte:0, acompte_type:'euro',
+      notes:`Frais de devis ${d.numero}. Ce montant est déduit de la facture de réparation si le devis est accepté.`,
+      stock_decremente:true,
+      updated_at:new Date().toISOString()
+    }).select().single()
+    if(res.error)throw new Error(res.error.message)
+    const maj={frais_devis_facture_id:res.data.id,updated_at:new Date().toISOString()}
+    const rm=await sb.from('devis').update(maj).eq('id',d.id)
+    if(rm.error)throw new Error(rm.error.message)
+    const i=allDevis.findIndex(x=>x.id===d.id)
+    if(i>=0)Object.assign(allDevis[i],maj)
+    Object.assign(courant,maj)
+    chargerDansFormulaire(courant)
+    showToast(`Facture ${numFacture} créée (${eur(m)}) — à compléter dans Factures`,'ok')
+  }catch(e){
+    btn.disabled=false
+    showToast('Erreur : '+(e.message||e),'err')
   }
 }
 function signature(){return JSON.stringify(lireFormulaire())+'|'+document.getElementById('f-client-select').value}
@@ -1267,6 +1370,7 @@ function chargerDansFormulaire(d){
   document.getElementById('f-remise-type').value='euro'
   set('f-acompte',d?(d.acompte||0):0)
   document.getElementById('f-acompte-type').value='euro'
+  majBlocFraisDevis(d)
   set('f-statut',d?(d.statut||'brouillon'):'brouillon')
   set('f-notes',d?d.notes:'')
   set('f-date-emission',d&&d.date_emission?d.date_emission:ymd(new Date()))
@@ -1350,6 +1454,13 @@ function majEtatApercu(){
   const bAgr=document.getElementById('sidePreviewBtn')
   const enregistre=!!d
   ;[bPdf,bSend,bFac,bRep,bAgr].forEach(b=>{if(b)b.disabled=!enregistre})
+  const bFrais=document.getElementById('sideFraisBtn')
+  if(bFrais){
+    const avecFrais=enregistre&&Number(d.frais_devis)>0
+    bFrais.style.display=avecFrais?'':'none'
+    bFrais.disabled=!avecFrais||!!d.frais_devis_facture_id
+    if(avecFrais)bFrais.textContent=d.frais_devis_facture_id?'Frais de devis facturés':`Facturer les frais de devis (${eur(d.frais_devis)})`
+  }
   if(!enregistre){
     etat.textContent='brouillon'
     note.textContent="Enregistre le devis pour pouvoir le télécharger, l'envoyer ou le convertir."
@@ -1539,6 +1650,7 @@ function buildTemplateHTML(f,forPdf){
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:18px;font-weight:700;color:#1a1a1a;border-top:2px solid #1d4ed8;padding-top:8px;margin-top:6px;">
           <span>TOTAL</span><span>${Number(f.total).toFixed(2).replace('.',',')} €</span>
         </div>
+        ${Number(f.frais_devis||0)>0?`<div style="font-size:11px;color:#555;padding:6px 0 0;line-height:1.45;">Frais de devis de ${Number(f.frais_devis).toFixed(2).replace('.',',')} € facturés séparément, déduits de ce total si vous acceptez le devis.</div>`:''}
         ${Number(f.acompte||0)>0?`
         <div style="display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#555;padding:6px 0;border-top:1px dashed #ddd;margin-top:6px;">
           <span>Acompte demandé</span><span>${Number(f.acompte||0).toFixed(2).replace('.',',')} €</span>
@@ -1552,7 +1664,7 @@ function buildTemplateHTML(f,forPdf){
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
       <div><strong style="color:#555;">Validité :</strong> Ce devis est valable jusqu'au ${dateVal}. Passé ce délai, les prix sont susceptibles d'être révisés.</div>
-      <div><strong style="color:#555;">Acceptation :</strong> Pour accepter ce devis, merci de nous retourner votre accord par email ou de nous contacter. Tout accord vaut commande.</div>${Number(f.acompte||0)>0?`<div style="margin-top:4px;"><strong style="color:#1d4ed8;">Acompte :</strong> Un acompte de ${Number(f.acompte||0).toFixed(2).replace('.',',')} € sera demandé à l'acceptation du devis. Solde restant : ${Math.max(0,Number(f.total||0)-Number(f.acompte||0)).toFixed(2).replace('.',',')} €.</div>`:''}
+      <div><strong style="color:#555;">Acceptation :</strong> Pour accepter ce devis, merci de nous retourner votre accord par email ou de nous contacter. Tout accord vaut commande.</div>${Number(f.frais_devis||0)>0?`<div style="margin-top:4px;"><strong style="color:#1d4ed8;">Frais de devis :</strong> L'établissement de ce devis est facturé ${Number(f.frais_devis).toFixed(2).replace('.',',')} €. Ce montant est intégralement déduit de la facture si vous acceptez le devis ; il reste dû en cas de refus.</div>`:''}${Number(f.acompte||0)>0?`<div style="margin-top:4px;"><strong style="color:#1d4ed8;">Acompte :</strong> Un acompte de ${Number(f.acompte||0).toFixed(2).replace('.',',')} € sera demandé à l'acceptation du devis. Solde restant : ${Math.max(0,Number(f.total||0)-Number(f.acompte||0)).toFixed(2).replace('.',',')} €.</div>`:''}
       <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
       <div style="margin-top:12px;padding-top:10px;border-top:1px dotted #ddd;">
         <div style="font-size:8.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Conditions générales</div>
@@ -1730,7 +1842,11 @@ window.convertirEnFacture=async function(){
   const d=courant
   if(!d){showToast("Enregistre d'abord le devis",'err');return}
   if(d.converti_facture_id){showToast('Ce devis a déjà été converti en facture','err');return}
-  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant : ${eur(d.total)}\n\nLe stock lié aux lignes sera décrémenté.`))return
+  const ded=await deductionFraisDevis(d)
+  const totalFacture=ded?Math.max(0,Number(d.total||0)-ded.montant):Number(d.total||0)
+  const avisFrais=ded?`\nFrais de devis déduits : − ${eur(ded.montant)} (facture ${ded.numero})\nTotal facturé : ${eur(totalFacture)}\n`
+    :(Number(d.frais_devis)>0&&!d.frais_devis_facture_id&&!d.frais_devis_deduit?`\nLes frais de devis n'ont pas été facturés : aucune déduction.\n`:'')
+  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant du devis : ${eur(d.total)}\n${avisFrais}\nLe stock lié aux lignes sera décrémenté.`))return
   const btn=document.getElementById('sideFactureBtn')
   const txt=btn.textContent
   btn.disabled=true;btn.textContent='Conversion…'
@@ -1750,10 +1866,10 @@ window.convertirEnFacture=async function(){
       reparation_numero:d.reparation_numero||null,
       date_emission:ymd(new Date()),
       statut:'brouillon',
-      lignes:d.lignes||[],
-      total:d.total||0,
+      lignes:ded?[...(d.lignes||[]),ded.ligne]:(d.lignes||[]),
+      total:totalFacture,
       remise:d.remise||0,
-      acompte:d.acompte||0,
+      acompte:Math.min(Number(d.acompte||0),totalFacture),
       acompte_type:'euro',
       notes:d.notes||null,
       stock_decremente:true,
@@ -1773,6 +1889,7 @@ window.convertirEnFacture=async function(){
     }
 
     const maj={statut:'accepte',converti_facture_id:res.data.id,updated_at:new Date().toISOString()}
+    if(ded)maj.frais_devis_deduit=true
     const rm=await sb.from('devis').update(maj).eq('id',d.id)
     if(rm.error)throw new Error(rm.error.message)
     const i=allDevis.findIndex(x=>x.id===d.id)
