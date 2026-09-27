@@ -1841,7 +1841,6 @@ window.renderPrestations=function(){
       <span class="lrow-v">${escHtml(prixLabel(s))}</span>
       ${s.actif===false?'<span class="tag t-of">Inactive</span>':''}
       ${s.vitrine===true?'<span class="tag t-on">En ligne</span>':''}
-      ${s.frais_devis===true?'<span class="tag t-ok">Frais de devis</span>':''}
     </div>`).join('')
     : `<div class="vide-l"><h4>Aucune prestation${q||_fPrest?' ne correspond':''}</h4><p>${_prest.length?'Change de filtre ou vide la recherche.':'Ajoute ta première prestation pour la retrouver dans tes devis.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvellePrestation()">Ajouter une prestation</button></div>`
   if(_selPrest&&!_prest.some(s=>String(s.id)===String(_selPrest)))_selPrest=null
@@ -1856,7 +1855,7 @@ function dessinerDetailPrest(){
     return
   }
   const neuf=_selPrest==='__neuf'
-  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true,vitrine:false,frais_devis:false}:_prest.find(x=>String(x.id)===String(_selPrest))
+  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true,vitrine:false}:_prest.find(x=>String(x.id)===String(_selPrest))
   if(!s){_selPrest=null;return dessinerDetailPrest()}
   box.innerHTML=`
     <div class="detail-h">${neuf?'Nouvelle prestation':escHtml(s.nom)}</div>
@@ -1873,10 +1872,6 @@ function dessinerDetailPrest(){
          Décoché par défaut : une prestation nouvellement créée ne part pas
          en ligne sans décision explicite. -->
     <div class="toggle-l"><span>Afficher sur le site<em>Dans la colonne « Service supplémentaire » des tarifs publics</em></span><div class="tog ${s.vitrine===true?'on':''}" id="p-vitrine" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
-    <!-- Une seule prestation porte ce rôle : son prix est facturé pour chaque
-         devis, déduit de la facture finale si la réparation est acceptée, et
-         affiché sur le site vitrine (encart Devis, tarifs, FAQ, CGV). -->
-    <div class="toggle-l"><span>Frais de devis<em>Montant facturé pour chaque devis et déduit de la facture si la réparation est acceptée. Affiché sur le site. Une seule prestation à la fois.</em></span><div class="tog ${s.frais_devis===true?'on':''}" id="p-fraisdevis" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
     <div class="detail-f">
       ${neuf?'':'<button class="btn btn-danger" onclick="supprimerPrestation()">Supprimer</button>'}
       <button class="btn btn-primary" onclick="enregistrerPrestation()">${neuf?'Créer':'Enregistrer'}</button>
@@ -1895,22 +1890,9 @@ window.enregistrerPrestation=async function(){
     unite:document.getElementById('p-unite').value.trim()||null,
     detail:document.getElementById('p-detail').value.trim()||null,
     actif:document.getElementById('p-actif').classList.contains('on'),
-    vitrine:document.getElementById('p-vitrine').classList.contains('on'),
-    frais_devis:document.getElementById('p-fraisdevis').classList.contains('on')
+    vitrine:document.getElementById('p-vitrine').classList.contains('on')
   }
-  if(data.frais_devis&&!data.actif){showToast('Les frais de devis doivent rester actifs','err');return}
-  if(data.frais_devis&&prix<=0){showToast('Les frais de devis doivent avoir un prix supérieur à 0','err');return}
   try{
-    // Une seule prestation « Frais de devis » : l'ancienne perd le rôle avant
-    // l'enregistrement (l'index unique refuserait sinon le doublon).
-    if(data.frais_devis){
-      const autres=_prest.filter(x=>x.frais_devis===true&&String(x.id)!==String(_selPrest))
-      for(const a of autres){
-        const {error:ea}=await sb.from('services').update({frais_devis:false}).eq('id',a.id)
-        if(ea)throw ea
-        a.frais_devis=false
-      }
-    }
     if(_selPrest==='__neuf'){
       data.ordre=(_prest.length?Math.max(..._prest.map(x=>x.ordre||0)):0)+1
       const {data:res,error}=await sb.from('services').insert(data).select().single()
