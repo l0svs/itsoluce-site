@@ -1,0 +1,16 @@
+{
+  "name": "IT Soluce — ERP",
+  "short_name": "IT Soluce",
+  "description": "Gestion de l'activité IT Soluce : réparations, devis, facturation, stock.",
+  "id": "/admin/",
+  "start_url": "/admin/dashboard.html",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#0d0d10",
+  "theme_color": "#0d0d10",
+  "icons": [
+    { "src": "/favicon_io/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon_io/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon_io/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
