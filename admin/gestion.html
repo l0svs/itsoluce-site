@@ -660,7 +660,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <button class="sn-item" data-sec="fournisseurs" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="cnt" id="cnt-fournisseurs"></span></button>
         <button class="sn-item" data-sec="commandes" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Commandes<span class="cnt" id="cnt-commandes"></span></button>
         <button class="sn-item" data-sec="garanties" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties<span class="cnt" id="cnt-garanties"></span></button>
-        <button class="sn-item" data-sec="depenses" onclick="showSec(this)"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Dépenses<span class="cnt" id="cnt-depenses"></span></button>
+        <button class="sn-item" data-sec="depenses" onclick="showSec(this)"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Dépenses & entrées<span class="cnt" id="cnt-depenses"></span></button>
 
         <div class="sn-group">Réglages</div>
         <button class="sn-item" data-sec="entreprise" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Entreprise</button>
@@ -722,9 +722,13 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 
           <!-- ── DÉPENSES ── -->
           <section class="sec large" id="sec-depenses">
-            <h1 class="sec-title">Dépenses</h1>
-            <p class="sec-desc">Chaque paiement réel, saisi quand il a lieu : commandes de pièces (livraison comprise), cotisations, comptable, abonnements… Le Dashboard calcule tes sorties et ton résultat uniquement à partir de cette liste.</p>
+            <h1 class="sec-title">Dépenses et entrées</h1>
+            <p class="sec-desc">Chaque mouvement réel, saisi quand il a lieu. <b>Dépenses</b> : commandes de pièces (livraison comprise), cotisations, comptable, abonnements… <b>Entrées</b> : l'argent reçu hors factures, comme tes apports personnels. Tes ventes viennent des factures payées. Le Dashboard lit ces deux listes.</p>
             <div class="sec-bar">
+              <div class="segf" id="seg-sens">
+                <button class="on" data-v="depenses" onclick="changerSens(this)">Dépenses</button>
+                <button data-v="entrees" onclick="changerSens(this)">Entrées</button>
+              </div>
               <input type="month" id="dep-mois" class="dep-filtre" onchange="renderDepenses()" aria-label="Mois affiché"/>
               <select id="dep-cat" class="dep-filtre" onchange="renderDepenses()" aria-label="Catégorie"><option value="">Toutes les catégories</option></select>
               <button class="btn btn-primary" style="margin-left:auto;" onclick="nouvelleDepense()">Ajouter</button>
@@ -1198,6 +1202,7 @@ const TABLES=[
   {t:'stock',        nom:'Stock',        desc:'Pièces, quantités et prix',         exporter:true,  vider:true },
   {t:'fournisseurs', nom:'Fournisseurs', desc:'Liste et coordonnées',              exporter:true,  vider:false},
   {t:'depenses',     nom:'Dépenses',     desc:'Paiements saisis dans Gestion',     exporter:true,  vider:false},
+  {t:'entrees',      nom:'Entrées',      desc:'Apports et entrées hors factures',  exporter:true,  vider:false},
   {t:'taches',       nom:'Tâches',       desc:'Toutes les tâches enregistrées',    exporter:false, vider:true }
 ]
 
@@ -1953,8 +1958,27 @@ const CATEGORIES_DEP=[
   ['abonnements','Abonnements / logiciels'],['assurance','Assurance'],['materiel','Matériel / outillage'],
   ['consommable','Consommables'],['autre','Autre']
 ]
-const LIB_DEP=Object.fromEntries(CATEGORIES_DEP)
+const CATEGORIES_ENT=[
+  ['apport','Apport personnel'],['subside','Subside / aide'],['remboursement','Remboursement'],['autre','Autre entrée']
+]
+/* La même section gère les deux listes : seules la table et les libellés changent. */
+const SENS={
+  depenses:{table:'depenses',cats:CATEGORIES_DEP,defCat:'stock',une:'une dépense',Une:'Dépense',la:'la dépense',
+    date:'Date du paiement *',mnt:'Montant payé (€) *',four:'Fournisseur / organisme',phFour:'Foneday, UCM…',phLib:'Commande Foneday, UCM T4…'},
+  entrees:{table:'entrees',cats:CATEGORIES_ENT,defCat:'apport',une:'une entrée',Une:'Entrée',la:"l'entrée",
+    date:'Date de réception *',mnt:'Montant reçu (€) *',four:'Provenance',phFour:'Compte privé, organisme…',phLib:'Apport personnel…'}
+}
+let _sens='depenses'
+const cfgS=()=>SENS[_sens]
+let LIB_DEP=Object.fromEntries(CATEGORIES_DEP)
 let _dep=[], _selDep=null, _brouillonDep=null
+window.changerSens=async function(btn){
+  if(btn.dataset.v===_sens)return
+  _sens=btn.dataset.v
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn))
+  _selDep=null; _brouillonDep=null
+  try{await loadDepenses()}catch(err){showToast('Erreur de chargement : '+(err.message||err),'err')}
+}
 
 function isoJour(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function dateDep(iso){const [a,m,j]=String(iso||'').split('-');return a&&m&&j?`${j}/${m}/${a}`:''}
@@ -1966,19 +1990,21 @@ function moisSuivant(iso){
 }
 
 async function loadDepenses(){
-  const {data,error}=await sb.from('depenses').select('*').order('date',{ascending:false}).limit(5000)
+  const c=cfgS()
+  const {data,error}=await sb.from(c.table).select('*').order('date',{ascending:false}).limit(5000)
   if(error)throw error
   _dep=data||[]
+  LIB_DEP=Object.fromEntries(c.cats)
   const selMois=document.getElementById('dep-mois')
   if(!selMois.value)selMois.value=isoJour(new Date()).slice(0,7)
   const selCat=document.getElementById('dep-cat')
-  if(selCat.options.length<=1)selCat.insertAdjacentHTML('beforeend',CATEGORIES_DEP.map(([v,l])=>`<option value="${v}">${escHtml(l)}</option>`).join(''))
+  selCat.innerHTML='<option value="">Toutes les catégories</option>'+c.cats.map(([v,l])=>`<option value="${v}">${escHtml(l)}</option>`).join('')
   renderDepenses()
 }
 window.renderDepenses=function(){
   const mois=document.getElementById('dep-mois').value
   const cat=document.getElementById('dep-cat').value
-  majCompteur('depenses',_dep.length)
+  if(_sens==='depenses')majCompteur('depenses',_dep.length)
   const duMois=_dep.filter(d=>!mois||String(d.date||'').startsWith(mois))
   const l=duMois.filter(d=>!cat||d.categorie===cat)
   const total=l.reduce((a,d)=>a+(Number(d.montant)||0),0)
@@ -1996,7 +2022,7 @@ window.renderDepenses=function(){
       <span class="lrow-m">${escHtml(eur(d.montant))}</span>
     </div>`
   }).join('')
-    : `<div class="vide-l"><h4>Aucune dépense${cat?' dans cette catégorie':''} ce mois-ci</h4><p>Saisis chaque paiement quand il a lieu, ou duplique une charge du mois précédent.</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvelleDepense()">Ajouter une dépense</button></div>`
+    : `<div class="vide-l"><h4>Aucune ${_sens==='depenses'?'dépense':'entrée'}${cat?' dans cette catégorie':''} ce mois-ci</h4><p>${_sens==='depenses'?'Saisis chaque paiement quand il a lieu, ou duplique une charge du mois précédent.':'Saisis ici l\'argent reçu hors factures : apports personnels, subsides, remboursements.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvelleDepense()">Ajouter ${cfgS().une}</button></div>`
   if(_selDep&&_selDep!=='__neuf'&&!_dep.some(d=>String(d.id)===String(_selDep)))_selDep=null
   dessinerDetailDep()
 }
@@ -2045,28 +2071,29 @@ function dessinerDetailDep(){
   _retirerPj=false
   const box=document.getElementById('detail-dep')
   if(!_selDep){
-    box.innerHTML='<div class="detail-vide">Choisis une dépense pour la modifier,<br>ou clique sur « Ajouter ».</div>'
+    box.innerHTML=`<div class="detail-vide">Choisis ${cfgS().une} pour la modifier,<br>ou clique sur « Ajouter ».</div>`
     return
   }
   const neuf=_selDep==='__neuf'
   const mois=document.getElementById('dep-mois').value
   const aujourd=isoJour(new Date())
-  const d=neuf?(_brouillonDep||{libelle:'',montant:'',categorie:'stock',fournisseur:'',notes:'',date:(!mois||aujourd.startsWith(mois))?aujourd:mois+'-01'})
+  const c=cfgS()
+  const d=neuf?(_brouillonDep||{libelle:'',montant:'',categorie:c.defCat,fournisseur:'',notes:'',date:(!mois||aujourd.startsWith(mois))?aujourd:mois+'-01'})
              :_dep.find(x=>String(x.id)===String(_selDep))
   if(!d){_selDep=null;return dessinerDetailDep()}
   box.innerHTML=`
-    <div class="detail-h">${neuf?(_brouillonDep?'Copie de la dépense':'Nouvelle dépense'):escHtml(d.libelle)}</div>
+    <div class="detail-h">${neuf?(_brouillonDep?'Copie de '+c.la:(_sens==='depenses'?'Nouvelle dépense':'Nouvelle entrée')):escHtml(d.libelle)}</div>
     <div class="detail-s">${neuf?'Vérifie la date et le montant, puis enregistre.':'Modifie puis enregistre.'}</div>
-    <div class="fg"><label for="d-date">Date du paiement *</label><input type="date" id="d-date" value="${escHtml(d.date||'')}"/></div>
-    <div class="fg"><label for="d-lib">Libellé *</label><input type="text" id="d-lib" value="${escHtml(d.libelle||'')}" placeholder="Commande Foneday, UCM T4…"/></div>
-    <div class="fg"><label for="d-mnt">Montant payé (€) *</label><input type="number" id="d-mnt" min="0" step="0.01" value="${d.montant!==''&&d.montant!=null?escHtml(String(d.montant)):''}" placeholder="0.00"/></div>
+    <div class="fg"><label for="d-date">${c.date}</label><input type="date" id="d-date" value="${escHtml(d.date||'')}"/></div>
+    <div class="fg"><label for="d-lib">Libellé *</label><input type="text" id="d-lib" value="${escHtml(d.libelle||'')}" placeholder="${escHtml(c.phLib)}"/></div>
+    <div class="fg"><label for="d-mnt">${c.mnt}</label><input type="number" id="d-mnt" min="0" step="0.01" value="${d.montant!==''&&d.montant!=null?escHtml(String(d.montant)):''}" placeholder="0.00"/></div>
     <div class="fg"><label for="d-cat">Catégorie</label><select id="d-cat">
-      ${CATEGORIES_DEP.map(([v,l])=>`<option value="${v}" ${v===d.categorie?'selected':''}>${escHtml(l)}</option>`).join('')}
+      ${c.cats.map(([v,l])=>`<option value="${v}" ${v===d.categorie?'selected':''}>${escHtml(l)}</option>`).join('')}
       ${d.categorie&&!LIB_DEP[d.categorie]?`<option value="${escHtml(d.categorie)}" selected>${escHtml(d.categorie)}</option>`:''}
     </select></div>
-    <div class="fg"><label for="d-four">Fournisseur / organisme</label><input type="text" id="d-four" value="${escHtml(d.fournisseur||'')}" placeholder="Foneday, UCM…"/></div>
+    <div class="fg"><label for="d-four">${c.four}</label><input type="text" id="d-four" value="${escHtml(d.fournisseur||'')}" placeholder="${escHtml(c.phFour)}"/></div>
     <div class="fg"><label for="d-notes">Remarques</label><textarea id="d-notes" placeholder="N° de facture, détail…">${escHtml(d.notes||'')}</textarea></div>
-    <div class="fg"><label for="d-pj">Justificatif (facture, ticket)</label>
+    <div class="fg"><label for="d-pj">Justificatif (${_sens==='depenses'?'facture, ticket':'extrait, preuve'})</label>
       ${!neuf&&d.justificatif?`<div class="dep-fichier" id="d-pj-actuel"><span>${escHtml(nomPj(d.justificatif))}</span><button type="button" class="btn btn-secondary" onclick="voirJustificatif('${escJsAttr(d.justificatif)}')">Voir</button><button type="button" class="btn btn-secondary" onclick="retirerJustificatif()">Retirer</button></div>`:''}
       <input type="file" id="d-pj" accept="application/pdf,image/*"/>
       <div style="font-size:12px;color:var(--t3);margin-top:4px;">PDF ou photo, 10 Mo maximum.${!neuf&&d.justificatif?' Un nouveau fichier remplace l\'actuel.':''}</div>
@@ -2087,6 +2114,7 @@ window.enregistrerDepense=async function(){
   const fichier=document.getElementById('d-pj')?.files?.[0]||null
   const errPj=verifierPj(fichier)
   if(errPj){showToast(errPj,'err');return}
+  const c=cfgS()
   const ancienPj=_selDep==='__neuf'?null:(_dep.find(x=>String(x.id)===String(_selDep))?.justificatif||null)
   const data={
     date, libelle, montant:Math.round(montant*100)/100,
@@ -2096,11 +2124,11 @@ window.enregistrerDepense=async function(){
   }
   try{
     if(_selDep==='__neuf'){
-      const {data:res,error}=await sb.from('depenses').insert(data).select().single()
+      const {data:res,error}=await sb.from(c.table).insert(data).select().single()
       if(error)throw error
       _dep.unshift(res); _selDep=res.id
     } else {
-      const {error}=await sb.from('depenses').update(data).eq('id',_selDep)
+      const {error}=await sb.from(c.table).update(data).eq('id',_selDep)
       if(error)throw error
       const i=_dep.findIndex(x=>String(x.id)===String(_selDep))
       if(i>=0)_dep[i]={..._dep[i],...data}
@@ -2111,37 +2139,38 @@ window.enregistrerDepense=async function(){
     const ligne=()=>_dep.find(x=>String(x.id)===String(id))
     let avertPj=''
     if(fichier){
-      const chemin=`depenses/${id}/${Date.now()}-${nomFichierSur(fichier.name)}`
+      const chemin=`${c.table}/${id}/${Date.now()}-${nomFichierSur(fichier.name)}`
       const up=await sb.storage.from(BUCKET_PJ).upload(chemin,fichier,{contentType:fichier.type,upsert:false})
-      if(up.error)avertPj='Dépense enregistrée, mais le justificatif n\'a pas pu être envoyé : '+up.error.message
+      if(up.error)avertPj=c.Une+' enregistrée, mais le justificatif n\'a pas pu être envoyé : '+up.error.message
       else{
-        const {error:e2}=await sb.from('depenses').update({justificatif:chemin}).eq('id',id)
-        if(e2){await sb.storage.from(BUCKET_PJ).remove([chemin]);avertPj='Dépense enregistrée, mais le justificatif n\'a pas pu être lié : '+e2.message}
+        const {error:e2}=await sb.from(c.table).update({justificatif:chemin}).eq('id',id)
+        if(e2){await sb.storage.from(BUCKET_PJ).remove([chemin]);avertPj=c.Une+' enregistrée, mais le justificatif n\'a pas pu être lié : '+e2.message}
         else{
           if(ligne())ligne().justificatif=chemin
           if(ancienPj&&ancienPj!==chemin)await sb.storage.from(BUCKET_PJ).remove([ancienPj])
         }
       }
     } else if(_retirerPj&&ancienPj){
-      const {error:e3}=await sb.from('depenses').update({justificatif:null}).eq('id',id)
+      const {error:e3}=await sb.from(c.table).update({justificatif:null}).eq('id',id)
       if(e3)avertPj='Le justificatif n\'a pas pu être retiré : '+e3.message
       else{if(ligne())ligne().justificatif=null;await sb.storage.from(BUCKET_PJ).remove([ancienPj])}
     }
     _dep.sort((a,b)=>String(b.date).localeCompare(String(a.date))||(Number(b.id)||0)-(Number(a.id)||0))
     document.getElementById('dep-mois').value=date.slice(0,7)
     renderDepenses()
-    if(avertPj)showToast(avertPj,'err'); else showToast('Dépense enregistrée','ok')
+    if(avertPj)showToast(avertPj,'err'); else showToast(c.Une+' enregistrée','ok')
   }catch(err){showToast('Erreur : '+(err.message||err),'err')}
 }
 window.supprimerDepense=async function(){
   const d=_dep.find(x=>String(x.id)===String(_selDep))
   if(!d)return
-  if(!confirm(`Supprimer la dépense « ${d.libelle} » (${eur(d.montant)})${d.justificatif?' et son justificatif':''} ? Cette action est définitive.`))return
-  const {error}=await sb.from('depenses').delete().eq('id',d.id)
+  const c=cfgS()
+  if(!confirm(`Supprimer ${c.la} « ${d.libelle} » (${eur(d.montant)})${d.justificatif?' et son justificatif':''} ? Cette action est définitive.`))return
+  const {error}=await sb.from(c.table).delete().eq('id',d.id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   if(d.justificatif)await sb.storage.from(BUCKET_PJ).remove([d.justificatif])
   _dep=_dep.filter(x=>String(x.id)!==String(d.id)); _selDep=null
-  renderDepenses(); showToast('Dépense supprimée','ok')
+  renderDepenses(); showToast(c.Une+' supprimée','ok')
 }
 
 /* ══════════ FOURNISSEURS ══════════ */
