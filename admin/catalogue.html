@@ -680,7 +680,16 @@ const GRILLE_DEFAUT=[
   {min:150,max:250,coef:1.25,fixe:45},
   {min:250,max:999999,coef:1.15,fixe:55}
 ]
-const FRAIS_LIVRAISON=6.95 // frais de livraison Foneday, ajoutés au coût de chaque pièce
+// Frais de livraison Foneday, ajoutés au coût de chaque pièce (réglés dans Gestion).
+const LIVRAISON_DEFAUT=6.95 // valeur par défaut tant que rien n'est enregistré dans Gestion
+function fraisLivraison(){
+  try{
+    const v=localStorage.getItem('erp-livraison')
+    const n=Number(String(v??'').replace(',','.'))
+    if(String(v??'').trim()!==''&&Number.isFinite(n)&&n>=0)return n
+  }catch(e){}
+  return LIVRAISON_DEFAUT
+}
 function getGrille(){
   try{
     const stored=localStorage.getItem('erp-grille')
@@ -694,7 +703,7 @@ function getPalier(achat){
 }
 function calcPrixVente(achat){
   if(achat<=0)return 0
-  const cout=achat+FRAIS_LIVRAISON
+  const cout=achat+fraisLivraison()
   const p=getPalier(cout)
   return cout*p.coef+p.fixe
 }
@@ -763,6 +772,14 @@ try{
     if(Array.isArray(_parsed)&&_parsed.length)localStorage.setItem('erp-grille',_g.valeur)
   }
 }catch(e){console.warn('Grille tarifaire : valeurs locales conservées.',e)}
+// ── Frais de livraison Foneday : réglés dans Gestion › Grille tarifaire ──
+try{
+  const {data:_l,error:_le}=await sb.from('settings').select('valeur').eq('cle','finance_frais_livraison').maybeSingle()
+  if(!_le){
+    if(_l&&String(_l.valeur??'').trim()!=='')localStorage.setItem('erp-livraison',String(_l.valeur))
+    else localStorage.removeItem('erp-livraison')
+  }
+}catch(e){console.warn('Frais de livraison : valeur locale conservée.',e)}
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 document.getElementById('ldr').style.display='none'
 document.getElementById('pageBody').style.display='flex'
@@ -973,7 +990,7 @@ function renderResults(){
     items.forEach(p=>{
       const achat=Number(p.prix_achat)||0
       const vente=calcPrixVente(achat)
-      const cout=achat+FRAIS_LIVRAISON
+      const cout=achat+fraisLivraison()
       const marge=vente-cout
       const niv=p.niveau||'a_valider'
       const stockIco=p.instock?'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
@@ -992,7 +1009,7 @@ function renderResults(){
           <div class="cat-opt-price-sub">prix conseillé · marge estimée</div>
           <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
-            <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${FRAIS_LIVRAISON.toFixed(2)} €</span></div>
+            <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${fraisLivraison().toFixed(2)} €</span></div>
           </div>
         </div>
         <div class="cat-opt-foot" style="display:flex;gap:6px;">
