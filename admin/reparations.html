@@ -1413,28 +1413,10 @@ window.editRep=function(id){
 }
 
 /* ─── Facturation ─── */
-/* Frais de devis payés sur le devis d'origine du dossier : déduits une seule
-   fois, et seulement si leur facture existe et n'est pas annulée. Sans accès
-   aux devis, aucune déduction n'est faite (elle reste possible à la main). */
-async function deductionFraisDevisDossier(r){
-  const {data:dv,error}=await sb.from('devis')
-    .select('id,numero,frais_devis,frais_devis_facture_id,frais_devis_deduit')
-    .eq('converti_reparation_id',r.id).limit(1)
-  const d=!error&&Array.isArray(dv)?dv[0]:null
-  const m=Number(d&&d.frais_devis)||0
-  if(!d||m<=0||!d.frais_devis_facture_id||d.frais_devis_deduit)return null
-  const {data:f,error:ef}=await sb.from('factures').select('numero,statut').eq('id',d.frais_devis_facture_id).maybeSingle()
-  if(ef||!f||f.statut==='annulee')return null
-  return {devisId:d.id,montant:m,numero:f.numero,
-    ligne:{description:`Déduction frais de devis (facture ${f.numero})`,quantite:1,prix_unitaire:-m,total:-m,stock_id:''}}
-}
 async function creerFactureDepuis(r){
   if(r.converti_facture_id){showToast('Une facture existe déjà pour ce dossier','err');return}
   const prix=prixClient(r)
-  const ded=await deductionFraisDevisDossier(r)
-  const totalFacture=ded?Math.max(0,prix-ded.montant):prix
-  const avisFrais=ded?`\nFrais de devis déduits : − ${eur(ded.montant)} (facture ${ded.numero})\nTotal facturé : ${eur(totalFacture)}\n`:''
-  if(!confirm(`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}\n${avisFrais}\nElle sera créée en brouillon, à compléter dans Factures.`))return
+  if(!confirm(`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}\n\nElle sera créée en brouillon, à compléter dans Factures.`))return
   const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
   const seq=(cpt?.valeur||0)+1
   await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
@@ -1452,14 +1434,12 @@ async function creerFactureDepuis(r){
     client_adresse:r.client_adresse||null,
     date_emission:new Date().toISOString().slice(0,10),
     statut:'brouillon',
-    lignes:ded?[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''},ded.ligne]
-              :[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''}],
-    total:totalFacture, remise:0, notes:null, stock_decremente:true,
+    lignes:[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''}],
+    total:prix, remise:0, notes:null, stock_decremente:true,
     updated_at:new Date().toISOString()
   }).select().single()
   if(res.error)throw new Error(res.error.message)
   await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
-  if(ded)await sb.from('devis').update({frais_devis_deduit:true,updated_at:new Date().toISOString()}).eq('id',ded.devisId)
   r.converti_facture_id=res.data.id
   renderDetail()
   showToast(`Facture ${numFacture} créée — à compléter dans Factures`,'ok')
