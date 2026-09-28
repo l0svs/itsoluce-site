@@ -258,6 +258,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 html{scroll-behavior:smooth;}
 .cat-piece-group{margin-bottom:28px;}
 .cat-piece-head{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--ln);}
+.cat-piece-head{flex-wrap:wrap;}
+.cat-rep-type{font-size:14px;font-weight:600;color:var(--t1);}
+.cat-rep-nb{font-size:12px;font-weight:400;color:var(--t3);}
+.cat-rep-prix{margin-left:auto;font-size:14px;font-weight:700;color:var(--a);white-space:nowrap;}
 .cat-piece-head .cat-cat-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--t2);}
 .cat-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
 .cat-opt{border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:var(--bg2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s cubic-bezier(.16,1,.3,1),border-color .2s;opacity:0;}
@@ -962,31 +966,88 @@ window.setFiltre=function(cat){
   setTimeout(()=>{renderResults();results.style.opacity='1'},130)
 }
 
+/* ─── Prix par réparation (variante 1) ───
+   Une même réparation = un seul prix client, calculé avec la grille sur la
+   pièce la plus chère du groupe (toutes qualités et couleurs confondues).
+   La marge de chaque pièce = ce prix − son coût : la moins chère gagne le plus.
+   Foneday range parfois plusieurs réparations dans une même catégorie
+   (caméra avant / arrière, écran seul / avec châssis…) : le type est déduit
+   du titre. Pièce non reconnue = groupe à elle seule (calcul d'avant). */
+const MOTS_QUALITE=/\b(oem-?equivalent|oem|service pack|pulled|refurbished|calibrated|used|original|eu-?version|eu version)\b/g
+const COULEURS=/\b(black|white|silver|gold|graphite|lavender|cream|red|green|blue|sky|deep|cosmic|orange|purple|pink|yellow|grey|gray|phantom|titanium|natural|desert|teal|ultramarine|midnight|starlight|mist|burgundy|lime|violet|icy|jet|navy|mint|bronze|copper|beige)\b/g
+function typeReparation(p){
+  const t=(p.title||'').toLowerCase(), c=p.category||'Autre'
+  const r=(cle,lib)=>({cle,lib})
+  if(c==='Display')return /housing|with frame|pre-?assembled/.test(t)&&!/without frame/.test(t)?r('ecran-chassis','Écran complet avec châssis'):r('ecran','Écran')
+  if(c==='Battery')return r('batterie','Batterie')
+  if(c==='Back Cover')return /housing/.test(t)?r('chassis-arriere','Châssis arrière complet'):r('vitre-arriere','Vitre arrière')
+  if(c==='Camera'){
+    if(/front/.test(t))return r('cam-avant','Caméra avant')
+    if(/ultra wide/.test(t))return r('cam-ultra-grand-angle','Caméra arrière ultra grand-angle')
+    if(/periscope/.test(t))return r('cam-periscope','Caméra arrière périscope')
+    if(/telephoto/.test(t))return r('cam-tele','Caméra arrière téléobjectif')
+    return r('cam-arriere','Caméra arrière principale')
+  }
+  if(c==='Charging Connector'){
+    if(/solder|pieces/.test(t))return r('charge-souder','Connecteur de charge à souder')
+    if(/board/.test(t))return r('charge-carte','Carte de charge')
+    return r('charge','Connecteur de charge')
+  }
+  if(c==='Power/volume'){
+    if(/cable|flex/.test(t))return r('nappe-boutons','Nappe des boutons')
+    if(/power/.test(t))return r('bouton-power','Bouton power')
+    if(/volume/.test(t))return r('bouton-volume','Bouton volume')
+  }
+  if(c==='Speakers/loud'){
+    if(/earpiece/.test(t))return r('ecouteur','Écouteur interne')
+    if(/loud/.test(t))return r('haut-parleur','Haut-parleur')
+  }
+  if(c==='Frame')return r('chassis','Châssis')
+  if(c==='Camera Lens')return r('lentille','Lentille caméra')
+  // Repli : même titre une fois retirés qualité, couleurs, modèle et marque.
+  const base=t.replace(/\([^)]*\)/g,' ').replace(MOTS_QUALITE,' ').replace(COULEURS,' ')
+    .split(/[^a-z0-9]+/).filter(w=>w&&w!=='for'&&!/\d/.test(w)&&!['samsung','galaxy','apple','iphone','xiaomi','redmi','huawei','google','pixel','oneplus','ultra','pro','max','plus','mini','lite','fe','series'].includes(w))
+    .sort().join(' ')
+  return r('autre:'+base,'')
+}
+function cleGroupe(p){
+  const marque=(p.model_brand||'').replace(/^for\s+/i,'').trim().toLowerCase()
+  return [p.category||'Autre',marque,typeReparation(p).cle].join('|')
+}
+window._prixReparation={}
+
 function renderResults(){
   const results=document.getElementById('cat-results')
   const q=_qActuel
   // Filtrer selon la catégorie active
   const data=_filtreActif==='all'?_resultatsActuels:_resultatsActuels.filter(p=>(p.category||'Autre')===_filtreActif)
-  // Grouper par catégorie (Display, Battery...)
+  // Grouper par catégorie (Display, Battery...), puis par réparation
   const groupes={}
   data.forEach(p=>{
-    const cat=p.category||'Autre'
-    if(!groupes[cat])groupes[cat]=[]
-    groupes[cat].push(p)
+    const cle=cleGroupe(p)
+    if(!groupes[cle])groupes[cle]=[]
+    groupes[cle].push(p)
   })
+  window._prixReparation={}
+  const nomMarque=p=>(p.model_brand||'').replace(/^for\s+/i,'').trim()
+  const plusieursMarques=new Set(data.map(nomMarque)).size>1
   let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
   // Pour chaque catégorie, trier par niveau puis prix
-  Object.keys(groupes).sort().forEach(cat=>{
+  Object.keys(groupes).sort().forEach(cle=>{
     let cardIdx=0
-    const items=groupes[cat].sort((a,b)=>{
+    const items=groupes[cle].sort((a,b)=>{
       const na=NIVEAU_ORDRE[a.niveau]??9, nb=NIVEAU_ORDRE[b.niveau]??9
       if(na!==nb)return na-nb
       return (a.prix_achat||0)-(b.prix_achat||0)
     })
-    html+=`<div class="cat-piece-group"><div class="cat-piece-head"><span class="cat-cat-badge">${escapeHtml(cat)}</span> ${items.length} option${items.length>1?'s':''}</div><div class="cat-options">`
+    const achatMax=Math.max(...items.map(p=>Number(p.prix_achat)||0))
+    const prixRep=calcPrixVente(achatMax)
+    const typeLib=typeReparation(items[0]).lib
+    html+=`<div class="cat-piece-group"><div class="cat-piece-head"><span class="cat-cat-badge">${escapeHtml(items[0].category||'Autre')}</span>${typeLib||plusieursMarques?`<span class="cat-rep-type">${escapeHtml([typeLib,plusieursMarques?nomMarque(items[0]):''].filter(Boolean).join(' · '))}</span>`:''}<span class="cat-rep-nb">${items.length} option${items.length>1?'s':''}</span><span class="cat-rep-prix">${prixRep.toFixed(2)} €</span></div><div class="cat-options">`
     items.forEach(p=>{
       const achat=Number(p.prix_achat)||0
-      const vente=calcPrixVente(achat)
+      const vente=prixRep
+      window._prixReparation[p.sku]=prixRep
       const cout=achat+fraisLivraison()
       const marge=vente-cout
       const niv=p.niveau||'a_valider'
@@ -1003,7 +1064,7 @@ function renderResults(){
           <div class="cat-opt-title">${escapeHtml(p.title||'')}</div>
           <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')} · Réf. ${escapeHtml(p.sku||'')}</div>
           <div class="cat-opt-price-big"><span class="prix">${vente.toFixed(2)} €</span><span class="marge">+${marge.toFixed(2)} €</span></div>
-          <div class="cat-opt-price-sub">prix conseillé · marge estimée</div>
+          <div class="cat-opt-price-sub">prix de la réparation · ta marge avec cette pièce</div>
           <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
             <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${LIV_FONEDAY==null?'0.00 € · à renseigner dans Gestion › Fournisseurs':fraisLivraison().toFixed(2)+' €'}</span></div>
@@ -1055,7 +1116,7 @@ window.ajouterAuStock=async function(sku){
     categorie:data.category,
     modele:[(data.model_brand||'').replace('For ','').trim(),data.suitable_for].filter(Boolean).join(' '),
     prix_achat:data.prix_achat,
-    prix_vente:calcPrixVente(Number(data.prix_achat)||0).toFixed(2),
+    prix_vente:(window._prixReparation[data.sku]??calcPrixVente(Number(data.prix_achat)||0)).toFixed(2),
     fournisseur:'Foneday',
     notes:'Réf. Foneday : '+data.sku+' — '+(data.quality||'')
   }
