@@ -1110,7 +1110,9 @@ function setGrilleLocal(g){
 function calcVente(achat){
   const g=getGrille()
   const p=g.find(x=>achat>=x.min&&achat<x.max)||g[g.length-1]
-  return achat*(Number(p.coef)||0)+(Number(p.fixe)||0)
+  const v=achat*(Number(p.coef)||0)+(Number(p.fixe)||0)
+  // Même arrondi que Stock et Catalogue : à l'euro le plus proche.
+  return v>0?Math.round(Math.round(v*100)/100):0
 }
 function renderGrille(){
   const box=document.getElementById('grille-rows')
