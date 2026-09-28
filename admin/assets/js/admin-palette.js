@@ -91,6 +91,7 @@
     { label: 'Stock', href: '/admin/stock.html' },
     { label: 'Catalogue Foneday', href: '/admin/catalogue.html' },
     { label: 'Planning', href: '/admin/planning.html' },
+    { label: 'Messages', href: '/admin/messages.html' },
     { label: 'Gestion', href: '/admin/gestion.html' }
   ];
 

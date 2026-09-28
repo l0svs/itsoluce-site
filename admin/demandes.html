@@ -85,7 +85,7 @@ body{font-size:14px;}
 .ph-right{display:flex; gap:8px; flex-wrap:wrap;}
 
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; cursor:pointer;
-  font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s;}
+  font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s; text-decoration:none;}
 .btn svg{width:14px; height:14px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
 .btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
 .btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
@@ -270,6 +270,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert">—</span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl">Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
     <a href="/admin/gestion.html" class="hnl">Gestion</a>
   </nav>
 </header>
@@ -284,6 +285,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
       <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
@@ -519,11 +521,14 @@ function fiche(d){
   const mail=d.email_confirmation_envoye
     ? '<span class="mail-etat ok">Accusé de réception envoyé</span>'
     : '<span class="mail-etat ko">Accusé de réception non parti</span>'
+  const repondre=d.email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:d.email,nom:nom==='Sans nom'?'':nom,appareil:d.appareil,modele:'reponse_demande'}))}">✉ Répondre par mail</a>`:''
   const actions=s==='converti'
     ? `<a class="lien-rep" href="/admin/reparations.html">Voir le dossier de réparation</a>
+       ${repondre}
        <span class="espace"></span>
        <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
-    : `<button class="btn btn-secondary" onclick="toggleVue(${d.id})">${d.vue?'Remettre à traiter':'Classer sans suite'}</button>
+    : `${repondre}
+       <button class="btn btn-secondary" onclick="toggleVue(${d.id})">${d.vue?'Remettre à traiter':'Classer sans suite'}</button>
        <button class="btn btn-primary" onclick="transformer(${d.id})">Transformer en réparation</button>
        <span class="espace"></span>
        <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
@@ -544,6 +549,15 @@ function fiche(d){
     <div class="fiche-acts">${actions}</div>
     <div style="margin-top:9px;">${mail}</div>
   </article>`
+}
+
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, nom,
+   appareil, n° de dossier…) : le mail part de contact@itsoluce.be et reste
+   dans la conversation du client. */
+function lienMessages(o){
+  const p=new URLSearchParams({nouveau:'1'})
+  Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})
+  return '/admin/messages.html?'+p.toString()
 }
 
 // Exposée globalement : la recherche l'appelle depuis un attribut oninput,
@@ -757,5 +771,6 @@ document.addEventListener('click',function(e){
 })
 </script>
 <script src="/admin/assets/js/admin-palette.js"></script>
+<script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>
 </html>

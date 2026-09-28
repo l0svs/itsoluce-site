@@ -157,6 +157,15 @@ body{font-size:14px;}
 }
 .card input:focus,.card select:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
 .card input:disabled{color:var(--t3); cursor:default;}
+/* Messages : signature et modèles */
+.card textarea{width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px; padding:9px 13px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; resize:vertical; line-height:1.5; min-height:80px;}
+.card textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.mm{padding:14px 0; border-bottom:1px solid var(--ln); display:flex; flex-direction:column; gap:8px;}
+.mm-l{display:flex; gap:8px; align-items:center;}
+.mm-l input{flex:1;}
+.mm-l .btn{flex-shrink:0;}
+.mm textarea{min-height:120px;}
+.mm small{font-size:11.5px; color:var(--t3);}
 .card input::placeholder{color:var(--t3);}
 
 /* ── Boutons façon site public ── */
@@ -624,6 +633,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert">—</span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl">Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
     <a href="/admin/gestion.html" class="hnl active">Gestion</a>
   </nav>
 </header>
@@ -640,6 +650,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
       <a href="/admin/gestion.html" class="nl active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
       <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
@@ -665,6 +676,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <button class="sn-item" data-sec="journal" id="sn-journal" style="display:none;" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Journal</button>
         <button class="sn-item" data-sec="facturation" onclick="showSec(this)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Facturation</button>
         <button class="sn-item" data-sec="grille" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Grille tarifaire</button>
+        <button class="sn-item" data-sec="messages" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages</button>
 
         <button class="sn-item" data-sec="integrations" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Intégrations</button>
         <button class="sn-item" data-sec="donnees" onclick="showSec(this)"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Données</button>
@@ -917,6 +929,34 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             </div>
           </section>
 
+          <!-- ── MESSAGES ── -->
+          <section class="sec" id="sec-messages">
+            <h1 class="sec-title">Messages</h1>
+            <p class="sec-desc">La signature et les modèles de la page Messages. Ils s'enregistrent avec le bouton du bas, comme les autres réglages.</p>
+
+            <div class="card">
+              <div class="card-lbl">Signature</div>
+              <div class="row"><div class="row-l"><b>Signature</b><em>Ajoutée automatiquement sous chaque mail envoyé depuis l'ERP. La première ligne est en gras.</em></div><div class="row-f"><textarea id="s-mail-signature" data-cle="mail_signature" rows="4"></textarea></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-lbl">Modèles de messages</div>
+              <div id="mail-modeles"></div>
+              <input type="hidden" id="s-mail-modeles" data-cle="mail_modeles"/>
+              <div class="grille-foot">
+                <span>Remplis automatiquement : <b>{nom}</b> <b>{prenom}</b> <b>{appareil}</b> <b>{dossier}</b> <b>{devis}</b>. À compléter avant l'envoi : <b>{date}</b> <b>{délai}</b>.</span>
+                <button type="button" class="btn btn-secondary" onclick="ajouterModeleMail()">+ Ajouter un modèle</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-lbl">Boîte mail</div>
+              <div class="row"><div class="row-l"><b>Adresse</b></div><div class="row-f">contact@itsoluce.be · OVH Zimbra</div></div>
+              <div class="row"><div class="row-l"><b>Synchronisation</b><em>Automatique toutes les 5 minutes</em></div><div class="row-f" id="mail-synchro">—</div></div>
+            </div>
+            <p class="note">Le mot de passe de la boîte n'apparaît nulle part dans l'ERP : il est rangé dans les secrets de Supabase, lus uniquement par la fonction qui envoie et reçoit les mails.</p>
+          </section>
+
           <!-- ── INTÉGRATIONS ── -->
           <section class="sec" id="sec-integrations">
             <h1 class="sec-title">Intégrations</h1>
@@ -1068,6 +1108,7 @@ function cancelChanges(){
     if(el.id in _original)el.value=_original[el.id]
   })
   if(_originalGrille){setGrilleLocal(_originalGrille);renderGrille()}
+  if(window.renderModelesMail)renderModelesMail()
   const mode=_original['s-mode']||'auto'
   setMode(mode)
   const base=_original['__accent']||ACCENT_DEFAUT
@@ -1280,6 +1321,51 @@ try{
 }catch(e){}
 renderGrille()
 _originalGrille=getGrille()
+
+/* ── Messages : signature et modèles ─────────────────────────────
+   Tant que rien n'est enregistré, les valeurs par défaut (mail-modeles.js)
+   sont affichées ; elles ne sont écrites qu'au premier enregistrement. */
+{
+  const sig=document.getElementById('s-mail-signature')
+  if(!sig.value.trim()){sig.value=MAIL_DEFAUTS.signature;_original[sig.id]=sig.value}
+  const cache=document.getElementById('s-mail-modeles')
+  let l=null
+  try{l=JSON.parse(cache.value||'null')}catch(e){}
+  if(!Array.isArray(l)){cache.value=JSON.stringify(MAIL_DEFAUTS.modeles);_original[cache.id]=cache.value}
+}
+function lireModelesMail(){
+  try{const l=JSON.parse(document.getElementById('s-mail-modeles').value||'[]');return Array.isArray(l)?l:[]}catch(e){return []}
+}
+function ecrireModelesMail(l){document.getElementById('s-mail-modeles').value=JSON.stringify(l);markDirty()}
+window.renderModelesMail=function(){
+  const l=lireModelesMail()
+  document.getElementById('mail-modeles').innerHTML=l.length?l.map((m,i)=>`<div class="mm">
+    <div class="mm-l"><input type="text" value="${escHtml(m.nom||'')}" placeholder="Nom du modèle" oninput="majModeleMail(${i},'nom',this.value)"/>
+    <button type="button" class="btn btn-secondary" onclick="supprimerModeleMail(${i})">Supprimer</button></div>
+    <input type="text" value="${escHtml(m.objet||'')}" placeholder="Objet (laisser vide pour ne pas le changer)" oninput="majModeleMail(${i},'objet',this.value)"/>
+    <textarea placeholder="Texte du message" oninput="majModeleMail(${i},'corps',this.value)">${escHtml(m.corps||'')}</textarea>
+  </div>`).join(''):'<div class="row"><div class="row-f" style="color:var(--t3)">Aucun modèle.</div></div>'
+}
+window.majModeleMail=function(i,champ,v){const l=lireModelesMail();if(!l[i])return;l[i][champ]=v;ecrireModelesMail(l)}
+window.supprimerModeleMail=function(i){
+  const l=lireModelesMail()
+  if(!l[i]||!confirm(`Supprimer le modèle « ${l[i].nom||'sans nom'} » ?`))return
+  l.splice(i,1);ecrireModelesMail(l);renderModelesMail()
+}
+window.ajouterModeleMail=function(){
+  const l=lireModelesMail()
+  l.push({cle:'perso_'+Date.now(),nom:'Nouveau modèle',objet:'',corps:'Bonjour {nom},\n\n\n\nBien à vous,'})
+  ecrireModelesMail(l);renderModelesMail()
+}
+renderModelesMail()
+sb.from('mail_etat').select('derniere_synchro,ok,message').eq('id',1).maybeSingle().then(({data})=>{
+  const el=document.getElementById('mail-synchro')
+  if(!data||!data.derniere_synchro){el.textContent='Pas encore synchronisée';return}
+  const quand=new Date(data.derniere_synchro).toLocaleString('fr-BE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+  el.innerHTML=data.ok===false
+    ? `<span style="color:var(--w)">Erreur le ${escHtml(quand)} : ${escHtml(data.message||'')}</span>`
+    : `<span style="color:var(--ok)">OK</span> · dernière le ${escHtml(quand)}`
+})
 
 document.querySelectorAll('[data-cle]').forEach(el=>{
   el.addEventListener('input',markDirty)
@@ -2429,6 +2515,8 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
+<script src="/admin/assets/js/mail-modeles.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
+<script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>
 </html>
