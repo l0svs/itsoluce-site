@@ -702,11 +702,13 @@ function getPalier(achat){
   const grille=getGrille()
   return grille.find(p=>achat>=p.min&&achat<p.max)||grille[grille.length-1]
 }
+// Prix arrondi à l'euro le plus proche (77,64 € → 78 € ; 72,21 € → 72 €).
+function arrondiPrix(v){return v>0?Math.round(Math.round(v*100)/100):0}
 function calcPrixVente(achat){
   if(achat<=0)return 0
   const cout=achat+fraisLivraison()
   const p=getPalier(cout)
-  return cout*p.coef+p.fixe
+  return arrondiPrix(cout*p.coef+p.fixe)
 }
 </script>
 <script type="module">
