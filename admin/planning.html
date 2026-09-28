@@ -1502,13 +1502,8 @@ window.confirmerEnvoiRappel=async function(){
   try{
     const html=texteEnHtml(document.getElementById('em-body').value)+signatureRappel()
     const {data:{session:s2}}=await sb.auth.getSession()
-    const res=await fetch(`${SB}/functions/v1/send-reminder`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${s2.access_token}`},
-      body:JSON.stringify({to,subject,html})
-    })
-    const result=await res.json().catch(()=>({}))
-    if(!res.ok)throw new Error(result.error||'Échec de l\'envoi')
+    const envoi=await envoyerMailERP({SB,jeton:s2.access_token,to,subject,html,repli:'send-reminder'})
+    if(envoi.avertissement)setTimeout(()=>showToast(envoi.avertissement,'err'),3600)
     const now=new Date().toISOString()
     await sb.from('rendezvous').update({rappel_envoye_le:now}).eq('id',r.id)
     const i=allRdv.findIndex(x=>Number(x.id)===Number(r.id))
@@ -1650,6 +1645,7 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
+<script src="/admin/assets/js/envoi-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>

@@ -8,6 +8,8 @@
 //                 les 5 minutes par pg_cron, ou à la demande depuis l'ERP.
 //   - envoyer   : envoie un mail par le serveur SMTP d'OVH, puis en dépose
 //                 une copie dans « Envoyés » de la boîte (comme une app mail).
+//   - envoyer_html : même envoi pour les pages Devis, Factures et Planning,
+//                 dont le message (signature comprise) est déjà mis en forme.
 //   - lu        : marque un mail lu / non lu (dans l'ERP ET dans la boîte).
 //   - deplacer  : vers la Corbeille, les Reçus ou les Indésirables.
 //   - effacer   : suppression définitive (uniquement depuis la Corbeille).
@@ -25,7 +27,7 @@
 
 import { Imap } from "./imap.ts";
 import { Smtp } from "./smtp.ts";
-import { analyserMessage, construireMessage, extrairePiece, type Personne, type PieceJointe, toutesLesPieces } from "./mime.ts";
+import { analyserMessage, construireMessage, extrairePiece, htmlVersTexte, type Personne, type PieceJointe, toutesLesPieces } from "./mime.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -310,26 +312,14 @@ async function actionEnvoyer(c: Record<string, unknown>) {
   const corps = String(c.corps ?? "").replace(/\r\n/g, "\n");
   if (corps.length > 100_000) throw new ErreurClient("Message trop long.");
 
-  // Pièces jointes choisies dans l'ERP (fichiers, PDF de devis ou de facture).
-  const pieces: PieceJointe[] = [];
-  let total = 0;
-  for (const p of (Array.isArray(c.pieces) ? c.pieces : []) as { nom?: unknown; type?: unknown; base64?: unknown }[]) {
-    const b64 = String(p.base64 ?? "");
-    total += Math.floor(b64.length * 3 / 4);
-    if (total > MAX_PIECES) throw new ErreurClient("Pièces jointes trop lourdes (10 Mo au total maximum).");
-    let octets: Uint8Array;
-    try { octets = Uint8Array.from(atob(b64), (x) => x.charCodeAt(0)); }
-    catch { throw new ErreurClient("Pièce jointe illisible."); }
-    pieces.push({ nom: String(p.nom ?? "piece-jointe").slice(0, 200), type: String(p.type ?? "application/octet-stream"), contenu: octets });
-  }
+  const pieces = lirePieces(c.pieces);
+  let total = pieces.reduce((a, p) => a + p.contenu.length, 0);
 
   const reponseA = c.repondre_a_id != null ? await ligneMail(c.repondre_a_id) : null;
   const transfert = c.transfert_de_id != null ? await ligneMail(c.transfert_de_id) : null;
 
   const signature = (await reglage("mail_signature")) || SIGNATURE_DEFAUT;
   const nomEntreprise = (await reglage("entreprise_nom")) || "IT Soluce";
-  const { utilisateur, motDePasse } = identifiants();
-
   // Texte cité : le message d'origine sous la réponse, comme une app mail.
   let citationTexte = "", citationHtml = "";
   const origine = reponseA || transfert;
@@ -369,21 +359,49 @@ async function actionEnvoyer(c: Record<string, unknown>) {
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#1d1d1f">` +
     paragraphes(corps) + htmlSignature + citationHtml + `</div>`;
 
-  const messageId = `<${crypto.randomUUID()}@itsoluce.be>`;
   let references: string | null = null;
   if (reponseA?.message_id) references = [reponseA.refs, reponseA.message_id].filter(Boolean).join(" ");
 
+  return await expedier({
+    nomEntreprise, a, cc, objet, texte, html, pieces,
+    inReplyTo: reponseA?.message_id ?? null, references,
+  });
+}
+
+/** Pièces jointes reçues de l'ERP (base64), 10 Mo au total au maximum. */
+function lirePieces(v: unknown): PieceJointe[] {
+  const pieces: PieceJointe[] = [];
+  let total = 0;
+  for (const p of (Array.isArray(v) ? v : []) as { nom?: unknown; type?: unknown; base64?: unknown }[]) {
+    const b64 = String(p.base64 ?? "");
+    total += Math.floor(b64.length * 3 / 4);
+    if (total > MAX_PIECES) throw new ErreurClient("Pièces jointes trop lourdes (10 Mo au total maximum).");
+    let octets: Uint8Array;
+    try { octets = Uint8Array.from(atob(b64), (x) => x.charCodeAt(0)); }
+    catch { throw new ErreurClient("Pièce jointe illisible."); }
+    pieces.push({ nom: String(p.nom ?? "piece-jointe").slice(0, 200), type: String(p.type ?? "application/octet-stream"), contenu: octets });
+  }
+  return pieces;
+}
+
+/** Envoi SMTP par OVH, puis copie dans « Envoyés » et mise à jour de l'ERP. */
+async function expedier(m: {
+  nomEntreprise: string; a: string[]; cc: string[]; objet: string; texte: string; html: string;
+  pieces: PieceJointe[]; inReplyTo?: string | null; references?: string | null;
+}) {
+  const { utilisateur, motDePasse } = identifiants();
+  const messageId = `<${crypto.randomUUID()}@itsoluce.be>`;
   const brut = construireMessage({
-    de: { nom: nomEntreprise, email: utilisateur },
-    a: a.map((email) => ({ email })),
-    cc: cc.map((email) => ({ email })),
-    objet, texte, html, pieces, messageId,
-    inReplyTo: reponseA?.message_id ?? null,
-    references,
+    de: { nom: m.nomEntreprise, email: utilisateur },
+    a: m.a.map((email) => ({ email })),
+    cc: m.cc.map((email) => ({ email })),
+    objet: m.objet, texte: m.texte, html: m.html, pieces: m.pieces, messageId,
+    inReplyTo: m.inReplyTo ?? null,
+    references: m.references ?? null,
   });
 
   await new Smtp(await connecter(HOTE, 465)).envoyer({
-    utilisateur, motDePasse, de: utilisateur, destinataires: [...a, ...cc], brut,
+    utilisateur, motDePasse, de: utilisateur, destinataires: [...m.a, ...m.cc], brut,
   });
 
   // Copie dans « Envoyés » : le mail apparaît aussi dans ton app mail.
@@ -399,6 +417,26 @@ async function actionEnvoyer(c: Record<string, unknown>) {
   } finally { if (imap) await imap.deconnexion(); }
 
   return { ok: true, message_id: messageId, avertissement };
+}
+
+/**
+ * Envoi depuis les pages Devis, Factures et Planning : le message arrive déjà
+ * mis en forme (HTML avec la signature « complète » de ces pages). En cas
+ * d'échec, ces pages repassent d'elles-mêmes par l'ancien envoi (Resend).
+ */
+async function actionEnvoyerHtml(c: Record<string, unknown>) {
+  const a = listeAdresses(c.a, "À");
+  if (!a.length) throw new ErreurClient("Indique au moins un destinataire.");
+  const objet = String(c.objet ?? "").replace(/[\r\n]+/g, " ").trim();
+  if (!objet) throw new ErreurClient("L'objet est vide.");
+  if (objet.length > 300) throw new ErreurClient("Objet trop long (300 caractères maximum).");
+  const html = String(c.html ?? "");
+  if (!html.trim()) throw new ErreurClient("Le message est vide.");
+  if (html.length > 200_000) throw new ErreurClient("Message trop long.");
+  const pieces = lirePieces(c.pieces);
+  const nomEntreprise = (await reglage("entreprise_nom")) || "IT Soluce";
+  const corps = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e">${html}</div>`;
+  return await expedier({ nomEntreprise, a, cc: [], objet, texte: htmlVersTexte(html) + "\n", html: corps, pieces });
 }
 
 // ── Actions sur un mail ─────────────────────────────────
@@ -486,6 +524,7 @@ Deno.serve(async (req) => {
     if (action === "piece") return json(await actionPiece(corps));
     if (!u.ecriture) return json({ error: "Ton compte est en lecture seule." }, 403);
     if (action === "envoyer") return json(await actionEnvoyer(corps));
+    if (action === "envoyer_html") return json(await actionEnvoyerHtml(corps));
     if (action === "lu") return json(await actionLu(corps));
     if (action === "deplacer") return json(await actionDeplacer(corps));
     if (action === "effacer") return json(await actionEffacer(corps));

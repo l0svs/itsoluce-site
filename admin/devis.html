@@ -1388,9 +1388,8 @@ function confirmerAbandon(){
   if(!sale)return true
   return confirm('Des modifications ne sont pas enregistrées. Les abandonner ?')
 }
-/* Lien vers la page Messages, rédaction pré-remplie (destinataire, nom,
-   appareil, n° de dossier…) : le mail part de contact@itsoluce.be et reste
-   dans la conversation du client. */
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) :
+   le mail part de contact@itsoluce.be et reste dans la conversation du client. */
 function lienMessages(o){
   const p=new URLSearchParams({nouveau:'1'})
   Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})
@@ -1400,7 +1399,7 @@ window.repondreParMail=function(){
   if(!courant){showToast("Enregistre d'abord le devis",'err');return}
   if(!courant.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
   if(!confirmerAbandon())return
-  location.href=lienMessages({a:courant.client_email,nom:courant.client_nom,devis:courant.numero,dossier:courant.reparation_numero})
+  location.href=lienMessages({a:courant.client_email,objet:`Votre devis ${courant.numero}`})
 }
 window.ouvrirDevis=function(id){
   if(!confirmerAbandon())return
@@ -1719,13 +1718,8 @@ window.confirmerEnvoiEmail=async function(){
   try{
     const html=textToHtml(document.getElementById('em-body').value)+signatureHTML('complete')
     const {data:{session}}=await sb.auth.getSession()
-    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
-      body:JSON.stringify({to,subject,html,pdfBase64,pdfName})
-    })
-    const result=await res.json()
-    if(!res.ok)throw new Error(result.error||"Échec de l'envoi")
+    const envoi=await envoyerMailERP({SB,jeton:session.access_token,to,subject,html,pdfBase64,pdfName,repli:'send-invoice'})
+    if(envoi.avertissement)setTimeout(()=>showToast(envoi.avertissement,'err'),3600)
     // Les colonnes email_envoye et date_envoi n'existaient pas sur devis :
     // l'écriture échouait en silence et le statut ne passait jamais à « envoyé ».
     const maj={email_envoye:true,date_envoi:new Date().toISOString(),updated_at:new Date().toISOString()}
@@ -2023,6 +2017,7 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
+<script src="/admin/assets/js/envoi-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>

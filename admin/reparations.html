@@ -1299,9 +1299,8 @@ function renderCards(){
   }).join('')
 }
 
-/* Lien vers la page Messages, rédaction pré-remplie (destinataire, nom,
-   appareil, n° de dossier…) : le mail part de contact@itsoluce.be et reste
-   dans la conversation du client. */
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) :
+   le mail part de contact@itsoluce.be et reste dans la conversation du client. */
 function lienMessages(o){
   const p=new URLSearchParams({nouveau:'1'})
   Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})
@@ -1415,7 +1414,7 @@ function renderDetail(){
         ? '<button class="btn btn-ghost" disabled style="flex:1;">Facture déjà créée</button>'
         : `<button class="btn btn-primary" onclick="factureDepuisDossier(${r.id})">Créer une facture</button>`}
     </div>
-    ${r.client_email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:r.client_email,nom:r.client_nom,appareil:[r.appareil,r.modele].filter(Boolean).join(' '),dossier:r.numero}))}">✉ Répondre par mail</a>`:''}
+    ${r.client_email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:r.client_email,objet:r.numero?`Votre réparation ${r.numero}`:''}))}">✉ Répondre par mail</a>`:''}
     <button class="btn btn-danger" onclick="deleteRep(${r.id},'${escJsAttr(r.client_nom||'')}')">Supprimer le dossier</button>
   </div>`
 }
