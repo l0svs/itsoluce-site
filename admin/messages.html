@@ -455,7 +455,7 @@ function showToast(msg,type='ok'){
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="/admin/assets/js/mail-modeles.js"></script>
+<script src="/admin/assets/js/mail-signature.js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
@@ -533,7 +533,7 @@ let filCourant=[]         // mails de la conversation ouverte
 let redaction=null        // brouillon en cours de rédaction
 let etat=null
 const ctx={clients:new Map(),demandes:new Map(),fournisseurs:[],reps:[],devis:[],factures:[]}
-let reglages={signature:MAIL_DEFAUTS.signature,modeles:MAIL_DEFAUTS.modeles}
+let reglages={signature:MAIL_DEFAUTS.signature}
 
 const app=document.getElementById('pageBody')
 const zoneLecture=document.getElementById('lecture')
@@ -623,12 +623,9 @@ function etiquettesHtml(m){
 
 /* ═══ Chargements ═══ */
 async function chargerReglages(){
-  const {data}=await sb.from('settings').select('cle,valeur').in('cle',['mail_signature','mail_modeles'])
+  const {data}=await sb.from('settings').select('cle,valeur').in('cle',['mail_signature'])
   ;(data||[]).forEach(r=>{
     if(r.cle==='mail_signature'&&String(r.valeur||'').trim())reglages.signature=String(r.valeur).trim()
-    if(r.cle==='mail_modeles'){
-      try{const l=JSON.parse(r.valeur||'null');if(Array.isArray(l))reglages.modeles=l}catch(e){}
-    }
   })
 }
 /* Clients, demandes, fournisseurs… : servent aux étiquettes et aux liens.
@@ -849,15 +846,12 @@ function afficherConversation(m){
       <div class="fil" id="filBulles"></div>
       ${LECTURE_SEULE?'':`<div class="rapide">
         <textarea id="repRapide" placeholder="Répondre à ${escHtml(nomAff||'')}…"></textarea>
-        <div class="chips" id="chipsRapides"></div>
         <div class="bar"><button class="btn btn-secondary btn-sm" onclick="repondre(true)">Ouvrir en grand · joindre un fichier</button><button class="btn btn-primary btn-sm" id="btnRapide" onclick="envoiRapide()">Envoyer</button></div>
       </div>
       <div class="boutons-mobile"><button class="btn btn-primary" onclick="repondre()">Répondre</button><button class="btn btn-secondary" onclick="transferer()">Transférer</button></div>`}
     </div>`
   const fil=document.getElementById('filBulles')
   filCourant.forEach(x=>fil.appendChild(bulle(x)))
-  const chips=document.getElementById('chipsRapides')
-  if(chips)chips.innerHTML=reglages.modeles.map((t,i)=>`<button class="chip" onclick="modeleRapide(${i})">${escHtml(t.nom)}</button>`).join('')
 }
 
 /* Coupe un texte au début de la partie citée (réponse précédente, signature). */
@@ -994,40 +988,9 @@ window.effacer=async function(id){
   }catch(e){showToast(e.message,'err')}
 }
 
-/* ═══ Modèles ═══ */
-function valeursContact(email,base){
-  const v=Object.assign({},base||{})
-  const cl=ctx.clients.get(email),dm=ctx.demandes.get(email)
-  const rep=ctx.reps.find(r=>norm(r.client_email)===email)
-  const dv=ctx.devis.find(d=>norm(d.client_email)===email)
-  if(!v.nom)v.nom=(cl&&cl.nom)||(dm&&[dm.prenom,dm.nom].filter(Boolean).join(' '))||(rep&&rep.client_nom)||''
-  if(!v.appareil)v.appareil=(rep&&[rep.appareil,rep.modele].filter(Boolean).join(' '))||(dm&&dm.appareil)||''
-  if(!v.dossier&&rep)v.dossier=rep.numero||''
-  if(!v.devis&&dv)v.devis=dv.numero||''
-  if(!v.prenom)v.prenom=(dm&&dm.prenom)||String(v.nom||'').split(' ')[0]||''
-  return v
-}
-function remplir(t,v){
-  return String(t||'').replace(/\{(nom|prenom|prénom|appareil|dossier|devis)\}/gi,(tout,k)=>{
-    const cle=k.toLowerCase().replace('é','e')
-    return v[cle]?v[cle]:tout
-  })
-}
-function champsRestants(t){return [...new Set(String(t||'').match(/\{[a-zA-Zéèêàû]+\}/g)||[])]}
-
-window.modeleRapide=function(i){
-  const t=reglages.modeles[i]; if(!t)return
-  const ta=document.getElementById('repRapide')
-  if(ta.value.trim()&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
-  const recu=filCourant.filter(x=>x.dossier!=='Sent').pop()||filCourant[filCourant.length-1]
-  const v=valeursContact(contrepartie(recu).email,{nom:''})
-  ta.value=remplir(t.corps,v)
-  ta.focus()
-}
-
 /* ═══ Rédaction ═══ */
 function nouvelleRedaction(init){
-  redaction=Object.assign({a:'',cc:'',objet:'',corps:'',pieces:[],repondre_a_id:null,transfert_de_id:null,brouillon_id:null,valeurs:{},modele:null,titre:'Nouveau message'},init||{})
+  redaction=Object.assign({a:'',cc:'',objet:'',corps:'',pieces:[],repondre_a_id:null,transfert_de_id:null,brouillon_id:null,titre:'Nouveau message'},init||{})
   selection=null
   afficherListe()
   vue('lecture')
@@ -1044,7 +1007,7 @@ window.repondre=function(depuisRapide){
   const email=p.dossier==='Sent'?norm(((p.a||[])[0]||{}).email):norm(p.repondre_a||p.de_email)
   const objet=/^re\s?:/i.test(p.objet||'')?p.objet:'Re: '+(p.objet||'')
   const corps=depuisRapide===true?(document.getElementById('repRapide')||{}).value||'':''
-  nouvelleRedaction({a:email,objet,corps,repondre_a_id:p.id,titre:'Répondre',valeurs:valeursContact(email,{})})
+  nouvelleRedaction({a:email,objet,corps,repondre_a_id:p.id,titre:'Répondre'})
 }
 window.transferer=function(){
   const p=filCourant[filCourant.length-1]; if(!p)return
@@ -1054,8 +1017,6 @@ window.envoiRapide=async function(){
   const ta=document.getElementById('repRapide')
   const corps=ta.value.trim()
   if(!corps){showToast('Écris ton message','err');ta.focus();return}
-  const reste=champsRestants(corps)
-  if(reste.length){showToast(`Complète d'abord : ${reste.join(', ')}`,'err');return}
   const p=parentReponse()
   const email=p.dossier==='Sent'?norm(((p.a||[])[0]||{}).email):norm(p.repondre_a||p.de_email)
   const objet=/^re\s?:/i.test(p.objet||'')?p.objet:'Re: '+(p.objet||'')
@@ -1084,8 +1045,6 @@ function afficherRedaction(){
       </div>
       <div class="fg" id="fg-cc" style="${r.cc||r.ccOuvert?'':'display:none'}"><label>Cc</label><input class="in" id="c-cc" type="text" inputmode="email" autocomplete="off" placeholder="Séparer les adresses par une virgule" value="${escHtml(r.cc)}"/></div>
       ${r.transfert_de_id?`<div class="info-transfert">Le message d'origine sera ajouté sous ton texte${r.nbPiecesOrigine?`, avec ses ${r.nbPiecesOrigine} pièce${r.nbPiecesOrigine>1?'s':''} jointe${r.nbPiecesOrigine>1?'s':''}`:''}.</div>`:''}
-      <div class="fg"><label>Modèle</label><div class="chips">${reglages.modeles.map((t,i)=>`<button type="button" class="chip${r.modele===i?' on':''}" onclick="appliquerModele(${i})">${escHtml(t.nom)}</button>`).join('')}</div></div>
-      <div class="alerte-champ" id="alerteChamps"></div>
       <div class="fg"><label>Message</label>
         <textarea class="in" id="c-corps" placeholder="Ton message…">${escHtml(r.corps)}</textarea>
         <div class="sig"><b>${escHtml(sigLignes[0]||'')}</b>${sigLignes.slice(1).map(l=>'<br>'+escHtml(l)).join('')}<small>Signature ajoutée automatiquement · modifiable dans Gestion › Messages</small></div>
@@ -1103,8 +1062,7 @@ function afficherRedaction(){
       </div>
     </div>`
   afficherPieces()
-  ;['c-a','c-cc','c-objet','c-corps'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{lireChamps();verifierChamps()})})
-  verifierChamps()
+  ;['c-a','c-cc','c-objet','c-corps'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',lireChamps)})
   const cible=r.a?document.getElementById('c-corps'):document.getElementById('c-a')
   if(!estMobile())cible.focus()
 }
@@ -1115,12 +1073,6 @@ function lireChamps(){
   redaction.cc=v('c-cc')??redaction.cc
   redaction.objet=v('c-objet')??redaction.objet
   redaction.corps=v('c-corps')??redaction.corps
-}
-function verifierChamps(){
-  const el=document.getElementById('alerteChamps'); if(!el||!redaction)return
-  const reste=champsRestants(redaction.objet+' '+redaction.corps)
-  el.style.display=reste.length?'block':'none'
-  el.textContent=reste.length?`À compléter avant l'envoi : ${reste.join(', ')}`:''
 }
 window.ouvrirCc=function(){lireChamps();redaction.ccOuvert=true;afficherRedaction();document.getElementById('c-cc').focus()}
 window.annulerRedaction=function(){
@@ -1133,19 +1085,6 @@ window.annulerRedaction=function(){
   else if(estMobile())retourListe()
   else lectureVide()
 }
-window.appliquerModele=function(i){
-  lireChamps()
-  const t=reglages.modeles[i]; if(!t)return
-  if(redaction.corps.trim()&&redaction.modele===null&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
-  const email=norm(String(redaction.a).split(/[,;]/)[0])
-  const v=valeursContact(email,redaction.valeurs)
-  redaction.corps=remplir(t.corps,v)
-  // En réponse, l'objet « Re: … » est gardé : il rattache le mail au fil.
-  if(t.objet&&!redaction.repondre_a_id)redaction.objet=remplir(t.objet,v)
-  redaction.modele=i
-  afficherRedaction()
-}
-
 /* ── Pièces jointes ── */
 function totalPieces(){return redaction.pieces.reduce((a,p)=>a+p.taille,0)}
 function afficherPieces(){
@@ -1238,8 +1177,6 @@ window.envoyer=async function(){
   if(!a.length){showToast('Indique un destinataire','err');return}
   if(!r.objet.trim()){showToast("L'objet est vide",'err');return}
   if(!r.corps.trim()){showToast('Le message est vide','err');return}
-  const reste=champsRestants(r.objet+' '+r.corps)
-  if(reste.length){showToast(`Complète d'abord : ${reste.join(', ')}`,'err');verifierChamps();return}
   const btn=document.getElementById('btnEnvoyer')
   btn.disabled=true;btn.innerHTML='<span class="spin"></span> Envoi…'
   try{
@@ -1271,16 +1208,13 @@ document.getElementById('ldr').style.display='none'
 app.style.display=''
 lectureVide()
 
-// Ouverture directe : ?mail=12 ou ?nouveau=1&a=…&nom=…&modele=… (boutons
+// Ouverture directe : ?mail=12 ou ?nouveau=1&a=…&objet=… (boutons
 // « Répondre par mail » des pages Demandes, Clients, Réparations et Devis).
 const P=new URLSearchParams(location.search)
 if(P.get('mail'))ouvrirMail(Number(P.get('mail')))
 else if(P.get('nouveau')&&!LECTURE_SEULE){
   const email=norm(P.get('a'))
-  const valeurs=valeursContact(email,{nom:P.get('nom')||'',appareil:P.get('appareil')||'',dossier:P.get('dossier')||'',devis:P.get('devis')||''})
-  nouvelleRedaction({a:email,objet:P.get('objet')||'',valeurs})
-  const i=reglages.modeles.findIndex(t=>t.cle===P.get('modele'))
-  if(i>=0)appliquerModele(i)
+  nouvelleRedaction({a:email,objet:P.get('objet')||''})
   history.replaceState(null,'','/admin/messages.html')
 }
 

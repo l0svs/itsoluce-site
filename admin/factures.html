@@ -2015,13 +2015,8 @@ window.confirmerEnvoiEmail=async function(){
     const avis=(type!=='acompte'&&f.statut==='payee')?AVIS_HTML:''
     const html=corps+avis+sig
     const {data:{session}}=await sb.auth.getSession()
-    const res=await fetch(`${SB}/functions/v1/send-invoice`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},
-      body:JSON.stringify({to,subject,html,pdfBase64,pdfName})
-    })
-    const result=await res.json()
-    if(!res.ok)throw new Error(result.error||"Échec de l'envoi")
+    const envoi=await envoyerMailERP({SB,jeton:session.access_token,to,subject,html,pdfBase64,pdfName,repli:'send-invoice'})
+    if(envoi.avertissement)setTimeout(()=>showToast(envoi.avertissement,'err'),3600)
     if(type==='acompte'){
       closeEmailModal()
       showToast(`Reçu d'acompte envoyé à ${to}`,'ok')
@@ -2215,6 +2210,7 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
+<script src="/admin/assets/js/envoi-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>
