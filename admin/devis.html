@@ -574,6 +574,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert">—</span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl">Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
     <a href="/admin/gestion.html" class="hnl">Gestion</a>
   </nav>
 </header>
@@ -588,6 +589,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
       <div class="sf">IT Soluce ERP · v1.1</div>
       </aside>
@@ -723,6 +725,9 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             </div>
             <div class="prev-acts">
               <button class="btn btn-secondary" onclick="convertirEnReparation()" id="sideRepBtn">Créer la réparation</button>
+            </div>
+            <div class="prev-acts">
+              <button class="btn btn-secondary" onclick="repondreParMail()" id="sideMailBtn">✉ Répondre par mail</button>
             </div>
           </div>
           <div class="prev-note" id="prev-note"></div>
@@ -1383,6 +1388,20 @@ function confirmerAbandon(){
   if(!sale)return true
   return confirm('Des modifications ne sont pas enregistrées. Les abandonner ?')
 }
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, nom,
+   appareil, n° de dossier…) : le mail part de contact@itsoluce.be et reste
+   dans la conversation du client. */
+function lienMessages(o){
+  const p=new URLSearchParams({nouveau:'1'})
+  Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})
+  return '/admin/messages.html?'+p.toString()
+}
+window.repondreParMail=function(){
+  if(!courant){showToast("Enregistre d'abord le devis",'err');return}
+  if(!courant.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
+  if(!confirmerAbandon())return
+  location.href=lienMessages({a:courant.client_email,nom:courant.client_nom,devis:courant.numero,dossier:courant.reparation_numero})
+}
 window.ouvrirDevis=function(id){
   if(!confirmerAbandon())return
   const d=allDevis.find(x=>x.id===id)
@@ -1862,6 +1881,37 @@ document.addEventListener('keydown',e=>{
 
 await load()
 
+// Lien direct ?q=… (page Messages, palette de recherche) : pré-remplit la recherche.
+{
+  const q=new URLSearchParams(location.search).get('q')
+  if(q){
+    document.getElementById('searchInput').value=q
+    renderCards()
+    const d=allDevis.find(x=>x.numero===q)
+    if(d)ouvrirDevis(d.id)
+    history.replaceState(null,'',location.pathname)
+  }
+}
+
+/* Export PDF pour la page Messages (« Joindre un devis ») : Messages ouvre
+   cette page dans un cadre invisible avec ?export=pdf&id=…, elle génère le
+   PDF exactement comme pour un envoi, puis le renvoie à Messages. */
+{
+  const p=new URLSearchParams(location.search)
+  if(p.get('export')==='pdf'&&window.parent!==window){
+    const repondre=m=>window.parent.postMessage(Object.assign({type:'itsoluce-pdf'},m),location.origin)
+    const d=allDevis.find(x=>x.id===Number(p.get('id')))
+    if(!d)repondre({erreur:'Devis introuvable'})
+    else{
+      try{
+        courant=d
+        const pdf=await genererPDF()
+        repondre({nom:`Devis_${d.numero}.pdf`,base64:pdf.output('datauristring').split(',')[1]})
+      }catch(e){repondre({erreur:e.message||String(e)})}
+    }
+  }
+}
+
 } catch(err){
   console.error('Erreur devis :',err)
   showError(err.message||'Une erreur inattendue est survenue.')
@@ -1974,5 +2024,6 @@ document.addEventListener('click',function(e){
 })
 </script>
 <script src="/admin/assets/js/admin-palette.js"></script>
+<script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>
 </html>

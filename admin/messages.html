@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="fr" data-mode="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>IT Soluce ERP — Messages</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="IT Soluce">
+<link rel="manifest" href="/admin/manifest.webmanifest">
+<script src="/assets/js/admin-security.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+:root{--a:#3b82f6;--ad:rgba(59,130,246,0.12);--bg:#0c0d0f;--bg2:#111214;--bg3:#18191c;--bg4:#1f2023;--ln:rgba(255,255,255,0.06);--ln2:rgba(255,255,255,0.1);--t1:#e8e8e8;--t2:#8a8f98;--t3:#4b5059;--ok:#34d399;--w:#fbbf24;--d:#f87171;--sw:220px;--th:48px;}
+[data-mode="light"]{--bg:#f8f8f8;--bg2:#fff;--bg3:#f2f2f4;--bg4:#eaeaec;--ln:rgba(0,0,0,0.06);--ln2:rgba(0,0,0,0.1);--t1:#111114;--t2:#52525b;--t3:#a1a1aa;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;}
+.topbar{height:var(--th);background:var(--bg2);border-bottom:1px solid var(--ln);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}.logo-m{font-size:17px;font-weight:600;color:var(--a);letter-spacing:-1px;}.logo-sep{width:1px;height:14px;background:var(--ln2);}.logo-s{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:2px;}
+.tb-crumb{font-size:12px;color:var(--t3);flex:1;display:flex;align-items:center;gap:6px;}.tb-crumb a{color:var(--t3);text-decoration:none;}.tb-crumb a:hover{color:var(--a);}.tb-crumb span{color:var(--t2);}
+.mstrip{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--ln2);border-radius:6px;padding:3px;gap:1px;}
+.mbtn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;background:none;cursor:pointer;border-radius:4px;color:var(--t3);transition:all .12s;}.mbtn:hover{color:var(--t1);background:var(--bg4);}.mbtn.on{background:var(--ad);color:var(--a);}
+.mbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.upill{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 4px;border:1px solid var(--ln2);border-radius:99px;background:var(--bg3);font-size:12px;color:var(--t2);}
+.uav{width:22px;height:22px;border-radius:50%;background:var(--ad);color:var(--a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.bout{padding:5px 10px;border:1px solid var(--ln2);border-radius:5px;background:none;color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;}.bout:hover{color:var(--d);border-color:var(--d);}
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:var(--sw);background:var(--bg2);border-right:1px solid var(--ln);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 0;display:none;}
+.hnav{display:flex;align-items:center;gap:4px;padding:8px 16px;background:var(--bg2);border-bottom:1px solid var(--ln);flex-shrink:0;position:relative;}
+.hnl{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:7px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;font-family:inherit;white-space:nowrap;transition:all .1s;}
+.hnl:hover{background:var(--bg3);color:var(--t1);}
+.hnl.active{background:var(--ad);color:var(--a);}
+.hnl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.hnl .chev{width:11px;height:11px;margin-left:1px;transition:transform .15s;}
+.hnl.open .chev{transform:rotate(180deg);}
+.hnav-drop{position:relative;}
+.hnav-menu{position:absolute;top:calc(100% + 8px);left:0;background:var(--bg2);border:1px solid var(--ln2);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.24);min-width:230px;padding:8px;display:none;flex-direction:column;gap:2px;z-index:250;}
+.hnav-menu.open{display:flex;animation:hnavIn .16s ease;}
+@keyframes hnavIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.hnav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;font-size:13px;color:var(--t2);text-decoration:none;transition:background .12s;}
+.hnav-item:hover{background:var(--bg3);color:var(--t1);}
+.hnav-item.active{background:var(--ad);color:var(--a);font-weight:500;}
+.hnav-item-ico{width:28px;height:28px;border-radius:8px;background:var(--bg3);color:var(--t3);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hnav-item.active .hnav-item-ico{background:var(--bg4);color:var(--a);}
+.hnav-item-ico svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+.hnav-item .nc{margin-left:auto;font-size:10px;font-weight:600;min-width:16px;height:15px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
+@media(max-width:900px){.hnav{display:none;}}
+
+.ng{padding:14px 10px 4px;}.ngl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;padding:0 6px;margin-bottom:3px;}
+.nl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;font-size:13px;color:var(--t2);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .1s;margin-bottom:1px;}
+.nl:hover{background:var(--bg3);color:var(--t1);}.nl.active{background:var(--ad);color:var(--a);}
+.nl svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.75;}.nl.active svg{opacity:1;}
+.nc{margin-left:auto;font-size:10px;font-weight:600;min-width:18px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--bg4);color:var(--t3);padding:0 4px;}
+.nhr{height:1px;background:var(--ln);margin:8px 10px;}.sf{margin-top:auto;padding:10px 16px;border-top:1px solid var(--ln);font-size:10px;color:var(--t3);}
+/* ═══ SYSTÈME MOBILE ERP ═══ */
+.mobile-menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--ln2);border-radius:9px;background:var(--bg3);color:var(--t1);cursor:pointer;flex-shrink:0;}
+.mobile-menu-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;opacity:0;transition:opacity .2s;}
+.mobile-overlay.open{display:block;opacity:1;}
+.mobile-nav{position:fixed;top:0;left:0;bottom:0;width:78%;max-width:300px;background:var(--bg2);z-index:401;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;padding:16px 0;box-shadow:2px 0 20px rgba(0,0,0,.3);}
+.mobile-nav.open{transform:translateX(0);}
+.mobile-nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 18px 16px;border-bottom:1px solid var(--ln);margin-bottom:12px;}
+.mobile-nav-head img{height:30px;border-radius:6px;}
+.mobile-nav-close{width:32px;height:32px;border:none;background:var(--bg3);border-radius:8px;color:var(--t2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.mobile-bottombar{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--bg2);border-top:1px solid var(--ln);z-index:300;padding-bottom:env(safe-area-inset-bottom);}
+.mobile-bottombar-inner{display:flex;height:60px;}
+.mbb-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--t3);text-decoration:none;font-size:9px;font-weight:500;transition:color .12s;}
+.mbb-item.active{color:var(--a);}
+.mbb-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;}
+
+@media(max-width:640px){
+  .mobile-menu-btn{display:flex;}
+  .mobile-bottombar{display:block;}
+  .content{padding-bottom:70px !important;}
+  .tb-crumb{display:none !important;}
+  .upill span{display:none !important;}
+  .topbar{padding:0 12px !important;gap:8px !important;}
+  .mstrip{display:none !important;}
+  .content{padding-left:14px !important;padding-right:14px !important;}
+  .page-head{flex-wrap:wrap;gap:10px;}
+  .page-head h1{font-size:19px !important;}
+  .btn,button.btn{min-height:40px;}
+  .kpi-strip{flex-wrap:wrap !important;gap:8px !important;}
+  .kpi{flex:1 1 calc(50% - 4px) !important;min-width:0 !important;}
+  .panel{width:100% !important;max-width:100% !important;min-width:0 !important;}
+  .table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;}
+}
+
+/* ── NAV ÉTALÉE (une seule barre en haut, répartition style Apple) ── */
+.topbar{gap:0;padding:0 22px;}
+.topbar .logo{margin-right:10px;}
+.tb-crumb{display:none;}
+.hnav{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-evenly;gap:0;padding:0 18px;background:none;border-bottom:none;}
+.hnav .hnl{padding:7px 14px;}
+@media(max-width:1200px){.hnav{padding:0 6px;}.hnav .hnl{padding:7px 10px;}}
+@media(max-width:900px){.hnav{display:none;}}
+
+/* ── NAV À PLAT : les 15 pages directement dans la barre ── */
+/* Paliers calés sur mesure : la nav ne doit jamais déborder entre 900px
+   (en dessous elle laisse place au hamburger) et les grands écrans. */
+.hnav{gap:0;justify-content:space-between;padding:0 12px;}
+.hnav .hnl{padding:6px 10px;font-size:13px;gap:5px;border-radius:6px;}
+.hnav .hnl .nc{margin-left:0;min-width:17px;height:14px;font-size:9px;padding:0 3px;font-variant-numeric:tabular-nums;}
+@media(max-width:1500px){.hnav{padding:0 8px;}.hnav .hnl{padding:6px 7px;font-size:12.5px;}}
+@media(max-width:1340px){.hnav{padding:0 4px;}.hnav .hnl{padding:6px 5px;font-size:12px;}}
+@media(max-width:1240px){.hnav .hnl{padding:5px 4px;font-size:11.5px;}.hnav .hnl .nc{display:none;}}
+@media(max-width:1100px){.hnav{padding:0 2px;}.hnav .hnl{padding:5px 3px;font-size:11px;letter-spacing:-.2px;}}
+/* Sous ~1000px les 15 onglets ne tiennent plus : la barre défile
+   horizontalement au lieu de disparaître. Corrige au passage une zone morte
+   préexistante — entre 641 et 900px, la nav était masquée alors que le
+   hamburger n'apparaît qu'à 640px : aucune navigation n'était affichée. */
+@media(max-width:1000px) and (min-width:641px){
+  .hnav{display:flex;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .hnav::-webkit-scrollbar{display:none;}
+  .hnav .hnl{flex-shrink:0;}
+}
+/* ═══════════════════════════════════════════════════════════════
+   MESSAGES — la boîte contact@itsoluce.be dans l'ERP.
+   Ordinateur : trois colonnes (dossiers, liste, lecture).
+   iPhone : un écran à la fois (liste → conversation → rédaction).
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --bg2:#ffffff; --bg3:#f0f0f3; --bg4:#e6e6ea;
+  --ln:#e6e6e9; --ln2:#d2d2d7;
+  --t1:#1d1d1f; --t2:#6e6e73; --t3:#a1a1a6;
+  --ok:#1a8a52; --w:#b25e09; --d:#c8362c; --vio:#7c3aed;
+  --radius:16px;
+}
+[data-mode="dark"]{--vio:#a78bfa;}
+body{font-size:14px;}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.topbar{height:52px; padding:0 22px; background:rgba(255,255,255,.88); -webkit-backdrop-filter:saturate(180%) blur(14px); backdrop-filter:saturate(180%) blur(14px);}
+[data-mode="dark"] .topbar{background:rgba(28,28,30,.82);}
+.hnav .hnl{border-radius:8px; font-size:12.5px;}
+.hnav .hnl.active{background:var(--ad); color:var(--a);}
+.sidebar .nl{border-radius:9px; margin:0 8px 2px; padding:8px 10px;}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; cursor:pointer;
+  font-family:inherit; border-radius:980px; padding:9px 17px; font-size:13px; font-weight:500; line-height:1.2; transition:.15s; text-decoration:none; white-space:nowrap;}
+.btn svg{width:14px; height:14px; flex-shrink:0; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.btn-primary{background:var(--a); color:#fff;} .btn-primary:hover{opacity:.88;}
+.btn-secondary{background:var(--bg3); color:var(--t1); border:1px solid var(--ln);}
+.btn-secondary:hover{background:var(--bg4);}
+.btn-danger{background:rgba(200,54,44,.1); color:var(--d); border:1px solid rgba(200,54,44,.2);}
+.btn-sm{padding:6px 12px; font-size:12px;}
+.btn:disabled{opacity:.45; cursor:default;}
+
+/* ── Structure ── */
+.msg-app{flex:1; display:grid; grid-template-columns:210px minmax(300px,390px) 1fr; overflow:hidden; min-height:0;}
+.m-col{overflow-y:auto; min-height:0; border-right:1px solid var(--ln);}
+.m-dossiers{padding:16px 12px; background:var(--bg2);}
+.m-dossiers .btn{width:100%; margin-bottom:14px;}
+.fold{display:flex; align-items:center; justify-content:space-between; width:100%; border:none; background:none; font-family:inherit;
+  padding:8px 11px; border-radius:9px; color:var(--t2); font-size:13.5px; cursor:pointer; text-align:left;}
+.fold:hover{background:var(--bg3); color:var(--t1);}
+.fold.on{background:var(--ad); color:var(--a); font-weight:600;}
+.fold small{font-size:11px; color:var(--t3); font-weight:600;}
+.fold.on small{color:var(--a);}
+.ftl{font-size:10.5px; font-weight:600; color:var(--t3); text-transform:uppercase; letter-spacing:.06em; padding:18px 11px 6px;}
+.fdot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:9px;}
+.synchro{margin-top:18px; padding:12px 11px 0; border-top:1px solid var(--ln); font-size:12px; color:var(--t3); line-height:1.5;}
+.synchro b{color:var(--t2); font-weight:500;}
+.synchro .ko{color:var(--w);}
+.synchro button{margin-top:8px; width:100%;}
+
+.m-liste{display:flex; flex-direction:column; background:var(--bg);}
+.m-liste-tete{padding:14px 14px 8px; flex-shrink:0;}
+.m-titre{display:none; align-items:center; justify-content:space-between; margin-bottom:10px;}
+.m-titre h1{font-size:26px; font-weight:600; letter-spacing:-.03em;}
+.segf{display:none; background:var(--bg3); border:1px solid var(--ln); border-radius:10px; padding:3px; gap:2px; margin-bottom:10px;}
+.segf button{flex:1; border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:7px 6px; border-radius:8px; cursor:pointer; white-space:nowrap;}
+.segf .seg-sel{flex:1; position:relative; text-align:center; font-size:12.5px; color:var(--t2); padding:7px 6px; border-radius:8px; cursor:pointer; white-space:nowrap;}
+.segf .seg-sel.on{background:var(--bg2); color:var(--t1); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.07);}
+.segf button.on{background:var(--bg2); color:var(--t1); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.07);}
+.srch{position:relative;}
+.srch svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
+.srch input{width:100%; background:var(--bg2); border:1px solid var(--ln); border-radius:11px; padding:9px 12px 9px 34px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none;}
+.srch input:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.m-rows{flex:1; overflow-y:auto; padding:0 8px 16px;}
+.row{display:flex; gap:11px; padding:11px 8px; border-bottom:1px solid var(--ln); cursor:pointer; border-radius:10px;}
+.row:hover{background:var(--bg3);}
+.row.sel{background:var(--ad);}
+.av{width:38px; height:38px; border-radius:50%; background:var(--bg4); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; color:var(--t2); flex-shrink:0;}
+.row .m{flex:1; min-width:0;}
+.row .l1{display:flex; justify-content:space-between; gap:8px; align-items:baseline;}
+.row .nom{font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.row.nonlu .nom{font-weight:600;}
+.row.nonlu .nom:before{content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--a); margin-right:6px; vertical-align:2px;}
+.row .hr{font-size:11.5px; color:var(--t3); white-space:nowrap; flex-shrink:0;}
+.row .obj{font-size:13px; color:var(--t1); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.row.nonlu .obj{font-weight:500;}
+.row .ap{font-size:12.5px; color:var(--t3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
+.tags{margin-top:5px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;}
+.tag{display:inline-block; font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:980px;}
+.t-cl{background:rgba(26,138,82,.12); color:var(--ok);}
+.t-dem{background:rgba(178,94,9,.12); color:var(--w);}
+.t-f{background:rgba(124,58,237,.12); color:var(--vio);}
+.t-rep{background:var(--ad); color:var(--a);}
+.pj-ico{font-size:11px; color:var(--t3);}
+.vide-liste{padding:40px 18px; text-align:center; color:var(--t3); font-size:13px; line-height:1.6;}
+.plus{display:block; margin:12px auto 0;}
+
+/* ── Lecture ── */
+.m-lecture{display:flex; flex-direction:column; background:var(--bg); border-right:none;}
+.lect-barre{display:flex; align-items:center; gap:8px; padding:12px 22px; border-bottom:1px solid var(--ln); background:var(--bg2); flex-shrink:0; flex-wrap:wrap;}
+.lect-barre .espace{flex:1;}
+.retour{display:none; border:none; background:none; color:var(--a); font-family:inherit; font-size:14px; cursor:pointer; padding:4px 0;}
+.lect-corps{flex:1; overflow-y:auto; padding:18px 22px 24px;}
+.lect-vide{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--t3); gap:10px; font-size:13.5px; padding:30px; text-align:center;}
+.lect-vide svg{width:40px; height:40px; stroke:currentColor; fill:none; stroke-width:1.4;}
+.carte{background:var(--bg2); border:1px solid var(--ln); border-radius:14px; padding:11px 14px; margin-bottom:14px;}
+.carte .t{font-size:10.5px; color:var(--t3); text-transform:uppercase; letter-spacing:.06em; font-weight:600; margin-bottom:3px;}
+.carte .who{font-size:14px;}
+.carte .who span{color:var(--t2);}
+.liens{margin-top:5px; display:flex; flex-wrap:wrap; gap:4px 14px;}
+.liens a{color:var(--a); font-size:13px; text-decoration:none;}
+.liens a:hover{text-decoration:underline;}
+.sujet{font-size:20px; font-weight:600; letter-spacing:-.02em; margin:2px 0 14px; word-break:break-word;}
+.fil{display:flex; flex-direction:column; gap:12px;}
+.bulle{border-radius:16px; padding:10px 13px; font-size:14px; line-height:1.5; max-width:82%; min-width:0; word-break:break-word;}
+.bulle.recu{background:var(--bg2); border:1px solid var(--ln); align-self:flex-start; border-bottom-left-radius:5px;}
+.bulle.env{background:var(--ad); border:1px solid rgba(59,130,246,.22); align-self:flex-end; border-bottom-right-radius:5px;}
+.bulle.large{max-width:100%; width:100%;}
+.bulle .meta{font-size:11.5px; color:var(--t3); margin-bottom:5px; display:flex; gap:6px; flex-wrap:wrap;}
+.bulle .txt{white-space:pre-wrap;}
+.bulle .cite-btn{margin-top:6px; border:none; background:none; color:var(--a); font-family:inherit; font-size:12px; cursor:pointer; padding:0;}
+.bulle .cite{white-space:pre-wrap; color:var(--t2); border-left:3px solid var(--ln2); padding-left:10px; margin-top:6px; font-size:13px; display:none;}
+.bulle .cite.ouvert{display:block;}
+.bulle iframe{width:100%; border:0; border-radius:10px; background:#fff; display:block; min-height:60px;}
+.bulle .partiel{font-size:12px; color:var(--w); margin-top:6px;}
+.pjs{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;}
+.pj{display:inline-flex; align-items:center; gap:7px; background:var(--bg3); border:1px solid var(--ln2); border-radius:9px; padding:6px 10px; font-size:12.5px; color:var(--t1); cursor:pointer; font-family:inherit; max-width:100%;}
+.pj:hover{border-color:var(--a);}
+.pj i{width:18px; height:22px; border-radius:3px; background:#dc2626; flex-shrink:0; display:inline-block;}
+.pj i.img{background:#2563eb;} .pj i.autre{background:var(--t3);}
+.pj span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.pj em{font-style:normal; color:var(--t3); font-size:11.5px; flex-shrink:0;}
+.pj .x{border:none; background:none; color:var(--t3); cursor:pointer; font-size:15px; line-height:1; padding:0 0 0 4px;}
+.rapide{margin-top:18px; background:var(--bg2); border:1px solid var(--ln2); border-radius:14px; padding:10px 12px;}
+.rapide textarea{width:100%; border:none; background:none; resize:vertical; min-height:70px; font-family:inherit; font-size:14px; color:var(--t1); outline:none; line-height:1.5;}
+.rapide .bar{display:flex; justify-content:space-between; gap:8px; margin-top:6px; flex-wrap:wrap;}
+.boutons-mobile{display:none; gap:8px; margin-top:16px;}
+.boutons-mobile .btn{flex:1;}
+
+/* ── Rédaction ── */
+.fg{margin-bottom:11px;}
+.fg label{display:flex; justify-content:space-between; font-size:12px; color:var(--t2); margin-bottom:4px; font-weight:500;}
+.fg label button{border:none; background:none; color:var(--a); font-family:inherit; font-size:12px; cursor:pointer;}
+.in{width:100%; background:var(--bg2); border:1px solid var(--ln2); border-radius:11px; padding:10px 12px; font-family:inherit; font-size:14px; color:var(--t1); outline:none;}
+.in:focus{border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+textarea.in{min-height:210px; resize:vertical; line-height:1.55;}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.chips{display:flex; flex-wrap:wrap; gap:6px;}
+.chip{background:var(--bg3); border:1px solid var(--ln2); border-radius:980px; padding:5px 11px; font-size:12.5px; color:var(--t2); cursor:pointer; font-family:inherit;}
+.chip:hover{color:var(--t1); border-color:var(--a);}
+.chip.on{background:var(--ad); color:var(--a); border-color:transparent;}
+.sig{border-top:1px dashed var(--ln2); margin-top:8px; padding-top:8px; color:var(--t2); font-size:12.5px; line-height:1.55; white-space:pre-line;}
+.sig b{color:var(--t1); font-weight:600;}
+.sig small{display:block; color:var(--t3); font-size:11px; margin-top:4px;}
+.alerte-champ{background:rgba(178,94,9,.1); color:var(--w); border-radius:10px; padding:8px 11px; font-size:12.5px; margin-bottom:10px; display:none;}
+.info-transfert{background:var(--bg3); color:var(--t2); border-radius:10px; padding:8px 11px; font-size:12.5px; margin-bottom:10px;}
+.comp-bar{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap;}
+.comp-bar .gauche,.comp-bar .droite{display:flex; gap:8px; flex-wrap:wrap;}
+
+/* ── Choix d'un devis / d'une facture ── */
+.modal-fond{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:600; display:none; align-items:center; justify-content:center; padding:16px;}
+.modal-fond.open{display:flex;}
+.modal{background:var(--bg2); border-radius:16px; width:100%; max-width:520px; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal h3{font-size:16px; padding:16px 18px 6px;}
+.modal p{font-size:12.5px; color:var(--t2); padding:0 18px 10px;}
+.modal .liste{overflow-y:auto; padding:0 10px 10px;}
+.doc{display:flex; justify-content:space-between; gap:10px; width:100%; border:none; background:none; text-align:left; font-family:inherit; padding:10px; border-radius:10px; cursor:pointer; color:var(--t1); font-size:13.5px;}
+.doc:hover{background:var(--bg3);}
+.doc em{font-style:normal; color:var(--t3); font-size:12px;}
+.modal .pied{padding:10px 18px 16px; display:flex; justify-content:flex-end;}
+
+.toast{position:fixed; bottom:22px; right:22px; background:var(--bg2); border:1px solid var(--ln2); border-radius:12px; padding:11px 17px; font-size:13px; color:var(--t1); box-shadow:0 10px 30px rgba(0,0,0,.14); z-index:999; transform:translateY(20px); opacity:0; transition:.25s; pointer-events:none; max-width:min(420px,calc(100vw - 32px));}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast.ok{border-color:rgba(26,138,82,.34); color:var(--ok);}
+.toast.err{border-color:rgba(200,54,44,.34); color:var(--d);}
+.loader{display:flex; align-items:center; justify-content:center; height:100%; gap:9px; font-size:13px; color:var(--t3);}
+.spin{width:15px; height:15px; border:1.6px solid var(--ln2); border-top-color:var(--a); border-radius:50%; animation:spin .6s linear infinite; display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Tablette : liste + lecture ── */
+@media(max-width:1100px){
+  .msg-app{grid-template-columns:minmax(280px,340px) 1fr;}
+  .m-dossiers{display:none;}
+  .segf{display:flex;}
+  .m-titre{display:flex;}
+}
+/* ── iPhone : un écran à la fois ── */
+@media(max-width:900px){
+  .msg-app{grid-template-columns:1fr;}
+  .msg-app[data-vue="liste"] .m-lecture{display:none;}
+  .msg-app[data-vue="lecture"] .m-liste{display:none;}
+  .m-col{border-right:none;}
+  .retour{display:inline-block;}
+  .lect-barre{padding:10px 14px;}
+  .lect-corps{padding:14px 14px 22px;}
+  .bulle{max-width:92%;}
+  .rapide{display:none;}
+  .boutons-mobile{display:flex;}
+  .act-rep{display:none;}
+  .grid2{grid-template-columns:1fr;}
+  .comp-bar .droite{width:100%;}
+  .comp-bar .droite .btn{flex:1;}
+  .toast{left:16px; right:16px; bottom:80px;}
+}
+@media(max-width:640px){
+  .content{padding-left:0 !important; padding-right:0 !important;}
+  .m-liste-tete{padding:12px 14px 8px;}
+}
+
+</style>
+<style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
+<script>
+/* Les liens de navigation sont écrits dans le HTML, mais les pages
+   autorisées ne sont connues qu'après un aller-retour avec Supabase.
+   Sans ce voile, l'utilisateur voit fugitivement toutes les pages, y compris
+   celles qui lui sont interdites, avant qu'elles ne disparaissent.
+   La navigation garde sa place (visibility, pas display) : rien ne saute.
+   Le délai est un filet de sécurité — si le script de page ne s'exécute
+   jamais, la navigation réapparaît quand même plutôt que de rester vide. */
+setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()},4000);
+</script>
+</head>
+<body>
+<header class="topbar">
+  <button class="mobile-menu-btn" onclick="openMobileNav()" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+
+  <a href="/admin/dashboard.html" class="logo"><img src="https://itsoluce.be/img/logo-full.png" alt="IT Soluce" style="height:28px;width:auto;display:block;"/></a>
+  <div class="tb-crumb">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <a href="/admin/dashboard.html">Dashboard</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <span>Messages</span>
+  </div>
+  <nav class="hnav">
+    <a href="/admin/dashboard.html" class="hnl">Dashboard</a>
+    <a href="/admin/clients.html" class="hnl">Clients</a>
+    <a href="/admin/demandes.html" class="hnl">Demandes<span class="nc" id="nb-dem">0</span></a>
+    <a href="/admin/devis.html" class="hnl">Devis</a>
+    <a href="/admin/factures.html" class="hnl">Factures</a>
+    <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep">0</span></a>
+    <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert">—</span></a>
+    <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
+    <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl active">Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
+    <a href="/admin/gestion.html" class="hnl">Gestion</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+      <a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
+      <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert">—</span></a>
+      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="nc">0</span></a>
+      <a href="/admin/demandes.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes<span class="nc" id="nb-dem">0</span></a>
+      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
+      <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep">0</span></a>
+      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none">0</span></a>
+      <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
+      <div class="sf">IT Soluce ERP · v1.1</div>
+      </aside>
+
+  <div class="content" id="mainContent">
+    <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
+    <div class="msg-app" id="pageBody" data-vue="liste" style="display:none;">
+
+      <!-- Dossiers et filtres (ordinateur) -->
+      <aside class="m-col m-dossiers">
+        <button class="btn btn-primary" onclick="nouveauMessage()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau message</button>
+        <div id="dossiers"></div>
+        <div class="ftl">Filtrer</div>
+        <div id="filtres"></div>
+        <div class="synchro" id="synchro"></div>
+      </aside>
+
+      <!-- Liste des mails -->
+      <section class="m-col m-liste">
+        <div class="m-liste-tete">
+          <div class="m-titre"><h1>Messages</h1><button class="btn btn-primary btn-sm" onclick="nouveauMessage()">+ Nouveau</button></div>
+          <div class="segf" id="segf"></div>
+          <div class="srch">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="recherche" placeholder="Rechercher un nom, un objet…" oninput="afficherListe()"/>
+          </div>
+        </div>
+        <div class="m-rows" id="liste"></div>
+      </section>
+
+      <!-- Conversation ou rédaction -->
+      <section class="m-col m-lecture" id="lecture"></section>
+    </div>
+  </div>
+</div>
+
+<!-- Choix d'un devis ou d'une facture à joindre -->
+<div class="modal-fond" id="choixDoc" onclick="if(event.target===this)fermerChoixDoc()">
+  <div class="modal">
+    <h3>Joindre un devis ou une facture</h3>
+    <p>Le PDF est généré comme depuis la page Devis ou Factures.</p>
+    <div class="liste" id="choixDocListe"></div>
+    <div class="pied"><button class="btn btn-secondary" onclick="fermerChoixDoc()">Annuler</button></div>
+  </div>
+</div>
+<input type="file" id="fichiers" multiple style="display:none" onchange="ajouterFichiers(this)"/>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* Thème et accent — mêmes valeurs que les autres pages refondues. */
+const ACCENT_DEFAUT='#0052CC'
+const root=document.documentElement
+function hex2rgb(h){h=String(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(h))h='0052cc';return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+function eclaircir(hex,ratio){const [r,g,b]=hex2rgb(hex);return rgb2hex(r+(255-r)*ratio,g+(255-g)*ratio,b+(255-b)*ratio)}
+let accentBase=localStorage.getItem('erp-accent')||localStorage.getItem('erp-a')||ACCENT_DEFAUT
+function applyAccent(base){
+  accentBase=base||ACCENT_DEFAUT
+  const sombre=root.getAttribute('data-mode')==='dark'
+  const utilise=sombre?eclaircir(accentBase,.34):accentBase
+  const [r,g,b]=hex2rgb(utilise)
+  root.style.setProperty('--a',utilise)
+  root.style.setProperty('--ad',`rgba(${r},${g},${b},${sombre?.20:.12})`)
+}
+function applyMode(m){
+  const h=new Date().getHours()
+  const eff=(m==='auto')?((h>=7&&h<20)?'light':'dark'):m
+  root.setAttribute('data-mode',eff)
+  const clair=eff==='light', v=(a,b)=>clair?a:b, s=(k,val)=>root.style.setProperty(k,val)
+  s('--bg', v('#f5f5f7','#0d0d0f'));  s('--bg2',v('#ffffff','#1c1c1e'))
+  s('--bg3',v('#f0f0f3','#2c2c2e'));  s('--bg4',v('#e6e6ea','#3a3a3c'))
+  s('--ln', v('#e6e6e9','rgba(255,255,255,0.09)')); s('--ln2',v('#d2d2d7','rgba(255,255,255,0.15)'))
+  s('--t1', v('#1d1d1f','#f5f5f7'));  s('--t2', v('#6e6e73','#98989d')); s('--t3', v('#a1a1a6','#6a6a6e'))
+  s('--ok', v('#1a8a52','#34d399'));  s('--w',  v('#b25e09','#fbbf24'));  s('--d',  v('#c8362c','#f87171'))
+  applyAccent(accentBase)
+}
+function setMode(m){try{localStorage.setItem('erp-m',m)}catch(e){};applyMode(m)}
+applyMode(localStorage.getItem('erp-m')||'auto')
+setInterval(()=>{if((localStorage.getItem('erp-m')||'auto')==='auto')applyMode('auto')},60000)
+
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.className='toast show '+(type==='err'?'err':'ok')
+  setTimeout(()=>t.className='toast',3400)
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script src="/admin/assets/js/mail-modeles.js"></script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const sb=createClient(SB,SK)
+
+function showError(msg){
+  document.getElementById('ldr').style.display='none'
+  document.getElementById('mainContent').innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:24px;">
+      <div style="font-size:15px;font-weight:600;color:var(--t1);">Erreur de chargement</div>
+      <div style="font-size:13px;color:var(--t2);max-width:42ch;text-align:center;line-height:1.6;">${escHtml(msg)}</div>
+      <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:4px;">Réessayer</button>
+    </div>`
+}
+
+try {
+
+const {data:{session}}=await sb.auth.getSession()
+if(!session){window.location.href='/admin/login.html';throw new Error('no session')}
+/* Accès par page : même garde que les autres pages de l'ERP. Les mails
+   eux-mêmes sont protégés par les politiques RLS et par la fonction « mail ». */
+const PAGE_COURANTE='messages'
+const {data:_profil}=await sb.from('profils').select('role,pages,actif,lecture_seule').eq('id',session.user.id).maybeSingle()
+if(!_profil||_profil.actif!==true){
+  await sb.auth.signOut()
+  window.location.href='/admin/login.html?acces=compte'
+  throw new Error('compte desactive')
+}
+const MES_PAGES=_profil.role==='proprietaire'?null:(Array.isArray(_profil.pages)?_profil.pages:[])
+window.MES_PAGES=MES_PAGES
+if(MES_PAGES&&!MES_PAGES.includes(PAGE_COURANTE)){
+  const repli=MES_PAGES[0]
+  if(repli){window.location.href='/admin/'+repli+'.html?acces='+PAGE_COURANTE}
+  else{await sb.auth.signOut();window.location.href='/admin/login.html?acces=aucune'}
+  throw new Error('page non autorisee')
+}
+if(MES_PAGES){
+  document.querySelectorAll('.hnav a.hnl[href], .sidebar a.nl[href]').forEach(a=>{
+    const m=(a.getAttribute('href')||'').match(/\/admin\/([a-z-]+)\.html/)
+    if(m&&!MES_PAGES.includes(m[1]))a.remove()
+  })
+}
+const _voile=document.getElementById('voile-nav')
+if(_voile)_voile.remove()
+const LECTURE_SEULE=_profil.role!=='proprietaire'&&_profil.lecture_seule===true
+
+/* ═══ Constantes ═══ */
+const DOSSIERS=[
+  {cle:'INBOX', nom:'Reçus'},
+  {cle:'Sent',  nom:'Envoyés'},
+  {cle:'brouillons', nom:'Brouillons'},
+  {cle:'Junk',  nom:'Indésirables'},
+  {cle:'Trash', nom:'Corbeille'}
+]
+const FILTRES=[
+  {cle:'client',      nom:'Clients',          coul:'var(--ok)'},
+  {cle:'demande',     nom:'Demandes du site', coul:'var(--w)'},
+  {cle:'fournisseur', nom:'Fournisseurs',     coul:'var(--vio)'},
+  {cle:'autre',       nom:'Autres',           coul:'var(--t3)'}
+]
+const COLONNES_LISTE='id,dossier,uid,fil,message_id,de_email,de_nom,repondre_a,a,cc,objet,date_mail,extrait,pieces,lu,partiel'
+const MAX_PIECES=10*1024*1024
+const PAGE_LISTE=200
+
+/* ═══ État ═══ */
+let dossier='INBOX'
+let filtre=null
+let mails=[]
+let complet=false
+let brouillons=[]
+let nonLus=0
+let selection=null        // id du mail ouvert
+let filCourant=[]         // mails de la conversation ouverte
+let redaction=null        // brouillon en cours de rédaction
+let etat=null
+const ctx={clients:new Map(),demandes:new Map(),fournisseurs:[],reps:[],devis:[],factures:[]}
+let reglages={signature:MAIL_DEFAUTS.signature,modeles:MAIL_DEFAUTS.modeles}
+
+const app=document.getElementById('pageBody')
+const zoneLecture=document.getElementById('lecture')
+
+/* ═══ Outils ═══ */
+async function appelMail(corps){
+  const {data:{session:s}}=await sb.auth.getSession()
+  if(!s)throw new Error('Session expirée : reconnecte-toi.')
+  const r=await fetch(`${SB}/functions/v1/mail`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${s.access_token}`,'apikey':SK},
+    body:JSON.stringify(corps)
+  })
+  const j=await r.json().catch(()=>({}))
+  if(!r.ok)throw new Error(j.error||`Erreur ${r.status}`)
+  return j
+}
+function initiales(nom,email){
+  const s=String(nom||email||'?').replace(/["']/g,'').trim()
+  const mots=s.split(/[\s@._-]+/).filter(Boolean)
+  return ((mots[0]||'?')[0]+((mots[1]||'')[0]||'')).toUpperCase()
+}
+function heureListe(iso){
+  if(!iso)return ''
+  const d=new Date(iso), maintenant=new Date()
+  const memeJour=d.toDateString()===maintenant.toDateString()
+  if(memeJour)return d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})
+  const hier=new Date(maintenant);hier.setDate(hier.getDate()-1)
+  if(d.toDateString()===hier.toDateString())return 'Hier'
+  const jours=(maintenant-d)/86400000
+  if(jours<7)return d.toLocaleDateString('fr-BE',{weekday:'short'})
+  return d.toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:d.getFullYear()===maintenant.getFullYear()?undefined:'numeric'})
+}
+function dateLongue(iso){
+  if(!iso)return ''
+  return new Date(iso).toLocaleString('fr-BE',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+}
+function taille(o){
+  if(!o)return ''
+  if(o<1024)return o+' o'
+  if(o<1048576)return Math.round(o/1024)+' Ko'
+  return (o/1048576).toFixed(1).replace('.',',')+' Mo'
+}
+function norm(e){return String(e||'').trim().toLowerCase()}
+function domaine(e){const m=norm(e).match(/@([^@\s>]+)$/);return m?m[1].replace(/^www\./,''):''}
+const estMobile=()=>window.matchMedia('(max-width:900px)').matches
+
+/* Interlocuteur d'un mail : l'expéditeur, ou le destinataire pour un envoyé. */
+/* Le formulaire du site passe par Formspree : l'expéditeur technique est
+   noreply@formspree.io, la vraie personne est dans « Répondre à ». */
+const RELAIS_FORMULAIRE=/@formspree\.io$/i
+function viaFormulaire(m){return m.dossier!=='Sent'&&RELAIS_FORMULAIRE.test(norm(m.de_email))}
+function contrepartie(m){
+  if(m.dossier==='Sent'){const x=(m.a||[])[0]||{};return {email:norm(x.email),nom:x.nom||''}}
+  if(viaFormulaire(m)&&m.repondre_a){
+    const e=norm(m.repondre_a),dm=ctx.demandes.get(e),cl=ctx.clients.get(e)
+    return {email:e,nom:(cl&&cl.nom)||(dm&&[dm.prenom,dm.nom].filter(Boolean).join(' '))||e}
+  }
+  return {email:norm(m.de_email),nom:m.de_nom||''}
+}
+function estFournisseur(email){
+  const d=domaine(email)
+  if(!d)return null
+  return ctx.fournisseurs.find(f=>f.domaines.includes(d))||null
+}
+const RE_REFS=/\b(REP-\d{3,}|DEV-\d{3,}|20\d{2}-\d{4})\b/g
+function refsDe(texte){return [...new Set(String(texte||'').match(RE_REFS)||[])]}
+function categories(m){
+  const e=contrepartie(m).email
+  const c=[]
+  if(ctx.clients.has(e))c.push('client')
+  if(ctx.demandes.has(e)||viaFormulaire(m))c.push('demande')
+  if(estFournisseur(e))c.push('fournisseur')
+  if(!c.length)c.push('autre')
+  return c
+}
+function etiquettesHtml(m){
+  const cats=categories(m)
+  let h=''
+  if(cats.includes('client'))h+='<span class="tag t-cl">Client</span>'
+  if(cats.includes('demande'))h+='<span class="tag t-dem">Demande du site</span>'
+  if(cats.includes('fournisseur'))h+='<span class="tag t-f">Fournisseur</span>'
+  refsDe(m.objet).slice(0,2).forEach(r=>{h+=`<span class="tag t-rep">${escHtml(r)}</span>`})
+  if((m.pieces||[]).length)h+=`<span class="pj-ico">📎 ${m.pieces.length}</span>`
+  return h
+}
+
+/* ═══ Chargements ═══ */
+async function chargerReglages(){
+  const {data}=await sb.from('settings').select('cle,valeur').in('cle',['mail_signature','mail_modeles'])
+  ;(data||[]).forEach(r=>{
+    if(r.cle==='mail_signature'&&String(r.valeur||'').trim())reglages.signature=String(r.valeur).trim()
+    if(r.cle==='mail_modeles'){
+      try{const l=JSON.parse(r.valeur||'null');if(Array.isArray(l))reglages.modeles=l}catch(e){}
+    }
+  })
+}
+/* Clients, demandes, fournisseurs… : servent aux étiquettes et aux liens.
+   Une table inaccessible pour ce compte est simplement ignorée. */
+async function chargerContexte(){
+  const [c,d,f,r,dv,fa]=await Promise.all([
+    sb.from('clients').select('id,numero,nom,email').not('email','is',null).limit(5000),
+    sb.from('demandes_formulaire').select('id,prenom,nom,email,appareil,created_at').not('email','is',null).order('created_at',{ascending:false}).limit(2000),
+    sb.from('fournisseurs').select('nom,email,site_web').limit(500),
+    sb.from('reparations').select('id,numero,client_email,client_nom,appareil,modele,statut,created_at').order('created_at',{ascending:false}).limit(2000),
+    sb.from('devis').select('id,numero,client_email,client_nom,total,date_emission,created_at').order('created_at',{ascending:false}).limit(2000),
+    sb.from('factures').select('id,numero,client_email,client_nom,total,date_emission').order('date_emission',{ascending:false}).limit(2000)
+  ])
+  ;(c.data||[]).forEach(x=>{if(x.email)ctx.clients.set(norm(x.email),x)})
+  ;(d.data||[]).forEach(x=>{const e=norm(x.email);if(e&&!ctx.demandes.has(e))ctx.demandes.set(e,x)})
+  ctx.fournisseurs=(f.data||[]).map(x=>({nom:x.nom,domaines:[domaine(x.email),String(x.site_web||'').toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0]].filter(Boolean)}))
+  ctx.reps=r.data||[]; ctx.devis=dv.data||[]; ctx.factures=fa.data||[]
+}
+async function chargerEtat(){
+  const {data}=await sb.from('mail_etat').select('derniere_synchro,ok,message,nouveaux').eq('id',1).maybeSingle()
+  etat=data||null
+  afficherSynchro()
+}
+async function compterNonLus(){
+  const {count}=await sb.from('mails').select('id',{count:'exact',head:true}).eq('dossier','INBOX').eq('lu',false)
+  nonLus=count||0
+  document.querySelectorAll('#nb-mail').forEach(x=>{x.textContent=nonLus;x.style.display=nonLus?'':'none'})
+  afficherDossiers()
+}
+async function chargerListe(silencieux){
+  if(dossier==='brouillons'){
+    const {data,error}=await sb.from('mail_brouillons').select('*').order('updated_at',{ascending:false}).limit(200)
+    if(error)throw new Error(error.message)
+    brouillons=data||[]
+  }else{
+    const {data,error}=await sb.from('mails').select(COLONNES_LISTE)
+      .eq('dossier',dossier).order('date_mail',{ascending:false,nullsFirst:false}).limit(PAGE_LISTE+1)
+    if(error)throw new Error(error.message)
+    complet=(data||[]).length<=PAGE_LISTE
+    mails=(data||[]).slice(0,PAGE_LISTE)
+  }
+  if(!silencieux||!document.getElementById('recherche').value)afficherListe()
+}
+window.chargerPlus=async function(){
+  const {data,error}=await sb.from('mails').select(COLONNES_LISTE)
+    .eq('dossier',dossier).order('date_mail',{ascending:false,nullsFirst:false}).range(mails.length,mails.length+PAGE_LISTE)
+  if(error){showToast(error.message,'err');return}
+  complet=(data||[]).length<=PAGE_LISTE
+  mails=mails.concat((data||[]).slice(0,PAGE_LISTE))
+  afficherListe()
+}
+
+/* ═══ Colonne des dossiers ═══ */
+function afficherDossiers(){
+  const n=c=>c==='INBOX'&&nonLus?`<small>${nonLus}</small>`:(c==='brouillons'&&brouillons.length?`<small>${brouillons.length}</small>`:'')
+  document.getElementById('dossiers').innerHTML=DOSSIERS.map(d=>
+    `<button class="fold${d.cle===dossier?' on':''}" onclick="changerDossier('${d.cle}')">${d.nom}${n(d.cle)}</button>`).join('')
+  document.getElementById('filtres').innerHTML=FILTRES.map(f=>
+    `<button class="fold${filtre===f.cle?' on':''}" onclick="changerFiltre('${f.cle}')"><span><span class="fdot" style="background:${f.coul}"></span>${f.nom}</span></button>`).join('')
+  // Onglets de l'iPhone : Reçus, Envoyés, Brouillons, puis « Plus » pour le reste.
+  const principal=['INBOX','Sent','brouillons']
+  const autre=DOSSIERS.find(d=>d.cle===dossier&&!principal.includes(d.cle))
+  document.getElementById('segf').innerHTML=
+    principal.map(c=>{const d=DOSSIERS.find(x=>x.cle===c);return `<button class="${c===dossier?'on':''}" onclick="changerDossier('${c}')">${d.nom}${c==='INBOX'&&nonLus?' · '+nonLus:''}</button>`}).join('')+
+    `<label class="seg-sel${autre?' on':''}">${autre?autre.nom:'Plus'} ▾<select aria-label="Autres dossiers" onchange="changerDossier(this.value)" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;">
+      <option value="" disabled ${autre?'':'selected'}>Plus</option><option value="Junk" ${dossier==='Junk'?'selected':''}>Indésirables</option><option value="Trash" ${dossier==='Trash'?'selected':''}>Corbeille</option></select></label>`
+}
+function afficherSynchro(){
+  const el=document.getElementById('synchro')
+  if(!etat||!etat.derniere_synchro){el.innerHTML=`Pas encore synchronisé.<button class="btn btn-secondary btn-sm" onclick="synchroniser()">Synchroniser</button>`;return}
+  const min=Math.round((Date.now()-new Date(etat.derniere_synchro))/60000)
+  const quand=min<1?'à l\'instant':min<60?`il y a ${min} min`:dateLongue(etat.derniere_synchro)
+  el.innerHTML=`Boîte <b>contact@itsoluce.be</b><br>Synchronisée ${quand}`+
+    (etat.ok===false?`<br><span class="ko">${escHtml(etat.message||'Erreur')}</span>`:(etat.message&&etat.message!=='OK'?`<br>${escHtml(etat.message)}`:''))+
+    `<button class="btn btn-secondary btn-sm" id="btnSynchro" onclick="synchroniser()">Synchroniser</button>`
+}
+window.synchroniser=async function(){
+  const b=document.getElementById('btnSynchro')
+  if(b){b.disabled=true;b.innerHTML='<span class="spin"></span> Synchronisation…'}
+  try{
+    await appelMail({action:'synchro'})
+    await Promise.all([chargerListe(),compterNonLus(),chargerEtat()])
+    showToast('Boîte synchronisée','ok')
+  }catch(e){showToast('Synchronisation : '+e.message,'err');await chargerEtat().catch(()=>{})}
+}
+window.changerDossier=async function(c){
+  dossier=c;filtre=null
+  document.getElementById('recherche').value=''
+  afficherDossiers()
+  document.getElementById('liste').innerHTML='<div class="vide-liste"><span class="spin"></span></div>'
+  try{await chargerListe()}catch(e){showToast(e.message,'err')}
+}
+window.changerFiltre=function(c){
+  filtre=filtre===c?null:c
+  afficherDossiers();afficherListe()
+}
+
+/* ═══ Liste ═══ */
+window.afficherListe=function(){
+  const q=norm(document.getElementById('recherche').value)
+  const zone=document.getElementById('liste')
+  if(dossier==='brouillons'){
+    const l=brouillons.filter(b=>!q||[b.a,b.objet,b.corps].some(v=>norm(v).includes(q)))
+    zone.innerHTML=l.length?l.map(b=>`<div class="row${redaction&&redaction.brouillon_id===b.id?' sel':''}" onclick="ouvrirBrouillon(${b.id})">
+      <div class="av">${escHtml(initiales('',b.a))}</div>
+      <div class="m"><div class="l1"><span class="nom">${escHtml(b.a||'(sans destinataire)')}</span><span class="hr">${heureListe(b.updated_at)}</span></div>
+      <div class="obj">${escHtml(b.objet||'(sans objet)')}</div><div class="ap">${escHtml(String(b.corps||'').replace(/\s+/g,' ').slice(0,120))}</div></div></div>`).join('')
+      :'<div class="vide-liste">Aucun brouillon.</div>'
+    afficherDossiers()
+    return
+  }
+  const l=mails.filter(m=>{
+    if(filtre&&!categories(m).includes(filtre))return false
+    if(!q)return true
+    return [m.de_nom,m.de_email,m.objet,m.extrait,...(m.a||[]).map(x=>x.email+' '+(x.nom||''))].some(v=>norm(v).includes(q))
+  })
+  if(!l.length){
+    zone.innerHTML=`<div class="vide-liste">${mails.length?'Aucun mail ne correspond.':(etat&&etat.derniere_synchro?'Aucun mail dans ce dossier.':'La première synchronisation n\'a pas encore eu lieu.<br><button class="btn btn-secondary btn-sm plus" onclick="synchroniser()">Synchroniser maintenant</button>')}</div>`
+    return
+  }
+  zone.innerHTML=l.map(m=>{
+    const p=contrepartie(m)
+    const nom=m.dossier==='Sent'?'À : '+(p.nom||p.email||'—'):(p.nom||p.email||'—')
+    return `<div class="row${!m.lu&&m.dossier!=='Sent'?' nonlu':''}${selection===m.id?' sel':''}" onclick="ouvrirMail(${m.id})">
+      <div class="av">${escHtml(initiales(p.nom,p.email))}</div>
+      <div class="m"><div class="l1"><span class="nom">${escHtml(nom)}</span><span class="hr">${heureListe(m.date_mail)}</span></div>
+      <div class="obj">${escHtml(m.objet||'(sans objet)')}</div>
+      <div class="ap">${escHtml(m.extrait||'')}</div>
+      <div class="tags">${etiquettesHtml(m)}</div></div></div>`
+  }).join('')+(complet||q||filtre?'':'<button class="btn btn-secondary btn-sm plus" onclick="chargerPlus()">Afficher les mails plus anciens</button>')
+}
+
+/* ═══ Conversation ═══ */
+function vue(v){app.dataset.vue=v}
+window.retourListe=function(){
+  vue('liste');selection=null;redaction=null
+  afficherListe()
+  history.replaceState(null,'','/admin/messages.html')
+}
+function lectureVide(){
+  zoneLecture.innerHTML=`<div class="lect-vide"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Choisis un mail dans la liste,<br>ou écris un nouveau message.</div>`
+}
+
+window.ouvrirMail=async function(id){
+  selection=id;redaction=null
+  afficherListe()
+  vue('lecture')
+  zoneLecture.innerHTML='<div class="lect-vide"><span class="spin"></span></div>'
+  const base=mails.find(x=>x.id===id)
+  let m=base
+  if(!m){
+    const {data}=await sb.from('mails').select(COLONNES_LISTE).eq('id',id).maybeSingle()
+    m=data
+  }
+  if(!m){zoneLecture.innerHTML='<div class="lect-vide">Ce mail n\'existe plus.</div>';return}
+  const {data,error}=await sb.from('mails').select('*').eq('fil',m.fil).order('date_mail',{ascending:true,nullsFirst:true}).limit(100)
+  if(error){zoneLecture.innerHTML=`<div class="lect-vide">${escHtml(error.message)}</div>`;return}
+  // Hors Corbeille et Indésirables, on n'y mêle pas leurs mails.
+  const exclus=['Trash','Junk'].includes(m.dossier)?[]:['Trash','Junk']
+  filCourant=(data||[]).filter(x=>x.id===m.id||!exclus.includes(x.dossier))
+  if(!filCourant.length)filCourant=[m]
+  if(selection!==id)return
+  afficherConversation(m)
+  history.replaceState(null,'','/admin/messages.html?mail='+id)
+  // Lu : dans l'ERP tout de suite, dans la boîte OVH en arrière-plan.
+  const aLire=filCourant.filter(x=>x.dossier==='INBOX'&&!x.lu)
+  if(aLire.length&&!LECTURE_SEULE){
+    aLire.forEach(x=>{x.lu=true;const l=mails.find(y=>y.id===x.id);if(l)l.lu=true})
+    nonLus=Math.max(0,nonLus-aLire.length)
+    document.querySelectorAll('#nb-mail').forEach(x=>{x.textContent=nonLus;x.style.display=nonLus?'':'none'})
+    afficherListe();afficherDossiers()
+    for(const x of aLire){try{await appelMail({action:'lu',id:x.id,lu:true})}catch(e){console.warn('lu',e)}}
+  }
+}
+
+function liensContact(email){
+  const liens=[]
+  const cl=ctx.clients.get(email)
+  if(cl)liens.push(`<a href="/admin/clients.html?q=${encodeURIComponent(cl.numero||cl.nom||'')}">Fiche client${cl.numero?' '+escHtml(cl.numero):''}</a>`)
+  const refs=new Set()
+  filCourant.forEach(x=>refsDe(x.objet).forEach(r=>refs.add(r)))
+  const rep=ctx.reps.find(r=>norm(r.client_email)===email)
+  if(rep&&rep.numero)refs.add(rep.numero)
+  const dv=ctx.devis.find(d=>norm(d.client_email)===email)
+  if(dv&&dv.numero)refs.add(dv.numero)
+  ;[...refs].slice(0,4).forEach(r=>{
+    if(r.startsWith('REP-'))liens.push(`<a href="/admin/reparations.html?q=${encodeURIComponent(r)}">${escHtml(r)}</a>`)
+    else if(r.startsWith('DEV-'))liens.push(`<a href="/admin/devis.html?q=${encodeURIComponent(r)}">${escHtml(r)}</a>`)
+    else{const f=ctx.factures.find(x=>x.numero===r);if(f)liens.push(`<a href="/admin/factures.html?open=${f.id}">Facture ${escHtml(r)}</a>`)}
+  })
+  if(ctx.demandes.has(email))liens.push('<a href="/admin/demandes.html">Demande du site</a>')
+  return liens
+}
+
+function afficherConversation(m){
+  const p=contrepartie(filCourant.find(x=>x.dossier!=='Sent')||m)
+  const cats=categories(m)
+  const libelle=cats.includes('client')?'Client':cats.includes('demande')?'Demande du site':cats.includes('fournisseur')?'Fournisseur':'Contact'
+  const nomAff=(ctx.clients.get(p.email)||{}).nom||p.nom||p.email
+  const liens=liensContact(p.email)
+  const actionsDossier=m.dossier==='Trash'
+    ?`<button class="btn btn-secondary btn-sm" onclick="deplacer(${m.id},'INBOX')">Remettre dans Reçus</button><button class="btn btn-danger btn-sm" onclick="effacer(${m.id})">Supprimer définitivement</button>`
+    :m.dossier==='Junk'
+      ?`<button class="btn btn-secondary btn-sm" onclick="deplacer(${m.id},'INBOX')">Pas un indésirable</button><button class="btn btn-danger btn-sm" onclick="deplacer(${m.id},'Trash')">Supprimer</button>`
+      :`${m.dossier==='INBOX'?`<button class="btn btn-secondary btn-sm" onclick="marquerNonLu(${m.id})">Non lu</button>`:''}<button class="btn btn-danger btn-sm" onclick="deplacer(${m.id},'Trash')">Supprimer</button>`
+  zoneLecture.innerHTML=`
+    <div class="lect-barre">
+      <button class="retour" onclick="retourListe()">‹ Messages</button>
+      <span class="espace"></span>
+      ${LECTURE_SEULE?'':`<button class="btn btn-secondary btn-sm act-rep" onclick="repondre()">Répondre</button><button class="btn btn-secondary btn-sm act-rep" onclick="transferer()">Transférer</button>${actionsDossier}`}
+    </div>
+    <div class="lect-corps">
+      <div class="carte"><div class="t">${libelle}</div>
+        <div class="who"><b>${escHtml(nomAff||'—')}</b>${p.email&&p.email!==nomAff?` <span>· ${escHtml(p.email)}</span>`:''}</div>
+        ${liens.length?`<div class="liens">${liens.join('')}</div>`:''}
+      </div>
+      <div class="sujet">${escHtml(m.objet||'(sans objet)')}</div>
+      <div class="fil" id="filBulles"></div>
+      ${LECTURE_SEULE?'':`<div class="rapide">
+        <textarea id="repRapide" placeholder="Répondre à ${escHtml(nomAff||'')}…"></textarea>
+        <div class="chips" id="chipsRapides"></div>
+        <div class="bar"><button class="btn btn-secondary btn-sm" onclick="repondre(true)">Ouvrir en grand · joindre un fichier</button><button class="btn btn-primary btn-sm" id="btnRapide" onclick="envoiRapide()">Envoyer</button></div>
+      </div>
+      <div class="boutons-mobile"><button class="btn btn-primary" onclick="repondre()">Répondre</button><button class="btn btn-secondary" onclick="transferer()">Transférer</button></div>`}
+    </div>`
+  const fil=document.getElementById('filBulles')
+  filCourant.forEach(x=>fil.appendChild(bulle(x)))
+  const chips=document.getElementById('chipsRapides')
+  if(chips)chips.innerHTML=reglages.modeles.map((t,i)=>`<button class="chip" onclick="modeleRapide(${i})">${escHtml(t.nom)}</button>`).join('')
+}
+
+/* Coupe un texte au début de la partie citée (réponse précédente, signature). */
+function separerCitation(t){
+  const lignes=String(t||'').split('\n')
+  const i=lignes.findIndex((l,n)=>l==='-- '||/^>/.test(l)||/^Le .{4,200} a écrit\s?:\s*$/.test(l)||/^On .{4,200} wrote:\s*$/.test(l)||/^-{5,}\s?(Message transféré|Original Message|Forwarded message)/i.test(l)||(n>0&&/^(De|From)\s?: .+/.test(l)&&/^(Envoyé|Sent|Date)\s?:/.test(lignes[n+1]||'')))
+  if(i<=0)return {corps:String(t||'').trim(),cite:''}
+  return {corps:lignes.slice(0,i).join('\n').trim(),cite:lignes.slice(i).join('\n').trim()}
+}
+
+function bulle(x){
+  const env=x.dossier==='Sent'
+  const el=document.createElement('div')
+  const html=!env&&x.html
+  el.className='bulle '+(env?'env':'recu')+(html?' large':'')
+  const qui=env?'Toi':(x.de_nom||x.de_email||'—')
+  const pour=env?' → '+(x.a||[]).map(a=>a.nom||a.email).join(', '):''
+  el.innerHTML=`<div class="meta"><b>${escHtml(qui)}</b><span>${escHtml(pour)}</span><span>· ${escHtml(dateLongue(x.date_mail))}</span></div>`
+  if(html){
+    const f=document.createElement('iframe')
+    f.setAttribute('sandbox','allow-same-origin allow-popups allow-popups-to-escape-sandbox')
+    f.setAttribute('referrerpolicy','no-referrer')
+    f.srcdoc=documentMail(x.html)
+    const b=document.createElement('button')
+    b.className='cite-btn';b.textContent='Afficher tout le message (historique compris)';b.style.display='none'
+    b.onclick=()=>{try{f.contentDocument.body.classList.remove('court');ajusterCadre(f)}catch(e){};b.remove()}
+    f.addEventListener('load',()=>{
+      ajusterCadre(f)
+      try{if(f.contentDocument.querySelector(CITATIONS_HTML))b.style.display=''}catch(e){}
+    })
+    el.appendChild(f)
+    el.appendChild(b)
+  }else{
+    const {corps,cite}=separerCitation(x.texte)
+    const t=document.createElement('div');t.className='txt';t.textContent=corps||(cite?'':'(message vide)')
+    el.appendChild(t)
+    if(cite){
+      const c=document.createElement('div');c.className='cite';c.textContent=cite
+      const b=document.createElement('button');b.className='cite-btn';b.textContent='··· Afficher le message cité'
+      b.onclick=()=>{c.classList.toggle('ouvert');b.textContent=c.classList.contains('ouvert')?'Masquer le message cité':'··· Afficher le message cité'}
+      el.appendChild(b);el.appendChild(c)
+    }
+  }
+  if(x.partiel){
+    const p=document.createElement('div');p.className='partiel'
+    p.textContent='Mail très volumineux : seul le début est affiché. Ouvre-le dans ton app mail pour le voir en entier.'
+    el.appendChild(p)
+  }
+  if((x.pieces||[]).length){
+    const z=document.createElement('div');z.className='pjs'
+    x.pieces.forEach(pj=>{
+      const b=document.createElement('button');b.className='pj';b.type='button'
+      const cls=/pdf/i.test(pj.type)?'':/^image\//i.test(pj.type)?'img':'autre'
+      b.innerHTML=`<i class="${cls}"></i><span>${escHtml(pj.nom)}</span><em>${taille(pj.taille)}</em>`
+      b.onclick=()=>ouvrirPiece(x,pj,b)
+      z.appendChild(b)
+    })
+    el.appendChild(z)
+  }
+  return el
+}
+
+const CITATIONS_HTML='blockquote,.gmail_quote,.gmail_extra,#appendonsend,.moz-cite-prefix,div[name="messageReplySection"],.zmail_extra'
+if(window.DOMPurify){
+  // Images intégrées (cid:) : non disponibles hors de l'app mail, on les retire.
+  DOMPurify.addHook('afterSanitizeAttributes',n=>{
+    if(n.tagName==='IMG'&&/^cid:/i.test(n.getAttribute('src')||''))n.remove()
+  })
+}
+/* Le HTML d'un mail vient de l'extérieur : il est nettoyé (DOMPurify), puis
+   affiché dans un cadre isolé où aucun script ne peut s'exécuter. */
+function documentMail(html){
+  const propre=window.DOMPurify?DOMPurify.sanitize(html,{WHOLE_DOCUMENT:true,FORBID_TAGS:['form','input','button','textarea','select'],FORBID_ATTR:['onerror','onload']}):escHtml(html)
+  const corps=(propre.match(/<body[^>]*>([\s\S]*)<\/body>/i)||[null,propre])[1]
+  const styles=(propre.match(/<style[\s\S]*?<\/style>/gi)||[]).join('')
+  return `<!doctype html><html><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src https: http: data:; style-src 'unsafe-inline'; font-src https: data:">
+<base target="_blank">${styles}
+<style>html,body{margin:0}body{padding:14px;font-family:-apple-system,Segoe UI,Arial,sans-serif;font-size:14px;line-height:1.5;color:#1d1d1f;background:#fff;overflow-wrap:anywhere}
+img{max-width:100%;height:auto}table{max-width:100%!important}img[src^="cid:"]{display:none}
+body.court blockquote,body.court .gmail_quote,body.court .gmail_extra,body.court #appendonsend~*,body.court .moz-cite-prefix,body.court div[name="messageReplySection"],body.court .zmail_extra{display:none!important}</style>
+</head><body class="court">${corps}</body></html>`
+}
+function ajusterCadre(f){
+  const mesurer=()=>{try{const d=f.contentDocument;if(d)f.style.height=Math.min(Math.max(d.documentElement.scrollHeight,60),20000)+'px'}catch(e){}}
+  mesurer();setTimeout(mesurer,300);setTimeout(mesurer,1500)
+}
+
+async function ouvrirPiece(x,pj,bouton){
+  const txt=bouton.innerHTML
+  bouton.disabled=true;bouton.innerHTML='<span class="spin"></span> Ouverture…'
+  try{
+    const r=await appelMail({action:'piece',id:x.id,index:pj.index})
+    const octets=Uint8Array.from(atob(r.base64),c=>c.charCodeAt(0))
+    const url=URL.createObjectURL(new Blob([octets],{type:r.type||'application/octet-stream'}))
+    const a=document.createElement('a')
+    a.href=url;a.download=r.nom||pj.nom;a.rel='noopener'
+    // PDF et images s'ouvrent dans un nouvel onglet, le reste se télécharge.
+    if(/pdf|^image\//i.test(r.type||'')){a.target='_blank';a.removeAttribute('download')}
+    document.body.appendChild(a);a.click();a.remove()
+    setTimeout(()=>URL.revokeObjectURL(url),60000)
+  }catch(e){showToast('Pièce jointe : '+e.message,'err')}
+  finally{bouton.disabled=false;bouton.innerHTML=txt}
+}
+
+window.marquerNonLu=async function(id){
+  try{
+    await appelMail({action:'lu',id,lu:false})
+    const l=mails.find(y=>y.id===id);if(l)l.lu=false
+    showToast('Marqué comme non lu','ok')
+    await compterNonLus()
+    retourListe()
+  }catch(e){showToast(e.message,'err')}
+}
+window.deplacer=async function(id,vers){
+  const libelle={Trash:'Corbeille',INBOX:'Reçus',Junk:'Indésirables'}[vers]
+  try{
+    await appelMail({action:'deplacer',id,vers})
+    mails=mails.filter(y=>y.id!==id)
+    showToast(`Déplacé vers ${libelle}`,'ok')
+    await compterNonLus()
+    selection=null;afficherListe()
+    if(estMobile())retourListe();else lectureVide()
+  }catch(e){showToast(e.message,'err')}
+}
+window.effacer=async function(id){
+  if(!confirm('Supprimer définitivement ce mail ? Il disparaîtra aussi de ta boîte OVH.'))return
+  try{
+    await appelMail({action:'effacer',id})
+    mails=mails.filter(y=>y.id!==id)
+    showToast('Mail supprimé définitivement','ok')
+    selection=null;afficherListe()
+    if(estMobile())retourListe();else lectureVide()
+  }catch(e){showToast(e.message,'err')}
+}
+
+/* ═══ Modèles ═══ */
+function valeursContact(email,base){
+  const v=Object.assign({},base||{})
+  const cl=ctx.clients.get(email),dm=ctx.demandes.get(email)
+  const rep=ctx.reps.find(r=>norm(r.client_email)===email)
+  const dv=ctx.devis.find(d=>norm(d.client_email)===email)
+  if(!v.nom)v.nom=(cl&&cl.nom)||(dm&&[dm.prenom,dm.nom].filter(Boolean).join(' '))||(rep&&rep.client_nom)||''
+  if(!v.appareil)v.appareil=(rep&&[rep.appareil,rep.modele].filter(Boolean).join(' '))||(dm&&dm.appareil)||''
+  if(!v.dossier&&rep)v.dossier=rep.numero||''
+  if(!v.devis&&dv)v.devis=dv.numero||''
+  if(!v.prenom)v.prenom=(dm&&dm.prenom)||String(v.nom||'').split(' ')[0]||''
+  return v
+}
+function remplir(t,v){
+  return String(t||'').replace(/\{(nom|prenom|prénom|appareil|dossier|devis)\}/gi,(tout,k)=>{
+    const cle=k.toLowerCase().replace('é','e')
+    return v[cle]?v[cle]:tout
+  })
+}
+function champsRestants(t){return [...new Set(String(t||'').match(/\{[a-zA-Zéèêàû]+\}/g)||[])]}
+
+window.modeleRapide=function(i){
+  const t=reglages.modeles[i]; if(!t)return
+  const ta=document.getElementById('repRapide')
+  if(ta.value.trim()&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
+  const recu=filCourant.filter(x=>x.dossier!=='Sent').pop()||filCourant[filCourant.length-1]
+  const v=valeursContact(contrepartie(recu).email,{nom:''})
+  ta.value=remplir(t.corps,v)
+  ta.focus()
+}
+
+/* ═══ Rédaction ═══ */
+function nouvelleRedaction(init){
+  redaction=Object.assign({a:'',cc:'',objet:'',corps:'',pieces:[],repondre_a_id:null,transfert_de_id:null,brouillon_id:null,valeurs:{},modele:null,titre:'Nouveau message'},init||{})
+  selection=null
+  afficherListe()
+  vue('lecture')
+  afficherRedaction()
+}
+window.nouveauMessage=function(){nouvelleRedaction()}
+
+function parentReponse(){
+  // On répond au dernier mail reçu du fil (ou au dernier tout court).
+  return filCourant.filter(x=>x.dossier!=='Sent').pop()||filCourant[filCourant.length-1]
+}
+window.repondre=function(depuisRapide){
+  const p=parentReponse(); if(!p)return
+  const email=p.dossier==='Sent'?norm(((p.a||[])[0]||{}).email):norm(p.repondre_a||p.de_email)
+  const objet=/^re\s?:/i.test(p.objet||'')?p.objet:'Re: '+(p.objet||'')
+  const corps=depuisRapide===true?(document.getElementById('repRapide')||{}).value||'':''
+  nouvelleRedaction({a:email,objet,corps,repondre_a_id:p.id,titre:'Répondre',valeurs:valeursContact(email,{})})
+}
+window.transferer=function(){
+  const p=filCourant[filCourant.length-1]; if(!p)return
+  nouvelleRedaction({objet:'Tr: '+(p.objet||''),transfert_de_id:p.id,titre:'Transférer',nbPiecesOrigine:(p.pieces||[]).length})
+}
+window.envoiRapide=async function(){
+  const ta=document.getElementById('repRapide')
+  const corps=ta.value.trim()
+  if(!corps){showToast('Écris ton message','err');ta.focus();return}
+  const reste=champsRestants(corps)
+  if(reste.length){showToast(`Complète d'abord : ${reste.join(', ')}`,'err');return}
+  const p=parentReponse()
+  const email=p.dossier==='Sent'?norm(((p.a||[])[0]||{}).email):norm(p.repondre_a||p.de_email)
+  const objet=/^re\s?:/i.test(p.objet||'')?p.objet:'Re: '+(p.objet||'')
+  const b=document.getElementById('btnRapide')
+  b.disabled=true;b.innerHTML='<span class="spin"></span> Envoi…'
+  try{
+    const r=await appelMail({action:'envoyer',a:[email],cc:[],objet,corps,repondre_a_id:p.id,pieces:[]})
+    showToast(r.avertissement||`Envoyé à ${email}`,r.avertissement?'err':'ok')
+    await ouvrirMail(selection)
+  }catch(e){showToast('Envoi : '+e.message,'err');b.disabled=false;b.textContent='Envoyer'}
+}
+
+function afficherRedaction(){
+  const r=redaction
+  const sigLignes=reglages.signature.split('\n')
+  zoneLecture.innerHTML=`
+    <div class="lect-barre">
+      <button class="retour" onclick="annulerRedaction()">‹ Annuler</button>
+      <b style="font-size:15px;">${escHtml(r.titre)}</b>
+      <span class="espace"></span>
+    </div>
+    <div class="lect-corps">
+      <div class="grid2">
+        <div class="fg"><label>À ${r.cc||r.ccOuvert?'':'<button type="button" onclick="ouvrirCc()">+ Cc</button>'}</label><input class="in" id="c-a" type="text" inputmode="email" autocomplete="off" placeholder="adresse@exemple.be" value="${escHtml(r.a)}"/></div>
+        <div class="fg"><label>Objet</label><input class="in" id="c-objet" type="text" value="${escHtml(r.objet)}"/></div>
+      </div>
+      <div class="fg" id="fg-cc" style="${r.cc||r.ccOuvert?'':'display:none'}"><label>Cc</label><input class="in" id="c-cc" type="text" inputmode="email" autocomplete="off" placeholder="Séparer les adresses par une virgule" value="${escHtml(r.cc)}"/></div>
+      ${r.transfert_de_id?`<div class="info-transfert">Le message d'origine sera ajouté sous ton texte${r.nbPiecesOrigine?`, avec ses ${r.nbPiecesOrigine} pièce${r.nbPiecesOrigine>1?'s':''} jointe${r.nbPiecesOrigine>1?'s':''}`:''}.</div>`:''}
+      <div class="fg"><label>Modèle</label><div class="chips">${reglages.modeles.map((t,i)=>`<button type="button" class="chip${r.modele===i?' on':''}" onclick="appliquerModele(${i})">${escHtml(t.nom)}</button>`).join('')}</div></div>
+      <div class="alerte-champ" id="alerteChamps"></div>
+      <div class="fg"><label>Message</label>
+        <textarea class="in" id="c-corps" placeholder="Ton message…">${escHtml(r.corps)}</textarea>
+        <div class="sig"><b>${escHtml(sigLignes[0]||'')}</b>${sigLignes.slice(1).map(l=>'<br>'+escHtml(l)).join('')}<small>Signature ajoutée automatiquement · modifiable dans Gestion › Messages</small></div>
+      </div>
+      <div class="pjs" id="c-pieces"></div>
+      <div class="comp-bar">
+        <div class="gauche">
+          <button type="button" class="chip" onclick="document.getElementById('fichiers').click()">📎 Joindre un fichier</button>
+          <button type="button" class="chip" onclick="ouvrirChoixDoc()">Joindre un devis / une facture de l'ERP</button>
+        </div>
+        <div class="droite">
+          <button type="button" class="btn btn-secondary" id="btnBrouillon" onclick="enregistrerBrouillon()">Brouillon</button>
+          <button type="button" class="btn btn-primary" id="btnEnvoyer" onclick="envoyer()">Envoyer</button>
+        </div>
+      </div>
+    </div>`
+  afficherPieces()
+  ;['c-a','c-cc','c-objet','c-corps'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{lireChamps();verifierChamps()})})
+  verifierChamps()
+  const cible=r.a?document.getElementById('c-corps'):document.getElementById('c-a')
+  if(!estMobile())cible.focus()
+}
+function lireChamps(){
+  if(!redaction)return
+  const v=id=>(document.getElementById(id)||{}).value
+  redaction.a=v('c-a')??redaction.a
+  redaction.cc=v('c-cc')??redaction.cc
+  redaction.objet=v('c-objet')??redaction.objet
+  redaction.corps=v('c-corps')??redaction.corps
+}
+function verifierChamps(){
+  const el=document.getElementById('alerteChamps'); if(!el||!redaction)return
+  const reste=champsRestants(redaction.objet+' '+redaction.corps)
+  el.style.display=reste.length?'block':'none'
+  el.textContent=reste.length?`À compléter avant l'envoi : ${reste.join(', ')}`:''
+}
+window.ouvrirCc=function(){lireChamps();redaction.ccOuvert=true;afficherRedaction();document.getElementById('c-cc').focus()}
+window.annulerRedaction=function(){
+  lireChamps()
+  const r=redaction
+  if(r&&(r.corps.trim()||r.pieces.length)&&!r.brouillon_id&&!confirm('Abandonner ce message ? (Brouillon permet de le garder)'))return
+  const retour=r&&(r.repondre_a_id||r.transfert_de_id)
+  redaction=null
+  if(retour&&!estMobile())ouvrirMail(retour)
+  else if(estMobile())retourListe()
+  else lectureVide()
+}
+window.appliquerModele=function(i){
+  lireChamps()
+  const t=reglages.modeles[i]; if(!t)return
+  if(redaction.corps.trim()&&redaction.modele===null&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
+  const email=norm(String(redaction.a).split(/[,;]/)[0])
+  const v=valeursContact(email,redaction.valeurs)
+  redaction.corps=remplir(t.corps,v)
+  // En réponse, l'objet « Re: … » est gardé : il rattache le mail au fil.
+  if(t.objet&&!redaction.repondre_a_id)redaction.objet=remplir(t.objet,v)
+  redaction.modele=i
+  afficherRedaction()
+}
+
+/* ── Pièces jointes ── */
+function totalPieces(){return redaction.pieces.reduce((a,p)=>a+p.taille,0)}
+function afficherPieces(){
+  const z=document.getElementById('c-pieces'); if(!z)return
+  z.innerHTML=redaction.pieces.map((p,i)=>`<span class="pj"><i class="${/pdf/i.test(p.type)?'':/^image\//i.test(p.type)?'img':'autre'}"></i><span>${escHtml(p.nom)}</span><em>${taille(p.taille)}</em><button type="button" class="x" onclick="retirerPiece(${i})" aria-label="Retirer">×</button></span>`).join('')
+}
+window.retirerPiece=function(i){redaction.pieces.splice(i,1);afficherPieces()}
+function lireEnBase64(fichier){
+  return new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.onerror=()=>ko(r.error);r.readAsDataURL(fichier)})
+}
+window.ajouterFichiers=async function(input){
+  lireChamps()
+  for(const f of [...input.files]){
+    if(totalPieces()+f.size>MAX_PIECES){showToast('10 Mo maximum au total pour les pièces jointes','err');break}
+    try{redaction.pieces.push({nom:f.name,type:f.type||'application/octet-stream',taille:f.size,base64:await lireEnBase64(f)})}
+    catch(e){showToast('Fichier illisible : '+f.name,'err')}
+  }
+  input.value=''
+  afficherPieces()
+}
+
+/* Devis / factures : le PDF est produit par la page Devis ou Factures elle-même,
+   ouverte dans un cadre invisible. Même rendu qu'un envoi depuis ces pages. */
+window.ouvrirChoixDoc=function(){
+  lireChamps()
+  const email=norm(String(redaction.a).split(/[,;]/)[0])
+  const docs=[
+    ...ctx.devis.map(d=>({type:'devis',id:d.id,numero:d.numero,nom:d.client_nom,email:norm(d.client_email),total:d.total,date:d.date_emission||d.created_at})),
+    ...ctx.factures.map(f=>({type:'facture',id:f.id,numero:f.numero,nom:f.client_nom,email:norm(f.client_email),total:f.total,date:f.date_emission}))
+  ]
+  docs.sort((a,b)=>(b.email===email)-(a.email===email)||String(b.date||'').localeCompare(String(a.date||'')))
+  const liste=docs.slice(0,60)
+  document.getElementById('choixDocListe').innerHTML=liste.length?liste.map(d=>
+    `<button class="doc" onclick="joindreDoc('${d.type}',${d.id})"><span><b>${d.type==='devis'?'Devis':'Facture'} ${escHtml(d.numero||'')}</b> · ${escHtml(d.nom||'')}${email&&d.email===email?' · <span class="tag t-cl">ce destinataire</span>':''}</span><em>${Number(d.total||0).toFixed(2).replace('.',',')} €</em></button>`).join('')
+    :'<div class="vide-liste">Aucun devis ni facture.</div>'
+  document.getElementById('choixDoc').classList.add('open')
+}
+window.fermerChoixDoc=function(){document.getElementById('choixDoc').classList.remove('open')}
+window.joindreDoc=async function(type,id){
+  fermerChoixDoc()
+  showToast('Génération du PDF…','ok')
+  const cadre=document.createElement('iframe')
+  cadre.style.cssText='position:fixed;left:-12000px;top:0;width:1200px;height:900px;opacity:0;pointer-events:none;border:0;'
+  cadre.src=`/admin/${type==='devis'?'devis':'factures'}.html?export=pdf&id=${id}`
+  try{
+    const res=await new Promise((ok,ko)=>{
+      const fin=setTimeout(()=>{window.removeEventListener('message',ecoute);ko(new Error('délai dépassé'))},45000)
+      function ecoute(ev){
+        if(ev.origin!==location.origin||ev.source!==cadre.contentWindow||!ev.data||ev.data.type!=='itsoluce-pdf')return
+        clearTimeout(fin);window.removeEventListener('message',ecoute)
+        ev.data.erreur?ko(new Error(ev.data.erreur)):ok(ev.data)
+      }
+      window.addEventListener('message',ecoute)
+      document.body.appendChild(cadre)
+    })
+    const t=Math.floor(res.base64.length*3/4)
+    if(totalPieces()+t>MAX_PIECES)throw new Error('10 Mo maximum au total')
+    redaction.pieces.push({nom:res.nom,type:'application/pdf',taille:t,base64:res.base64})
+    afficherPieces()
+    showToast(`${res.nom} joint`,'ok')
+  }catch(e){showToast('PDF : '+e.message,'err')}
+  finally{cadre.remove()}
+}
+
+/* ── Brouillon et envoi ── */
+window.enregistrerBrouillon=async function(){
+  lireChamps()
+  const r=redaction
+  const ligne={a:r.a||'',cc:r.cc||'',objet:r.objet||'',corps:r.corps||'',repondre_a_id:r.repondre_a_id,transfert_de_id:r.transfert_de_id,updated_at:new Date().toISOString()}
+  const res=r.brouillon_id
+    ?await sb.from('mail_brouillons').update(ligne).eq('id',r.brouillon_id).select('id').single()
+    :await sb.from('mail_brouillons').insert(ligne).select('id').single()
+  if(res.error){showToast('Brouillon : '+res.error.message,'err');return}
+  r.brouillon_id=res.data.id
+  showToast(r.pieces.length?'Brouillon enregistré (sans les pièces jointes)':'Brouillon enregistré','ok')
+  const {data}=await sb.from('mail_brouillons').select('*').order('updated_at',{ascending:false}).limit(200)
+  brouillons=data||[]
+  afficherDossiers()
+  if(dossier==='brouillons')afficherListe()
+}
+window.ouvrirBrouillon=function(id){
+  const b=brouillons.find(x=>x.id===id); if(!b)return
+  nouvelleRedaction({a:b.a,cc:b.cc,objet:b.objet,corps:b.corps,repondre_a_id:b.repondre_a_id,transfert_de_id:b.transfert_de_id,brouillon_id:b.id,titre:'Brouillon'})
+}
+window.envoyer=async function(){
+  lireChamps()
+  const r=redaction
+  const a=String(r.a).split(/[,;]/).map(norm).filter(Boolean)
+  const cc=String(r.cc||'').split(/[,;]/).map(norm).filter(Boolean)
+  if(!a.length){showToast('Indique un destinataire','err');return}
+  if(!r.objet.trim()){showToast("L'objet est vide",'err');return}
+  if(!r.corps.trim()){showToast('Le message est vide','err');return}
+  const reste=champsRestants(r.objet+' '+r.corps)
+  if(reste.length){showToast(`Complète d'abord : ${reste.join(', ')}`,'err');verifierChamps();return}
+  const btn=document.getElementById('btnEnvoyer')
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Envoi…'
+  try{
+    const res=await appelMail({action:'envoyer',a,cc,objet:r.objet.trim(),corps:r.corps,
+      repondre_a_id:r.repondre_a_id,transfert_de_id:r.transfert_de_id,
+      pieces:r.pieces.map(p=>({nom:p.nom,type:p.type,base64:p.base64}))})
+    if(r.brouillon_id)await sb.from('mail_brouillons').delete().eq('id',r.brouillon_id)
+    brouillons=brouillons.filter(b=>b.id!==r.brouillon_id)
+    showToast(res.avertissement||`Envoyé à ${a.join(', ')}`,res.avertissement?'err':'ok')
+    const retour=r.repondre_a_id
+    redaction=null
+    if(retour){await ouvrirMail(retour)}
+    else{await changerDossier('Sent');if(estMobile())retourListe();else lectureVide()}
+  }catch(e){
+    showToast('Envoi : '+e.message,'err')
+    btn.disabled=false;btn.textContent='Envoyer'
+  }
+}
+
+/* ═══ Démarrage ═══ */
+await Promise.all([chargerReglages(),chargerContexte().catch(e=>console.warn('contexte',e))])
+await Promise.all([chargerListe(),compterNonLus(),chargerEtat()])
+{
+  const {data}=await sb.from('mail_brouillons').select('*').order('updated_at',{ascending:false}).limit(200)
+  brouillons=data||[]
+}
+afficherDossiers()
+document.getElementById('ldr').style.display='none'
+app.style.display=''
+lectureVide()
+
+// Ouverture directe : ?mail=12 ou ?nouveau=1&a=…&nom=…&modele=… (boutons
+// « Répondre par mail » des pages Demandes, Clients, Réparations et Devis).
+const P=new URLSearchParams(location.search)
+if(P.get('mail'))ouvrirMail(Number(P.get('mail')))
+else if(P.get('nouveau')&&!LECTURE_SEULE){
+  const email=norm(P.get('a'))
+  const valeurs=valeursContact(email,{nom:P.get('nom')||'',appareil:P.get('appareil')||'',dossier:P.get('dossier')||'',devis:P.get('devis')||''})
+  nouvelleRedaction({a:email,objet:P.get('objet')||'',valeurs})
+  const i=reglages.modeles.findIndex(t=>t.cle===P.get('modele'))
+  if(i>=0)appliquerModele(i)
+  history.replaceState(null,'','/admin/messages.html')
+}
+
+// Première ouverture : rien encore en base → on lance la synchronisation.
+if(!etat||!etat.derniere_synchro)synchroniser()
+
+// Rafraîchissement : la boîte est relue par le serveur toutes les 5 minutes ;
+// la page recharge la liste chaque minute et au retour sur l'onglet.
+async function rafraichir(){
+  if(document.hidden)return
+  try{await Promise.all([chargerListe(true),compterNonLus(),chargerEtat()])}catch(e){console.warn(e)}
+}
+setInterval(rafraichir,60000)
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)rafraichir()})
+
+window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
+} catch(err){
+  console.error('Erreur messages :',err)
+  if(!['no session','compte desactive','page non autorisee'].includes(err.message))showError(err.message||'Une erreur inattendue est survenue.')
+}
+</script>
+
+
+
+<div class="mobile-bottombar">
+  <div class="mobile-bottombar-inner">
+    <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
+    <a href="/admin/reparations.html" class="mbb-item" data-page="reparations"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Répar.</a>
+    <a href="/admin/stock.html" class="mbb-item" data-page="stock"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Stock</a>
+    <a href="/admin/catalogue.html" class="mbb-item" data-page="catalogue"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue</a>
+    <a href="/admin/clients.html" class="mbb-item" data-page="clients"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+  </div>
+</div>
+
+<script>
+function openMobileNav(){
+  let ov=document.getElementById('mobileOverlay');
+  let nav=document.getElementById('mobileNav');
+  if(!nav){
+    const sb=document.querySelector('.sidebar');
+    ov=document.createElement('div');ov.id='mobileOverlay';ov.className='mobile-overlay';ov.onclick=closeMobileNav;
+    nav=document.createElement('div');nav.id='mobileNav';nav.className='mobile-nav';
+    const head=document.createElement('div');head.className='mobile-nav-head';
+    head.innerHTML='<img src="https://itsoluce.be/favicon_io/android-chrome-512x512.png" alt="IT Soluce"/><button class="mobile-nav-close" onclick="closeMobileNav()">&times;</button>';
+    nav.appendChild(head);
+    if(sb){const clone=sb.cloneNode(true);clone.style.display='block';clone.style.width='100%';clone.style.borderRight='none';nav.appendChild(clone);}
+    document.body.appendChild(ov);document.body.appendChild(nav);
+  }
+  requestAnimationFrame(()=>{ov.classList.add('open');nav.classList.add('open');});
+}
+function closeMobileNav(){
+  const ov=document.getElementById('mobileOverlay');const nav=document.getElementById('mobileNav');
+  if(ov)ov.classList.remove('open');if(nav)nav.classList.remove('open');
+}
+(function(){
+  const path=location.pathname.split('/').pop().replace('.html','');
+  document.querySelectorAll('.mbb-item').forEach(a=>{if(a.dataset.page===path)a.classList.add('active');});
+})();
+</script>
+
+<script>
+window.toggleDrop=function(btn){
+  const menu=btn.nextElementSibling
+  const isOpen=menu.classList.contains('open')
+  document.querySelectorAll('.hnav-menu.open').forEach(m=>m.classList.remove('open'))
+  document.querySelectorAll('.hnl.open').forEach(b=>b.classList.remove('open'))
+  if(!isOpen){menu.classList.add('open');btn.classList.add('open')}
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.hnav-drop')){
+    document.querySelectorAll('.hnav-menu.open').forEach(m=>m.classList.remove('open'))
+    document.querySelectorAll('.hnl.open').forEach(b=>b.classList.remove('open'))
+  }
+})
+</script>
+<script src="/admin/assets/js/admin-palette.js"></script>
+</body>
+</html>
