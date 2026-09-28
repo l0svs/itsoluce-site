@@ -582,8 +582,16 @@ function domaine(e){const m=norm(e).match(/@([^@\s>]+)$/);return m?m[1].replace(
 const estMobile=()=>window.matchMedia('(max-width:900px)').matches
 
 /* Interlocuteur d'un mail : l'expéditeur, ou le destinataire pour un envoyé. */
+/* Le formulaire du site passe par Formspree : l'expéditeur technique est
+   noreply@formspree.io, la vraie personne est dans « Répondre à ». */
+const RELAIS_FORMULAIRE=/@formspree\.io$/i
+function viaFormulaire(m){return m.dossier!=='Sent'&&RELAIS_FORMULAIRE.test(norm(m.de_email))}
 function contrepartie(m){
   if(m.dossier==='Sent'){const x=(m.a||[])[0]||{};return {email:norm(x.email),nom:x.nom||''}}
+  if(viaFormulaire(m)&&m.repondre_a){
+    const e=norm(m.repondre_a),dm=ctx.demandes.get(e),cl=ctx.clients.get(e)
+    return {email:e,nom:(cl&&cl.nom)||(dm&&[dm.prenom,dm.nom].filter(Boolean).join(' '))||e}
+  }
   return {email:norm(m.de_email),nom:m.de_nom||''}
 }
 function estFournisseur(email){
@@ -597,7 +605,7 @@ function categories(m){
   const e=contrepartie(m).email
   const c=[]
   if(ctx.clients.has(e))c.push('client')
-  if(ctx.demandes.has(e))c.push('demande')
+  if(ctx.demandes.has(e)||viaFormulaire(m))c.push('demande')
   if(estFournisseur(e))c.push('fournisseur')
   if(!c.length)c.push('autre')
   return c
