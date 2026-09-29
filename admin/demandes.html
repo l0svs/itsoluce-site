@@ -521,7 +521,7 @@ function fiche(d){
   const mail=d.email_confirmation_envoye
     ? '<span class="mail-etat ok">Accusé de réception envoyé</span>'
     : '<span class="mail-etat ko">Accusé de réception non parti</span>'
-  const repondre=d.email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:d.email,objet:d.appareil?`Votre demande de réparation — ${d.appareil}`:'Votre demande de réparation'}))}">✉ Répondre par mail</a>`:''
+  const repondre=d.email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:d.email,demande:d.id,objet:d.appareil?`Votre demande de réparation — ${d.appareil}`:'Votre demande de réparation'}))}">✉ Répondre par mail</a>`:''
   const actions=s==='converti'
     ? `<a class="lien-rep" href="/admin/reparations.html">Voir le dossier de réparation</a>
        ${repondre}
@@ -551,8 +551,9 @@ function fiche(d){
   </article>`
 }
 
-/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) :
-   le mail part de contact@itsoluce.be et reste dans la conversation du client. */
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) et
+   dossier d'origine : les modèles se remplissent avec ses informations. Le
+   mail part de contact@itsoluce.be et reste dans la conversation du client. */
 function lienMessages(o){
   const p=new URLSearchParams({nouveau:'1'})
   Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})

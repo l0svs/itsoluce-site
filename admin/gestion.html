@@ -157,7 +157,13 @@ body{font-size:14px;}
 }
 .card input:focus,.card select:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
 .card input:disabled{color:var(--t3); cursor:default;}
-/* Messages : signature */
+/* Messages : signature et modèles */
+.mm{padding:14px 0; border-bottom:1px solid var(--ln); display:flex; flex-direction:column; gap:8px;}
+.mm-l{display:flex; gap:8px; align-items:center;}
+.mm-l input{flex:1;}
+.mm-l .btn{flex-shrink:0;}
+.mm textarea{min-height:120px;}
+.sig-apercu{background:#fff; border:1px solid var(--ln); border-radius:11px; padding:2px 16px 14px; overflow-x:auto;}
 .card textarea{width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px; padding:9px 13px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; resize:vertical; line-height:1.5; min-height:80px;}
 .card textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
 .card input::placeholder{color:var(--t3);}
@@ -926,11 +932,21 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <!-- ── MESSAGES ── -->
           <section class="sec" id="sec-messages">
             <h1 class="sec-title">Messages</h1>
-            <p class="sec-desc">La signature des mails envoyés depuis la page Messages. Elle s'enregistre avec le bouton du bas, comme les autres réglages.</p>
+            <p class="sec-desc">La signature et les modèles de mail. Les modèles s'enregistrent avec le bouton du bas, comme les autres réglages.</p>
 
             <div class="card">
               <div class="card-lbl">Signature</div>
-              <div class="row"><div class="row-l"><b>Signature</b><em>Ajoutée automatiquement sous chaque mail envoyé depuis l'ERP. La première ligne est en gras.</em></div><div class="row-f"><textarea id="s-mail-signature" data-cle="mail_signature" rows="4"></textarea></div></div>
+              <div class="row"><div class="row-l"><b>Signature</b><em>La même sur tous les mails : Messages, devis, factures, rappels. Elle reprend les coordonnées de la section Entreprise.</em></div><div class="row-f"><div class="sig-apercu" id="sig-apercu"></div></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-lbl">Modèles de mail</div>
+              <div id="mail-modeles"></div>
+              <input type="hidden" id="s-mail-modeles" data-cle="mail_modeles_v2"/>
+              <div class="grille-foot">
+                <span>Remplis selon le client : <b>{prenom}</b> <b>{nom}</b> <b>{appareil}</b> <b>{panne}</b> <b>{dossier}</b> <b>{devis}</b> <b>{montant_devis}</b> <b>{validite_devis}</b> <b>{date_rdv}</b> <b>{lieu_rdv}</b>. Tout autre champ, comme <b>{délai}</b>, est à compléter avant l'envoi. Pas de « Bien à vous » : il est ajouté avec la signature.</span>
+                <button type="button" class="btn btn-secondary" onclick="ajouterModeleMail()">+ Ajouter un modèle</button>
+              </div>
             </div>
 
             <div class="card">
@@ -1092,6 +1108,7 @@ function cancelChanges(){
     if(el.id in _original)el.value=_original[el.id]
   })
   if(_originalGrille){setGrilleLocal(_originalGrille);renderGrille()}
+  if(window.renderModelesMail)renderModelesMail()
   const mode=_original['s-mode']||'auto'
   setMode(mode)
   const base=_original['__accent']||ACCENT_DEFAUT
@@ -1305,13 +1322,42 @@ try{
 renderGrille()
 _originalGrille=getGrille()
 
-/* ── Messages : signature ─────────────────────────────────────────
-   Tant que rien n'est enregistré, la signature par défaut (mail-signature.js)
-   est affichée ; elle n'est écrite qu'au premier enregistrement. */
+/* ── Messages : signature et modèles ─────────────────────────────
+   La signature est construite à partir de la section Entreprise
+   (signature-mail.js). Les modèles par défaut (mail-modeles.js) sont
+   affichés tant que rien n'est enregistré. */
+document.getElementById('sig-apercu').innerHTML=signatureMailHTML(entrepriseDepuisReglages(rows||[]))
 {
-  const sig=document.getElementById('s-mail-signature')
-  if(!sig.value.trim()){sig.value=MAIL_DEFAUTS.signature;_original[sig.id]=sig.value}
+  const cache=document.getElementById('s-mail-modeles')
+  let l=null
+  try{l=JSON.parse(cache.value||'null')}catch(e){}
+  if(!Array.isArray(l)||!l.length){cache.value=JSON.stringify(MAIL_MODELES_DEFAUT);_original[cache.id]=cache.value}
 }
+function lireModelesMail(){
+  try{const l=JSON.parse(document.getElementById('s-mail-modeles').value||'[]');return Array.isArray(l)?l:[]}catch(e){return []}
+}
+function ecrireModelesMail(l){document.getElementById('s-mail-modeles').value=JSON.stringify(l);markDirty()}
+window.renderModelesMail=function(){
+  const l=lireModelesMail()
+  document.getElementById('mail-modeles').innerHTML=l.length?l.map((m,i)=>`<div class="mm">
+    <div class="mm-l"><input type="text" value="${escHtml(m.nom||'')}" placeholder="Nom du modèle" oninput="majModeleMail(${i},'nom',this.value)"/>
+    <button type="button" class="btn btn-secondary" onclick="supprimerModeleMail(${i})">Supprimer</button></div>
+    <input type="text" value="${escHtml(m.objet||'')}" placeholder="Objet (laisser vide pour ne pas le changer)" oninput="majModeleMail(${i},'objet',this.value)"/>
+    <textarea placeholder="Texte du message" oninput="majModeleMail(${i},'corps',this.value)">${escHtml(m.corps||'')}</textarea>
+  </div>`).join(''):'<div class="row"><div class="row-f" style="color:var(--t3)">Aucun modèle.</div></div>'
+}
+window.majModeleMail=function(i,champ,v){const l=lireModelesMail();if(!l[i])return;l[i][champ]=v;ecrireModelesMail(l)}
+window.supprimerModeleMail=function(i){
+  const l=lireModelesMail()
+  if(!l[i]||!confirm(`Supprimer le modèle « ${l[i].nom||'sans nom'} » ?`))return
+  l.splice(i,1);ecrireModelesMail(l);renderModelesMail()
+}
+window.ajouterModeleMail=function(){
+  const l=lireModelesMail()
+  l.push({cle:'perso_'+Date.now(),nom:'Nouveau modèle',objet:'',corps:'Bonjour {prenom},\n\n'})
+  ecrireModelesMail(l);renderModelesMail()
+}
+renderModelesMail()
 sb.from('mail_etat').select('derniere_synchro,ok,message').eq('id',1).maybeSingle().then(({data})=>{
   const el=document.getElementById('mail-synchro')
   if(!data||!data.derniere_synchro){el.textContent='Pas encore synchronisée';return}
@@ -2471,7 +2517,8 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
-<script src="/admin/assets/js/mail-signature.js"></script>
+<script src="/admin/assets/js/mail-modeles.js"></script>
+<script src="/admin/assets/js/signature-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>

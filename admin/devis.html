@@ -1424,8 +1424,9 @@ function confirmerAbandon(){
   if(!sale)return true
   return confirm('Des modifications ne sont pas enregistrées. Les abandonner ?')
 }
-/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) :
-   le mail part de contact@itsoluce.be et reste dans la conversation du client. */
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) et
+   dossier d'origine : les modèles se remplissent avec ses informations. Le
+   mail part de contact@itsoluce.be et reste dans la conversation du client. */
 function lienMessages(o){
   const p=new URLSearchParams({nouveau:'1'})
   Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})
@@ -1435,7 +1436,7 @@ window.repondreParMail=function(){
   if(!courant){showToast("Enregistre d'abord le devis",'err');return}
   if(!courant.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
   if(!confirmerAbandon())return
-  location.href=lienMessages({a:courant.client_email,objet:`Votre devis ${courant.numero}`})
+  location.href=lienMessages({a:courant.client_email,devis_id:courant.id,objet:`Votre devis ${courant.numero}`})
 }
 window.ouvrirDevis=function(id){
   if(!confirmerAbandon())return

@@ -351,11 +351,17 @@ async function actionEnvoyer(c: Record<string, unknown>) {
     } finally { if (imap) await imap.deconnexion(); }
   }
 
+  // Signature « complète » (logo, coordonnées), la même que sur les devis et
+  // les factures : construite par la page Messages depuis Gestion › Entreprise.
+  // À défaut, l'ancienne signature texte sert de secours.
+  const sigHtmlRecue = typeof c.signature_html === "string" && c.signature_html.length <= 20_000 ? c.signature_html : "";
+  const sigTexteRecue = typeof c.signature_texte === "string" && c.signature_texte.length <= 2_000 ? c.signature_texte : "";
   const lignesSig = signature.split("\n");
-  const htmlSignature = `<div style="margin-top:16px;padding-top:10px;border-top:1px solid #e3e3e3;font-size:13px;line-height:1.55;color:#555">` +
+  const htmlSignature = sigHtmlRecue ||
+    `<div style="margin-top:16px;padding-top:10px;border-top:1px solid #e3e3e3;font-size:13px;line-height:1.55;color:#555">` +
     `<b style="color:#1d1d1f">${echapper(lignesSig[0] || "")}</b>` +
     lignesSig.slice(1).map((l) => `<br>${echapper(l)}`).join("") + `</div>`;
-  const texte = `${corps}\n\n-- \n${signature}${citationTexte}\n`;
+  const texte = `${corps}\n\n-- \n${sigTexteRecue || signature}${citationTexte}\n`;
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#1d1d1f">` +
     paragraphes(corps) + htmlSignature + citationHtml + `</div>`;
 

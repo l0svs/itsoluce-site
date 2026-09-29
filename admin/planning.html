@@ -1023,6 +1023,8 @@ async function load(){
     if(r.cle==='entreprise_telephone')ENTREPRISE.tel=v
     if(r.cle==='entreprise_site')ENTREPRISE.site=v.replace(/^https?:\/\//,'').replace(/\/$/,'')
   })
+  // Adresse et BCE : pour la signature complète, la même que sur les devis.
+  Object.assign(ENTREPRISE,entrepriseDepuisReglages(rSet&&rSet.data||[]),{logo:ENTREPRISE.logo})
   if(rRdv.error)throw rRdv.error
   allRdv=rRdv.data||[]
   allClients=rCli.data||[]
@@ -1437,20 +1439,9 @@ window.deleteRdv=async function(){
 let _rappelEnAttente=null
 
 function signatureRappel(){
-  /* Signature compacte, identique à celle de l'accusé de réception.
-     Le logo est affiché à 78 px : le fichier source fait 156 px de large,
-     au-delà il perdrait sa netteté sur un écran retina. */
-  const telLien=(ENTREPRISE.tel||'').replace(/[^0-9+]/g,'')
-  const L=(href,txt)=>`<a href="${href}" style="color:#0052CC;text-decoration:none;">${escHtml(txt)}</a>`
-  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>`+
-    `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">`+
-    `<tr><td style="padding:0 0 10px;"><img src="${ENTREPRISE.logo}" width="78" height="32" alt="${escHtml(ENTREPRISE.nom)}" style="display:block;border:0;"></td></tr>`+
-    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>`+
-    `<tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:#5a6b7b;">`+
-    [ENTREPRISE.tel?L('tel:'+telLien,ENTREPRISE.tel):'',
-     ENTREPRISE.email?L('mailto:'+ENTREPRISE.email,ENTREPRISE.email):'',
-     ENTREPRISE.site?L('https://'+ENTREPRISE.site+'/',ENTREPRISE.site):''].filter(Boolean).join('&nbsp;&middot;&nbsp;')+
-    `</td></tr></table>`
+  /* Signature complète, la même que sur les devis, les factures et les mails
+     écrits depuis Messages (admin/assets/js/signature-mail.js). */
+  return signatureMailHTML(ENTREPRISE)
 }
 
 function texteEnHtml(t){
@@ -1646,6 +1637,7 @@ document.addEventListener('click',function(e){
 })
 </script>
 <script src="/admin/assets/js/envoi-mail.js"></script>
+<script src="/admin/assets/js/signature-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-mail-badge.js"></script>
 </body>
