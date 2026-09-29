@@ -14,6 +14,20 @@ export interface Flux {
   close(): void;
 }
 
+/**
+ * Écrit tous les octets. Une connexion TLS n'en accepte qu'une partie à la
+ * fois (64 Ko au maximum) : sans cette boucle, un mail avec un PDF partait
+ * tronqué et la copie dans « Envoyés » restait bloquée.
+ */
+export async function ecrireTout(flux: Flux, octets: Uint8Array): Promise<void> {
+  let fait = 0;
+  while (fait < octets.length) {
+    const n = await flux.write(octets.subarray(fait));
+    if (n <= 0) throw new Error("Écriture impossible sur la connexion");
+    fait += n;
+  }
+}
+
 // Élément d'une réponse analysée : texte (atome ou chaîne), octets
 // (littéral), liste entre parenthèses, ou NIL (null).
 export type Jeton = string | Uint8Array | null | Jeton[];
@@ -132,9 +146,9 @@ export class Imap {
   async commande(cmd: string, litteral?: Uint8Array): Promise<Jeton[][]> {
     const tag = "m" + (++this.numero);
     if (litteral) {
-      await this.flux.write(enc.encode(`${tag} ${cmd} {${litteral.length}}\r\n`));
+      await ecrireTout(this.flux, enc.encode(`${tag} ${cmd} {${litteral.length}}\r\n`));
     } else {
-      await this.flux.write(enc.encode(`${tag} ${cmd}\r\n`));
+      await ecrireTout(this.flux, enc.encode(`${tag} ${cmd}\r\n`));
     }
     const nonEtiquetees: Jeton[][] = [];
     for (;;) {
@@ -142,8 +156,8 @@ export class Imap {
       const debut = String(r.morceaux[0]);
       if (debut.startsWith("+")) {
         if (!litteral) throw new ErreurImap("Continuation IMAP inattendue");
-        await this.flux.write(litteral);
-        await this.flux.write(enc.encode("\r\n"));
+        await ecrireTout(this.flux, litteral);
+        await ecrireTout(this.flux, enc.encode("\r\n"));
         litteral = undefined;
         continue;
       }

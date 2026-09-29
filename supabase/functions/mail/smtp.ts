@@ -4,7 +4,7 @@
 //  l'app mail : même serveur, mêmes enregistrements SPF/DKIM.
 // ═══════════════════════════════════════════════════════════
 
-import type { Flux } from "./imap.ts";
+import { ecrireTout, type Flux } from "./imap.ts";
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
@@ -50,7 +50,7 @@ export class Smtp {
   }
 
   private async envoyerLigne(l: string) {
-    await this.flux.write(enc.encode(l + "\r\n"));
+    await ecrireTout(this.flux, enc.encode(l + "\r\n"));
   }
 
   async envoyer(opts: {
@@ -75,8 +75,8 @@ export class Smtp {
       }
       await this.envoyerLigne("DATA");
       await this.attendre([354], "DATA");
-      await this.flux.write(pointsDoubles(opts.brut));
-      await this.flux.write(enc.encode("\r\n.\r\n"));
+      await ecrireTout(this.flux, pointsDoubles(opts.brut));
+      await ecrireTout(this.flux, enc.encode("\r\n.\r\n"));
       await this.attendre([250], "envoi");
       await this.envoyerLigne("QUIT");
       await this.reponse().catch(() => {});
