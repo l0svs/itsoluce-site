@@ -1211,7 +1211,7 @@ window.addLigne=function addLigne(desc,qte,prix,stockId){
       </div>
     </div>
     <input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()" aria-label="Quantité"/>
-    <input type="number" class="l-prix" value="${prix}" min="0" step="0.01" oninput="calcTotaux()" aria-label="Prix unitaire"/>
+    <input type="number" class="l-prix" value="${prix}" step="0.01" oninput="calcTotaux()" aria-label="Prix unitaire"/>
     <input type="text" class="l-total" value="0,00" readonly aria-label="Total de la ligne"/>
     <button type="button" class="ligne-del" onclick="this.closest('.ligne').remove();calcTotaux()" title="Retirer la ligne"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`
   document.getElementById('lignesBody').appendChild(div)
