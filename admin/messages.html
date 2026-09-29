@@ -257,9 +257,8 @@ textarea.in{min-height:210px; resize:vertical; line-height:1.55;}
 .chip{background:var(--bg3); border:1px solid var(--ln2); border-radius:980px; padding:5px 11px; font-size:12.5px; color:var(--t2); cursor:pointer; font-family:inherit;}
 .chip:hover{color:var(--t1); border-color:var(--a);}
 .chip.on{background:var(--ad); color:var(--a); border-color:transparent;}
-.sig{border-top:1px dashed var(--ln2); margin-top:8px; padding-top:8px; color:var(--t2); font-size:12.5px; line-height:1.55; white-space:pre-line;}
-.sig b{color:var(--t1); font-weight:600;}
-.sig small{display:block; color:var(--t3); font-size:11px; margin-top:4px;}
+.sig-apercu{background:#fff; border:1px solid var(--ln); border-radius:11px; padding:2px 14px 12px; margin-top:8px; overflow-x:auto;}
+.sig-note{color:var(--t3); font-size:11px; margin-top:5px;}
 .alerte-champ{background:rgba(178,94,9,.1); color:var(--w); border-radius:10px; padding:8px 11px; font-size:12.5px; margin-bottom:10px; display:none;}
 .info-transfert{background:var(--bg3); color:var(--t2); border-radius:10px; padding:8px 11px; font-size:12.5px; margin-bottom:10px;}
 .comp-bar{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap;}
@@ -455,7 +454,8 @@ function showToast(msg,type='ok'){
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="/admin/assets/js/mail-signature.js"></script>
+<script src="/admin/assets/js/mail-modeles.js"></script>
+<script src="/admin/assets/js/signature-mail.js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
@@ -532,8 +532,9 @@ let selection=null        // id du mail ouvert
 let filCourant=[]         // mails de la conversation ouverte
 let redaction=null        // brouillon en cours de rédaction
 let etat=null
-const ctx={clients:new Map(),demandes:new Map(),fournisseurs:[],reps:[],devis:[],factures:[]}
-let reglages={signature:MAIL_DEFAUTS.signature}
+const ctx={clients:new Map(),demandes:new Map(),fournisseurs:[],reps:[],devis:[],factures:[],rdvs:[],demandesListe:[]}
+let reglages={modeles:MAIL_MODELES_DEFAUT}
+let ENT=entrepriseDepuisReglages([])
 
 const app=document.getElementById('pageBody')
 const zoneLecture=document.getElementById('lecture')
@@ -623,26 +624,31 @@ function etiquettesHtml(m){
 
 /* ═══ Chargements ═══ */
 async function chargerReglages(){
-  const {data}=await sb.from('settings').select('cle,valeur').in('cle',['mail_signature'])
+  const {data}=await sb.from('settings').select('cle,valeur')
+  ENT=entrepriseDepuisReglages(data||[])
   ;(data||[]).forEach(r=>{
-    if(r.cle==='mail_signature'&&String(r.valeur||'').trim())reglages.signature=String(r.valeur).trim()
+    if(r.cle==='mail_modeles_v2'){
+      try{const l=JSON.parse(r.valeur||'null');if(Array.isArray(l)&&l.length)reglages.modeles=l}catch(e){}
+    }
   })
 }
 /* Clients, demandes, fournisseurs… : servent aux étiquettes et aux liens.
    Une table inaccessible pour ce compte est simplement ignorée. */
 async function chargerContexte(){
-  const [c,d,f,r,dv,fa]=await Promise.all([
+  const [c,d,f,r,dv,fa,rv]=await Promise.all([
     sb.from('clients').select('id,numero,nom,email').not('email','is',null).limit(5000),
-    sb.from('demandes_formulaire').select('id,prenom,nom,email,appareil,created_at').not('email','is',null).order('created_at',{ascending:false}).limit(2000),
+    sb.from('demandes_formulaire').select('id,prenom,nom,email,appareil,description,created_at').not('email','is',null).order('created_at',{ascending:false}).limit(2000),
     sb.from('fournisseurs').select('nom,email,site_web').limit(500),
-    sb.from('reparations').select('id,numero,client_email,client_nom,appareil,modele,statut,created_at').order('created_at',{ascending:false}).limit(2000),
-    sb.from('devis').select('id,numero,client_email,client_nom,total,date_emission,created_at').order('created_at',{ascending:false}).limit(2000),
-    sb.from('factures').select('id,numero,client_email,client_nom,total,date_emission').order('date_emission',{ascending:false}).limit(2000)
+    sb.from('reparations').select('id,numero,client_id,client_email,client_nom,appareil,modele,panne_description,statut,created_at').order('created_at',{ascending:false}).limit(2000),
+    sb.from('devis').select('id,numero,client_id,client_email,client_nom,total,statut,date_emission,date_validite,created_at').order('created_at',{ascending:false}).limit(2000),
+    sb.from('factures').select('id,numero,client_email,client_nom,total,date_emission').order('date_emission',{ascending:false}).limit(2000),
+    sb.from('rendezvous').select('id,client_id,client_nom,reparation_id,date_debut,lieu,termine').gte('date_debut',new Date(Date.now()-86400000).toISOString()).order('date_debut',{ascending:true}).limit(500)
   ])
   ;(c.data||[]).forEach(x=>{if(x.email)ctx.clients.set(norm(x.email),x)})
+  ctx.demandesListe=d.data||[]
   ;(d.data||[]).forEach(x=>{const e=norm(x.email);if(e&&!ctx.demandes.has(e))ctx.demandes.set(e,x)})
   ctx.fournisseurs=(f.data||[]).map(x=>({nom:x.nom,domaines:[domaine(x.email),String(x.site_web||'').toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0]].filter(Boolean)}))
-  ctx.reps=r.data||[]; ctx.devis=dv.data||[]; ctx.factures=fa.data||[]
+  ctx.reps=r.data||[]; ctx.devis=dv.data||[]; ctx.factures=fa.data||[]; ctx.rdvs=(rv.data||[]).filter(x=>!x.termine)
 }
 async function chargerEtat(){
   const {data}=await sb.from('mail_etat').select('derniere_synchro,ok,message,nouveaux').eq('id',1).maybeSingle()
@@ -846,12 +852,15 @@ function afficherConversation(m){
       <div class="fil" id="filBulles"></div>
       ${LECTURE_SEULE?'':`<div class="rapide">
         <textarea id="repRapide" placeholder="Répondre à ${escHtml(nomAff||'')}…"></textarea>
+        <div class="chips" id="chipsRapides"></div>
         <div class="bar"><button class="btn btn-secondary btn-sm" onclick="repondre(true)">Ouvrir en grand · joindre un fichier</button><button class="btn btn-primary btn-sm" id="btnRapide" onclick="envoiRapide()">Envoyer</button></div>
       </div>
       <div class="boutons-mobile"><button class="btn btn-primary" onclick="repondre()">Répondre</button><button class="btn btn-secondary" onclick="transferer()">Transférer</button></div>`}
     </div>`
   const fil=document.getElementById('filBulles')
   filCourant.forEach(x=>fil.appendChild(bulle(x)))
+  const chips=document.getElementById('chipsRapides')
+  if(chips)chips.innerHTML=reglages.modeles.map((t,i)=>`<button class="chip" onclick="modeleRapide(${i})">${escHtml(t.nom)}</button>`).join('')
 }
 
 /* Coupe un texte au début de la partie citée (réponse précédente, signature). */
@@ -988,9 +997,60 @@ window.effacer=async function(id){
   }catch(e){showToast(e.message,'err')}
 }
 
+/* ═══ Modèles : contenu adapté au contexte ═══
+   Tu choisis le modèle ; ses champs se remplissent avec ce que l'ERP sait
+   du client : sa demande, son dossier de réparation, son devis, son
+   prochain rendez-vous. « indices » précise le dossier quand on arrive
+   depuis une autre page (bouton « Répondre par mail »). */
+const REPS_CLOSES=['rendu','annule','non_reparable']
+function contexteMail(email,indices){
+  indices=indices||{}
+  const cl=ctx.clients.get(email)||[...ctx.clients.values()].find(c=>String(c.id)===String(indices.client))||null
+  const dm=(indices.demande&&ctx.demandesListe.find(x=>String(x.id)===String(indices.demande)))||ctx.demandes.get(email)||null
+  const repsClient=ctx.reps.filter(r=>(email&&norm(r.client_email)===email)||(cl&&r.client_id===cl.id))
+  const rep=(indices.reparation&&ctx.reps.find(x=>String(x.id)===String(indices.reparation)))
+    ||repsClient.find(r=>!REPS_CLOSES.includes(r.statut))||repsClient[0]||null
+  const devisClient=ctx.devis.filter(d=>(email&&norm(d.client_email)===email)||(cl&&d.client_id===cl.id))
+  const dv=(indices.devis&&ctx.devis.find(x=>String(x.id)===String(indices.devis)))
+    ||devisClient.find(d=>d.statut==='envoye')||devisClient[0]||null
+  const rdv=ctx.rdvs.find(x=>(cl&&x.client_id===cl.id)||(rep&&x.reparation_id===rep.id))||null
+  const nom=(cl&&cl.nom)||(dm&&[dm.prenom,dm.nom].filter(Boolean).join(' '))||(rep&&rep.client_nom)||(dv&&dv.client_nom)||''
+  const eur=n=>Number(n||0).toFixed(2).replace('.',',')+' €'
+  const v={
+    nom,
+    prenom:(dm&&dm.prenom)||String(nom).split(' ')[0]||'',
+    appareil:(rep&&[rep.appareil,rep.modele].filter(Boolean).join(' '))||(dm&&dm.appareil)||'',
+    panne:String((rep&&rep.panne_description)||(dm&&dm.description)||'').replace(/\s+/g,' ').trim().slice(0,200),
+    dossier:(rep&&rep.numero)||'',
+    devis:(dv&&dv.numero)||'',
+    montant_devis:dv&&Number(dv.total)>0?eur(dv.total):'',
+    validite_devis:dv&&dv.date_validite?new Date(dv.date_validite).toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'}):'',
+    date_rdv:rdv?new Date(rdv.date_debut).toLocaleString('fr-BE',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).replace(':','h').replace(' à ',' à '):'',
+    lieu_rdv:(rdv&&rdv.lieu)||''
+  }
+  return v
+}
+function remplir(t,v){
+  return String(t||'').replace(/\{([a-zA-Z_éèêàû]+)\}/g,(tout,k)=>{
+    const cle=k.toLowerCase().replace('é','e')
+    return v[cle]?v[cle]:tout
+  })
+}
+function champsRestants(t){return [...new Set(String(t||'').match(/\{[a-zA-Z_éèêàû]+\}/g)||[])]}
+function signatureEnvoi(){return {signature_html:signatureMailHTML(ENT),signature_texte:signatureMailTexte(ENT)}}
+
+window.modeleRapide=function(i){
+  const t=reglages.modeles[i]; if(!t)return
+  const ta=document.getElementById('repRapide')
+  if(ta.value.trim()&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
+  const recu=filCourant.filter(x=>x.dossier!=='Sent').pop()||filCourant[filCourant.length-1]
+  ta.value=remplir(t.corps,contexteMail(contrepartie(recu).email))
+  ta.focus()
+}
+
 /* ═══ Rédaction ═══ */
 function nouvelleRedaction(init){
-  redaction=Object.assign({a:'',cc:'',objet:'',corps:'',pieces:[],repondre_a_id:null,transfert_de_id:null,brouillon_id:null,titre:'Nouveau message'},init||{})
+  redaction=Object.assign({a:'',cc:'',objet:'',corps:'',pieces:[],repondre_a_id:null,transfert_de_id:null,brouillon_id:null,indices:{},modele:null,titre:'Nouveau message'},init||{})
   selection=null
   afficherListe()
   vue('lecture')
@@ -1023,7 +1083,9 @@ window.envoiRapide=async function(){
   const b=document.getElementById('btnRapide')
   b.disabled=true;b.innerHTML='<span class="spin"></span> Envoi…'
   try{
-    const r=await appelMail({action:'envoyer',a:[email],cc:[],objet,corps,repondre_a_id:p.id,pieces:[]})
+    const reste=champsRestants(corps)
+    if(reste.length)throw new Error(`complète d'abord ${reste.join(', ')}`)
+    const r=await appelMail({action:'envoyer',a:[email],cc:[],objet,corps,repondre_a_id:p.id,pieces:[],...signatureEnvoi()})
     showToast(r.avertissement||`Envoyé à ${email}`,r.avertissement?'err':'ok')
     await ouvrirMail(selection)
   }catch(e){showToast('Envoi : '+e.message,'err');b.disabled=false;b.textContent='Envoyer'}
@@ -1031,7 +1093,6 @@ window.envoiRapide=async function(){
 
 function afficherRedaction(){
   const r=redaction
-  const sigLignes=reglages.signature.split('\n')
   zoneLecture.innerHTML=`
     <div class="lect-barre">
       <button class="retour" onclick="annulerRedaction()">‹ Annuler</button>
@@ -1045,9 +1106,12 @@ function afficherRedaction(){
       </div>
       <div class="fg" id="fg-cc" style="${r.cc||r.ccOuvert?'':'display:none'}"><label>Cc</label><input class="in" id="c-cc" type="text" inputmode="email" autocomplete="off" placeholder="Séparer les adresses par une virgule" value="${escHtml(r.cc)}"/></div>
       ${r.transfert_de_id?`<div class="info-transfert">Le message d'origine sera ajouté sous ton texte${r.nbPiecesOrigine?`, avec ses ${r.nbPiecesOrigine} pièce${r.nbPiecesOrigine>1?'s':''} jointe${r.nbPiecesOrigine>1?'s':''}`:''}.</div>`:''}
+      <div class="fg"><label>Modèle</label><div class="chips">${reglages.modeles.map((t,i)=>`<button type="button" class="chip${r.modele===i?' on':''}" onclick="appliquerModele(${i})">${escHtml(t.nom)}</button>`).join('')}</div></div>
+      <div class="alerte-champ" id="alerteChamps"></div>
       <div class="fg"><label>Message</label>
         <textarea class="in" id="c-corps" placeholder="Ton message…">${escHtml(r.corps)}</textarea>
-        <div class="sig"><b>${escHtml(sigLignes[0]||'')}</b>${sigLignes.slice(1).map(l=>'<br>'+escHtml(l)).join('')}<small>Signature ajoutée automatiquement · modifiable dans Gestion › Messages</small></div>
+        <div class="sig-apercu">${signatureMailHTML(ENT)}</div>
+        <div class="sig-note">Formule de politesse et signature ajoutées automatiquement (coordonnées : Gestion › Entreprise)</div>
       </div>
       <div class="pjs" id="c-pieces"></div>
       <div class="comp-bar">
@@ -1062,7 +1126,8 @@ function afficherRedaction(){
       </div>
     </div>`
   afficherPieces()
-  ;['c-a','c-cc','c-objet','c-corps'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',lireChamps)})
+  ;['c-a','c-cc','c-objet','c-corps'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{lireChamps();verifierChamps()})})
+  verifierChamps()
   const cible=r.a?document.getElementById('c-corps'):document.getElementById('c-a')
   if(!estMobile())cible.focus()
 }
@@ -1073,6 +1138,24 @@ function lireChamps(){
   redaction.cc=v('c-cc')??redaction.cc
   redaction.objet=v('c-objet')??redaction.objet
   redaction.corps=v('c-corps')??redaction.corps
+}
+function verifierChamps(){
+  const el=document.getElementById('alerteChamps'); if(!el||!redaction)return
+  const reste=champsRestants(redaction.objet+' '+redaction.corps)
+  el.style.display=reste.length?'block':'none'
+  el.textContent=reste.length?`À compléter avant l'envoi : ${reste.join(', ')}`:''
+}
+window.appliquerModele=function(i){
+  lireChamps()
+  const t=reglages.modeles[i]; if(!t)return
+  if(redaction.corps.trim()&&redaction.modele===null&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
+  const email=norm(String(redaction.a).split(/[,;]/)[0])
+  const v=contexteMail(email,redaction.indices)
+  redaction.corps=remplir(t.corps,v)
+  // En réponse, l'objet « Re: … » est gardé : il rattache le mail au fil.
+  if(t.objet&&!redaction.repondre_a_id)redaction.objet=remplir(t.objet,v)
+  redaction.modele=i
+  afficherRedaction()
 }
 window.ouvrirCc=function(){lireChamps();redaction.ccOuvert=true;afficherRedaction();document.getElementById('c-cc').focus()}
 window.annulerRedaction=function(){
@@ -1177,12 +1260,14 @@ window.envoyer=async function(){
   if(!a.length){showToast('Indique un destinataire','err');return}
   if(!r.objet.trim()){showToast("L'objet est vide",'err');return}
   if(!r.corps.trim()){showToast('Le message est vide','err');return}
+  const reste=champsRestants(r.objet+' '+r.corps)
+  if(reste.length){showToast(`Complète d'abord : ${reste.join(', ')}`,'err');verifierChamps();return}
   const btn=document.getElementById('btnEnvoyer')
   btn.disabled=true;btn.innerHTML='<span class="spin"></span> Envoi…'
   try{
     const res=await appelMail({action:'envoyer',a,cc,objet:r.objet.trim(),corps:r.corps,
       repondre_a_id:r.repondre_a_id,transfert_de_id:r.transfert_de_id,
-      pieces:r.pieces.map(p=>({nom:p.nom,type:p.type,base64:p.base64}))})
+      pieces:r.pieces.map(p=>({nom:p.nom,type:p.type,base64:p.base64})),...signatureEnvoi()})
     if(r.brouillon_id)await sb.from('mail_brouillons').delete().eq('id',r.brouillon_id)
     brouillons=brouillons.filter(b=>b.id!==r.brouillon_id)
     showToast(res.avertissement||`Envoyé à ${a.join(', ')}`,res.avertissement?'err':'ok')
@@ -1214,7 +1299,7 @@ const P=new URLSearchParams(location.search)
 if(P.get('mail'))ouvrirMail(Number(P.get('mail')))
 else if(P.get('nouveau')&&!LECTURE_SEULE){
   const email=norm(P.get('a'))
-  nouvelleRedaction({a:email,objet:P.get('objet')||''})
+  nouvelleRedaction({a:email,objet:P.get('objet')||'',indices:{demande:P.get('demande'),reparation:P.get('reparation'),devis:P.get('devis_id'),client:P.get('client')}})
   history.replaceState(null,'','/admin/messages.html')
 }
 

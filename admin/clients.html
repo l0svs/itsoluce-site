@@ -1098,8 +1098,9 @@ window.trier=function(cle){
 }
 
 /* ═══════════ Fiche 360° ═══════════ */
-/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) :
-   le mail part de contact@itsoluce.be et reste dans la conversation du client. */
+/* Lien vers la page Messages, rédaction pré-remplie (destinataire, objet) et
+   dossier d'origine : les modèles se remplissent avec ses informations. Le
+   mail part de contact@itsoluce.be et reste dans la conversation du client. */
 function lienMessages(o){
   const p=new URLSearchParams({nouveau:'1'})
   Object.entries(o).forEach(([k,v])=>{if(v)p.set(k,String(v))})
@@ -1155,7 +1156,7 @@ window.showDetail=function(id){
     </div>
     <div class="fi-acts">
       <button class="btn btn-secondary" onclick="editClient(${c.id})">Modifier</button>
-      ${c.email?`<a class="btn btn-primary" href="${escHtml(lienMessages({a:c.email}))}">✉ Répondre par mail</a>`:''}
+      ${c.email?`<a class="btn btn-primary" href="${escHtml(lienMessages({a:c.email,client:c.id}))}">✉ Répondre par mail</a>`:''}
     </div>`
   document.querySelectorAll('.reg-row').forEach(r=>r.classList.toggle('sel',Number(r.dataset.id)===id))
   document.getElementById('fichePanel').classList.add('open')
