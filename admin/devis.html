@@ -870,7 +870,34 @@ function expire(d){
 }
 function etatAffiche(d){
   if(expire(d))return {label:'Validité dépassée',cls:'t-expire'}
+  const sv=suivi(d)
+  if(sv)return {label:sv.label,cls:STATUTS.accepte.cls,suivi:true}
   return STATUTS[d.statut]||STATUTS.brouillon
+}
+
+/* ─── Suivi d'un devis accepté ────────────────────────────────────
+   Un devis accepté passe le plus souvent par « Créer la réparation » : la
+   facture est ensuite faite depuis le dossier, et elle est rattachée à la
+   réparation, pas au devis. Le devis restait donc « à facturer » alors qu'il
+   était facturé et payé. Le suivi relit la facture et la réparation liées. */
+let facturesLiees=[], repsLiees=new Map()
+const REP_COURT={attente_reception:'nouveau dossier',recu:'appareil reçu',attente:'attente de pièce',encours:'en réparation',pret:'prêt à récupérer',rendu:'rendu au client'}
+function factureDe(d){
+  const idsRep=[d.converti_reparation_id,d.reparation_id].filter(Boolean)
+  return facturesLiees.find(f=>f.id===d.converti_facture_id)
+    ||facturesLiees.find(f=>f.devis_id===d.id)
+    ||facturesLiees.find(f=>f.reparation_id&&idsRep.includes(f.reparation_id))
+    ||null
+}
+function suivi(d){
+  if(d.statut!=='accepte')return null
+  const f=factureDe(d)
+  const r=repsLiees.get(d.converti_reparation_id||d.reparation_id)||null
+  if(f&&f.statut==='payee')return {cle:'paye',label:`payé · facture ${f.numero||''}`.trim(),facture:f,rep:r}
+  if(f)return {cle:'facture',label:f.statut==='brouillon'?`facture ${f.numero||''} en brouillon`:`facturé · à encaisser`,facture:f,rep:r}
+  if(r&&['non_reparable','annule'].includes(r.statut))return {cle:'sans_suite',label:r.statut==='annule'?'réparation annulée':'non réparable',facture:null,rep:r}
+  if(r)return {cle:'reparation',label:`${r.numero||'réparation'} · ${REP_COURT[r.statut]||r.statut||'en cours'}`,facture:null,rep:r}
+  return {cle:'a_lancer',label:'accepté · à lancer',facture:null,rep:null}
 }
 
 try {
@@ -970,17 +997,21 @@ async function nextNumero(cle){
 
 /* ─── Chargement ─── */
 async function load(){
-  const [rDev,rCli,rStock,rSvc]=await Promise.all([
+  const [rDev,rCli,rStock,rSvc,rFac,rRep]=await Promise.all([
     sb.from('devis').select('*',{count:'exact'}).order('created_at',{ascending:false}).limit(2000),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva,type').order('nom').limit(5000),
     sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom').limit(5000),
-    sb.from('services').select('*').order('ordre',{ascending:true})
+    sb.from('services').select('*').order('ordre',{ascending:true}),
+    sb.from('factures').select('id,numero,statut,devis_id,reparation_id').limit(5000),
+    sb.from('reparations').select('id,numero,statut').limit(5000)
   ])
   if(rDev.error)throw new Error(rDev.error.message)
   allDevis=rDev.data||[]
   allClients=rCli.data||[]
   allStock=rStock.data||[]
   window.allServices=rSvc.data||[]
+  facturesLiees=rFac.data||[]
+  repsLiees=new Map((rRep.data||[]).map(r=>[r.id,r]))
   if(typeof rDev.count==='number'&&rDev.count>allDevis.length){
     showToast(`Seuls ${allDevis.length} devis sur ${rDev.count} ont été chargés.`,'err')
   }
@@ -1002,7 +1033,7 @@ function majResume(){
     el.textContent='Aucun devis pour le moment. Crée le premier avec le formulaire.'
     return
   }
-  const aFacturer=allDevis.filter(d=>d.statut==='accepte'&&!d.converti_facture_id)
+  const aFacturer=allDevis.filter(d=>['a_lancer','reparation'].includes(suivi(d)?.cle))
   const montantAFacturer=aFacturer.reduce((a,d)=>a+(Number(d.total)||0),0)
   const enAttente=allDevis.filter(d=>d.statut==='envoye')
   const expires=enAttente.filter(expire)
@@ -1022,9 +1053,11 @@ function majResume(){
 
 /* ─── Rail ─── */
 const GROUPES=[
-  {cle:'a_facturer', titre:'Accepté, à facturer', test:d=>d.statut==='accepte'&&!d.converti_facture_id, chaud:true},
-  {cle:'en_cours',   titre:'En cours',            test:d=>['brouillon','envoye'].includes(d.statut)},
-  {cle:'clos',       titre:'Classés',             test:d=>d.statut==='refuse'||(d.statut==='accepte'&&d.converti_facture_id)}
+  {cle:'a_lancer',   titre:'Accepté, à lancer',        test:d=>suivi(d)?.cle==='a_lancer', chaud:true},
+  {cle:'reparation', titre:'Accepté, en réparation',   test:d=>suivi(d)?.cle==='reparation'},
+  {cle:'facture',    titre:'Facturé, à encaisser',     test:d=>suivi(d)?.cle==='facture', chaud:true},
+  {cle:'en_cours',   titre:'En attente de réponse',    test:d=>['brouillon','envoye'].includes(d.statut)},
+  {cle:'clos',       titre:'Classés', test:d=>d.statut==='refuse'||['paye','sans_suite'].includes(suivi(d)?.cle)}
 ]
 
 // Exposée globalement : la recherche l'appelle depuis un attribut oninput,
@@ -1046,7 +1079,7 @@ window.renderCards=function renderCards(){
       return `<button type="button" class="rail-item s-${escHtml(d.statut||'brouillon')}${courant&&courant.id===d.id?' on':''}" onclick="ouvrirDevis(${d.id})">
         <span class="ref">${escHtml(d.numero||'—')}</span>
         <b>${escHtml(d.client_nom||'Sans client')}</b>
-        <em>${eur(d.total)} · ${e.label.toLowerCase()}</em>
+        <em>${eur(d.total)} · ${e.suivi?e.label:e.label.toLowerCase()}</em>
       </button>`
     }).join('')
   })
@@ -1365,12 +1398,15 @@ function majEtatApercu(){
   const bouts=[]
   if(d.email_envoye)bouts.push(`Envoyé au client le ${dateCourte(d.date_envoi)}`)
   if(expire(d))bouts.push(`Validité dépassée depuis ${joursDepuis(d.date_validite)} jours`)
-  if(d.converti_facture_id){
-    bouts.push('Déjà converti en facture')
+  const fLiee=factureDe(d)
+  if(fLiee){
+    // Facture faite directement ou depuis la réparation : une seconde
+    // conversion créerait une facture en double.
+    bouts.push(`Facture ${fLiee.numero||''} ${fLiee.statut==='payee'?'payée':fLiee.statut==='brouillon'?'en brouillon':'envoyée, à encaisser'}`)
     if(bFac){bFac.disabled=true;bFac.textContent='Déjà facturé'}
   }else if(bFac)bFac.textContent='Convertir en facture'
   if(d.converti_reparation_id){
-    bouts.push(`Réparation ${d.reparation_numero||''} créée`)
+    bouts.push(`Réparation ${d.reparation_numero||repsLiees.get(d.converti_reparation_id)?.numero||''} créée`.replace('  ',' '))
     if(bRep){bRep.disabled=true;bRep.textContent='Réparation déjà créée'}
   }else if(bRep)bRep.textContent='Créer la réparation'
   if(!d.client_id)bouts.push('Aucune fiche client rattachée')
@@ -1744,6 +1780,8 @@ window.convertirEnFacture=async function(){
   const d=courant
   if(!d){showToast("Enregistre d'abord le devis",'err');return}
   if(d.converti_facture_id){showToast('Ce devis a déjà été converti en facture','err');return}
+  const dejaFacture=factureDe(d)
+  if(dejaFacture){showToast(`Ce devis est déjà facturé (facture ${dejaFacture.numero||''}, faite depuis la réparation)`,'err');return}
   if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant : ${eur(d.total)}\n\nLe stock lié aux lignes sera décrémenté.`))return
   const btn=document.getElementById('sideFactureBtn')
   const txt=btn.textContent
@@ -1792,6 +1830,7 @@ window.convertirEnFacture=async function(){
     const i=allDevis.findIndex(x=>x.id===d.id)
     if(i>=0)Object.assign(allDevis[i],maj)
     Object.assign(courant,maj)
+    facturesLiees.push({id:res.data.id,numero:numFacture,statut:'brouillon',devis_id:d.id,reparation_id:d.reparation_id||null})
     closePdf()
     majResume()
     chargerDansFormulaire(courant)
@@ -1838,6 +1877,7 @@ window.convertirEnReparation=async function(){
     const i=allDevis.findIndex(x=>x.id===d.id)
     if(i>=0)Object.assign(allDevis[i],maj)
     Object.assign(courant,maj)
+    repsLiees.set(res.data.id,{id:res.data.id,numero:numRep,statut:'attente_reception'})
     _repLien={id:res.data.id,numero:numRep}
     closePdf()
     chargerDansFormulaire(courant)
