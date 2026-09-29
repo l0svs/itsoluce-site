@@ -160,6 +160,8 @@ body{font-size:14px;}
 .i-dem{background:rgba(26,138,82,.11); color:var(--ok);}
 .i-gar{background:rgba(178,94,9,.12); color:var(--w);}
 .i-stk{background:rgba(200,54,44,.10); color:var(--d);}
+.i-mail{background:var(--ad); color:var(--a);}
+.drow.nonlu .drow-t{font-weight:600;}
 [data-mode="dark"] .i-rdv{background:rgba(167,139,250,.18);}
 [data-mode="dark"] .i-fac,[data-mode="dark"] .i-gar{background:rgba(251,191,36,.16);}
 [data-mode="dark"] .i-dem{background:rgba(52,211,153,.16);}
@@ -677,7 +679,7 @@ const tables=[
   ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
   ['stock','id,nom,modele,quantite,seuil_alerte',5000],
-  ['demandes_formulaire','id,prenom,nom,appareil,description,vue,converti_reparation_id,created_at',3000],
+  ['demandes_formulaire','id,prenom,nom,email,appareil,description,vue,converti_reparation_id,created_at',3000],
   ['settings','cle,valeur',500]
 ]
 const reponses=await Promise.all(tables.map(([t,cols,lim])=>
@@ -691,6 +693,18 @@ tables.forEach(([t],i)=>{
   donnees[t]=r.data||[]
   if(typeof r.count==='number'&&r.count>donnees[t].length)tronques.push(t)
 })
+/* Messages : les 5 derniers mails reçus et le nombre de non-lus. Seulement
+   pour un compte qui a accès à la page Messages (RLS refuse sinon). */
+const VOIT_MAILS=MES_PAGES===null||MES_PAGES.includes('messages')
+let mailsRecents=[], mailsNonLus=0
+if(VOIT_MAILS){
+  const [rM,rN]=await Promise.all([
+    sb.from('mails').select('id,de_email,de_nom,repondre_a,objet,extrait,date_mail,lu').eq('dossier','INBOX').order('date_mail',{ascending:false}).limit(5),
+    sb.from('mails').select('id',{count:'exact',head:true}).eq('dossier','INBOX').eq('lu',false)
+  ])
+  if(!rM.error)mailsRecents=rM.data||[]
+  if(!rN.error)mailsNonLus=rN.count||0
+}
 const reps=donnees.reparations, factures=donnees.factures, devis=donnees.devis
 const rdvs=donnees.rendezvous, stock=donnees.stock
 const demandes=donnees.demandes_formulaire
@@ -768,10 +782,11 @@ const ICONES={
   dev:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
   dem:'<svg viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>',
   gar:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
   stk:'<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
 }
-function ligne({href,ico,cls,titre,sous,droite}){
-  return `<a class="drow" href="${href}">
+function ligne({href,ico,cls,titre,sous,droite,classe}){
+  return `<a class="drow${classe?' '+classe:''}" href="${href}">
     <span class="dico ${cls}">${ICONES[ico]}</span>
     <span class="drow-main"><span class="drow-t">${titre}</span><span class="drow-s">${sous||''}</span></span>
     ${droite||''}
@@ -808,6 +823,12 @@ function rendreJour(){
       sous:`Échue depuis ${j} ${pluriel(j,'jour')}`,
       droite:`<span class="pill p-d">${escHtml(eur(f.total))}</span>`}))
   })
+  if(mailsNonLus){
+    items.push(ligne({href:'/admin/messages.html',ico:'mail',cls:'i-mail',
+      titre:`${mailsNonLus} ${pluriel(mailsNonLus,'mail')} non ${mailsNonLus>1?'lus':'lu'}`,
+      sous:'Boîte contact@itsoluce.be',
+      droite:'<span class="pill p-a">Messages</span>'}))
+  }
   demandesATraiter.slice(0,3).forEach(d=>{
     items.push(ligne({href:'/admin/demandes.html',ico:'dem',cls:'i-dem',
       titre:escHtml([d.prenom,d.nom].filter(Boolean).join(' ')||'Demande'),
@@ -832,6 +853,23 @@ function rendreJour(){
 function rendreGrille(){
   const grid=document.getElementById('grid')
   grid.innerHTML=''
+
+  if(VOIT_MAILS){
+    const corpsMail=mailsRecents.map(m=>{
+      // Demandes du site : l'expéditeur technique est Formspree, la personne
+      // réelle est dans « Répondre à ».
+      const viaSite=/@formspree\.io$/i.test(m.de_email||'')&&m.repondre_a
+      const dem=viaSite?demandes.find(x=>String(x.email||'').toLowerCase()===String(m.repondre_a).toLowerCase()):null
+      const qui=viaSite?((dem&&[dem.prenom,dem.nom].filter(Boolean).join(' '))||m.repondre_a):(m.de_nom||m.de_email||'—')
+      const d=new Date(m.date_mail)
+      const quand=isNaN(d)?'':(joursEntre(d,aujourdhui)===0?heure(d):d.toLocaleDateString('fr-BE',{day:'numeric',month:'short'}))
+      return ligne({href:`/admin/messages.html?mail=${m.id}`,ico:'mail',cls:'i-mail',classe:m.lu?'':'nonlu',
+        titre:escHtml(qui),
+        sous:escHtml(m.objet||'(sans objet)'),
+        droite:m.lu?`<span class="drow-s">${escHtml(quand)}</span>`:'<span class="pill p-a">Nouveau</span>'})
+    }).join('')
+    grid.appendChild(carte('c-mail','Messages','/admin/messages.html',mailsNonLus?`${mailsNonLus} non ${mailsNonLus>1?'lus':'lu'}`:0,'hot',corpsMail,'Aucun mail reçu.'))
+  }
 
   const corpsRdv=rdvFuturs.slice(0,6).map(r=>{
     const t=TYPE_RDV[r.type]||TYPE_RDV.autre
