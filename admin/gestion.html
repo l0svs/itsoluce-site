@@ -1905,7 +1905,7 @@ function dessinerDetailPrest(){
     <div class="detail-s">${neuf?'Elle apparaîtra dans la liste une fois enregistrée.':'Modifie puis enregistre.'}</div>
     <div class="fg"><label for="p-nom">Nom *</label><input type="text" id="p-nom" value="${escHtml(s.nom)}" placeholder="Transfert de données"/></div>
     <div class="fg"><label>Prix *</label><div class="duo">
-      <input type="number" step="0.01" min="0" id="p-prix" value="${s.prix===''?'':escHtml(s.prix)}" placeholder="50"/>
+      <input type="number" step="0.01" id="p-prix" value="${s.prix===''?'':escHtml(s.prix)}" placeholder="50"/>
       <input type="number" step="0.01" min="0" id="p-prixmax" value="${s.prix_max==null?'':escHtml(s.prix_max)}" placeholder="max (facultatif)"/>
     </div></div>
     <div class="fg"><label for="p-unite">Unité</label><input type="text" id="p-unite" value="${escHtml(s.unite||'')}" placeholder="/h — laisser vide si forfait"/></div>
@@ -1924,7 +1924,9 @@ window.enregistrerPrestation=async function(){
   const nom=document.getElementById('p-nom').value.trim()
   const prix=parseFloat(document.getElementById('p-prix').value)
   if(!nom){showToast('Le nom est obligatoire','err');return}
-  if(isNaN(prix)||prix<0){showToast('Prix invalide','err');return}
+  // Un prix négatif est admis : il sert aux déductions, comme « Diagnostic
+  // déduit » (−30 €) ajouté au devis quand un diagnostic a déjà été payé.
+  if(isNaN(prix)){showToast('Prix invalide','err');return}
   const brutMax=document.getElementById('p-prixmax').value
   const pmax=brutMax!==''?parseFloat(brutMax):null
   const data={

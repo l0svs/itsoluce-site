@@ -829,7 +829,7 @@ const ENTREPRISE={
   cgv:[
     ['Validité de l\'offre','Le présent devis est valable durant la période indiquée ci-dessus. Passé ce délai, IT Soluce se réserve le droit de réviser les prix, notamment en fonction de la disponibilité et du coût des pièces.'],
     ['Acceptation','Le devis devient ferme et vaut commande dès réception de l\'accord écrit du client (email, signature ou confirmation explicite). Toute intervention ne débute qu\'après cette acceptation.'],
-    ['Prix et pièces','Les prix sont exprimés en euros, TVA non applicable (art. 56bis du Code de la TVA). Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord.'],
+    ['Prix et pièces','Les prix sont exprimés en euros, TVA non applicable (art. 56bis du Code de la TVA). Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord. Lorsqu\'un diagnostic (30 €) a été réalisé, son montant est déduit du présent devis si la réparation est confiée à IT Soluce.'],
     ['Garantie','Les réparations réalisées bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre), hors casse, oxydation ou mauvaise utilisation. La garantie légale de conformité reste applicable sur les pièces neuves.'],
     ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne saurait être tenu responsable d\'une perte de données. Sa responsabilité est limitée au montant de la prestation.'],
     ['Droit applicable','Le présent devis est soumis au droit belge. En cas de litige, les tribunaux du Brabant wallon sont seuls compétents. Le consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
@@ -1134,7 +1134,7 @@ window.addLigne=function addLigne(desc,qte,prix,stockId){
       </div>
     </div>
     <input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()" aria-label="Quantité"/>
-    <input type="number" class="l-prix" value="${prix}" min="0" step="0.01" oninput="calcTotaux()" aria-label="Prix unitaire"/>
+    <input type="number" class="l-prix" value="${prix}" step="0.01" oninput="calcTotaux()" aria-label="Prix unitaire"/>
     <input type="text" class="l-total" value="0,00" readonly aria-label="Total de la ligne"/>
     <button type="button" class="ligne-del" onclick="this.closest('.ligne').remove();calcTotaux()" title="Retirer la ligne"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`
   document.getElementById('lignesBody').appendChild(div)
