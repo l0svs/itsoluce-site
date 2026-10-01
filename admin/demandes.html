@@ -116,6 +116,7 @@ body{font-size:14px;}
 .fiche{background:var(--bg2); border-radius:var(--radius); padding:17px 20px 18px; box-shadow:0 1px 2px rgba(0,0,0,.05); border-left:3px solid transparent;}
 .fiche.st-nouveau{border-left-color:var(--a);}
 .fiche.st-converti{border-left-color:var(--ok);}
+.fiche.st-attente{border-left-color:var(--w);}
 .fiche.st-traite{opacity:.82;}
 .fiche.st-traite:hover{opacity:1;}
 
@@ -125,6 +126,7 @@ body{font-size:14px;}
 .tag{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap;}
 .t-nouveau{background:var(--ad); color:var(--a);}
 .t-traite{background:var(--bg3); color:var(--t2);}
+.t-attente{background:rgba(251,191,36,.15); color:var(--w);}
 .t-converti{background:rgba(26,138,82,.11); color:var(--ok);}
 [data-mode="dark"] .t-converti{background:rgba(52,211,153,.16);}
 .canal{font-size:11.5px; color:var(--t3);}
@@ -391,6 +393,12 @@ function jours(iso){
   const d=new Date(iso)
   return isNaN(d)?null:Math.floor((Date.now()-d.getTime())/86400000)
 }
+/** « depuis aujourd'hui », « depuis 1 jour », « depuis 4 jours ». */
+function depuis(iso){
+  const j=jours(iso)??0
+  return j<1?"depuis aujourd'hui":`depuis ${j} jour${j>1?'s':''}`
+}
+
 function quand(iso){
   const d=new Date(iso)
   if(isNaN(d))return '—'
@@ -454,6 +462,7 @@ let activeFilter='a_traiter'
 
 function statutOf(d){
   if(d.converti_reparation_id)return 'converti'
+  if(d.en_attente_depuis)return 'attente'
   if(!d.vue)return 'nouveau'
   return 'traite'
 }
@@ -480,6 +489,7 @@ function majResume(){
   const aTraiter=allDemandes.filter(d=>statutOf(d)==='nouveau')
   const convertis=allDemandes.filter(d=>statutOf(d)==='converti').length
   const traites=allDemandes.filter(d=>statutOf(d)==='traite').length
+  const enAttente=allDemandes.filter(d=>statutOf(d)==='attente').length
   if(!allDemandes.length){
     el.textContent='Aucune demande reçue pour le moment. Elles arriveront ici dès qu’un visiteur remplira le formulaire du site.'
   }else{
@@ -488,6 +498,7 @@ function majResume(){
       const plusVieille=Math.max(...aTraiter.map(d=>jours(d.created_at)??0))
       if(plusVieille>=2)bouts.push(`<span class="alerte">la plus ancienne attend depuis ${plusVieille} jours</span>`)
     }
+    if(enAttente)bouts.push(`${enAttente} en attente de réponse client`)
     if(convertis)bouts.push(`${convertis} transformée${convertis>1?'s':''} en dossier`)
     if(traites)bouts.push(`${traites} sans suite`)
     if(bouts.length===1)bouts.push(`${allDemandes.length} au total`)
@@ -502,6 +513,7 @@ function majResume(){
 
 const FILTRES=[
   {cle:'a_traiter', label:'À traiter'},
+  {cle:'attente',   label:'En attente'},
   {cle:'toutes',    label:'Toutes'},
   {cle:'traite',    label:'Sans suite'},
   {cle:'converti',  label:'Transformées'}
@@ -515,6 +527,7 @@ window.setFilter=function(f){activeFilter=f;renderFilters();renderTable()}
 
 const ETATS={
   nouveau: {label:'À traiter',  cls:'t-nouveau'},
+  attente: {label:'En attente client', cls:'t-attente'},
   traite:  {label:'Sans suite', cls:'t-traite'},
   converti:{label:'Transformée',cls:'t-converti'}
 }
@@ -537,14 +550,23 @@ function fiche(d){
        ${repondre}
        <span class="espace"></span>
        <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
+    : s==='traite'
+    ? `${repondre}
+       <button class="btn btn-secondary" onclick="changerStatut(${d.id},'nouveau')">Remettre à traiter</button>
+       <button class="btn btn-primary" onclick="transformer(${d.id})">Transformer en réparation</button>
+       <span class="espace"></span>
+       <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
     : `${repondre}
-       <button class="btn btn-secondary" onclick="toggleVue(${d.id})">${d.vue?'Remettre à traiter':'Classer sans suite'}</button>
+       ${s==='attente'
+         ? `<button class="btn btn-secondary" onclick="changerStatut(${d.id},'nouveau')">Réponse reçue</button>`
+         : `<button class="btn btn-secondary" onclick="changerStatut(${d.id},'attente')">En attente client</button>`}
+       <button class="btn btn-secondary" onclick="changerStatut(${d.id},'traite')">Classer sans suite</button>
        <button class="btn btn-primary" onclick="transformer(${d.id})">Transformer en réparation</button>
        <span class="espace"></span>
        <button class="btn btn-danger" onclick="supprimer(${d.id})">Supprimer</button>`
   return `<article class="fiche st-${s}">
     <div class="fiche-h">
-      <span class="tag ${e.cls}">${e.label}</span>
+      <span class="tag ${e.cls}">${e.label}${s==='attente'?` · ${depuis(d.en_attente_depuis)}`:''}</span>
       <b>${escHtml(nom)}</b>
       <span class="canal">formulaire du site</span>
       <span class="quand">${quand(d.created_at)}</span>
@@ -599,14 +621,25 @@ window.renderTable=function renderTable(){
   wrap.innerHTML=rows.map(fiche).join('')
 }
 
-window.toggleVue=async function(id){
+/* À traiter → En attente client (réponse demandée) → Réponse reçue (de nouveau
+   à traiter), ou Classée sans suite. Une demande en attente sort de la
+   pastille « Demandes » : elle ne demande rien tant que le client n'a pas
+   répondu. */
+const CHANGEMENTS={
+  nouveau:{champs:()=>({vue:false,en_attente_depuis:null}),message:'Demande remise à traiter'},
+  attente:{champs:()=>({vue:true,en_attente_depuis:new Date().toISOString()}),message:'Demande en attente de la réponse du client'},
+  traite: {champs:()=>({vue:true,en_attente_depuis:null}),message:'Demande classée sans suite'}
+}
+window.changerStatut=async function(id,vers){
   const d=allDemandes.find(x=>x.id===id)
-  if(!d)return
-  const {error}=await sb.from('demandes_formulaire').update({vue:!d.vue}).eq('id',id)
+  const c=CHANGEMENTS[vers]
+  if(!d||!c)return
+  const champs=c.champs()
+  const {error}=await sb.from('demandes_formulaire').update(champs).eq('id',id)
   if(error){showToast('Erreur : '+error.message,'err');return}
-  d.vue=!d.vue
+  Object.assign(d,champs)
   renderAll()
-  showToast(d.vue?'Demande classée sans suite':'Demande remise à traiter','ok')
+  showToast(c.message,'ok')
 }
 
 window.supprimer=async function(id){
@@ -704,7 +737,7 @@ window.transformer=async function(id){
 
 window.exportCSV=function(){
   if(!allDemandes.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','vue','email_confirmation_envoye','converti_reparation_id']
+  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','vue','en_attente_depuis','email_confirmation_envoye','converti_reparation_id']
   const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
   const csv=[cols.join(';'),...allDemandes.map(d=>cols.map(c=>cell(d[c])).join(';'))].join('\r\n')
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
