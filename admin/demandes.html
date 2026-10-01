@@ -518,6 +518,8 @@ const FILTRES=[
   {cle:'traite',    label:'Sans suite'},
   {cle:'converti',  label:'Transformées'}
 ]
+// Lien direct vers un filtre (depuis le Dashboard) : demandes.html?filtre=attente
+{const f=new URLSearchParams(location.search).get('filtre');if(FILTRES.some(x=>x.cle===f))activeFilter=f}
 function renderFilters(){
   document.getElementById('filterBtns').innerHTML=FILTRES.map(f=>
     `<button class="${activeFilter===f.cle?'on':''}" onclick="setFilter('${f.cle}')">${f.label}</button>`
