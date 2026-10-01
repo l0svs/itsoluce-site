@@ -192,6 +192,9 @@ body{font-size:14px;}
 .row.nonlu .nom{font-weight:600;}
 .row.nonlu .nom:before{content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--a); margin-right:6px; vertical-align:2px;}
 .row .hr{font-size:11.5px; color:var(--t3); white-space:nowrap; flex-shrink:0;}
+.row .suppr{flex-shrink:0; align-self:center; width:32px; height:32px; border:none; border-radius:8px; background:none; color:var(--t3); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.row .suppr svg{width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
+.row .suppr:hover{background:rgba(200,54,44,.1); color:var(--d);}
 .row .obj{font-size:13px; color:var(--t1); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .row.nonlu .obj{font-weight:500;}
 .row .ap{font-size:12.5px; color:var(--t3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
@@ -748,7 +751,8 @@ window.afficherListe=function(){
     zone.innerHTML=l.length?l.map(b=>`<div class="row${redaction&&redaction.brouillon_id===b.id?' sel':''}" onclick="ouvrirBrouillon(${b.id})">
       <div class="av">${escHtml(initiales('',b.a))}</div>
       <div class="m"><div class="l1"><span class="nom">${escHtml(b.a||'(sans destinataire)')}</span><span class="hr">${heureListe(b.updated_at)}</span></div>
-      <div class="obj">${escHtml(b.objet||'(sans objet)')}</div><div class="ap">${escHtml(String(b.corps||'').replace(/\s+/g,' ').slice(0,120))}</div></div></div>`).join('')
+      <div class="obj">${escHtml(b.objet||'(sans objet)')}</div><div class="ap">${escHtml(String(b.corps||'').replace(/\s+/g,' ').slice(0,120))}</div></div>
+      <button type="button" class="suppr" title="Supprimer le brouillon" aria-label="Supprimer le brouillon" onclick="event.stopPropagation();supprimerBrouillon(${b.id})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div>`).join('')
       :'<div class="vide-liste">Aucun brouillon.</div>'
     afficherDossiers()
     return
@@ -1130,6 +1134,7 @@ function afficherRedaction(){
           <button type="button" class="chip" onclick="ouvrirChoixDoc()">Joindre un devis / une facture de l'ERP</button>
         </div>
         <div class="droite">
+          ${r.brouillon_id?`<button type="button" class="btn btn-danger" onclick="supprimerBrouillon(${r.brouillon_id})">Supprimer le brouillon</button>`:''}
           <button type="button" class="btn btn-secondary" id="btnBrouillon" onclick="enregistrerBrouillon()">Brouillon</button>
           <button type="button" class="btn btn-primary" id="btnEnvoyer" onclick="envoyer()">Envoyer</button>
         </div>
@@ -1257,6 +1262,22 @@ window.enregistrerBrouillon=async function(){
   brouillons=data||[]
   afficherDossiers()
   if(dossier==='brouillons')afficherListe()
+}
+/* Suppression définitive d'un brouillon (depuis la liste ou la rédaction).
+   Le mail n'est jamais parti : rien n'est touché dans la boîte OVH. */
+window.supprimerBrouillon=async function(id){
+  const b=brouillons.find(x=>x.id===id)
+  const quoi=b&&(b.objet||b.a)?` « ${b.objet||b.a} »`:''
+  if(!confirm(`Supprimer le brouillon${quoi} ? Il ne sera pas envoyé.`))return
+  const {error}=await sb.from('mail_brouillons').delete().eq('id',id)
+  if(error){showToast('Brouillon : '+error.message,'err');return}
+  brouillons=brouillons.filter(x=>x.id!==id)
+  showToast('Brouillon supprimé','ok')
+  if(redaction&&redaction.brouillon_id===id){
+    redaction=null
+    if(estMobile())retourListe();else lectureVide()
+  }
+  afficherListe()
 }
 window.ouvrirBrouillon=function(id){
   const b=brouillons.find(x=>x.id===id); if(!b)return
