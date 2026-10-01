@@ -134,6 +134,10 @@ body{font-size:14px;}
 .dash-wrap{padding:18px 28px 28px; display:flex; flex-direction:column; gap:16px;}
 .dash-top{display:grid; grid-template-columns:minmax(0,1fr); gap:16px; align-items:start;}
 .dash-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:16px; align-items:start;}
+/* Agencement en colonnes (voir agencerGrille) : chaque carte se place sous la
+   plus courte, sans trou laissé par une voisine plus haute. */
+.dash-grid.cols{display:flex; align-items:flex-start;}
+.dash-col{flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:16px;}
 
 .dcard{background:var(--bg2); border:none; border-radius:var(--radius); box-shadow:0 1px 2px rgba(0,0,0,.05); overflow:hidden;}
 .dcard-head{display:flex; align-items:baseline; gap:9px; padding:14px 17px 10px;}
@@ -962,8 +966,33 @@ function rendreGrille(){
   }
 }
 
+/* Les cartes qui ont du contenu passent en premier (dans leur ordre
+   habituel), les cartes vides (« Aucun rendez-vous… ») à la fin. Puis
+   chaque carte se range dans la colonne la moins haute : plus de grand vide
+   sous une carte courte. Recalculé si le nombre de colonnes change. */
+let _cartes=null, _nbCols=0
+function agencerGrille(force){
+  const grid=document.getElementById('grid')
+  if(!_cartes){
+    const toutes=[...grid.querySelectorAll(':scope > .dcard')]
+    const vide=c=>!!c.querySelector('.dcard-body > .dvide')
+    _cartes=[...toutes.filter(c=>!vide(c)),...toutes.filter(vide)]
+  }
+  const n=Math.max(1,Math.min(4,Math.floor((grid.clientWidth+16)/(330+16))))
+  if(!force&&n===_nbCols)return
+  _nbCols=n
+  grid.innerHTML=''
+  grid.classList.add('cols')
+  const cols=Array.from({length:n},()=>{const c=document.createElement('div');c.className='dash-col';grid.appendChild(c);return c})
+  _cartes.forEach(carte=>{
+    const cible=cols.reduce((a,b)=>b.offsetHeight<a.offsetHeight?b:a)
+    cible.appendChild(carte)
+  })
+}
+
 rendreJour()
 rendreGrille()
+{let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(()=>agencerGrille(false),150)})}
 
 /* ─── Compteurs du menu ───
    Les identifiants sont présents deux fois (barre du haut et menu latéral) :
@@ -978,6 +1007,8 @@ badge('nb-dem',demandesATraiter.length)
 
 document.getElementById('ldr').style.display='none'
 document.getElementById('pageBody').style.display='flex'
+// Après l'affichage : les colonnes se calculent sur la largeur et la hauteur réelles.
+agencerGrille(true)
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 
