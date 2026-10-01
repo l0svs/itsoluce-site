@@ -754,7 +754,7 @@ const demandesATraiter=demandes.filter(d=>!d.vue&&!d.converti_reparation_id)
 /* Demandes « En attente client » : réponse demandée au client. Au-delà de
    RELANCE_JOURS, elles reviennent dans « Aujourd'hui » pour penser à relancer
    ou à classer sans suite. Les plus anciennes d'abord. */
-const RELANCE_JOURS=7
+const RELANCE_JOURS=3
 const demandesEnAttente=demandes.filter(d=>d.en_attente_depuis&&!d.converti_reparation_id)
   .map(d=>({...d,_attente:Math.max(0,joursEntre(new Date(d.en_attente_depuis),aujourdhui))}))
   .sort((a,b)=>b._attente-a._attente)
