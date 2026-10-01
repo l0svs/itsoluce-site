@@ -1942,7 +1942,7 @@ window.renderPrestations=function(){
       ${s.vitrine===true?'<span class="tag t-on">En ligne</span>':''}
     </div>`).join('')
     : `<div class="vide-l"><h4>Aucune prestation${q||_fPrest?' ne correspond':''}</h4><p>${_prest.length?'Change de filtre ou vide la recherche.':'Ajoute ta première prestation pour la retrouver dans tes devis.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvellePrestation()">Ajouter une prestation</button></div>`
-  if(_selPrest&&!_prest.some(s=>String(s.id)===String(_selPrest)))_selPrest=null
+  if(_selPrest&&_selPrest!=='__neuf'&&!_prest.some(s=>String(s.id)===String(_selPrest)))_selPrest=null
   dessinerDetailPrest()
 }
 window.nouvellePrestation=function(){_selPrest='__neuf';renderPrestations()}
