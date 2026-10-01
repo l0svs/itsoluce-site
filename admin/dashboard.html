@@ -679,7 +679,7 @@ const tables=[
   ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
   ['stock','id,nom,modele,quantite,seuil_alerte',5000],
-  ['demandes_formulaire','id,prenom,nom,email,appareil,description,vue,converti_reparation_id,created_at',3000],
+  ['demandes_formulaire','id,prenom,nom,email,appareil,description,vue,en_attente_depuis,converti_reparation_id,created_at',3000],
   ['settings','cle,valeur',500]
 ]
 const reponses=await Promise.all(tables.map(([t,cols,lim])=>
@@ -751,6 +751,14 @@ const devisAttente=devis.filter(d=>d.statut==='envoye'&&!d.converti_facture_id)
 const devisExpires=devisAttente.filter(d=>d.date_validite&&new Date(d.date_validite)<aujourdhui)
 const demandesATraiter=demandes.filter(d=>!d.vue&&!d.converti_reparation_id)
   .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+/* Demandes « En attente client » : réponse demandée au client. Au-delà de
+   RELANCE_JOURS, elles reviennent dans « Aujourd'hui » pour penser à relancer
+   ou à classer sans suite. Les plus anciennes d'abord. */
+const RELANCE_JOURS=3
+const demandesEnAttente=demandes.filter(d=>d.en_attente_depuis&&!d.converti_reparation_id)
+  .map(d=>({...d,_attente:Math.max(0,joursEntre(new Date(d.en_attente_depuis),aujourdhui))}))
+  .sort((a,b)=>b._attente-a._attente)
+const demandesARelancer=demandesEnAttente.filter(d=>d._attente>=RELANCE_JOURS)
 const alertesStock=stock.filter(p=>Number(p.quantite)<=Number(p.seuil_alerte||0))
   .sort((a,b)=>Number(a.quantite)-Number(b.quantite))
 const garanties=reps.filter(r=>['pret','rendu'].includes(r.statut)).map(r=>{
@@ -835,6 +843,12 @@ function rendreJour(){
       sous:escHtml(d.appareil||d.description||'Demande du site'),
       droite:'<span class="pill p-ok">Nouvelle</span>'}))
   })
+  demandesARelancer.slice(0,3).forEach(d=>{
+    items.push(ligne({href:'/admin/demandes.html?filtre=attente',ico:'dem',cls:'i-dem',
+      titre:escHtml([d.prenom,d.nom].filter(Boolean).join(' ')||'Demande'),
+      sous:`Sans réponse depuis ${d._attente} jours · ${escHtml(d.appareil||'demande du site')}`,
+      droite:'<span class="pill p-w">À relancer</span>'}))
+  })
   garanties.slice(0,3).forEach(r=>{
     items.push(ligne({href:'/admin/gestion.html#garanties',ico:'gar',cls:'i-gar',
       titre:`Garantie ${escHtml(r.numero||'')} · ${escHtml(r.client_nom||'—')}`,
@@ -913,12 +927,19 @@ function rendreGrille(){
   if(VOIT_ARGENT)grid.appendChild(carte('c-dev','Devis en attente de réponse','/admin/devis.html',devisAttente.length,
     devisExpires.length?'hot':'',corpsDev,'Aucun devis en attente de réponse.'))
 
-  if(demandesATraiter.length){
-    const corps=demandesATraiter.slice(0,6).map(d=>ligne({href:'/admin/demandes.html',ico:'dem',cls:'i-dem',
+  if(demandesATraiter.length||demandesEnAttente.length){
+    const nouvelles=demandesATraiter.slice(0,6).map(d=>ligne({href:'/admin/demandes.html',ico:'dem',cls:'i-dem',
       titre:escHtml([d.prenom,d.nom].filter(Boolean).join(' ')||'Demande'),
       sous:`${escHtml(d.appareil||'—')} · reçue le ${jour(d.created_at)}`,
       droite:'<span class="pill p-ok">Nouvelle</span>'})).join('')
-    grid.appendChild(carte('c-dem','Demandes du site','/admin/demandes.html',demandesATraiter.length,'hot',corps,''))
+    const enAttente=demandesEnAttente.slice(0,6).map(d=>{
+      const relance=d._attente>=RELANCE_JOURS
+      return ligne({href:'/admin/demandes.html?filtre=attente',ico:'dem',cls:'i-dem',
+        titre:escHtml([d.prenom,d.nom].filter(Boolean).join(' ')||'Demande'),
+        sous:`${escHtml(d.appareil||'—')} · en attente ${d._attente===0?"depuis aujourd'hui":`depuis ${d._attente} ${pluriel(d._attente,'jour')}`}`,
+        droite:`<span class="pill ${relance?'p-w':'p-off'}">${relance?'À relancer':'Attente client'}</span>`})
+    }).join('')
+    grid.appendChild(carte('c-dem','Demandes du site','/admin/demandes.html',demandesATraiter.length,'hot',nouvelles+enAttente,''))
   }
 
   if(garanties.length){
