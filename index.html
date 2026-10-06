@@ -2314,6 +2314,14 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   box-shadow: 0 1px 16px rgba(0,0,0,.07);
 }
 
+/* Mode sombre de l'appareil : la barre du haut reste claire pour que le
+   logo d'origine (bleu foncé) reste bien visible. Certains navigateurs
+   (Samsung Internet) assombrissent sinon la barre mais pas le logo. */
+@media (prefers-color-scheme: dark) {
+  .nav, .nav.scrolled { background: rgba(240, 240, 243, 0.96); }
+  .nav__left a, .nav__right a, .nav__burger { color: #1d1d1f; }
+}
+
 /* Entrée du Hero au chargement */
 @keyframes heroIn {
   from { opacity: 0; transform: translateY(14px); }
