@@ -1,0 +1,44 @@
+# IT Soluce
+
+> Réparation de smartphones, PC, tablettes et consoles à domicile, en entreprise ou par dépôt, dans le Brabant wallon, à Bruxelles et dans la province de Namur. Indépendant basé à Tubize (Belgique). Devis gratuit, diagnostic 30 € déduit de la réparation, garantie 3 mois pièces et main d'œuvre.
+
+## Services
+
+- Smartphones (toutes marques) : écran, batterie, connecteur de charge et autres réparations.
+- PC et portables : dépannage, nettoyage et optimisation, réinstallation du système, ajout de SSD ou de RAM, réparation matérielle.
+- Consoles (PS4, PS5, Xbox, Switch) : surchauffe, nettoyage et pâte thermique, lecteur optique, extension de stockage.
+- Tablettes (iPad, Galaxy Tab) : écran tactile, batterie, connectique.
+- Services supplémentaires : transfert de données, sauvegarde de données, configuration d'un nouvel appareil, assistance et conseil.
+
+## Tarifs (main d'œuvre, hors pièces détachées)
+
+- Diagnostic : 30 €, quel que soit l'appareil, déduit du devis et de la facture si la réparation est confiée à IT Soluce. Il n'est demandé que si la panne doit d'abord être identifiée.
+- Smartphone : écran dès 40 €, batterie dès 25 €, connecteur de charge dès 30 €.
+- PC et portable : nettoyage et optimisation dès 25 €, réinstallation du système dès 40 €, SSD ou RAM dès 30 €.
+- Console : nettoyage et pâte thermique dès 35 €, lecteur optique dès 45 €, extension de stockage dès 40 €.
+- Tablette : écran dès 45 €, batterie dès 30 €, connectique dès 30 €.
+- Transfert de données, sauvegarde, configuration d'un nouvel appareil, assistance : 70 €.
+- Les pièces détachées sont toujours incluses dans le devis, transmis avant toute intervention. Autres réparations : sur devis.
+
+## Bon à savoir
+
+- Devis gratuit et sans engagement.
+- Délais : la plupart des réparations courantes (écran, batterie) sont faites dans la journée si la pièce est en stock ; 2 à 5 jours ouvrés si la pièce doit être commandée.
+- Garantie : 3 mois sur les pièces et la main d'œuvre (hors chocs, oxydation ou dégâts des eaux survenus après l'intervention).
+- Données personnelles : jamais consultées, copiées ni conservées.
+- Paiement en fin d'intervention : espèces, Bancontact, virement, carte sans contact.
+
+## Zone d'intervention
+
+- Brabant wallon, Région de Bruxelles-Capitale et province de Namur, principalement Tubize et ses environs.
+- Intervention à domicile ou sur le lieu de travail, ou dépôt de l'appareil à Tubize sur rendez-vous.
+
+## Contact
+
+- Site : https://itsoluce.be
+- Téléphone : +32 474 05 66 59
+- Email : contact@itsoluce.be
+- Adresse (dépôt sur rendez-vous) : Chaussée d'Hondzocht 164, 1480 Tubize, Belgique
+- Demande de réparation : https://itsoluce.be/#contact
+- Tarifs détaillés : https://itsoluce.be/#tarifs
+- Questions fréquentes : https://itsoluce.be/#faq
