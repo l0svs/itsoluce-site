@@ -1229,9 +1229,9 @@ window.addLigne=function addLigne(desc,qte,prix,stockId){
   allStock.forEach(s=>{
     const o=document.createElement('option')
     o.value=s.id
-    const label=[s.nom,s.modele].filter(Boolean).join(' ')
-    o.textContent=`${label} — ${Number(s.prix_vente||0).toFixed(2)} € (stock : ${s.quantite})`
-    o.dataset.nom=label
+    o.textContent=`${nomArticleStock(s)} — ${Number(s.prix_vente||0).toFixed(2)} € (stock : ${s.quantite})`
+    // Libellé lisible par le client, sans le titre fournisseur ni le modèle en double
+    o.dataset.nom=libellePiece(s)
     o.dataset.prix=s.prix_vente||0
     if(String(s.id)===String(stockId))o.selected=true
     sel.appendChild(o)
@@ -2222,6 +2222,7 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/envoi-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
+<script src="/admin/assets/js/libelle-piece.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 </body>
 </html>
