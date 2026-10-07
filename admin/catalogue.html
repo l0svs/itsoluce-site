@@ -693,11 +693,10 @@ function showToast(msg,type='ok'){
 
 // ─── CALCUL PRIX DE VENTE — GRILLE DÉGRESSIVE ───
 const GRILLE_DEFAUT=[
-  {min:0,max:30,coef:2.2,fixe:25},
-  {min:30,max:80,coef:1.8,fixe:25},
-  {min:80,max:150,coef:1.45,fixe:35},
-  {min:150,max:250,coef:1.25,fixe:45},
-  {min:250,max:999999,coef:1.15,fixe:55}
+  {min:0,max:30,coef:1.8,fixe:30},
+  {min:30,max:80,coef:1.75,fixe:32},
+  {min:80,max:150,coef:0.9,fixe:100},
+  {min:150,max:999999,coef:1,fixe:85}
 ]
 // Frais de livraison de la fiche fournisseur « Foneday » (Gestion › Fournisseurs).
 // null = fiche introuvable ou frais non renseignés : on compte 0 € et on le signale.

@@ -925,7 +925,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <!-- ── GRILLE TARIFAIRE ── -->
           <section class="sec" id="sec-grille">
             <h1 class="sec-title">Grille tarifaire</h1>
-            <p class="sec-desc">Le prix de vente conseillé d'une pièce est calculé selon son prix d'achat : <strong>(prix d'achat + livraison du fournisseur) × coefficient + frais fixes</strong>. Plus la pièce est chère, plus le coefficient diminue, pour rester compétitif sur les appareils récents.</p>
+            <p class="sec-desc">Le prix de vente conseillé d'une pièce est calculé selon son prix d'achat : <strong>(prix d'achat + livraison du fournisseur) × coefficient + frais fixes</strong>. Au-delà de 150 € de coût, la marge est un montant fixe (coefficient 1) : le prix suit celui du fournisseur, pour rester compétitif sur les appareils récents.</p>
 
             <p class="note">Cette grille est utilisée par <b>Stock</b> et <b>Catalogue Foneday</b> pour proposer un prix de vente. Elle est enregistrée dans Supabase : elle te suit d'un appareil à l'autre. Les frais de livraison se règlent dans la fiche de chaque fournisseur.</p>
 
@@ -1142,11 +1142,10 @@ function showSec(btn){
 
 /* ── Grille tarifaire dégressive ─────────────────────────────── */
 const GRILLE_DEFAUT=[
-  {min:0,   max:30,     coef:2.2,  fixe:25},
-  {min:30,  max:80,     coef:1.8,  fixe:25},
-  {min:80,  max:150,    coef:1.45, fixe:35},
-  {min:150, max:250,    coef:1.25, fixe:45},
-  {min:250, max:999999, coef:1.15, fixe:55}
+  {min:0,   max:30,     coef:1.8,  fixe:30},
+  {min:30,  max:80,     coef:1.75, fixe:32},
+  {min:80,  max:150,    coef:0.9,  fixe:100},
+  {min:150, max:999999, coef:1,    fixe:85}
 ]
 function getGrille(){
   try{
@@ -1173,7 +1172,7 @@ function renderGrille(){
     return `<div class="grille-row">
       <span class="grille-palier">${palier}</span>
       <span class="grille-lbl">×</span>
-      <input type="number" step="0.05" min="1" value="${p.coef}" data-i="${i}" data-f="coef" oninput="onGrilleInput()" aria-label="Coefficient ${palier}"/>
+      <input type="number" step="0.05" min="0.5" value="${p.coef}" data-i="${i}" data-f="coef" oninput="onGrilleInput()" aria-label="Coefficient ${palier}"/>
       <span class="grille-lbl">+</span>
       <input type="number" step="1" min="0" value="${p.fixe}" data-i="${i}" data-f="fixe" oninput="onGrilleInput()" aria-label="Frais fixes ${palier}"/>
       <span class="grille-lbl">€</span>
