@@ -1053,14 +1053,18 @@ function renderResults(){
       if(na!==nb)return na-nb
       return (a.prix_achat||0)-(b.prix_achat||0)
     })
-    const achatMax=Math.max(...items.map(p=>Number(p.prix_achat)||0))
-    const prixRep=calcPrixVente(achatMax)
+    // Prix propre à chaque qualité : la marge reste la même quelle que soit
+    // la pièce, et le client paie moins cher une pièce moins chère.
+    const prixQualites=items.map(p=>calcPrixVente(Number(p.prix_achat)||0)).filter(v=>v>0)
+    const prixMin=prixQualites.length?Math.min(...prixQualites):0
+    const prixMax=prixQualites.length?Math.max(...prixQualites):0
+    const prixRep=prixMin===prixMax?`${prixMax.toFixed(2)} €`:`${prixMin.toFixed(2)} – ${prixMax.toFixed(2)} €`
     const typeLib=typeReparation(items[0]).lib
-    html+=`<div class="cat-piece-group"><div class="cat-piece-head"><span class="cat-cat-badge">${escapeHtml(items[0].category||'Autre')}</span>${typeLib||plusieursMarques?`<span class="cat-rep-type">${escapeHtml([typeLib,plusieursMarques?nomMarque(items[0]):''].filter(Boolean).join(' · '))}</span>`:''}<span class="cat-rep-nb">${items.length} option${items.length>1?'s':''}</span><span class="cat-rep-prix">${prixRep.toFixed(2)} €</span></div><div class="cat-options">`
+    html+=`<div class="cat-piece-group"><div class="cat-piece-head"><span class="cat-cat-badge">${escapeHtml(items[0].category||'Autre')}</span>${typeLib||plusieursMarques?`<span class="cat-rep-type">${escapeHtml([typeLib,plusieursMarques?nomMarque(items[0]):''].filter(Boolean).join(' · '))}</span>`:''}<span class="cat-rep-nb">${items.length} option${items.length>1?'s':''}</span><span class="cat-rep-prix">${prixRep}</span></div><div class="cat-options">`
     items.forEach(p=>{
       const achat=Number(p.prix_achat)||0
-      const vente=prixRep
-      window._prixReparation[p.sku]=prixRep
+      const vente=calcPrixVente(achat)
+      window._prixReparation[p.sku]=vente
       const cout=achat+fraisLivraison()
       const marge=vente-cout
       const niv=p.niveau||'a_valider'
@@ -1077,7 +1081,7 @@ function renderResults(){
           <div class="cat-opt-title">${escapeHtml(p.title||'')}</div>
           <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')} · Réf. ${escapeHtml(p.sku||'')}</div>
           <div class="cat-opt-price-big"><span class="prix">${vente.toFixed(2)} €</span><span class="marge">+${marge.toFixed(2)} €</span></div>
-          <div class="cat-opt-price-sub">prix de la réparation · ta marge avec cette pièce</div>
+          <div class="cat-opt-price-sub">prix de la réparation avec cette pièce · ta marge</div>
           <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
             <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${LIV_FONEDAY==null?'0.00 € · à renseigner dans Gestion › Fournisseurs':fraisLivraison().toFixed(2)+' €'}</span></div>
