@@ -743,7 +743,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <div class="fg"><label>Prix facturé au client (€)</label><input type="number" id="f-prix" placeholder="0.00" min="0" step="0.01" oninput="majMargeRep()"/></div>
         </div>
         <div class="fg" id="prix-devis-rappel" style="display:none;font-size:12px;color:var(--t3);margin-top:-6px;"></div>
-        <div class="fg-aide">Marge sur ce dossier : <span id="marge-rep">—</span><br/>Le stock est décrémenté automatiquement pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
+        <div class="fg-aide">Marge sur ce dossier : <span id="marge-rep">—</span><br/>Le prix facturé reprend le prix de vente des pièces du stock (et des prestations) ; tu peux l'ajuster.<br/>Le stock est décrémenté automatiquement pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
       </div>
 
       <div class="form-section">
@@ -1040,7 +1040,7 @@ let selectedId=null
 
 /* ─── Lignes de pièces du panneau ─── */
 window.buildPieceOptions=function buildPieceOptions(selectedValue){
-  const stockOpts=allStockPieces.map(p=>`<option value="stock-${p.id}" data-kind="stock" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${selectedValue===`stock-${p.id}`?'selected':''}>${escHtml(p.nom)} (stock: ${p.quantite})</option>`).join('')
+  const stockOpts=allStockPieces.map(p=>`<option value="stock-${p.id}" data-kind="stock" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${selectedValue===`stock-${p.id}`?'selected':''}>${escHtml(p.nom)} (stock: ${p.quantite}${Number(p.prix_vente)>0?' · '+Number(p.prix_vente).toFixed(2).replace('.',',')+' €':''})</option>`).join('')
   const svcOpts=allServices.map(s=>`<option value="svc-${s.id}" data-kind="service" data-vente="${s.prix||0}" ${selectedValue===`svc-${s.id}`?'selected':''}>${escHtml(s.nom)}</option>`).join('')
   return '<option value="">— Aucune —</option>'+
     (stockOpts?`<optgroup label="Pièces (stock)">${stockOpts}</optgroup>`:'')+
@@ -1052,7 +1052,7 @@ window.addPieceLigne=function addPieceLigne(selectedValue='',qte=1,cout=''){
   div.className='piece-row'
   div.innerHTML=`
     <select onchange="onPieceLigneChange(this)" aria-label="Pièce ou prestation">${buildPieceOptions(selectedValue)}</select>
-    <input type="number" class="qte" placeholder="Qté" min="1" step="1" value="${qte}" oninput="recalcCout()" aria-label="Quantité"/>
+    <input type="number" class="qte" placeholder="Qté" min="1" step="1" value="${qte}" oninput="recalcCout(true)" aria-label="Quantité"/>
     <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" oninput="recalcCout()" aria-label="Coût unitaire"/>
     <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
   `
@@ -1065,19 +1065,27 @@ window.onPieceLigneChange=function onPieceLigneChange(sel){
   const coutInput=row.querySelectorAll('input')[1]
   if(opt&&opt.dataset.kind==='stock')coutInput.value=opt.dataset.achat||0
   else if(opt&&opt.dataset.kind==='service')coutInput.value=0
-  recalcCout()
+  recalcCout(true)
 }
 window.delPieceLigne=function delPieceLigne(btn){
   btn.closest('.piece-row').remove()
-  recalcCout()
+  recalcCout(true)
 }
-window.recalcCout=function recalcCout(){
-  let total=0
+// majPrix : quand on change les pièces (choix, quantité, retrait), le prix
+// facturé reprend la somme des prix de vente du stock et des prestations.
+// Pas à l'ouverture d'un dossier : son prix enregistré est conservé.
+window.recalcCout=function recalcCout(majPrix=false){
+  let total=0, vente=0
   document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
     const inputs=row.querySelectorAll('input')
-    total+=(Number(inputs[0].value)||1)*(Number(inputs[1].value)||0)
+    const sel=row.querySelector('select')
+    const opt=sel&&sel.value?sel.options[sel.selectedIndex]:null
+    const qte=Number(inputs[0].value)||1
+    total+=qte*(Number(inputs[1].value)||0)
+    if(opt)vente+=qte*(Number(opt.dataset.vente)||0)
   })
   document.getElementById('f-cout').value=total.toFixed(2)
+  if(majPrix)document.getElementById('f-prix').value=vente>0?vente.toFixed(2):''
   majMargeRep()
 }
 window.getPiecesData=function getPiecesData(){
