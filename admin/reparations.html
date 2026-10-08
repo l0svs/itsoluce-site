@@ -278,7 +278,6 @@ body{font-size:14px;}
 .add-piece-btn:hover{background:var(--ad); border-color:var(--a);}
 .add-piece-btn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2;}
 .fg-aide{font-size:12px; color:var(--t2); line-height:1.5; padding:10px 12px; background:var(--bg3); border-radius:11px;}
-#marge-rep{font-weight:600; font-variant-numeric:tabular-nums;}
 
 /* ── Toast / chargement ── */
 .toast{position:fixed; bottom:22px; right:22px; background:var(--bg2); border:1px solid var(--ln2); border-radius:12px; padding:11px 17px; font-size:13px; color:var(--t1); box-shadow:0 10px 30px rgba(0,0,0,.14); z-index:999; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; max-width:min(380px,calc(100vw - 44px));}
@@ -732,18 +731,17 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       </div>
 
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M20.59 13.41L13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><span>Pièces & Coûts</span></div>
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M20.59 13.41L13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><span>Pièces</span></div>
         <div class="fg">
           <label>Pièces utilisées (depuis le stock)</label>
           <div class="pieces-list" id="piecesList"></div>
           <button type="button" class="add-piece-btn" onclick="addPieceLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une pièce</button>
         </div>
-        <div class="fg-row">
-          <div class="fg"><label>Coût total pièces (€)</label><input type="text" id="f-cout" disabled style="opacity:.7;" value="0.00"/></div>
-          <div class="fg"><label>Prix facturé au client (€)</label><input type="number" id="f-prix" placeholder="0.00" min="0" step="0.01" oninput="majMargeRep()"/></div>
-        </div>
-        <div class="fg" id="prix-devis-rappel" style="display:none;font-size:12px;color:var(--t3);margin-top:-6px;"></div>
-        <div class="fg-aide">Marge sur ce dossier : <span id="marge-rep">—</span><br/>Le prix facturé reprend le prix de vente des pièces du stock (et des prestations) ; tu peux l'ajuster.<br/>Le stock est décrémenté automatiquement pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
+        <!-- Pas de prix affiché dans le dossier : il est calculé en coulisse
+             (prix de vente du stock) pour « Créer une facture ». -->
+        <input type="hidden" id="f-cout" value="0.00"/>
+        <input type="hidden" id="f-prix"/>
+        <div class="fg-aide">Le stock est décrémenté automatiquement pour chaque pièce quand le dossier passe en « Prêt » ou « Rendu ».</div>
       </div>
 
       <div class="form-section">
@@ -900,14 +898,6 @@ function openPanel(r=null){
   toggleMotif()
   document.getElementById('f-notes').value=r?.notes||''
 
-  // Rappel du montant du devis d'origine, s'il existe
-  const rappel=document.getElementById('prix-devis-rappel')
-  if(rappel){
-    const pd=Number(r?.prix_devis||0)
-    rappel.textContent=pd>0?`Devis d'origine : ${pd.toFixed(2).replace('.',',')} €`:''
-    rappel.style.display=pd>0?'block':'none'
-  }
-
   // Pièces (multi-pièces), avec compat des anciens dossiers à pièce unique
   window.loadPiecesData(r?.pieces||[])
   if((!r?.pieces||r.pieces.length===0)&&r?.piece_id){
@@ -1040,7 +1030,7 @@ let selectedId=null
 
 /* ─── Lignes de pièces du panneau ─── */
 window.buildPieceOptions=function buildPieceOptions(selectedValue){
-  const stockOpts=allStockPieces.map(p=>`<option value="stock-${p.id}" data-kind="stock" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${selectedValue===`stock-${p.id}`?'selected':''}>${escHtml(p.nom)} (stock: ${p.quantite}${Number(p.prix_vente)>0?' · '+Number(p.prix_vente).toFixed(2).replace('.',',')+' €':''})</option>`).join('')
+  const stockOpts=allStockPieces.map(p=>`<option value="stock-${p.id}" data-kind="stock" data-achat="${p.prix_achat||0}" data-vente="${p.prix_vente||0}" ${selectedValue===`stock-${p.id}`?'selected':''}>${escHtml(p.nom)} (stock: ${p.quantite})</option>`).join('')
   const svcOpts=allServices.map(s=>`<option value="svc-${s.id}" data-kind="service" data-vente="${s.prix||0}" ${selectedValue===`svc-${s.id}`?'selected':''}>${escHtml(s.nom)}</option>`).join('')
   return '<option value="">— Aucune —</option>'+
     (stockOpts?`<optgroup label="Pièces (stock)">${stockOpts}</optgroup>`:'')+
@@ -1053,7 +1043,7 @@ window.addPieceLigne=function addPieceLigne(selectedValue='',qte=1,cout=''){
   div.innerHTML=`
     <select onchange="onPieceLigneChange(this)" aria-label="Pièce ou prestation">${buildPieceOptions(selectedValue)}</select>
     <input type="number" class="qte" placeholder="Qté" min="1" step="1" value="${qte}" oninput="recalcCout(true)" aria-label="Quantité"/>
-    <input type="number" placeholder="Coût €" min="0" step="0.01" value="${cout}" oninput="recalcCout()" aria-label="Coût unitaire"/>
+    <input type="hidden" value="${cout}"/>
     <button type="button" class="piece-del" onclick="delPieceLigne(this)" title="Retirer"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
   `
   list.appendChild(div)
@@ -1204,7 +1194,6 @@ function majResume(){
   const ouverts=allReps.filter(r=>!CLOS.includes(r.statut))
   const enAttente=ouverts.filter(r=>r.statut==='attente')
   const prets=ouverts.filter(r=>r.statut==='pret')
-  const engage=ouverts.reduce((a,r)=>a+prixClient(r),0)
   const bouts=[]
   if(!allReps.length){
     document.getElementById('ph-resume').textContent='Aucun dossier pour le moment.'
@@ -1215,7 +1204,6 @@ function majResume(){
       bouts.push(`<span class="alerte">${enAttente.length} attente de pièce${plusVieux>=3?` (la plus ancienne : ${plusVieux} jours)`:''}</span>`)
     }
     if(prets.length)bouts.push(`${prets.length} prêt${prets.length>1?'s':''} à récupérer`)
-    if(engage>0)bouts.push(`${eur(engage)} engagés`)
     if(bouts.length===1)bouts.push(`${allReps.length} dossier${allReps.length>1?'s':''} au total`)
     document.getElementById('ph-resume').innerHTML=bouts.join(' · ')
   }
@@ -1294,13 +1282,11 @@ function renderCards(){
   wrap.innerHTML=GROUPES.map(g=>{
     const items=rows.filter(r=>groupeDe(r)===g.cle)
     if(!items.length)return ''
-    const montant=items.reduce((a,r)=>a+prixClient(r),0)
     const chaud=g.cle==='atelier'&&items.some(r=>r.statut==='attente')
     return `<div class="grp">
       <div class="grp-h">
         <b>${g.titre}</b>
         <i class="${chaud?'hot':''}">${items.length}</i>
-        ${montant>0?`<span>${eur(montant)}</span>`:''}
       </div>
       <div class="liste">${items.map(ligne).join('')}</div>
     </div>`
@@ -1361,13 +1347,10 @@ function renderDetail(){
   if(!r){
     selectedId=null
     box.classList.remove('open')
-    box.innerHTML=`<div class="det-vide"><p>Sélectionne un dossier dans la liste pour voir l'appareil, la panne, les pièces montées et le prix.</p></div>`
+    box.innerHTML=`<div class="det-vide"><p>Sélectionne un dossier dans la liste pour voir l'appareil, la panne et les pièces montées.</p></div>`
     return
   }
   const st=STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
-  const cout=Number(r.cout_pieces)||0
-  const prix=prixClient(r)
-  const marge=prix-cout
   const pieces=Array.isArray(r.pieces)?r.pieces:[]
   const appareil=r.modele||''
   box.innerHTML=`
@@ -1402,17 +1385,9 @@ function renderDetail(){
     <div>
       <div class="det-lab" style="margin-bottom:7px;">Pièces et prestations</div>
       ${pieces.length?`<dl class="dl">${pieces.map(p=>
-        `<div><dt>${escHtml(p.nom||'—')}${p.qte>1?` ×${p.qte}`:''}</dt><dd class="num">${eur((Number(p.qte)||1)*(Number(p.cout)||0))}</dd></div>`
+        `<div><dt>${escHtml(p.nom||'—')}</dt><dd class="num">×${Number(p.qte)||1}</dd></div>`
       ).join('')}</dl>`:'<div class="det-note">Aucune pièce enregistrée</div>'}
     </div>
-    <dl class="dl">
-      <div><dt>Coût des pièces</dt><dd class="num">${eur(cout)}</dd></div>
-    </dl>
-    <div class="det-prix">
-      <span>Prix client</span>
-      <b>${prix>0?eur(prix):'à définir'}</b>
-    </div>
-    ${prix>0?`<div class="det-marge" style="color:${marge>=0?'var(--ok)':'var(--d)'};text-align:right;">Marge : ${eur(marge)}</div>`:''}
     ${r.notes?`<div class="sep"></div><div><div class="det-lab" style="margin-bottom:5px;">Notes internes</div><div class="det-note">${escHtml(r.notes)}</div></div>`:''}
     <div class="sep"></div>
     ${etapes(r)}
