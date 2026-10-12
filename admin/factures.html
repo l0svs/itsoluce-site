@@ -1744,7 +1744,7 @@ function buildTemplateHTML(f,forPdf){
         <div>Date d'émission : <strong>${dateEm}</strong></div>
         ${estPayee
           ? `<div style="margin-top:3px;color:#16a34a;">Réglée${modePaie?` par ${escHtml(modePaie)}`:''}${f.date_paiement?` le ${dateLongue(f.date_paiement)}`:''}</div>`
-          : `<div style="margin-top:3px;">Échéance : <strong>${dateEch||'à réception'}</strong></div>`}
+          : nonRep&&total<=0?'':`<div style="margin-top:3px;">Échéance : <strong>${dateEch||'à réception'}</strong></div>`}
       </div>
     </div>
     <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:30px;">
@@ -1758,7 +1758,7 @@ function buildTemplateHTML(f,forPdf){
     </div>
     ${nonRep?`<div style="border:1px solid #f0d9bf;background:#fdf6ee;border-radius:10px;padding:14px 18px;margin:-12px 0 26px;">
       <div style="font-size:13px;font-weight:700;color:#b25e09;">Appareil non réparable</div>
-      <div style="font-size:12px;color:#555;margin-top:4px;line-height:1.55;">${escHtml(appareilDe(nonRep)||'Votre appareil')}${nonRep.motif?` : ${escHtml(nonRep.motif)}`:''}.<br>Seul le diagnostic est facturé.</div>
+      <div style="font-size:12px;color:#555;margin-top:4px;line-height:1.55;">${escHtml(appareilDe(nonRep)||'Votre appareil')}${nonRep.motif?` : ${escHtml(nonRep.motif)}`:''}.<br>${total<=0?"Le diagnostic vous est offert : vous n'avez rien à régler.":'Seul le diagnostic est facturé.'}</div>
     </div>`:''}
     <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
       <thead><tr style="background:#1d4ed8;">
@@ -1799,7 +1799,9 @@ function buildTemplateHTML(f,forPdf){
     ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${escHtml(f.notes)}</div>`:''}
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
-      ${estPayee
+      ${nonRep&&total<=0
+        ? `<div><strong style="color:#555;">Aucun montant à régler.</strong></div>`
+        : estPayee
         ? `<div><strong style="color:#16a34a;">Facture acquittée</strong>${modePaie?` — réglée par ${escHtml(modePaie)}`:''}. Merci de votre paiement.</div>`
         : `<div><strong style="color:#555;">Conditions de paiement :</strong> ${escHtml(ENTREPRISE.conditions)}${dateEch?` Échéance au ${dateEch}.`:''}</div><div><strong style="color:#555;">Coordonnées bancaires :</strong> ${escHtml(ENTREPRISE.iban)}</div>`}
       ${acompte>0&&!estPayee?`<div><strong style="color:#1d4ed8;">Acompte :</strong> un acompte de ${euro(acompte)} a déjà été reçu. Solde restant dû : ${euro(solde)}.</div>`:''}
