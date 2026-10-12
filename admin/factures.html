@@ -1022,7 +1022,7 @@ async function load(){
     sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva,type').order('nom').limit(5000),
     sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom').limit(5000),
     sb.from('services').select('*').order('ordre',{ascending:true}),
-    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut').order('created_at',{ascending:false}).limit(2000),
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut,motif').order('created_at',{ascending:false}).limit(2000),
     sb.from('devis').select('id,numero').limit(5000)
   ])
   if(rFac.error)throw new Error(rFac.error.message)
@@ -1183,9 +1183,14 @@ window.onRepSelect=function(){
     document.getElementById('f-tel').value=r.client_telephone||''
   }
   const appareil=[r.appareil,r.modele].filter(Boolean).join(' ')||'appareil'
-  const desc=`Réparation ${appareil}${r.panne_description?' — '+r.panne_description:''}`
   document.getElementById('lignesBody').innerHTML=''
-  addLigne(desc,1,Number(r.prix_final)||0,'')
+  if(r.statut==='non_reparable'){
+    // Seul le diagnostic est facturé, au prix de Gestion › Prestations.
+    const diag=(window.allServices||[]).find(s=>/^diagnostic$/i.test(String(s.nom||'').trim()))
+    addLigne(`Diagnostic ${appareil} — appareil non réparable`,1,Number(diag?.prix)||0,'')
+  }else{
+    addLigne(`Réparation ${appareil}${r.panne_description?' — '+r.panne_description:''}`,1,Number(r.prix_final)||0,'')
+  }
   _repLien={id:r.id,numero:r.numero}
   calcTotaux()
 }
@@ -1678,7 +1683,16 @@ window.supprimerCourante=async function(){
 }
 
 /* ─── Document PDF ─── */
+/** Dossier lié à la facture quand l'appareil s'est révélé non réparable. */
+function dossierNonReparable(f){
+  const r=f&&f.reparation_id?allReps.find(x=>String(x.id)===String(f.reparation_id)):null
+  return r&&r.statut==='non_reparable'?r:null
+}
+// Le modèle suffit (« iPhone 12 ») ; à défaut, le type d'appareil.
+function appareilDe(r){return String(r.modele||r.appareil||'').trim()}
+
 function buildTemplateHTML(f,forPdf){
+  const nonRep=dossierNonReparable(f)
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
@@ -1721,6 +1735,7 @@ function buildTemplateHTML(f,forPdf){
           <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">FACTURE</span>
           ${estPayee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">PAYÉE</span>`:''}
           ${estAnnulee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#c8362c;border:2px solid #c8362c;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">ANNULÉE</span>`:''}
+          ${nonRep&&!estAnnulee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#b25e09;border:2px solid #b25e09;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">NON RÉPARABLE</span>`:''}
         </div>
         <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${escHtml(f.numero)}</div>
         ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${escHtml(f.reparation_numero)}</div>`:''}
@@ -1741,6 +1756,10 @@ function buildTemplateHTML(f,forPdf){
       ${f.client_email?`<div style="font-size:12px;color:#555;margin-top:2px;">${escHtml(f.client_email)}</div>`:''}
       ${f.client_telephone?`<div style="font-size:12px;color:#555;">${escHtml(f.client_telephone)}</div>`:''}
     </div>
+    ${nonRep?`<div style="border:1px solid #f0d9bf;background:#fdf6ee;border-radius:10px;padding:14px 18px;margin:-12px 0 26px;">
+      <div style="font-size:13px;font-weight:700;color:#b25e09;">Appareil non réparable</div>
+      <div style="font-size:12px;color:#555;margin-top:4px;line-height:1.55;">${escHtml(appareilDe(nonRep)||'Votre appareil')}${nonRep.motif?` : ${escHtml(nonRep.motif)}`:''}.<br>Seul le diagnostic est facturé.</div>
+    </div>`:''}
     <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
       <thead><tr style="background:#1d4ed8;">
         <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#fff;text-align:left;border-radius:6px 0 0 0;">Description</th>
@@ -1968,7 +1987,18 @@ window.preparerEmail=async function(){
   const acompte=Number(f.acompte||0)
   const solde=Math.max(0,Number(f.total||0)-acompte)
   let message
-  if(f.statut==='payee'){
+  const nonRep=dossierNonReparable(f)
+  if(nonRep){
+    // Appareil non réparable : le mail explique d'abord pourquoi, puis
+    // présente la facture comme celle du diagnostic.
+    const app=appareilDe(nonRep)||'votre appareil'
+    const constat=`Après diagnostic, ${app.startsWith('votre')?app:'votre '+app} ne peut malheureusement pas être réparé${nonRep.motif?` : ${nonRep.motif.replace(/\.$/,'')}`:''}.`
+    let reglement
+    if(Number(f.total||0)<=0)reglement=`Vous trouverez ci-joint la facture ${f.numero}. Le diagnostic vous est offert : vous n'avez rien à régler.`
+    else if(f.statut==='payee')reglement=`Vous trouverez ci-joint la facture ${f.numero} du diagnostic, d'un montant de ${eur(f.total)}, réglée${mode?` par ${mode}`:''}. Ce document fait office de justificatif acquitté.`
+    else reglement=`Vous trouverez ci-joint la facture ${f.numero} du diagnostic. ${acompte>0?`Après l'acompte de ${eur(acompte)} déjà reçu, le solde à régler est de ${eur(solde)}.`:`Le montant à régler est de ${eur(f.total)}.`}${f.date_echeance?` Échéance au ${dateLongue(f.date_echeance)}.`:''}\n\nLe règlement se fait par virement sur le compte ${ENTREPRISE.iban}.`
+    message=`Bonjour ${prenom},\n\n${constat}\n\n${reglement}\n\nJe reste à votre disposition pour toute question.`
+  }else if(f.statut==='payee'){
     message=`Bonjour ${prenom},\n\nMerci d'avoir fait confiance à IT Soluce.\n\nVous trouverez ci-joint votre facture ${f.numero} d'un montant de ${eur(f.total)}, réglée${mode?` par ${mode}`:''}. Ce document fait office de justificatif acquitté.\n\nJe reste à votre disposition pour toute question.`
   }else{
     const du=acompte>0?`Après l'acompte de ${eur(acompte)} déjà reçu, le solde à régler est de ${eur(solde)}.`:`Le montant à régler est de ${eur(f.total)}.`
@@ -1978,7 +2008,7 @@ window.preparerEmail=async function(){
   await ouvrirModaleEmail({
     html:buildTemplateHTML(f,true),
     pdfName:`Facture_${f.numero}.pdf`,
-    sujet:`Facture ${f.numero} — ${ENTREPRISE.nom}`,
+    sujet:nonRep?`Diagnostic de votre appareil — Facture ${f.numero} — ${ENTREPRISE.nom}`:`Facture ${f.numero} — ${ENTREPRISE.nom}`,
     message,
     type:'facture'
   })

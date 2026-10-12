@@ -1396,7 +1396,7 @@ function renderDetail(){
       <button class="btn btn-secondary" onclick="editRep(${r.id})">Modifier</button>
       ${r.converti_facture_id
         ? '<button class="btn btn-ghost" disabled style="flex:1;">Facture déjà créée</button>'
-        : `<button class="btn btn-primary" onclick="factureDepuisDossier(${r.id})">Créer une facture</button>`}
+        : `<button class="btn btn-primary" onclick="factureDepuisDossier(${r.id})">${r.statut==='non_reparable'?'Facturer le diagnostic':'Créer une facture'}</button>`}
     </div>
     ${r.client_email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:r.client_email,reparation:r.id,objet:r.numero?`Votre réparation ${r.numero}`:''}))}">✉ Répondre par mail</a>`:''}
     <button class="btn btn-danger" onclick="deleteRep(${r.id},'${escJsAttr(r.client_nom||'')}')">Supprimer le dossier</button>
@@ -1411,14 +1411,23 @@ window.editRep=function(id){
 /* ─── Facturation ─── */
 async function creerFactureDepuis(r){
   if(r.converti_facture_id){showToast('Une facture existe déjà pour ce dossier','err');return}
-  const prix=prixClient(r)
-  if(!confirm(`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}\n\nElle sera créée en brouillon, à compléter dans Factures.`))return
+  // Appareil non réparable : seul le diagnostic est facturé, au prix de la
+  // prestation « Diagnostic » de Gestion › Prestations.
+  const nonRep=r.statut==='non_reparable'
+  const diag=nonRep?allServices.find(s=>/^diagnostic$/i.test(String(s.nom||'').trim())):null
+  const prix=nonRep?(Number(diag?.prix)||0):prixClient(r)
+  const question=nonRep
+    ?`Créer la facture du diagnostic pour le dossier ${r.numero} (appareil non réparable) ?\n\nMontant : ${eur(prix)}`
+    :`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}`
+  if(!confirm(`${question}\n\nElle sera créée en brouillon, à compléter dans Factures.`))return
   const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
   const seq=(cpt?.valeur||0)+1
   await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
   const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
   const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
-  const desc=`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
+  const desc=nonRep
+    ?`Diagnostic${app?' '+app:''} — appareil non réparable`
+    :`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
   const res=await sb.from('factures').insert({
     numero:numFacture,
     reparation_id:r.id,
