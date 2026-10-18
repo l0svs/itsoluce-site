@@ -904,7 +904,8 @@ const ET_FAC={
   brouillon:{l:'Brouillon',c:'p-off'},
   envoyee:{l:'Envoyée',c:'p-a'},
   payee:{l:'Payée',c:'p-ok'},
-  annulee:{l:'Annulée',c:'p-off'}
+  annulee:{l:'Annulée',c:'p-off'},
+  non_reparable:{l:'Non réparable',c:'p-w'}
 }
 function etatDevis(d){
   if(d.statut==='envoye'&&d.date_validite&&new Date(d.date_validite)<new Date())return {l:'Validité dépassée',c:'p-w'}

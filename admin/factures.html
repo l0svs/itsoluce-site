@@ -134,6 +134,8 @@ body{font-size:14px;}
 .t-envoyee{background:rgba(178,94,9,.12); color:var(--w);}
 .t-payee{background:rgba(26,138,82,.11); color:var(--ok);}
 .t-annulee{background:var(--bg3); color:var(--t3);}
+.t-nonrep{background:rgba(178,94,9,.12); color:var(--w);}
+[data-mode="dark"] .t-nonrep{background:rgba(251,191,36,.16);}
 .t-retard{background:rgba(200,54,44,.1); color:var(--d);}
 [data-mode="dark"] .t-envoyee{background:rgba(251,191,36,.16);}
 [data-mode="dark"] .t-payee{background:rgba(52,211,153,.16);}
@@ -713,6 +715,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
                   <option value="envoyee">Envoyée</option>
                   <option value="payee">Payée</option>
                   <option value="annulee">Annulée</option>
+                  <option value="non_reparable">Non réparable</option>
                 </select>
               </div>
               <div class="fg" id="fg-date-paiement" style="display:none;"><label for="f-date-paiement">Date d'encaissement</label><input type="date" id="f-date-paiement"/></div>
@@ -902,7 +905,10 @@ const STATUTS={
   brouillon:{label:'Brouillon',cls:'t-brouillon'},
   envoyee:  {label:'Envoyée',  cls:'t-envoyee'},
   payee:    {label:'Payée',    cls:'t-payee'},
-  annulee:  {label:'Annulée',  cls:'t-annulee'}
+  annulee:  {label:'Annulée',  cls:'t-annulee'},
+  // Facture à 0 € d'un appareil non réparable (diagnostic offert) : rien
+  // à encaisser, elle sort du suivi des paiements.
+  non_reparable:{label:'Non réparable',cls:'t-nonrep'}
 }
 const MODES={especes:'espèces',carte:'carte',virement:'virement',mixte:'carte + espèces'}
 /* En retard : envoyée et échéance dépassée. L'échéance n'était jamais
@@ -1081,6 +1087,7 @@ const GROUPES=[
   {cle:'encaisser', titre:'À encaisser',  test:f=>f.statut==='envoyee'&&!enRetard(f)},
   {cle:'brouillon', titre:'Brouillons',   test:f=>f.statut==='brouillon'},
   {cle:'payee',     titre:'Payées',       test:f=>f.statut==='payee'},
+  {cle:'nonrep',    titre:'Non réparables', test:f=>f.statut==='non_reparable'},
   {cle:'annulee',   titre:'Annulées',     test:f=>f.statut==='annulee'}
 ]
 
@@ -2065,7 +2072,10 @@ window.confirmerEnvoiEmail=async function(){
       return
     }
     const maj={email_envoye:true,date_envoi:new Date().toISOString(),updated_at:new Date().toISOString()}
-    if(f.statut==='brouillon')maj.statut='envoyee'
+    // Diagnostic offert sur un appareil non réparable : rien à encaisser.
+    const rienDu=dossierNonReparable(f)&&Number(f.total||0)<=0
+    if(rienDu&&['brouillon','envoyee'].includes(f.statut))maj.statut='non_reparable'
+    else if(f.statut==='brouillon')maj.statut='envoyee'
     const resMaj=await sb.from('factures').update(maj).eq('id',f.id)
     if(resMaj.error)throw new Error(resMaj.error.message)
     const i=allFactures.findIndex(x=>x.id===f.id)
