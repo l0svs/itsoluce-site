@@ -2494,6 +2494,52 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   .reveal, .reveal-group > * { opacity: 1 !important; transform: none !important; }
 }
 
+
+/* ── CONTACT : trois façons de me joindre, puis un formulaire court ── */
+.ct-head { text-align: center; }
+.ct-sub { font-size: 16px; color: #6e6e73; margin-top: 8px; line-height: 1.5; }
+.ct-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ct-act {
+  display: flex; flex-direction: column; gap: 9px; padding: 24px;
+  border: 1px solid #d2d2d7; border-radius: 18px; background: #fff;
+  text-decoration: none; color: #1d1d1f; transition: border-color .15s, transform .15s;
+}
+.ct-act:hover { border-color: #aeaeb2; transform: translateY(-2px); }
+.ct-act b { font-size: 17px; font-weight: 600; }
+.ct-act__ic { width: 44px; height: 44px; border-radius: 12px; background: #f5f5f7; color: #0052CC; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.ct-act__ic svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ct-act__ic--wa { color: #1a9e4a; }
+.ct-act__txt { font-size: 13.5px; line-height: 1.5; color: #6e6e73; flex: 1; }
+.ct-act__lien { font-size: 14.5px; font-weight: 500; color: #0052CC; }
+.ct-act--dark { background: #1d1d1f; border-color: #1d1d1f; color: #fff; }
+.ct-act--dark:hover { border-color: #1d1d1f; }
+.ct-act--dark .ct-act__ic { background: rgba(255,255,255,.1); color: #fff; }
+.ct-act--dark .ct-act__txt { color: rgba(255,255,255,.65); }
+.ct-act--dark .ct-act__lien { color: #fff; }
+.ct-infos { text-align: center; font-size: 13px; color: #86868b; margin: 18px 0 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; }
+.ct-infos a { color: #1d1d1f; text-decoration: none; font-weight: 500; }
+.ct-form { position: relative; border: 1px solid #d2d2d7; border-radius: 18px; padding: 32px; background: #fff; scroll-margin-top: 90px; }
+.ct-form__titre { font-size: 20px; font-weight: 600; color: #1d1d1f; margin-bottom: 20px; }
+.ct-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+.ct-opt { color: #aeaeb2; font-weight: 400; }
+.ct-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #f5f5f7; border-radius: 12px; }
+.ct-seg .mode-card { display: block; border: none; background: none; padding: 10px; border-radius: 9px; font: inherit; font-size: 14px; color: #6e6e73; cursor: pointer; text-align: center; transition: background .15s, color .15s; }
+.ct-seg .mode-card:hover { color: #1d1d1f; }
+.ct-seg .mode-card.is-active { background: #fff; color: #1d1d1f; font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.ct-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.ct-pills .chip { display: inline-block; border: 1px solid #d2d2d7; border-radius: 980px; padding: 9px 16px; font: inherit; font-size: 14px; color: #1d1d1f; background: #fff; cursor: pointer; transition: border-color .15s, color .15s; }
+.ct-pills .chip:hover { border-color: #aeaeb2; }
+.ct-pills .chip.is-active { border-color: #0052CC; color: #0052CC; box-shadow: inset 0 0 0 .5px #0052CC; }
+.ct-ta { min-height: 150px; }
+.ct-act:focus-visible, .ct-seg .mode-card:focus-visible, .ct-pills .chip:focus-visible { outline: 2px solid #0071e3; outline-offset: 2px; }
+@media (max-width: 760px) {
+  .ct-acts { grid-template-columns: 1fr; gap: 10px; }
+  .ct-act { padding: 20px; }
+  .ct-infos { flex-direction: column; gap: 3px; }
+  .ct-infos span { display: none; }
+  .ct-cols { grid-template-columns: 1fr; }
+  .ct-form { padding: 24px 20px; }
+}
 </style>
 <style id="mode-vacances">
 /* ═══ Mode vacances — temporaire ═══
@@ -2922,195 +2968,124 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 <section class="contact" id="contact">
   <div class="contact__inner">
 
-    <div class="contact__header reveal">
+    <div class="contact__header ct-head reveal">
       <p class="contact__label">Réponse rapide</p>
       <h2 class="contact__title">Contact</h2>
+      <p class="ct-sub">Un appel, un message ou un formulaire : choisissez ce qui vous arrange.</p>
     </div>
 
-    <div class="contact__grid">
+    <!-- Trois façons de me joindre -->
+    <div class="ct-acts reveal-group">
+      <a class="ct-act" href="tel:+32474056659">
+        <span class="ct-act__ic"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+        <b>Appeler</b>
+        <span class="ct-act__txt">Le plus rapide pour expliquer la panne et convenir d'un rendez-vous.</span>
+        <span class="ct-act__lien">+32 474 05 66 59</span>
+      </a>
+      <a class="ct-act" href="https://wa.me/32474056659" target="_blank" rel="noopener">
+        <span class="ct-act__ic ct-act__ic--wa"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-12.42 7.35L3 21l2.1-5.43A8.38 8.38 0 1 1 21 11.5z"/></svg></span>
+        <b>WhatsApp</b>
+        <span class="ct-act__txt">Envoyez une photo de l'appareil, je vous réponds avec une première estimation.</span>
+        <span class="ct-act__lien">Écrire sur WhatsApp →</span>
+      </a>
+      <a class="ct-act ct-act--dark" href="#ct-form">
+        <span class="ct-act__ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <b>Formulaire</b>
+        <span class="ct-act__txt">Décrivez la panne en une minute, je reviens vers vous avec un devis gratuit.</span>
+        <span class="ct-act__lien">Remplir le formulaire ↓</span>
+      </a>
+    </div>
+    <p class="ct-infos reveal"><a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a><span>·</span>Disponibilité sur rendez-vous<span>·</span>Dépôt à Tubize sur rendez-vous</p>
 
-      <!-- Formulaire -->
-      <div class="reveal">
-        <div class="progress">
-          <div class="progress__row">
-            <span class="progress__step" data-step="1">Vos infos</span>
-            <span class="progress__step" data-step="2">Votre appareil</span>
-            <span class="progress__step" data-step="3">La panne</span>
-          </div>
-          <div class="progress__track"><div class="progress__fill" id="progressFill"></div></div>
+    <!-- Formulaire -->
+    <div class="ct-form reveal" id="ct-form">
+      <h3 class="ct-form__titre">Demande de réparation</h3>
+      <form id="cForm" onsubmit="submitForm(event)">
+        <input type="hidden" name="_subject" value="Nouvelle demande — IT Soluce">
+        <!-- Piège anti-bot (honeypot) : champ invisible pour un humain, souvent rempli par les bots -->
+        <div style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden;" aria-hidden="true">
+          <label for="website">Ne pas remplir ce champ</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
         </div>
 
-        <div class="c-form">
-          <form id="cForm" onsubmit="submitForm(event)">
-            <input type="hidden" name="_subject" value="Nouvelle demande — IT Soluce">
-            <!-- Piège anti-bot (honeypot) : champ invisible pour un humain, souvent rempli par les bots -->
-            <div style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;overflow:hidden;" aria-hidden="true">
-              <label for="website">Ne pas remplir ce champ</label>
-              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-            </div>
-
+        <div class="ct-cols">
+          <div>
             <div class="frow">
               <div class="fg">
-                <label class="fl" for="f-prenom">Prénom *</label>
-                <input class="fi" id="f-prenom" type="text" name="prenom" placeholder="Votre prénom" required>
+                <label class="fl" for="f-prenom">Prénom</label>
+                <input class="fi" id="f-prenom" type="text" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>
               </div>
               <div class="fg">
-                <label class="fl" for="f-nom">Nom *</label>
-                <input class="fi" id="f-nom" type="text" name="nom" placeholder="Votre nom" required>
+                <label class="fl" for="f-nom">Nom</label>
+                <input class="fi" id="f-nom" type="text" name="nom" placeholder="Votre nom" autocomplete="family-name" required>
               </div>
             </div>
             <div class="fg">
-              <label class="fl" for="f-email">Email *</label>
-              <input class="fi" id="f-email" type="email" name="email" placeholder="votre@email.com" required>
+              <label class="fl" for="f-email">Email</label>
+              <input class="fi" id="f-email" type="email" name="email" placeholder="votre@email.com" autocomplete="email" required>
             </div>
             <div class="fg">
-              <label class="fl" for="f-tel">Téléphone</label>
-              <input class="fi" id="f-tel" type="tel" name="telephone" placeholder="+32 XXX XX XX XX">
+              <label class="fl" for="f-tel">Téléphone <span class="ct-opt">(facultatif)</span></label>
+              <input class="fi" id="f-tel" type="tel" name="telephone" placeholder="+32 4XX XX XX XX" autocomplete="tel">
             </div>
-
-            <div class="f-block">
-              <div class="f-block__label">Type d'appareil <span class="req">*</span></div>
-              <div class="chip-grid" id="chipGrid" role="radiogroup" aria-label="Type d'appareil">
-                <button type="button" class="chip" data-value="PC / Laptop" role="radio" aria-checked="false">
-                  <span class="chip__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg>
-                  <span>PC / Laptop</span>
-                </button>
-                <button type="button" class="chip" data-value="Smartphone" role="radio" aria-checked="false">
-                  <span class="chip__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
-                  <span>Smartphone</span>
-                </button>
-                <button type="button" class="chip" data-value="Console de jeux" role="radio" aria-checked="false">
-                  <span class="chip__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9h12l2 7a2 2 0 0 1-2 2.5c-1 0-1.5-.5-2-1.5l-1-2H9l-1 2c-.5 1-1 1.5-2 1.5A2 2 0 0 1 4 16z"/><path d="M8 12v2M7 13h2"/><circle cx="16" cy="12" r=".6" fill="currentColor"/><circle cx="18" cy="14" r=".6" fill="currentColor"/></svg>
-                  <span>Console</span>
-                </button>
-                <button type="button" class="chip" data-value="Tablette" role="radio" aria-checked="false">
-                  <span class="chip__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M11 18h2"/></svg>
-                  <span>Tablette</span>
-                </button>
-                <button type="button" class="chip" data-value="Autre" role="radio" aria-checked="false">
-                  <span class="chip__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
-                  <span>Autre</span>
-                </button>
+            <div class="fg">
+              <span class="fl">Où ?</span>
+              <div class="ct-seg" role="radiogroup" aria-label="Lieu de l'intervention">
+                <button type="button" class="mode-card" data-value="domicile" role="radio" aria-checked="false">À domicile</button>
+                <button type="button" class="mode-card" data-value="atelier" role="radio" aria-checked="false">Dépôt à Tubize</button>
               </div>
-              <p class="f-hint" id="appareilHint">Sélectionnez un type d'appareil.</p>
-              <input type="hidden" name="appareil" id="appareilInput">
-            </div>
-
-            <div class="f-block">
-              <div class="f-block__label">Mode d'intervention <span class="req">*</span></div>
-              <div class="mode-grid" role="radiogroup" aria-label="Mode d'intervention">
-                <button type="button" class="mode-card" data-value="domicile" role="radio" aria-checked="false">
-                  <div class="mode-card__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg></div>
-                  <div>
-                    <div class="mode-card__title">À domicile</div>
-                    <div class="mode-card__sub">Je me déplace chez vous</div>
-                  </div>
-                </button>
-                <button type="button" class="mode-card" data-value="atelier" role="radio" aria-checked="false">
-                  <div class="mode-card__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 1 5.4-5.4l-2.8 2.8-2-2z"/></svg></div>
-                  <div>
-                    <div class="mode-card__title">Dépôt à l'atelier</div>
-                    <div class="mode-card__sub">Vous déposez l'appareil</div>
-                  </div>
-                </button>
-              </div>
-              <p class="f-hint" id="modeHint">Sélectionnez un mode d'intervention.</p>
+              <p class="f-hint" id="modeHint">Choisissez à domicile ou dépôt à Tubize.</p>
               <input type="hidden" name="mode_intervention" id="modeInterventionInput">
-
               <div class="slide" id="adresseSlide">
                 <div class="slide__inner">
-                  <div class="fg" style="margin-top:12px;">
-                    <label class="fl" for="adresseInput">Adresse d'intervention *</label>
-                    <input class="fi" type="text" name="adresse" id="adresseInput" placeholder="Rue, numéro, code postal, ville">
+                  <div class="fg" style="margin:10px 0 0;">
+                    <label class="fl" for="adresseInput">Adresse de l'intervention</label>
+                    <input class="fi" type="text" name="adresse" id="adresseInput" placeholder="Rue, numéro, code postal, commune" autocomplete="street-address">
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
+          <div>
             <div class="fg">
-              <label class="fl" for="f-desc">Description de la panne *</label>
-              <textarea class="fi fi-ta" id="f-desc" name="description" placeholder="Marque, modèle, problème constaté..." rows="4" required></textarea>
+              <span class="fl">Appareil</span>
+              <div class="ct-pills" id="chipGrid" role="radiogroup" aria-label="Type d'appareil">
+                <button type="button" class="chip" data-value="Smartphone" role="radio" aria-checked="false">Smartphone</button>
+                <button type="button" class="chip" data-value="PC / Laptop" role="radio" aria-checked="false">PC / Laptop</button>
+                <button type="button" class="chip" data-value="Tablette" role="radio" aria-checked="false">Tablette</button>
+                <button type="button" class="chip" data-value="Console de jeux" role="radio" aria-checked="false">Console</button>
+                <button type="button" class="chip" data-value="Autre" role="radio" aria-checked="false">Autre</button>
+              </div>
+              <p class="f-hint" id="appareilHint">Choisissez un type d'appareil.</p>
+              <input type="hidden" name="appareil" id="appareilInput">
             </div>
-
-            <p class="recap" id="recapText">Sélectionnez un appareil et un mode d'intervention pour voir le résumé de votre demande.</p>
-
+            <div class="fg">
+              <label class="fl" for="f-desc">La panne</label>
+              <textarea class="fi fi-ta ct-ta" id="f-desc" name="description" placeholder="Marque, modèle et ce qui ne va pas" rows="5" required></textarea>
+            </div>
             <button class="btn-send" type="submit" id="submitBtn">
-              <span class="btn-send__label">Envoyer</span>
+              <span class="btn-send__label">Envoyer ma demande</span>
               <span class="btn-send__spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 0 1 10 10"/></svg></span>
             </button>
-
             <p class="f-rgpd">
-              Vos données ne servent qu'à traiter votre demande de réparation et ne sont jamais transmises à des tiers.
+              Vos données ne servent qu'à traiter votre demande et ne sont jamais transmises à des tiers.
               Vous pouvez à tout moment demander à les consulter, les corriger ou les supprimer en écrivant à
               <a href="mailto:contact@itsoluce.be" style="color:#0052CC;">contact@itsoluce.be</a>.
               <button type="button" data-m="privacy">En savoir plus</button>
             </p>
-
-            <div class="f-ok" id="fOk">
-              <svg class="f-ok__check" viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="24"/>
-                <path d="M14 27l7 7 16-16"/>
-              </svg>
-              <div class="f-ok__title">Message envoyé !</div>
-              <div class="f-ok__text vac-hide">Merci, votre demande a bien été reçue.<br>Je reviens vers vous dès que possible.</div>
-              <div class="f-ok__text vac-only">Merci, votre demande a bien été reçue.<br>Je suis en congé jusqu'au 4 octobre&nbsp;: je la traite dès mon retour, le lundi 5.</div>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
 
-      <!-- Coordonnées -->
-      <div class="c-info reveal">
-        <div class="c-info__title">Coordonnées</div>
-
-        <a class="irow" href="tel:+32474056659">
-          <div class="irow__ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.47 2 2 0 0 1 3.56 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.88a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/>
-            </svg>
-          </div>
-          <div>
-            <div class="irow__l">Téléphone & WhatsApp</div>
-            <div class="irow__v">+32 474 05 66 59</div>
-            <div class="vac-note vac-only">Ligne rouverte le lundi 5 octobre</div>
-          </div>
-        </a>
-
-        <a class="irow" href="mailto:contact@itsoluce.be">
-          <div class="irow__ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
-          </div>
-          <div>
-            <div class="irow__l">Email</div>
-            <div class="irow__v">contact@itsoluce.be</div>
-            <div class="vac-note vac-only">Réponse à partir du 5 octobre</div>
-          </div>
-        </a>
-
-        <a class="btn-wa" href="https://wa.me/32474056659" target="_blank">
-          <svg viewBox="0 0 32 32">
-            <path fill="currentColor" d="M19.11 17.36c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.13-.42-2.16-1.34-.8-.71-1.34-1.6-1.5-1.87-.16-.27-.02-.41.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.99-.22-.53-.44-.46-.6-.47h-.51c-.18 0-.47.07-.71.34-.24.27-.93.91-.93 2.22s.96 2.58 1.09 2.76c.13.18 1.89 2.88 4.58 4.04.64.28 1.14.44 1.53.56.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.8-1.27.22-.62.22-1.16.15-1.27-.07-.11-.24-.18-.51-.32z"/>
-            <path fill="currentColor" d="M26.67 15.97c0 5.89-4.79 10.67-10.67 10.67-1.88 0-3.72-.5-5.33-1.45L5.33 26.67l1.52-5.12c-.99-1.68-1.52-3.6-1.52-5.58C5.33 10.09 10.11 5.33 16 5.33c5.88 0 10.67 4.76 10.67 10.64zm-10.67-8.96c-4.94 0-8.96 4.02-8.96 8.96 0 1.86.57 3.66 1.65 5.19l.12.17-.9 3.02 3.1-.88.16.1c1.48.96 3.2 1.47 4.83 1.47 4.94 0 8.96-4.02 8.96-8.96 0-4.94-4.02-8.96-8.96-8.96z"/>
+        <div class="f-ok" id="fOk">
+          <svg class="f-ok__check" viewBox="0 0 52 52">
+            <circle cx="26" cy="26" r="24"/>
+            <path d="M14 27l7 7 16-16"/>
           </svg>
-          Contacter via WhatsApp
-        </a>
-        <div class="vac-note vac-only" style="margin:8px 0 0;">Vos messages sont lus, sans garantie de réponse avant le 5 octobre.</div>
-
-        <div class="hours">
-          <div class="hours__title">Disponibilités</div>
-          <div class="hrow vac-hide"><span>Disponibilité</span><span>Sur rendez-vous</span></div>
-          <div class="hrow vac-only" style="gap:14px;"><span>Disponibilité</span><span style="color:#b25e09;font-weight:600;text-align:right;">En congé jusqu'au 4&nbsp;octobre</span></div>
+          <div class="f-ok__title">Demande envoyée !</div>
+          <div class="f-ok__text">Merci, votre demande a bien été reçue.<br>Je reviens vers vous dès que possible.</div>
         </div>
-
-      </div>
+      </form>
     </div>
 
   </div>
@@ -3494,7 +3469,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     chip.setAttribute('aria-checked','true');
     appareilInput.value = chip.dataset.value;
     appareilHint.classList.remove('show');
-    updateRecap(); updateProgress();
+    
   });
 
   var modeCards = document.querySelectorAll('.mode-card');
@@ -3513,42 +3488,10 @@ document.getElementById('yr').textContent = new Date().getFullYear();
       adresseSlide.classList.toggle('is-open', domicile);
       adresseField.required = domicile;
       if (!domicile) adresseField.value = '';
-      updateRecap(); updateProgress();
+      
     });
   });
 
-  var recapText = document.getElementById('recapText');
-  var modeLabel = { domicile: 'à domicile', atelier: "à l'atelier" };
-  function updateRecap(){
-    var d = appareilInput.value, m = modeInput.value;
-    if (d && m) {
-      recapText.innerHTML = 'Réparation d’un <b>' + d + '</b> — intervention <b>' + modeLabel[m] + '</b>.';
-    } else if (d || m) {
-      recapText.innerHTML = d
-        ? 'Appareil : <b>' + d + '</b>. Choisissez le mode d’intervention.'
-        : 'Intervention <b>' + modeLabel[m] + '</b>. Choisissez le type d’appareil.';
-    } else {
-      recapText.textContent = "Sélectionnez un appareil et un mode d'intervention pour voir le résumé de votre demande.";
-    }
-  }
-
-  var progressFill = document.getElementById('progressFill');
-  var steps = document.querySelectorAll('.progress__step');
-  var cFormEl = document.getElementById('cForm');
-  function updateProgress(){
-    var infoDone = ['f-prenom','f-nom','f-email'].every(function(id){ return document.getElementById(id).value.trim().length > 0; });
-    var deviceDone = !!appareilInput.value && !!modeInput.value;
-    var descDone = document.getElementById('f-desc').value.trim().length > 0;
-    var doneCount = [infoDone, deviceDone, descDone].filter(Boolean).length;
-    progressFill.style.width = (doneCount / 3 * 100) + '%';
-    steps.forEach(function(step, i){
-      var stepDone = [infoDone, deviceDone, descDone][i];
-      step.classList.toggle('is-done', stepDone);
-      step.classList.toggle('is-active', !stepDone && (i === 0 || [infoDone, deviceDone][i-1]));
-    });
-  }
-  cFormEl.addEventListener('input', updateProgress);
-  updateProgress();
 })();
 
 function submitForm(e){
