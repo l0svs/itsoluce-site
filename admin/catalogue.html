@@ -916,10 +916,23 @@ async function rechercher(){
     query=query.eq('quality',qualiteDetectee)
   }
   const {data:dataRaw,error}=await query.order('category').limit(500)
-  const data=dataRaw?filtrerModeleExact(dataRaw,qModele).filter(exclusionsQualite):dataRaw
+  // La politique de qualités et de catégories s'applique en premier et reste
+  // inchangée : QUALITES_RETENUES côté requête, puis le modèle exact, puis les
+  // exclusions par catégorie (FDX, Battery sans BMS, high capacity).
+  const dataPolitique=dataRaw?filtrerModeleExact(dataRaw,qModele).filter(exclusionsQualite):dataRaw
+  // Le stock vient en dernier, une fois la politique appliquée : une pièce en
+  // rupture ne peut être ni commandée ni promise au client, elle n'a donc rien
+  // à faire dans les résultats.
+  const data=dataPolitique?dataPolitique.filter(p=>p.instock):dataPolitique
+  const nbRupture=(dataPolitique&&data)?dataPolitique.length-data.length:0
   if(error){results.innerHTML='<div class="cat-empty"><div class="cat-empty-ico">⚠️</div><div class="cat-empty-title">Erreur</div><div>'+escapeHtml(error.message)+'</div></div>';filtersBar.style.display='none';return}
   if(!data||data.length===0){
-    results.innerHTML=`<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(qRaw)}"</div><div>Essayez un autre modèle, une référence SKU, ou associez un mot de qualité (ex : iPhone 13 refurbished).</div></div>`
+    // Deux écrans vides très différents : « ta recherche ne correspond à rien »
+    // et « elle correspond, mais tout est en rupture ». Les confondre ferait
+    // passer une recherche juste pour une recherche ratée.
+    results.innerHTML=nbRupture>0
+      ? `<div class="cat-empty"><div class="cat-empty-ico">📦</div><div class="cat-empty-title">Tout est en rupture pour "${escapeHtml(qRaw)}"</div><div>${nbRupture} variante${nbRupture>1?'s':''} correspond${nbRupture>1?'ent':''} à cette recherche, mais aucune n'est disponible chez Foneday aujourd'hui.</div></div>`
+      : `<div class="cat-empty"><div class="cat-empty-ico">🔍</div><div class="cat-empty-title">Aucun résultat pour "${escapeHtml(qRaw)}"</div><div>Essayez un autre modèle, une référence SKU, ou associez un mot de qualité (ex : iPhone 13 refurbished).</div></div>`
     filtersBar.style.display='none'
     return
   }
