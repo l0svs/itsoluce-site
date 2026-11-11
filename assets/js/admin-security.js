@@ -53,3 +53,37 @@ function escJsAttr(value) {
     '"': '&quot;',
   }[c]));
 }
+
+/**
+ * Mise à jour automatique de l'ERP.
+ *
+ * GitHub Pages autorise les navigateurs à garder une copie des pages
+ * (Cache-Control: max-age=600), et Safari sur iPhone la garde parfois bien
+ * plus longtemps : après une mise en ligne, l'ERP pouvait continuer à
+ * tourner sur l'ancienne version (ancien PDF, ancien mail).
+ * À chaque ouverture, on demande au site la date de la version en ligne
+ * (sans cache) et on la compare à celle de la page affichée. Si une version
+ * plus récente existe, la page est rechargée une fois depuis le site.
+ */
+(function majAutomatique() {
+  try {
+    if (!window.fetch || !window.URL) return;
+    var locale = Date.parse(document.lastModified);
+    if (isNaN(locale)) return;
+    var url = location.pathname + '?_v=' + Date.now();
+    fetch(url, { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+      var lm = r.ok && r.headers.get('last-modified');
+      if (!lm) return;
+      var enLigne = Date.parse(lm);
+      if (isNaN(enLigne) || enLigne <= locale + 1000) return;
+      var cle = 'erp-maj:' + location.pathname;
+      try {
+        if (sessionStorage.getItem(cle) === lm) return;   // une seule tentative par version
+        sessionStorage.setItem(cle, lm);
+      } catch (e) { /* stockage indisponible : on recharge quand même une fois */ }
+      var u = new URL(location.href);
+      u.searchParams.set('_maj', String(enLigne));
+      location.replace(u.toString());
+    }).catch(function () {});
+  } catch (e) { /* jamais bloquant */ }
+})();
