@@ -222,6 +222,16 @@ body{font-size:14px;}
 .step em{font-style:normal; color:var(--t3); font-weight:400;}
 
 .det-acts{display:flex; gap:7px; flex-wrap:wrap;}
+.etape{display:flex; gap:7px; flex-wrap:wrap;}
+.etape .etape-btn{flex:1; justify-content:center;}
+.apres{display:flex; flex-direction:column; gap:7px;}
+.apres:empty{display:none;}
+.apres .btn{justify-content:center;}
+.apres-txt{font-size:12.5px; color:var(--t2);}
+.apres-txt.ok{color:var(--ok); font-weight:500;}
+.gar-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px;}
+.gar-note a{color:var(--a); cursor:pointer; font-weight:500;}
+.tag-gar{font-size:10px; font-weight:600; color:var(--a); background:var(--ad); border-radius:6px; padding:1px 6px; margin-left:4px; vertical-align:1px;}
 .det-acts .btn{flex:1; min-width:120px;}
 
 /* ── État vide ── */
@@ -598,15 +608,15 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   </div>
   <nav class="hnav">
     <a href="/admin/dashboard.html" class="hnl">Dashboard</a>
-    <a href="/admin/clients.html" class="hnl">Clients</a>
     <a href="/admin/demandes.html" class="hnl">Demandes<span class="nc" id="nb-dem" style="display:none"></span></a>
     <a href="/admin/devis.html" class="hnl">Devis</a>
-    <a href="/admin/factures.html" class="hnl">Factures</a>
     <a href="/admin/reparations.html" class="hnl active">Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
+    <a href="/admin/factures.html" class="hnl">Factures</a>
+    <a href="/admin/clients.html" class="hnl">Clients</a>
+    <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl">Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert" style="display:none"></span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
-    <a href="/admin/planning.html" class="hnl">Planning</a>
-    <a href="/admin/messages.html" class="hnl">Messages<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/gestion.html" class="hnl">Gestion</a>
   </nav>
 </header>
@@ -615,24 +625,21 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   <aside class="sidebar">
       <a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
 
-      <div class="nl-group">Commercial</div>
-      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
-      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
-      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
-
-      <div class="nl-group">Technique</div>
+      <div class="nl-group">Dossiers clients</div>
       <a href="/admin/demandes.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes<span class="nc" id="nb-dem" style="display:none"></span></a>
+      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/reparations.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
-
-      <div class="nl-group">Gestion</div>
+      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+      <div class="nl-group">Relation client</div>
+      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
+      <div class="nl-group">Atelier</div>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert" style="display:none"></span></a>
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
-
-      <div class="nl-group">Organisation</div>
-      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
-      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none"></span></a>
+      <div class="nl-group">Administration</div>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.2</div>
+      <div class="sf">IT Soluce ERP · v1.3</div>
       </aside>
 
   <div class="content" id="mainContent">
@@ -1258,7 +1265,7 @@ function ligne(r){
       onclick="selectRep(${r.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRep(${r.id})}">
     <span class="ref">${escHtml(r.numero||'—')}</span>
     <span class="row-who">
-      <b>${escHtml(r.client_nom||'Client inconnu')}</b>
+      <b>${escHtml(r.client_nom||'Client inconnu')}${r.garantie_de_id?' <span class="tag-gar">Garantie</span>':''}</b>
       <em>${escHtml(sous||'—')}</em>
     </span>
     <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" title="Changer le statut">${escHtml(st.court)}</button>
@@ -1369,6 +1376,10 @@ function renderDetail(){
         ${!r.client_id?'<span>Non rattaché à une fiche client</span>':''}
       </div>
     </div>
+    ${r.garantie_de_id?`<div class="gar-note">Retour <b>sous garantie</b> du dossier ${(()=>{const o=allReps.find(x=>x.id===r.garantie_de_id);return o?`<a onclick="selectRep(${o.id})">${escHtml(o.numero||'d\u2019origine')}</a>`:'d\u2019origine'})()} : rien à facturer, sauf si le problème n'est pas couvert (casse, oxydation…).</div>`:''}
+    <div id="fil-rep"></div>
+    ${etapeSuivante(r)}
+    <div id="apres-rep" class="apres"></div>
     <div class="sep"></div>
     <dl class="dl">
       <div><dt>Appareil</dt><dd>${escHtml(r.appareil||'—')}</dd></div>
@@ -1396,12 +1407,118 @@ function renderDetail(){
       <button class="btn btn-secondary" onclick="editRep(${r.id})">Modifier</button>
       ${r.converti_facture_id
         ? '<button class="btn btn-ghost" disabled style="flex:1;">Facture déjà créée</button>'
-        : `<button class="btn btn-primary" onclick="factureDepuisDossier(${r.id})">${r.statut==='non_reparable'?'Facturer le diagnostic':'Créer une facture'}</button>`}
+        : `<button class="btn ${r.statut==='non_reparable'?'btn-primary':'btn-secondary'}" onclick="factureDepuisDossier(${r.id})">${r.statut==='non_reparable'?'Facturer le diagnostic':'Créer une facture'}</button>`}
     </div>
     ${r.statut==='non_reparable'&&!r.converti_facture_id?`<button class="btn btn-secondary" onclick="factureDepuisDossier(${r.id},true)">Diagnostic offert · facture à 0 €</button>`:''}
+    ${!CLOS.includes(r.statut)&&!r.converti_facture_id?`<a class="btn btn-secondary" id="btn-devis-rep" style="display:none" href="/admin/devis.html?reparation=${r.id}">Faire un devis pour ce dossier</a>`:''}
     ${r.client_email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:r.client_email,reparation:r.id,objet:r.numero?`Votre réparation ${r.numero}`:''}))}">✉ Répondre par mail</a>`:''}
     <button class="btn btn-danger" onclick="deleteRep(${r.id},'${escJsAttr(r.client_nom||'')}')">Supprimer le dossier</button>
   </div>`
+  if(window.DossierFil){
+    DossierFil.afficher(document.getElementById('fil-rep'),{reparation:r.id},'reparation').then(d=>{
+      majApresVente(r)
+      if(!d||selectedId!==r.id)return
+      const b=document.getElementById('btn-devis-rep')
+      if(b&&!d.devis)b.style.display=''
+      /* Prêt + facture pas encore payée : au comptoir, on encaisse d'abord,
+         on rend l'appareil ensuite. */
+      const f=d.facture, et=document.querySelector('#detail .etape')
+      if(et&&r.statut==='pret'&&f&&['brouillon','envoyee'].includes(f.statut)){
+        const reste=Math.max(0,(Number(f.total)||0)-(Number(f.acompte)||0))
+        et.innerHTML=`<a class="btn btn-primary etape-btn" href="/admin/factures.html?open=${f.id}&encaisser=1">Encaisser ${eur(reste)}</a>
+          <button class="btn btn-secondary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
+      }
+    })
+  }
+}
+
+/* ─── Étape suivante ───
+   Un seul bouton, toujours au même endroit, qui fait avancer le dossier :
+   plus besoin de chercher le bon statut dans le menu. */
+function etapeSuivante(r){
+  const S={
+    attente_reception:{vers:'recu',  label:'Appareil reçu'},
+    recu:             {vers:'encours',label:'Démarrer la réparation'},
+    attente:          {vers:'encours',label:'Pièce reçue · reprendre la réparation'},
+    encours:          {vers:'pret',  label:'Réparation terminée · prêt à récupérer'}
+  }
+  let bouton=''
+  if(S[r.statut])bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'${S[r.statut].vers}')">${S[r.statut].label}</button>`
+  else if(r.statut==='pret'&&r.garantie_de_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (sous garantie)</button>`
+  else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id)bouton=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
+  else if(r.statut==='pret')bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
+  return bouton?`<div class="etape">${bouton}</div>`:''
+}
+/* ─── Après-vente ───
+   Prêt : relance si le client ne vient pas. Rendu : garantie (retour en un
+   clic), demande d'avis Google une fois la facture payée. */
+let _garantieMois=null
+async function garantieMois(){
+  if(_garantieMois)return _garantieMois
+  const {data}=await sb.from('settings').select('cle,valeur').eq('cle','garantie_mois')
+  const n=parseInt(data&&data[0]&&data[0].valeur,10)
+  _garantieMois=n>0?n:3
+  return _garantieMois
+}
+async function majApresVente(r){
+  const el=document.getElementById('apres-rep')
+  if(!el)return
+  const bouts=[]
+  const nomRel=t=>({mail:'mail',telephone:'appel',ignore:'rappel ignoré'})[t]||t
+  if(r.statut==='pret'&&window.Relances){
+    const [e,h]=await Promise.all([Relances.pourDocument('pret',r.id),Relances.historique('pret',r.id)])
+    if(e)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('pret',${r.id})">Relancer le client · ${escHtml(e.libelleNiveau.toLowerCase())}${e.estDu?'':' (prévu le '+dateCourte(e.du)+')'}</button>`)
+    if(h.length)bouts.push(`<div class="apres-txt">Relances : ${h.map(x=>nomRel(x.canal)+' le '+dateCourte(x.fait_le)).join(', ')}</div>`)
+  }
+  if(r.statut==='rendu'){
+    const mois=await garantieMois()
+    const fin=new Date(r.date_fin||r.updated_at||r.created_at);fin.setMonth(fin.getMonth()+mois)
+    const sous=fin>=new Date(new Date().toDateString())
+    bouts.push(`<div class="apres-txt ${sous?'ok':''}">${sous?`Sous garantie jusqu'au ${dateCourte(fin)} (${mois} mois)`:`Garantie terminée le ${dateCourte(fin)}`}</div>`)
+    if(sous)bouts.push(`<button class="btn btn-secondary" onclick="retourGarantie(${r.id})">Retour sous garantie</button>`)
+    if(window.Relances){
+      const [a,h]=await Promise.all([Relances.pourDocument('avis',r.id),Relances.historique('avis',r.id)])
+      if(a)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('avis',${r.id})">Demander un avis Google</button>`)
+      else if(h.length)bouts.push(`<div class="apres-txt">Avis Google demandé le ${dateCourte(h[h.length-1].fait_le)}</div>`)
+    }
+  }
+  if(selectedId!==r.id)return
+  el.innerHTML=bouts.join('')
+}
+window.relancerRep=async function(type,id){
+  if(!window.Relances)return
+  const e=await Relances.pourDocument(type,id)
+  if(!e){showToast('Rien à envoyer pour ce dossier','err');return}
+  Relances.ouvrir(e,()=>renderDetail())
+}
+window.retourGarantie=async function(id){
+  const r=allReps.find(x=>x.id===id)
+  if(!r)return
+  const symptome=prompt(`Retour sous garantie — ${r.numero}\n\nQuel problème le client constate-t-il ?`)
+  if(symptome===null)return
+  const mois=await garantieMois()
+  const fin=new Date(r.date_fin||r.updated_at||r.created_at);fin.setMonth(fin.getMonth()+mois)
+  try{
+    const numero=await nextNumero('reparation','REP')
+    const res=await sb.from('reparations').insert({
+      numero, garantie_de_id:r.id,
+      client_id:r.client_id||null, client_nom:r.client_nom, client_email:r.client_email||null, client_telephone:r.client_telephone||null,
+      appareil:r.appareil||null, modele:r.modele||null,
+      panne_description:`Retour sous garantie (dossier ${r.numero}) : ${symptome.trim()||'à préciser'}`,
+      statut:'recu', prix_devis:0, prix_final:0, piece_id:null, cout_pieces:0, pieces:[],
+      notes:`Dossier d'origine ${r.numero}, rendu le ${dateCourte(r.date_fin||r.updated_at)} — garantie jusqu'au ${dateCourte(fin)}.`,
+      updated_at:new Date().toISOString()
+    }).select().single()
+    if(res.error)throw new Error(res.error.message)
+    allReps.unshift(res.data)
+    renderAll()
+    selectRep(res.data.id)
+    showToast(`Dossier ${numero} ouvert sous garantie`,'ok')
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
+}
+window.passerStatut=function(id,statut){
+  window.currentStatusId=id
+  return window.changeStatut(statut)
 }
 
 window.editRep=function(id){
@@ -1419,43 +1536,68 @@ async function creerFactureDepuis(r,offert=false){
   const prix=nonRep?(Number(diag?.prix)||0):prixClient(r)
   // Diagnostic offert : il figure sur la facture puis est déduit, total 0 €.
   offert=nonRep&&offert
-  const total=offert?0:prix
-  const question=offert
+  /* Devis accepté lié au dossier : la facture reprend ses lignes, sa remise
+     et son acompte. Avant, elle repartait d'une seule ligne au montant du
+     devis — l'acompte déjà versé n'apparaissait plus et le client risquait
+     de le payer deux fois. */
+  const devisLie=nonRep?null:await devisDuDossier(r)
+  if(devisLie&&devisLie.converti_facture_id){
+    showToast(`Ce dossier est déjà facturé depuis le devis ${devisLie.numero||''}`,'err');return
+  }
+  const total=offert?0:devisLie?(Number(devisLie.total)||0):prix
+  const acompteDevis=devisLie?(Number(devisLie.acompte)||0):0
+  const question=devisLie
+    ?`Créer la facture du dossier ${r.numero} à partir du devis ${devisLie.numero} ?\n\nMontant : ${eur(total)}${acompteDevis>0?`\nAcompte déjà versé : ${eur(acompteDevis)} — reste à payer : ${eur(Math.max(0,total-acompteDevis))}`:''}`
+    :offert
     ?`Créer la facture du dossier ${r.numero} (appareil non réparable) avec le diagnostic offert ?\n\nMontant : ${eur(0)}`
     :nonRep
     ?`Créer la facture du diagnostic pour le dossier ${r.numero} (appareil non réparable) ?\n\nMontant : ${eur(prix)}`
     :`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}`
-  if(!confirm(`${question}\n\nElle sera créée en brouillon, à compléter dans Factures.`))return
-  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
-  const seq=(cpt?.valeur||0)+1
-  await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
-  const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
+  if(!confirm(`${question}\n\nElle sera créée en brouillon (sans numéro) : le numéro définitif est attribué à son émission, dans Factures.`))return
   const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
   const desc=nonRep
     ?`Diagnostic${app?' '+app:''} — appareil non réparable`
     :`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
   const res=await sb.from('factures').insert({
-    numero:numFacture,
     reparation_id:r.id,
     reparation_numero:r.numero,
-    client_id:r.client_id||null,
+    devis_id:devisLie?devisLie.id:null,
+    client_id:r.client_id||(devisLie&&devisLie.client_id)||null,
     client_nom:r.client_nom,
     client_email:r.client_email||null,
     client_telephone:r.client_telephone||null,
-    client_adresse:r.client_adresse||null,
+    client_adresse:r.client_adresse||(devisLie&&devisLie.client_adresse)||null,
+    client_societe:devisLie?(devisLie.client_societe||null):null,
+    client_tva:devisLie?(devisLie.client_tva||null):null,
     date_emission:new Date().toISOString().slice(0,10),
     statut:'brouillon',
-    lignes:offert
+    acompte:acompteDevis, acompte_type:'euro',
+    lignes:devisLie&&Array.isArray(devisLie.lignes)&&devisLie.lignes.length
+      ?devisLie.lignes
+      :offert
       ?[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''},{description:'Diagnostic offert',quantite:1,prix_unitaire:-prix,total:-prix,stock_id:''}]
       :[{description:desc,quantite:1,prix_unitaire:prix,total:prix,stock_id:''}],
-    total, remise:0, notes:null, stock_decremente:true,
+    total, remise:devisLie?(Number(devisLie.remise)||0):0, notes:devisLie?(devisLie.notes||null):null,
+    // Les pièces du dossier sortent du stock au passage « Prêt » : la facture
+    // ne les décompte pas une seconde fois.
+    stock_decremente:true,
     updated_at:new Date().toISOString()
   }).select().single()
   if(res.error)throw new Error(res.error.message)
   await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
   r.converti_facture_id=res.data.id
   renderDetail()
-  showToast(`Facture ${numFacture} créée — à compléter dans Factures`,'ok')
+  showToast('Facture créée en brouillon — à vérifier et émettre dans Factures','ok')
+}
+/* Devis lié au dossier : créé depuis le devis (« Créer la réparation ») ou
+   fait depuis le dossier (« Faire un devis »). Le plus récent l'emporte. */
+async function devisDuDossier(r){
+  for(const col of ['converti_reparation_id','reparation_id']){
+    const {data,error}=await sb.from('devis').select('id,numero,statut,lignes,total,remise,acompte,notes,client_id,client_adresse,client_societe,client_tva,converti_facture_id')
+      .eq(col,r.id).neq('statut','refuse').order('id',{ascending:false}).limit(1)
+    if(!error&&data&&data[0])return data[0]
+  }
+  return null
 }
 window.factureDepuisDossier=async function(id,offert=false){
   const r=allReps.find(x=>x.id===id)
@@ -1639,13 +1781,27 @@ window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/l
 
 await loadReps()
 
-// Lien direct ?q=… (page Messages, palette de recherche) : pré-remplit la recherche.
+// Depuis la fiche client : reparations.html?nouveau=1&client=ID ouvre un dossier
+// avec le client déjà choisi.
+{
+  const p=new URLSearchParams(location.search)
+  if(p.get('nouveau')==='1'){
+    history.replaceState(null,'',location.pathname)
+    openPanel(null)
+    const sel=document.getElementById('f-client-select')
+    const cid=p.get('client')
+    if(cid&&sel&&[...sel.options].some(o=>o.value===cid)){sel.value=cid;window.onClientSelect()}
+  }
+}
+// Lien direct ?q=… (page Mails, palette de recherche) : pré-remplit la recherche.
 {
   const q=new URLSearchParams(location.search).get('q')
   if(q){
     document.getElementById('searchInput').value=q
     renderCards()
     const r=allReps.find(x=>x.numero===q)
+    // Dossier clôturé (rendu, annulé…) : le filtre « Ouverts » le masquait.
+    if(r&&CLOS.includes(r.statut))window.setFilter('tous')
     if(r)selectRep(r.id)
     history.replaceState(null,'',location.pathname)
   }
@@ -1662,10 +1818,10 @@ await loadReps()
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
     <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
+    <a href="/admin/demandes.html" class="mbb-item" data-page="demandes"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes</a>
+    <a href="/admin/devis.html" class="mbb-item" data-page="devis"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
     <a href="/admin/reparations.html" class="mbb-item" data-page="reparations"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Répar.</a>
-    <a href="/admin/stock.html" class="mbb-item" data-page="stock"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Stock</a>
-    <a href="/admin/catalogue.html" class="mbb-item" data-page="catalogue"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue</a>
-    <a href="/admin/clients.html" class="mbb-item" data-page="clients"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a href="/admin/factures.html" class="mbb-item" data-page="factures"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
   </div>
 </div>
 
@@ -1766,5 +1922,7 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
+<script src="/admin/assets/js/dossier-fil.js"></script>
+<script src="/admin/assets/js/relances.js"></script>
 </body>
 </html>

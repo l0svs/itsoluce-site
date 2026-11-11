@@ -207,7 +207,10 @@ body{font-size:14px;}
 .fi-ev a.bd{text-decoration:none;}
 .fi-ev a.bd:hover b{color:var(--a);}
 .fi-acts{display:flex; gap:7px; margin-top:2px;}
-.fi-acts .btn{flex:1; padding:9px 8px; font-size:12.5px;}
+.fi-acts .btn{flex:1; padding:9px 8px; font-size:12.5px; justify-content:center; text-decoration:none; white-space:nowrap;}
+.fi-rail div.du{background:rgba(200,54,44,.10);}
+.fi-rail div.du b{color:var(--d);}
+.fi-ev .dt:empty{display:none;}
 .fi-note{font-size:12.5px; color:var(--t2); background:var(--bg3); border-radius:11px; padding:10px 12px; white-space:pre-wrap; word-break:break-word;}
 
 .pill{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; flex-shrink:0; align-self:flex-start;}
@@ -567,15 +570,15 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   </div>
   <nav class="hnav">
     <a href="/admin/dashboard.html" class="hnl">Dashboard</a>
-    <a href="/admin/clients.html" class="hnl active">Clients</a>
     <a href="/admin/demandes.html" class="hnl">Demandes<span class="nc" id="nb-dem" style="display:none"></span></a>
     <a href="/admin/devis.html" class="hnl">Devis</a>
-    <a href="/admin/factures.html" class="hnl">Factures</a>
     <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
+    <a href="/admin/factures.html" class="hnl">Factures</a>
+    <a href="/admin/clients.html" class="hnl active">Clients</a>
+    <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl">Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert" style="display:none"></span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
-    <a href="/admin/planning.html" class="hnl">Planning</a>
-    <a href="/admin/messages.html" class="hnl">Messages<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/gestion.html" class="hnl">Gestion</a>
   </nav>
 </header>
@@ -583,24 +586,21 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   <aside class="sidebar">
       <a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
 
-      <div class="nl-group">Commercial</div>
-      <a href="/admin/clients.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
-      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
-      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
-
-      <div class="nl-group">Technique</div>
+      <div class="nl-group">Dossiers clients</div>
       <a href="/admin/demandes.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes<span class="nc" id="nb-dem" style="display:none"></span></a>
+      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
-
-      <div class="nl-group">Gestion</div>
+      <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+      <div class="nl-group">Relation client</div>
+      <a href="/admin/clients.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
+      <div class="nl-group">Atelier</div>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert" style="display:none"></span></a>
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
-
-      <div class="nl-group">Organisation</div>
-      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
-      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none"></span></a>
+      <div class="nl-group">Administration</div>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.2</div>
+      <div class="sf">IT Soluce ERP · v1.3</div>
       </aside>
 
   <div class="content" id="mainContent">
@@ -905,7 +905,11 @@ const ET_FAC={
   envoyee:{l:'Envoyée',c:'p-a'},
   payee:{l:'Payée',c:'p-ok'},
   annulee:{l:'Annulée',c:'p-off'},
-  non_reparable:{l:'Non réparable',c:'p-w'}
+  non_reparable:{l:'Non réparable',c:'p-w'},
+  creditee:{l:'Créditée',c:'p-off'},
+  imputee:{l:'Note de crédit',c:'p-off'},
+  a_rembourser:{l:'À rembourser',c:'p-d'},
+  remboursee:{l:'Remboursée',c:'p-ok'}
 }
 function etatDevis(d){
   if(d.statut==='envoye'&&d.date_validite&&new Date(d.date_validite)<new Date())return {l:'Validité dépassée',c:'p-w'}
@@ -932,13 +936,18 @@ async function nextNumero(){
 }
 
 /* ═══════════ Chargement ═══════════ */
+let allRelances=[], garantieMois=3
 async function load(){
-  const [rCli,rRep,rDev,rFac]=await Promise.all([
+  const [rCli,rRep,rDev,rFac,rRel,rSet]=await Promise.all([
     sb.from('clients').select('*',{count:'exact'}).order('nom',{ascending:true}).limit(5000),
-    sb.from('reparations').select('id,numero,client_id,appareil,modele,panne_description,statut,prix_final,created_at',{count:'exact'}).limit(5000),
+    sb.from('reparations').select('id,numero,client_id,appareil,modele,panne_description,statut,prix_final,date_fin,garantie_de_id,created_at',{count:'exact'}).limit(5000),
     sb.from('devis').select('id,numero,client_id,statut,total,date_emission,date_validite,created_at',{count:'exact'}).limit(5000),
-    sb.from('factures').select('id,numero,client_id,statut,total,date_emission,date_echeance,date_paiement,created_at',{count:'exact'}).limit(5000)
+    sb.from('factures').select('id,numero,client_id,statut,total,acompte,type_document,facture_origine_id,reparation_id,date_emission,date_echeance,date_paiement,created_at',{count:'exact'}).limit(5000),
+    sb.from('relances').select('*').limit(5000),
+    sb.from('settings').select('cle,valeur').eq('cle','garantie_mois')
   ])
+  allRelances=rRel.error?[]:(rRel.data||[])
+  {const n=parseInt(rSet.data&&rSet.data[0]&&rSet.data[0].valeur,10);garantieMois=n>0?n:3}
   if(rCli.error)throw new Error('Clients : '+rCli.error.message)
 
   allClients=rCli.data||[]
@@ -980,7 +989,8 @@ function indexer(reps,devs,facs){
     c._reps.sort(recent); c._devis.sort(recent); c._factures.sort(recent)
     // Le chiffre d'affaires est celui réellement encaissé : les factures
     // payées. prix_final n'est pas toujours rempli sur la réparation.
-    c._ca=c._factures.filter(f=>f.statut==='payee').reduce((a,f)=>a+(Number(f.total)||0),0)
+    // Net des notes de crédit remboursées (montants négatifs).
+    c._ca=c._factures.filter(f=>['payee','remboursee'].includes(f.statut)).reduce((a,f)=>a+(Number(f.total)||0),0)
     c._passage=c._reps.length?c._reps[0].created_at:null
     c._activite=c._reps.length+c._devis.length+c._factures.length
   })
@@ -1000,7 +1010,7 @@ async function attribuerNumerosManquants(){
 function renderAll(){
   const total=allClients.length
   const caTotal=allClients.reduce((a,c)=>a+c._ca,0)
-  const nbPayees=allClients.reduce((a,c)=>a+c._factures.filter(f=>f.statut==='payee').length,0)
+  const nbPayees=allClients.reduce((a,c)=>a+c._factures.filter(f=>f.statut==='payee'&&f.type_document!=='note_credit').length,0)
   const sansActivite=allClients.filter(c=>!c._activite).length
   const bouts=[`<b>${total} client${total>1?'s':''}</b>`]
   bouts.push(`<b>${eur(caTotal)}</b> encaissé${caTotal>0?'s':''}`)
@@ -1113,51 +1123,104 @@ window.showDetail=function(id){
   if(!c)return
   const pro=c.type==='entreprise'
   const nomAff=pro&&c.societe?c.societe:c.nom
+  const auj=new Date(new Date().toDateString())
+  const lienRep=r=>`/admin/reparations.html?q=${encodeURIComponent(r.numero||'')}`
+  const lienDev=d=>`/admin/devis.html?q=${encodeURIComponent(d.numero||'')}`
+  const lienFac=f=>`/admin/factures.html?open=${f.id}`
+  const estNC=f=>f.type_document==='note_credit'
+  const solde=f=>Math.max(0,(Number(f.total)||0)-(Number(f.acompte)||0))
 
+  // ── À suivre : ce qui attend une action pour ce client
+  const CLOS=['rendu','annule','non_reparable']
+  const suivre=[]
+  c._reps.filter(r=>!CLOS.includes(r.statut)).forEach(r=>{
+    const e=ET_REP[r.statut]||{l:r.statut,c:'p-off'}
+    suivre.push({h:lienRep(r),t:`${r.numero||'Réparation'} · ${[r.appareil,r.modele].filter(Boolean).join(' ')||'appareil'}`,s:r.garantie_de_id?'Retour sous garantie':'Réparation en cours',p:e})
+  })
+  c._devis.filter(d=>d.statut==='envoye').forEach(d=>suivre.push({h:lienDev(d),t:`${d.numero||'Devis'} · ${eur(d.total)}`,s:'Devis en attente de réponse',p:etatDevis(d)}))
+  c._devis.filter(d=>d.statut==='brouillon').forEach(d=>suivre.push({h:'/admin/devis.html',t:`Devis brouillon · ${eur(d.total)}`,s:'À finaliser et envoyer',p:ET_DEV.brouillon}))
+  c._factures.filter(f=>!estNC(f)&&['brouillon','envoyee'].includes(f.statut)).forEach(f=>suivre.push({h:lienFac(f),t:`${f.numero||'Facture brouillon'} · ${eur(solde(f))}`,s:f.statut==='brouillon'?'À émettre':'À encaisser',p:etatFacture(f)}))
+  c._factures.filter(f=>estNC(f)&&f.statut==='a_rembourser').forEach(f=>suivre.push({h:lienFac(f),t:`${f.numero} · ${eur(Math.abs(f.total))}`,s:'Note de crédit à rembourser',p:ET_FAC.a_rembourser}))
+  const du=c._factures.filter(f=>!estNC(f)&&f.statut==='envoyee').reduce((a,f)=>a+solde(f),0)
+
+  // ── Appareils confiés, avec leur garantie
+  const appareils=new Map()
+  c._reps.forEach(r=>{
+    const nom=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
+    if(!nom)return
+    const cle=nom.toLowerCase()
+    const prec=appareils.get(cle)
+    if(!prec||new Date(r.created_at)>new Date(prec.r.created_at))appareils.set(cle,{nom,r,n:(prec?prec.n:0)+1})
+    else prec.n++
+  })
+  const lignesApp=[...appareils.values()].map(({nom,r,n})=>{
+    let gar=''
+    if(r.statut==='rendu'&&r.date_fin){
+      const fin=new Date(r.date_fin);fin.setMonth(fin.getMonth()+garantieMois)
+      gar=fin>=auj?`<span class="pill p-ok">garantie → ${dateCourte(fin)}</span>`:`<span class="pill p-off">garantie terminée</span>`
+    }else if(!CLOS.includes(r.statut))gar='<span class="pill p-a">en cours</span>'
+    return `<div class="fi-ev"><span class="dt">${dateMini(r.created_at)}</span><a class="bd" href="${lienRep(r)}"><b>${escHtml(nom)}</b><em>${n>1?n+' passages · ':''}dernier : ${escHtml(r.numero||'')} — ${escHtml(r.panne_description||'')}</em></a>${gar}</div>`
+  }).join('')
+
+  // ── Historique complet, cliquable, relances comprises
   const evts=[]
   c._reps.forEach(r=>{
     const e=ET_REP[r.statut]||{l:r.statut||'—',c:'p-off'}
     const appareil=[r.appareil,r.modele].filter(Boolean).join(' ')
-    evts.push({d:r.created_at,t:`${r.numero||'Réparation'}${appareil?' · '+appareil:''}`,s:r.panne_description||'Réparation',p:e})
+    evts.push({d:r.created_at,h:lienRep(r),t:`${r.numero||'Réparation'}${appareil?' · '+appareil:''}`,s:r.garantie_de_id?'Retour sous garantie':(r.panne_description||'Réparation'),p:e})
   })
-  c._devis.forEach(d=>{
-    evts.push({d:d.date_emission||d.created_at,t:`${d.numero||'Devis'} · ${eur(d.total)}`,s:'Devis',p:etatDevis(d)})
-  })
-  c._factures.forEach(f=>{
-    evts.push({d:f.date_emission||f.created_at,t:`${f.numero||'Facture'} · ${eur(f.total)}`,s:'Facture',p:etatFacture(f)})
-  })
+  c._devis.forEach(d=>evts.push({d:d.date_emission||d.created_at,h:lienDev(d),t:`${d.numero||'Devis brouillon'} · ${eur(d.total)}`,s:'Devis',p:etatDevis(d)}))
+  c._factures.forEach(f=>evts.push({d:f.date_emission||f.created_at,h:lienFac(f),t:`${f.numero||'Brouillon'} · ${eur(f.total)}`,s:estNC(f)?'Note de crédit':'Facture',p:etatFacture(f)}))
+  const docs=new Map()
+  c._devis.forEach(d=>docs.set('devis-'+d.id,d.numero))
+  c._factures.forEach(f=>docs.set('facture-'+f.id,f.numero))
+  c._reps.forEach(r=>{docs.set('pret-'+r.id,r.numero);docs.set('avis-'+r.id,r.numero)})
+  const NOM_REL={devis:'Relance devis',facture:'Relance facture',pret:'Relance appareil prêt',demande:'Relance demande',avis:'Demande d’avis Google'}
+  const CANAL={mail:'par mail',telephone:'par téléphone',ignore:'ignorée'}
+  const relClient=allRelances.filter(x=>Number(x.client_id)===c.id||docs.has(x.type+'-'+x.document_id)&&x.type!=='demande')
+  relClient.forEach(x=>evts.push({d:x.fait_le,h:null,t:`${NOM_REL[x.type]||'Relance'}${docs.get(x.type+'-'+x.document_id)?' · '+docs.get(x.type+'-'+x.document_id):''}`,s:CANAL[x.canal]||x.canal,p:{l:x.type==='avis'?'Avis':'Relance',c:x.type==='avis'?'p-ok':'p-w'}}))
   evts.sort((a,b)=>new Date(b.d||0)-new Date(a.d||0))
+  const avisDemande=relClient.filter(x=>x.type==='avis'&&x.canal==='mail').sort((a,b)=>new Date(b.fait_le)-new Date(a.fait_le))[0]
+  const fidele=c._reps.length>=2
 
   const champ=(lib,val)=>`<div class="fi-line"><span>${lib}</span><b class="${val?'':'z'}">${val?escHtml(val):'—'}</b></div>`
+  const ligneEv=e=>`<div class="fi-ev">
+        <span class="dt">${e.d===null?'':(dateMini(e.d)||'—')}</span>
+        ${e.h?`<a class="bd" href="${e.h}">`:'<span class="bd">'}<b>${escHtml(e.t)}</b><em>${escHtml(e.s)}</em>${e.h?'</a>':'</span>'}
+        <span class="pill ${e.p.c}">${escHtml(e.p.l)}</span>
+      </div>`
   document.getElementById('ficheBody').innerHTML=`
     <div class="fi-top">
       <span class="cl-av${pro?' pro':''}">${escHtml(initiales(nomAff))}</span>
-      <span><b>${escHtml(nomAff)||'—'}</b><em>${escHtml(c.numero||'sans numéro')} · ${pro?'Entreprise':'Particulier'}${c.created_at?' · client depuis '+dateCourte(c.created_at):''}</em></span>
+      <span><b>${escHtml(nomAff)||'—'}${fidele?' <span class="pill p-ok" style="vertical-align:2px;margin-left:4px;">Client fidèle</span>':''}</b><em>${escHtml(c.numero||'sans numéro')} · ${pro?'Entreprise':'Particulier'}${c.created_at?' · client depuis '+dateCourte(c.created_at):''}</em></span>
     </div>
     <div class="fi-rail">
       <div><span>Répar.</span><b>${c._reps.length}</b></div>
       <div><span>Devis</span><b>${c._devis.length}</b></div>
-      <div><span>Factures</span><b>${c._factures.length}</b></div>
       <div><span>Encaissé</span><b>${c._ca?eur(c._ca):'—'}</b></div>
+      <div class="${du>0?'du':''}"><span>À payer</span><b>${du>0?eur(du):'—'}</b></div>
     </div>
+    <div class="fi-acts">
+      <a class="btn btn-primary" href="/admin/devis.html?client=${c.id}">Nouveau devis</a>
+      <a class="btn btn-secondary" href="/admin/reparations.html?nouveau=1&client=${c.id}">Nouveau dossier</a>
+      ${c.email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:c.email,client:c.id}))}">✉ Mail</a>`:''}
+    </div>
+    ${suivre.length?`<div><div class="fi-tt">À suivre (${suivre.length})</div>${suivre.map(e=>ligneEv({...e,d:null})).join('')}</div>`:''}
     <div class="fi-bloc">
       ${champ('Email',c.email)}
       ${champ('Téléphone',c.telephone)}
       ${champ('Adresse',c.adresse)}
       ${pro?champ('Société',c.societe)+champ('N° TVA / BCE',c.tva):''}
+      <div class="fi-line"><span>Avis Google</span><b class="${avisDemande?'':'z'}">${avisDemande?'demandé le '+escHtml(dateCourte(avisDemande.fait_le)):'pas encore demandé'}</b></div>
     </div>
     ${c.notes?`<div><div class="fi-tt">Notes</div><div class="fi-note">${escHtml(c.notes)}</div></div>`:''}
+    ${lignesApp?`<div><div class="fi-tt">Appareils confiés</div>${lignesApp}</div>`:''}
     <div>
       <div class="fi-tt">Historique</div>
-      ${evts.length?evts.map(e=>`<div class="fi-ev">
-        <span class="dt">${dateMini(e.d)||'—'}</span>
-        <span class="bd"><b>${escHtml(e.t)}</b><em>${escHtml(e.s)}</em></span>
-        <span class="pill ${e.p.c}">${escHtml(e.p.l)}</span>
-      </div>`).join(''):'<div class="fi-ev"><span class="bd"><em>Aucun document enregistré pour ce client.</em></span></div>'}
+      ${evts.length?evts.map(ligneEv).join(''):'<div class="fi-ev"><span class="bd"><em>Aucun document enregistré pour ce client.</em></span></div>'}
     </div>
     <div class="fi-acts">
-      <button class="btn btn-secondary" onclick="editClient(${c.id})">Modifier</button>
-      ${c.email?`<a class="btn btn-primary" href="${escHtml(lienMessages({a:c.email,client:c.id}))}">✉ Répondre par mail</a>`:''}
+      <button class="btn btn-secondary" onclick="editClient(${c.id})">Modifier la fiche</button>
     </div>`
   document.querySelectorAll('.reg-row').forEach(r=>r.classList.toggle('sel',Number(r.dataset.id)===id))
   document.getElementById('fichePanel').classList.add('open')
@@ -1296,10 +1359,10 @@ await load()
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
     <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
+    <a href="/admin/demandes.html" class="mbb-item" data-page="demandes"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes</a>
+    <a href="/admin/devis.html" class="mbb-item" data-page="devis"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
     <a href="/admin/reparations.html" class="mbb-item" data-page="reparations"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Répar.</a>
-    <a href="/admin/stock.html" class="mbb-item" data-page="stock"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Stock</a>
-    <a href="/admin/catalogue.html" class="mbb-item" data-page="catalogue"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue</a>
-    <a href="/admin/clients.html" class="mbb-item" data-page="clients"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a href="/admin/factures.html" class="mbb-item" data-page="factures"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
   </div>
 </div>
 
