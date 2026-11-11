@@ -899,6 +899,9 @@ const STATUTS={
    l'émission (envoi, PDF, acceptation). Un devis émis ne se modifie plus :
    on le révise (nouvelle version, nouveau numéro, l'ancien « Remplacé »). */
 const estEmis=d=>!!(d&&d.emis_le)
+// Devis d'essai (nom du client contenant le mot « test ») : supprimable même émis.
+// Même règle en base (devis_regles).
+const estDevisTest=d=>!!(d&&/(^|[^a-zà-ÿ])test([^a-zà-ÿ]|$)/i.test(d.client_nom||''))
 const refDevis=d=>d&&d.numero?d.numero:'Brouillon'
 const TEXTE_EMISSION_DEVIS="Émettre le devis ?\n\nIl reçoit maintenant son numéro définitif et la date d'aujourd'hui.\nEnsuite, il ne pourra plus être modifié : pour le changer, tu feras « Réviser le devis » (nouvelle version, nouveau numéro)."
 
@@ -1404,8 +1407,8 @@ function chargerDansFormulaire(d){
   document.getElementById('ref-courant').textContent=d?refDevis(d):'Nouveau'
   document.getElementById('titre-courant').textContent=d?(d.client_nom||'Devis'):'Nouveau devis'
   document.getElementById('saveBtn').textContent=estEmis(d)?'Enregistrer':d?'Mettre à jour':'Enregistrer'
-  document.getElementById('delBtn').style.display=d&&!estEmis(d)?'inline-flex':'none'
-  document.getElementById('delBtn').textContent='Supprimer ce brouillon'
+  document.getElementById('delBtn').style.display=d&&(!estEmis(d)||estDevisTest(d))?'inline-flex':'none'
+  document.getElementById('delBtn').textContent=d&&estEmis(d)?'Supprimer ce devis de test':'Supprimer ce brouillon'
 
   calcTotaux()
   instantane=signature()
@@ -1796,15 +1799,16 @@ window.saveDevis=async function(){
 
 window.supprimerCourant=async function(){
   if(!courant)return
-  if(estEmis(courant)){showToast(`${courant.numero} est émis : il ne se supprime pas. Classe-le « Refusé » ou révise-le.`,'err');return}
-  if(!confirm('Supprimer ce brouillon de devis ?'))return
+  const test=estEmis(courant)&&estDevisTest(courant)
+  if(estEmis(courant)&&!test){showToast(`${courant.numero} est émis : il ne se supprime pas. Classe-le « Refusé » ou révise-le.`,'err');return}
+  if(!confirm(test?`Supprimer le devis de test ${courant.numero} ?\n\nIl part à la corbeille ; son numéro ne sera pas réutilisé.`:'Supprimer ce brouillon de devis ?'))return
   const {error}=await sb.from('devis').delete().eq('id',courant.id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   const num=courant.numero
   allDevis=allDevis.filter(x=>x.id!==courant.id)
   majResume()
   chargerDansFormulaire(allDevis[0]||null)
-  showToast('Brouillon supprimé','ok')
+  showToast(test?`Devis de test ${num} supprimé`:'Brouillon supprimé','ok')
 }
 function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
