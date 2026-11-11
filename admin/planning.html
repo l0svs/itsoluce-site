@@ -1479,7 +1479,7 @@ window.preparerRappel=function(){
   _rappelEnAttente={rdv:r,email:client.email}
   document.getElementById('em-to').value=client.email
   document.getElementById('em-subject').value=`Rappel de rendez-vous — ${ENTREPRISE.nom}`
-  document.getElementById('em-body').value=lignes.join('\n\n')
+  document.getElementById('em-body').value=lignes.join('\n\n').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g,'.\n')
   document.getElementById('emailOverlay').style.display='flex'
 }
 

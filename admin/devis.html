@@ -1949,6 +1949,7 @@ window.telechargerPdf=async function(){
 
 /* ─── Envoi par email ─── */
 let _enAttente=null
+const alaLigne=t=>String(t||'').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g,'.\n')  // une phrase par ligne dans les mails
 function textToHtml(t){return t.split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')}
 /* ─── Signature e-mail ───
    Deux variantes du même bloc : « compacte » pour les échanges courants,
@@ -2007,11 +2008,11 @@ window.preparerEmail=async function(){
     _enAttente={doc:courant,pdfBase64,pdfName}
     document.getElementById('em-to').value=courant.client_email
     document.getElementById('em-subject').value=`Devis ${courant.numero} — IT Soluce`
-    document.getElementById('em-body').value=
+    document.getElementById('em-body').value=alaLigne(
       `Bonjour ${prenom},\n\nVous trouverez ci-joint le devis ${courant.numero} d'un montant de ${eur(courant.total)}.`+
       (acompte>0?`\n\nUn acompte de ${eur(acompte)} sera demandé à l'acceptation du devis. Solde restant : ${eur(solde)}.`:'')+
       (validite?`\n\nIl est valable jusqu'au ${validite}.`:'')+
-      `\n\nPour l'accepter, il vous suffit de me répondre par email. N'hésitez pas à me contacter pour toute question.`
+      `\n\nPour l'accepter, il vous suffit de me répondre par email. N'hésitez pas à me contacter pour toute question.`)
     document.getElementById('em-pdfname').textContent=pdfName
     document.getElementById('emailOverlay').style.display='flex'
   }catch(e){showToast('Erreur de préparation : '+(e.message||e),'err')}

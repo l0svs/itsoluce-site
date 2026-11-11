@@ -543,6 +543,7 @@ let filCourant=[]         // mails de la conversation ouverte
 let redaction=null        // brouillon en cours de rédaction
 let etat=null
 const ctx={clients:new Map(),demandes:new Map(),fournisseurs:[],reps:[],devis:[],factures:[],rdvs:[],demandesListe:[]}
+const alaLigne=t=>String(t||'').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g,'.\n')  // une phrase par ligne dans les mails
 let reglages={modeles:MAIL_MODELES_DEFAUT}
 let ENT=entrepriseDepuisReglages([])
 
@@ -1055,7 +1056,7 @@ window.modeleRapide=function(i){
   const ta=document.getElementById('repRapide')
   if(ta.value.trim()&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
   const recu=filCourant.filter(x=>x.dossier!=='Sent').pop()||filCourant[filCourant.length-1]
-  ta.value=remplir(t.corps,contexteMail(contrepartie(recu).email))
+  ta.value=alaLigne(remplir(t.corps,contexteMail(contrepartie(recu).email)))
   ta.focus()
 }
 
@@ -1163,7 +1164,7 @@ window.appliquerModele=function(i){
   if(redaction.corps.trim()&&redaction.modele===null&&!confirm('Remplacer le texte déjà écrit par ce modèle ?'))return
   const email=norm(String(redaction.a).split(/[,;]/)[0])
   const v=contexteMail(email,redaction.indices)
-  redaction.corps=remplir(t.corps,v)
+  redaction.corps=alaLigne(remplir(t.corps,v))
   // En réponse, l'objet « Re: … » est gardé : il rattache le mail au fil.
   if(t.objet&&!redaction.repondre_a_id)redaction.objet=remplir(t.objet,v)
   redaction.modele=i

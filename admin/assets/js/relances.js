@@ -404,7 +404,8 @@
     document.getElementById('rl-info').innerHTML = info;
     document.getElementById('rl-a').value = e.email || '';
     document.getElementById('rl-objet').value = e.objet;
-    document.getElementById('rl-corps').value = e.corps;
+    // Une phrase par ligne dans les mails.
+    document.getElementById('rl-corps').value = String(e.corps || '').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g, '.\n');
     document.getElementById('rl-pdf-wrap').style.display = e.pdf ? '' : 'none';
     document.getElementById('rl-pdf').checked = !!e.pdf;
     document.getElementById('rl-hist').textContent = e.historique.length
