@@ -31,7 +31,7 @@
   var COLS = {
     demandes_formulaire: 'id,prenom,nom,created_at,converti_reparation_id,converti_devis_id',
     devis: 'id,numero,statut,total,date_validite,reparation_id,converti_reparation_id,converti_facture_id',
-    reparations: 'id,numero,statut,converti_facture_id,date_fin',
+    reparations: 'id,numero,statut,converti_facture_id,date_fin,garantie_de_id',
     factures: 'id,numero,statut,total,acompte,devis_id,reparation_id,date_paiement'
   };
 
@@ -74,8 +74,10 @@
       if (!d.reparation && d.demande) d.reparation = await un(sb, 'reparations', 'id', d.demande.converti_reparation_id);
       if (!d.reparation && d.devis) d.reparation = await un(sb, 'reparations', 'id', d.devis.converti_reparation_id || d.devis.reparation_id);
       if (!d.reparation && d.facture) d.reparation = await un(sb, 'reparations', 'id', d.facture.reparation_id);
-      if (!d.facture && d.reparation) d.facture = await un(sb, 'factures', 'id', d.reparation.converti_facture_id)
-        || await un(sb, 'factures', 'reparation_id', d.reparation.id);
+      // La facture la plus récente du dossier : après une note de crédit,
+      // c'est la facture corrigée qui compte.
+      if (!d.facture && d.reparation) d.facture = await un(sb, 'factures', 'reparation_id', d.reparation.id)
+        || await un(sb, 'factures', 'id', d.reparation.converti_facture_id);
       if (!d.facture && d.devis) d.facture = await un(sb, 'factures', 'id', d.devis.converti_facture_id)
         || await un(sb, 'factures', 'devis_id', d.devis.id);
       if (!d.demande && d.devis) d.demande = await un(sb, 'demandes_formulaire', 'converti_devis_id', d.devis.id);
@@ -86,7 +88,7 @@
 
   var DEV = { brouillon: 'brouillon', envoye: 'envoyé', accepte: 'accepté', refuse: 'refusé' };
   var REP = { attente_reception: 'à réceptionner', recu: 'appareil reçu', attente: 'attente de pièce', encours: 'en réparation', pret: 'prêt', rendu: 'rendu', non_reparable: 'non réparable', annule: 'annulé' };
-  var FAC = { brouillon: 'brouillon', envoyee: 'envoyée', payee: 'payée', annulee: 'annulée', non_reparable: 'diagnostic offert' };
+  var FAC = { brouillon: 'brouillon, sans numéro', envoyee: 'émise', payee: 'payée', annulee: 'annulée', non_reparable: 'diagnostic offert', creditee: 'annulée par note de crédit' };
 
   function etapes(d) {
     var e = [];
@@ -104,9 +106,14 @@
     } else e.push({ cle: 'reparation', titre: 'Réparation', sous: 'pas encore créée', etat: 'vide' });
     if (fac) {
       e.push({ cle: 'facture', titre: 'Facture ' + (fac.numero || ''), sous: FAC[fac.statut] || fac.statut,
-        etat: fac.statut === 'brouillon' ? 'cours' : fac.statut === 'annulee' ? 'ko' : 'ok', href: '/admin/factures.html?open=' + fac.id });
-    } else e.push({ cle: 'facture', titre: 'Facture', sous: 'pas encore créée', etat: 'vide' });
+        etat: fac.statut === 'brouillon' ? 'cours' : ['annulee', 'creditee'].indexOf(fac.statut) >= 0 ? 'ko' : 'ok', href: '/admin/factures.html?open=' + fac.id });
+    } else if (rep && rep.garantie_de_id) e.push({ cle: 'facture', titre: 'Facture', sous: 'sous garantie', etat: 'ok' });
+    else e.push({ cle: 'facture', titre: 'Facture', sous: 'pas encore créée', etat: 'vide' });
     var paye = fac && (fac.statut === 'payee' || fac.statut === 'non_reparable');
+    if (!fac && rep && rep.garantie_de_id) {
+      e.push({ cle: 'paye', titre: 'Encaissé', sous: 'rien à encaisser', etat: 'ok' });
+      return e;
+    }
     e.push({ cle: 'paye', titre: 'Encaissé',
       sous: !fac ? '—' : fac.statut === 'payee' ? (fac.date_paiement ? 'le ' + jour(fac.date_paiement) : 'payée') : fac.statut === 'non_reparable' ? 'rien à encaisser' : fac.statut === 'envoyee' ? eur(fac.total) + ' à encaisser' : '—',
       etat: paye ? 'ok' : fac && fac.statut === 'envoyee' ? 'cours' : 'vide',
@@ -120,8 +127,15 @@
     if (fac && fac.statut === 'payee' && rep && rep.statut === 'pret') return "Rendre l'appareil au client";
     if (fac && (fac.statut === 'payee' || fac.statut === 'non_reparable')) return null;
     if (fac && fac.statut === 'envoyee') return 'Encaisser ' + eur(fac.total);
-    if (fac && fac.statut === 'brouillon') return 'Vérifier et envoyer la facture';
+    if (fac && fac.statut === 'brouillon') return 'Vérifier et émettre la facture';
+    if (fac && fac.statut === 'creditee') return 'Émettre la facture corrigée';
     if (rep && rep.statut === 'annule') return null;
+    if (rep && rep.garantie_de_id && !fac) {
+      if (rep.statut === 'rendu') return null;
+      if (rep.statut === 'pret') return "Rendre l'appareil (sous garantie)";
+      if (rep.statut === 'attente_reception') return "Réceptionner l'appareil";
+      return 'Terminer la réparation (sous garantie)';
+    }
     if (rep && rep.statut === 'non_reparable') return 'Facturer le diagnostic (ou l’offrir)';
     if (rep && rep.statut === 'pret') return 'Créer la facture';
     if (rep && rep.statut === 'rendu') return 'Créer la facture';

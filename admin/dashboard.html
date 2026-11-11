@@ -187,6 +187,13 @@ body{font-size:14px;}
 .drow-t,.drow-s{display:block;}
 .drow-t{font-size:12.5px; font-weight:500; color:var(--t1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .12s;}
 .drow-s{font-size:11.5px; color:var(--t3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.rl-row{display:flex; align-items:center; gap:11px; padding:9px 0; border-top:1px solid var(--ln);}
+.rl-row:first-child{border-top:none;}
+.rl-row a.drow-main{text-decoration:none; color:inherit;}
+.rl-niv{font-size:10.5px; font-weight:600; color:var(--w); text-transform:uppercase; letter-spacing:.4px; margin-right:4px;}
+.rl-go{flex-shrink:0; padding:6px 12px; border-radius:980px; border:none; background:var(--a); color:#fff; font:inherit; font-size:12px; font-weight:500; cursor:pointer;}
+.rl-go:hover{opacity:.88;}
+.i-avis{background:rgba(234,179,8,.14); color:#b7791f;}
 .drow-r{flex-shrink:0; font-size:12.5px; font-weight:600; text-align:right; font-variant-numeric:tabular-nums; color:var(--t1);}
 .dnum{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--t3); font-weight:400;}
 .dvide{padding:16px 0 6px; font-size:12.5px; color:var(--t3); line-height:1.5;}
@@ -540,6 +547,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <div class="dcard pipe" id="carte-pipe"></div>
         <div class="dash-top">
           <div class="dcard" id="carte-jour"></div>
+          <div class="dcard" id="carte-relances" style="display:none;"></div>
         </div>
         <div class="dash-grid" id="grid"></div>
       </div>
@@ -689,8 +697,8 @@ const aujourdhui=debutJour(maintenant)
    les six requêtes partaient en select('*') sans limite, et une réponse
    tronquée ou en erreur passait inaperçue derrière un « data || [] ». */
 const tables=[
-  ['reparations','id,numero,client_nom,appareil,modele,statut,prix_final,prix_devis,cout_pieces,date_fin,converti_facture_id,created_at',3000],
-  ['factures','id,numero,client_nom,statut,total,date_emission,date_echeance,date_paiement,reparation_id,created_at',3000],
+  ['reparations','id,numero,client_nom,appareil,modele,statut,prix_final,prix_devis,cout_pieces,date_fin,converti_facture_id,garantie_de_id,created_at',3000],
+  ['factures','id,numero,client_nom,statut,total,acompte,type_document,date_emission,date_echeance,date_paiement,reparation_id,created_at',3000],
   ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,converti_reparation_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
   ['stock','id,nom,modele,quantite,seuil_alerte',5000],
@@ -805,6 +813,7 @@ const ICONES={
   dev:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
   dem:'<svg viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>',
   gar:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  avis:'<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
   mail:'<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
   stk:'<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
 }
@@ -1006,9 +1015,9 @@ function agencerGrille(force){
    = réparations prêtes ou rendues (90 derniers jours) sans facture : c'est
    de l'argent gagné qui n'est pas encore réclamé. */
 function rendrePipe(){
-  const facParRep=new Set(factures.filter(f=>f.reparation_id&&f.statut!=='annulee').map(f=>f.reparation_id))
+  const facParRep=new Set(factures.filter(f=>f.reparation_id&&!['annulee','creditee'].includes(f.statut)).map(f=>f.reparation_id))
   const il90=new Date(aujourdhui); il90.setDate(il90.getDate()-90)
-  const aFacturer=reps.filter(r=>['pret','rendu'].includes(r.statut)&&!r.converti_facture_id&&!facParRep.has(r.id)
+  const aFacturer=reps.filter(r=>['pret','rendu'].includes(r.statut)&&!r.converti_facture_id&&!r.garantie_de_id&&!facParRep.has(r.id)
     &&(r.statut==='pret'||new Date(r.date_fin||r.created_at)>=il90))
   const montantAFacturer=aFacturer.reduce((a,r)=>a+(Number(r.prix_final)||Number(r.prix_devis)||0),0)
   const enAtelier=repsActives.filter(r=>r.statut!=='pret')
@@ -1030,6 +1039,31 @@ function rendrePipe(){
 rendrePipe()
 rendreJour()
 rendreGrille()
+
+/* ─── À relancer ───
+   Devis sans réponse, factures impayées, appareils prêts non récupérés,
+   demandes sans réponse, demandes d'avis : ce qui est dû aujourd'hui. */
+const ICO_RL={devis:'dev',facture:'fac',pret:'rep',demande:'dem',avis:'avis'}
+const CLS_RL={devis:'i-dev',facture:'i-fac',pret:'i-rep',demande:'i-dem',avis:'i-avis'}
+async function rendreRelances(){
+  if(!window.Relances)return
+  const el=document.getElementById('carte-relances')
+  let items
+  try{items=await Relances.charger()}catch(e){return}
+  window._relances=items
+  if(!items.length){el.style.display='none';return}
+  const total=items.filter(e=>e.type==='facture').reduce((a,e)=>a+e.montant,0)
+  el.innerHTML=`<div class="dcard-head"><b>À relancer</b><i class="hot">${items.length}</i>${total?`<span class="drow-s" style="margin-left:4px;">${escHtml(eur(total))} de factures impayées</span>`:''}</div>
+    <div class="dcard-body">${items.map((e,i)=>`<div class="rl-row">
+      <span class="dico ${CLS_RL[e.type]}">${ICONES[ICO_RL[e.type]]}</span>
+      <a class="drow-main" href="${e.href}"><span class="drow-t"><span class="rl-niv">${escHtml(e.libelleNiveau)}</span>${escHtml(e.titre)} · ${escHtml(e.nom||'—')}</span><span class="drow-s">${escHtml(e.sous)}</span></a>
+      ${e.montant?`<span class="drow-r">${escHtml(eur(e.montant))}</span>`:''}
+      <button class="rl-go" onclick="relancer(${i})">${e.type==='avis'?'Demander':'Relancer'}</button>
+    </div>`).join('')}</div>`
+  el.style.display=''
+}
+window.relancer=i=>{const e=(window._relances||[])[i];if(e)Relances.ouvrir(e,rendreRelances)}
+rendreRelances()
 {let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(()=>agencerGrille(false),150)})}
 
 /* ─── Compteurs du menu ───
@@ -1162,5 +1196,6 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
+<script src="/admin/assets/js/relances.js"></script>
 </body>
 </html>

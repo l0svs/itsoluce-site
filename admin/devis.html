@@ -146,6 +146,13 @@ body{font-size:14px;}
 .source b{color:var(--t1);}
 .source q{display:block; margin-top:3px; color:var(--t2); font-style:italic;}
 #fil-devis:empty{display:none;}
+.fige-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--bg3); border-radius:10px; padding:9px 12px;}
+.fige-note b{color:var(--t1);}
+.fige-note a{color:var(--a); font-weight:500; cursor:pointer; text-decoration:none;}
+.fige-note.brouillon{background:var(--ad);}
+.at-form.fige .ligne-del,.at-form.fige .ligne-outils,.at-form.fige #cancelBtn,.at-form.fige .l-stock,.at-form.fige .lie{display:none !important;}
+.at-form.fige input:disabled,.at-form.fige select:disabled,.at-form.fige textarea:disabled{opacity:1; color:var(--t1); -webkit-text-fill-color:var(--t1); cursor:default;}
+.at-form.fige input:disabled::placeholder,.at-form.fige textarea:disabled::placeholder{color:transparent; -webkit-text-fill-color:transparent;}
 .at-form-top h2{font-size:16px; font-weight:600; letter-spacing:-.02em; color:var(--t1); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .at-form-top .spacer{margin-left:auto;}
 .grp-lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); margin-top:3px;}
@@ -644,6 +651,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <span class="dirty" id="dirty" style="display:none;">Modifications non enregistrées</span>
             </div>
             <div class="source" id="source-devis" style="display:none;"></div>
+            <div class="fige-note" id="fige-devis" style="display:none;"></div>
             <div id="fil-devis"></div>
 
             <div class="sep"></div>
@@ -742,6 +750,9 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             </div>
             <div class="prev-acts">
               <button class="btn btn-secondary" onclick="convertirEnFacture()" id="sideFactureBtn">Convertir en facture</button>
+            </div>
+            <div class="prev-acts" id="rowRelance" style="display:none;">
+              <button class="btn btn-secondary" onclick="relancerClient()" id="sideRelBtn">Relancer le client</button>
             </div>
             <div class="prev-acts">
               <button class="btn btn-secondary" onclick="repondreParMail()" id="sideMailBtn">✉ Répondre par mail</button>
@@ -880,8 +891,16 @@ const STATUTS={
   brouillon:{label:'Brouillon', cls:'t-brouillon'},
   envoye:   {label:'Envoyé',    cls:'t-envoye'},
   accepte:  {label:'Accepté',   cls:'t-accepte'},
-  refuse:   {label:'Refusé',    cls:'t-refuse'}
+  refuse:   {label:'Refusé',    cls:'t-refuse'},
+  remplace: {label:'Remplacé',  cls:'t-refuse'}
 }
+/* Numérotation : un brouillon n'a pas de numéro ; la base l'attribue à
+   l'émission (envoi, PDF, acceptation). Un devis émis ne se modifie plus :
+   on le révise (nouvelle version, nouveau numéro, l'ancien « Remplacé »). */
+const estEmis=d=>!!(d&&d.emis_le)
+const refDevis=d=>d&&d.numero?d.numero:'Brouillon'
+const TEXTE_EMISSION_DEVIS="Émettre le devis ?\n\nIl reçoit maintenant son numéro définitif et la date d'aujourd'hui.\nEnsuite, il ne pourra plus être modifié : pour le changer, tu feras « Réviser le devis » (nouvelle version, nouveau numéro)."
+
 function expire(d){
   return d.statut==='envoye'&&d.date_validite&&new Date(d.date_validite)<new Date()
 }
@@ -971,6 +990,49 @@ let sale=false
 let instantane=''
 let _repLien=null   // réparation liée, conservée d'une édition à l'autre
 let _source=null    // demande du site à l'origine d'un nouveau devis
+/* Mise à jour d'un devis avec relecture : la base renvoie le numéro qu'elle
+   vient d'attribuer. Une révision émise fait passer l'ancienne version en
+   « Remplacé ». */
+async function majDevis(d,maj){
+  const etaitEmis=estEmis(d)
+  const {data,error}=await sb.from('devis').update({...maj,updated_at:new Date().toISOString()}).eq('id',d.id).select().single()
+  if(error)throw new Error(error.message)
+  if(data.statut!=='brouillon'&&!data.numero){
+    await sb.from('devis').update({statut:'brouillon'}).eq('id',d.id)
+    throw new Error("la numérotation légale n'est pas active en base : le devis reste en brouillon.")
+  }
+  const i=allDevis.findIndex(x=>x.id===d.id)
+  if(i>=0)allDevis[i]=data
+  if(courant&&courant.id===d.id)courant=data
+  if(!etaitEmis&&estEmis(data))await remplacerAncienne(data)
+  return data
+}
+async function remplacerAncienne(d){
+  if(!d.remplace_devis_id)return
+  const r=await sb.from('devis').update({statut:'remplace',updated_at:new Date().toISOString()}).eq('id',d.remplace_devis_id).select().single()
+  if(!r.error&&r.data){const j=allDevis.findIndex(x=>x.id===r.data.id);if(j>=0)allDevis[j]=r.data}
+}
+async function assurerEmissionDevis(d,statut){
+  if(!d)return null
+  if(estEmis(d))return d
+  if(sale){showToast("Enregistre d'abord tes modifications",'err');return null}
+  if(!confirm(TEXTE_EMISSION_DEVIS))return null
+  try{
+    const x=await majDevis(d,{statut:statut||'envoye'})
+    majResume();chargerDansFormulaire(x)
+    showToast(`Devis émis : n° ${x.numero}`,'ok')
+    return x
+  }catch(e){showToast('Émission impossible : '+(e.message||e),'err');return null}
+}
+/* Passe le devis en « Accepté » avant une conversion (réparation, facture). */
+async function assurerAcceptation(d){
+  if(d.statut==='accepte')return d
+  if(['refuse','remplace'].includes(d.statut)){showToast(`Ce devis est ${STATUTS[d.statut].label.toLowerCase()} : il ne peut pas être converti`,'err');return null}
+  if(sale){showToast("Enregistre d'abord tes modifications",'err');return null}
+  if(!confirm(`Le devis ${refDevis(d)} va passer en « Accepté »${estEmis(d)?'':' et recevoir son numéro définitif'}. Continuer ?`))return null
+  try{const x=await majDevis(d,{statut:'accepte'});majResume();chargerDansFormulaire(x);return x}
+  catch(e){showToast('Erreur : '+(e.message||e),'err');return null}
+}
 
 /* ─── Coordonnées de l'entreprise : la page Gestion fait foi ─── */
 try{
@@ -1075,7 +1137,7 @@ const GROUPES=[
   {cle:'reparation', titre:'Accepté, en réparation',   test:d=>suivi(d)?.cle==='reparation'},
   {cle:'facture',    titre:'Facturé, à encaisser',     test:d=>suivi(d)?.cle==='facture', chaud:true},
   {cle:'en_cours',   titre:'En attente de réponse',    test:d=>['brouillon','envoye'].includes(d.statut)},
-  {cle:'clos',       titre:'Classés', test:d=>d.statut==='refuse'||['paye','sans_suite'].includes(suivi(d)?.cle)}
+  {cle:'clos',       titre:'Classés', test:d=>['refuse','remplace'].includes(d.statut)||['paye','sans_suite'].includes(suivi(d)?.cle)}
 ]
 
 // Exposée globalement : la recherche l'appelle depuis un attribut oninput,
@@ -1095,7 +1157,7 @@ window.renderCards=function renderCards(){
     html+=items.map(d=>{
       const e=etatAffiche(d)
       return `<button type="button" class="rail-item s-${escHtml(d.statut||'brouillon')}${courant&&courant.id===d.id?' on':''}" onclick="ouvrirDevis(${d.id})">
-        <span class="ref">${escHtml(d.numero||'—')}</span>
+        <span class="ref">${escHtml(refDevis(d))}</span>
         <b>${escHtml(d.client_nom||'Sans client')}</b>
         <em>${eur(d.total)} · ${e.suivi?e.label:e.label.toLowerCase()}</em>
       </button>`
@@ -1324,6 +1386,7 @@ function chargerDansFormulaire(d){
   document.getElementById('f-remise-type').value='euro'
   set('f-acompte',d?(d.acompte||0):0)
   document.getElementById('f-acompte-type').value='euro'
+  majOptionsStatutDevis(d)
   set('f-statut',d?(d.statut||'brouillon'):'brouillon')
   set('f-notes',d?d.notes:'')
   set('f-date-emission',d&&d.date_emission?d.date_emission:ymd(new Date()))
@@ -1351,16 +1414,90 @@ function chargerDansFormulaire(d){
   const tag=document.getElementById('tag-courant')
   tag.className='tag '+e.cls
   tag.textContent=e.label
-  document.getElementById('ref-courant').textContent=d?(d.numero||'—'):'Nouveau'
+  document.getElementById('ref-courant').textContent=d?refDevis(d):'Nouveau'
   document.getElementById('titre-courant').textContent=d?(d.client_nom||'Devis'):'Nouveau devis'
-  document.getElementById('saveBtn').textContent=d?'Mettre à jour':'Enregistrer'
-  document.getElementById('delBtn').style.display=d?'inline-flex':'none'
+  document.getElementById('saveBtn').textContent=estEmis(d)?'Enregistrer':d?'Mettre à jour':'Enregistrer'
+  document.getElementById('delBtn').style.display=d&&!estEmis(d)?'inline-flex':'none'
+  document.getElementById('delBtn').textContent='Supprimer ce brouillon'
 
   calcTotaux()
   instantane=signature()
   marquerPropre()
   renderCards()
   rafraichirApercu()
+  verrouillerDevis(d)
+}
+
+/* ─── Devis émis : formulaire verrouillé ─── */
+const LIBRES_DEVIS=['f-statut','f-date-validite','f-email','f-tel']
+function verrouillerDevis(d){
+  const fige=estEmis(d)
+  const form=document.querySelector('.at-form')
+  form.classList.toggle('fige',fige)
+  form.querySelectorAll('input,select,textarea,button.tog,button.add-ligne').forEach(el=>{
+    if(el.type==='hidden')return
+    if(!fige){
+      if(el.dataset.figeAvant!=null){el.disabled=el.dataset.figeAvant==='1';delete el.dataset.figeAvant}
+      return
+    }
+    if(LIBRES_DEVIS.includes(el.id)&&d.statut!=='remplace')return
+    if(el.dataset.figeAvant==null)el.dataset.figeAvant=el.disabled?'1':'0'
+    el.disabled=true
+  })
+  const note=document.getElementById('fige-devis')
+  note.className='fige-note'
+  if(!d){note.style.display='none';return}
+  let html
+  const ancienne=d.remplace_devis_id?allDevis.find(x=>x.id===d.remplace_devis_id):null
+  if(!fige){
+    note.classList.add('brouillon')
+    html=ancienne
+      ?`<b>Révision du devis ${escHtml(refDevis(ancienne))}</b> : modifie ce brouillon puis envoie-le. À son émission, ${escHtml(refDevis(ancienne))} passera en « Remplacé ».`
+      :"<b>Brouillon</b> : pas encore de numéro. Il sera attribué à l'envoi, au téléchargement du PDF ou à l'acceptation. Tant que c'est un brouillon, tu peux le modifier ou le supprimer."
+  }else if(d.statut==='remplace'){
+    const nouvelle=allDevis.find(x=>x.remplace_devis_id===d.id)
+    html=`<b>Devis ${escHtml(d.numero)} remplacé</b>${nouvelle?` par <a onclick="ouvrirDevis(${nouvelle.id})">${escHtml(refDevis(nouvelle))}</a>`:''}. Il est conservé pour l'historique.`
+  }else{
+    const lance=d.converti_reparation_id||factureDe(d)
+    html=`<b>Devis ${escHtml(d.numero)}</b> émis le ${dateCourte(d.date_emission)} : son contenu ne se modifie plus.`
+    if(ancienne)html+=` Remplace ${escHtml(refDevis(ancienne))}.`
+    if(!lance)html+=` Un changement ? <a onclick="reviserDevis()">Réviser le devis</a> (nouvelle version, nouveau numéro).`
+  }
+  note.innerHTML=html
+  note.style.display=''
+}
+function majOptionsStatutDevis(d){
+  const sel=document.getElementById('f-statut')
+  let o
+  if(!estEmis(d))o=[['brouillon','Brouillon (pas encore de numéro)'],['envoye','Émis / envoyé'],['accepte','Accepté'],['refuse','Refusé']]
+  else if(d.statut==='remplace')o=[['remplace','Remplacé']]
+  else o=[['envoye','Envoyé'],['accepte','Accepté'],['refuse','Refusé']]
+  sel.innerHTML=o.map(([v,l])=>`<option value="${v}">${escHtml(l)}</option>`).join('')
+}
+
+/* ─── Révision ───
+   Nouvelle version en brouillon (mêmes client et lignes) ; l'ancienne passe
+   « Remplacé » quand la nouvelle est émise. */
+window.reviserDevis=async function(){
+  const d=courant
+  if(!d||!estEmis(d))return
+  if(d.converti_reparation_id||factureDe(d)){showToast('Ce devis est déjà lancé (réparation ou facture) : fais un nouveau devis','err');return}
+  if(!confirm(`Réviser le devis ${d.numero} ?\n\nUne nouvelle version est créée en brouillon (même client, mêmes lignes). Quand tu l'émettras, ${d.numero} passera en « Remplacé ».`))return
+  const validite=new Date();validite.setDate(validite.getDate()+15)
+  const res=await sb.from('devis').insert({
+    client_id:d.client_id||null, client_nom:d.client_nom, client_email:d.client_email||null,
+    client_telephone:d.client_telephone||null, client_adresse:d.client_adresse||null,
+    client_societe:d.client_societe||null, client_tva:d.client_tva||null,
+    reparation_id:d.reparation_id||null, reparation_numero:d.reparation_numero||null,
+    date_emission:ymd(new Date()), date_validite:ymd(validite), statut:'brouillon',
+    lignes:d.lignes||[], total:d.total, remise:d.remise||0, acompte:d.acompte||0, acompte_type:'euro',
+    notes:d.notes||null, remplace_devis_id:d.id, updated_at:new Date().toISOString()
+  }).select().single()
+  if(res.error){showToast('Erreur : '+res.error.message,'err');return}
+  allDevis.unshift(res.data)
+  majResume()
+  chargerDansFormulaire(res.data)
+  showToast(`Nouvelle version de ${d.numero} prête en brouillon`,'ok')
 }
 
 function marquerPropre(){sale=false;document.getElementById('dirty').style.display='none'}
@@ -1434,6 +1571,7 @@ function majEtatApercu(){
   }else if(bRep)bRep.textContent='Créer la réparation'
   if(!d.client_id)bouts.push('Aucune fiche client rattachée')
   note.textContent=bouts.join(' · ')
+  majRelance(d)
   // Un seul bouton bleu : la prochaine étape du devis.
   const bOk=document.getElementById('sideOkBtn'), bKo=document.getElementById('sideKoBtn')
   ;[bSend,bFac,bRep,bOk].forEach(b=>{if(b){b.classList.remove('btn-primary');b.classList.add('btn-secondary')}})
@@ -1446,6 +1584,26 @@ function majEtatApercu(){
   if(principal){principal.classList.remove('btn-secondary');principal.classList.add('btn-primary')}
 }
 
+/* ─── Relances ─── (règles communes : assets/js/relances.js) */
+let _jetonRel=0
+async function majRelance(d){
+  const row=document.getElementById('rowRelance')
+  const visible=!!(d&&window.Relances&&d.statut==='envoye'&&estEmis(d))
+  row.style.display=visible?'':'none'
+  if(!visible)return
+  const t=++_jetonRel
+  const h=await Relances.historique('devis',d.id).catch(()=>[])
+  if(t!==_jetonRel)return
+  const b=document.getElementById('sideRelBtn')
+  b.textContent=h.length?`Relancer le client (${h.length} relance${h.length>1?'s':''} faite${h.length>1?'s':''})`:'Relancer le client'
+}
+window.relancerClient=async function(){
+  if(!courant||!window.Relances)return
+  const e=await Relances.pourDocument('devis',courant.id)
+  if(!e){showToast('Toutes les relances prévues ont été faites pour ce devis','err');return}
+  Relances.ouvrir(e,()=>majRelance(courant))
+}
+
 /* ─── Réponse du client ───
    Accepté / Refusé en un clic, sans passer par le champ Statut puis
    « Mettre à jour ». */
@@ -1453,16 +1611,13 @@ window.reponseClient=async function(statut){
   const d=courant
   if(!d){showToast("Enregistre d'abord le devis",'err');return}
   if(sale){showToast("Enregistre d'abord tes modifications",'err');return}
-  if(statut==='refuse'&&!confirm(`Le client refuse le devis ${d.numero} ?`))return
-  const maj={statut,updated_at:new Date().toISOString()}
-  const {error}=await sb.from('devis').update(maj).eq('id',d.id)
-  if(error){showToast('Erreur : '+error.message,'err');return}
-  const i=allDevis.findIndex(x=>x.id===d.id)
-  if(i>=0)Object.assign(allDevis[i],maj)
-  Object.assign(courant,maj)
+  if(statut==='refuse'&&!confirm(`Le client refuse le devis ${refDevis(d)} ?`))return
+  if(!estEmis(d)&&!confirm(TEXTE_EMISSION_DEVIS))return
+  let x
+  try{x=await majDevis(d,{statut})}catch(e){showToast('Erreur : '+(e.message||e),'err');return}
   majResume()
-  chargerDansFormulaire(courant)
-  showToast(statut==='accepte'?`Devis ${d.numero} accepté — prochaine étape : créer la réparation`:`Devis ${d.numero} classé refusé`,'ok')
+  chargerDansFormulaire(x)
+  showToast(statut==='accepte'?`Devis ${x.numero} accepté — prochaine étape : créer la réparation`:`Devis ${x.numero} classé refusé`,'ok')
 }
 
 /* ─── Devis préparé depuis une demande du site ou un dossier ───
@@ -1491,9 +1646,17 @@ function preremplirClient(o){
 }
 async function preparerDepuisLien(){
   const p=new URLSearchParams(location.search)
-  const idDem=p.get('demande'), idRep=p.get('reparation')
-  if(!idDem&&!idRep)return
+  const idDem=p.get('demande'), idRep=p.get('reparation'), idCli=p.get('client')
+  if(!idDem&&!idRep&&!idCli)return
   history.replaceState(null,'',location.pathname)
+  if(idCli&&!idDem&&!idRep){
+    // Depuis la fiche client : nouveau devis, client déjà choisi.
+    const c=allClients.find(x=>x.id===Number(idCli))
+    chargerDansFormulaire(null)
+    if(c){preremplirClient({client_id:c.id});afficherSource(`Nouveau devis pour <b>${escHtml(c.nom||'')}</b>`)}
+    surModification()
+    return
+  }
   if(idDem){
     const {data:dem,error}=await sb.from('demandes_formulaire').select('*').eq('id',idDem).maybeSingle()
     if(error||!dem){showToast('Demande introuvable','err');return}
@@ -1569,6 +1732,15 @@ window.saveDevis=async function(){
   if(!payload.client_nom){showToast('Le nom du client est requis','err');return}
   if(!payload.lignes.length){showToast('Ajoute au moins une ligne','err');return}
   const id=document.getElementById('f-id').value
+  if(id&&estEmis(courant)){
+    // Seuls le statut, la validité et les coordonnées de contact changent encore.
+    try{
+      const x=await majDevis(courant,{statut:payload.statut,date_validite:payload.date_validite,client_email:payload.client_email,client_telephone:payload.client_telephone})
+      majResume();chargerDansFormulaire(x);showToast(`Devis ${x.numero} enregistré`,'ok')
+    }catch(e){showToast('Erreur : '+(e.message||e),'err')}
+    return
+  }
+  if(payload.statut!=='brouillon'&&!confirm(TEXTE_EMISSION_DEVIS))return
   const clientSelId=document.getElementById('f-client-select').value
   const btn=document.getElementById('saveBtn')
   btn.textContent='Enregistrement…'
@@ -1604,17 +1776,18 @@ window.saveDevis=async function(){
 
     let enregistre
     if(id){
-      const res=await sb.from('devis').update(payload).eq('id',id)
-      if(res.error)throw new Error(res.error.message)
-      const i=allDevis.findIndex(x=>x.id===Number(id))
-      enregistre={...(i>=0?allDevis[i]:{}),...payload,id:Number(id)}
-      if(i>=0)allDevis[i]=enregistre
+      enregistre=await majDevis(courant&&courant.id===Number(id)?courant:{id:Number(id)},payload)
     }else{
-      payload.numero=await nextNumero('devis')
       const res=await sb.from('devis').insert(payload).select().single()
       if(res.error)throw new Error(res.error.message)
       enregistre=res.data
+      if(enregistre.statut!=='brouillon'&&!enregistre.numero){
+        await sb.from('devis').update({statut:'brouillon'}).eq('id',enregistre.id)
+        enregistre.statut='brouillon'
+        showToast("Numérotation légale inactive en base : le devis reste en brouillon.",'err')
+      }
       allDevis.unshift(enregistre)
+      if(estEmis(enregistre))await remplacerAncienne(enregistre)
       if(_source&&_source.type==='demande'){
         const rd=await sb.from('demandes_formulaire')
           .update({converti_devis_id:enregistre.id,vue:true,en_attente_depuis:null}).eq('id',_source.id)
@@ -1623,7 +1796,9 @@ window.saveDevis=async function(){
     }
     majResume()
     chargerDansFormulaire(enregistre)
-    showToast(id?`Devis ${enregistre.numero} mis à jour`:`Devis ${enregistre.numero} créé`,'ok')
+    showToast(enregistre.numero
+      ?(id?`Devis ${enregistre.numero} enregistré`:`Devis ${enregistre.numero} émis`)
+      :(id?'Brouillon mis à jour':"Brouillon créé — il recevra son numéro à l'émission"),'ok')
   }catch(e){
     showToast('Erreur : '+(e.message||e),'err')
   }finally{
@@ -1634,14 +1809,15 @@ window.saveDevis=async function(){
 
 window.supprimerCourant=async function(){
   if(!courant)return
-  if(!confirm(`Supprimer le devis ${courant.numero} ?`))return
+  if(estEmis(courant)){showToast(`${courant.numero} est émis : il ne se supprime pas. Classe-le « Refusé » ou révise-le.`,'err');return}
+  if(!confirm('Supprimer ce brouillon de devis ?'))return
   const {error}=await sb.from('devis').delete().eq('id',courant.id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   const num=courant.numero
   allDevis=allDevis.filter(x=>x.id!==courant.id)
   majResume()
   chargerDansFormulaire(allDevis[0]||null)
-  showToast(`Devis ${num} supprimé`,'ok')
+  showToast('Brouillon supprimé','ok')
 }
 function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
@@ -1677,7 +1853,7 @@ function buildTemplateHTML(f,forPdf){
           <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">DEVIS</span>
           ${accepte?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">ACCEPTÉ</span>`:''}
         </div>
-        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${escHtml(f.numero)}</div>
+        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">${f.numero&&f.numero!=='—'?`N° ${escHtml(f.numero)}`:'BROUILLON — sans numéro, sans valeur'}</div>
         ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${escHtml(f.reparation_numero)}</div>`:''}
       </div>
       <div style="text-align:right;font-size:12px;color:#555;">
@@ -1778,6 +1954,7 @@ async function genererPDF(){
 
 window.telechargerPdf=async function(){
   if(!courant){showToast("Enregistre d'abord le devis",'err');return}
+  if(!(await assurerEmissionDevis(courant)))return
   showToast('Génération du PDF…','ok')
   try{
     const pdf=await genererPDF()
@@ -1827,6 +2004,7 @@ function signatureHTML(variante){
 window.preparerEmail=async function(){
   if(!courant){showToast("Enregistre d'abord le devis",'err');return}
   if(!courant.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
+  if(!(await assurerEmissionDevis(courant)))return
   const btns=[document.getElementById('sideSendBtn'),document.getElementById('pdfSendBtn')].filter(Boolean)
   btns.forEach(b=>{b.disabled=true})
   try{
@@ -1893,19 +2071,18 @@ window.confirmerEnvoiEmail=async function(){
 
 /* ─── Conversion en facture ─── */
 window.convertirEnFacture=async function(){
+  if(!courant){showToast("Enregistre d'abord le devis",'err');return}
+  if(!(await assurerAcceptation(courant)))return
   const d=courant
-  if(!d){showToast("Enregistre d'abord le devis",'err');return}
   if(d.converti_facture_id){showToast('Ce devis a déjà été converti en facture','err');return}
   const dejaFacture=factureDe(d)
   if(dejaFacture){showToast(`Ce devis est déjà facturé (facture ${dejaFacture.numero||''}, faite depuis la réparation)`,'err');return}
-  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant : ${eur(d.total)}\n\nLe stock lié aux lignes sera décrémenté.`))return
+  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant : ${eur(d.total)}\n\nLa facture est créée en brouillon (numéro attribué à son émission). Le stock lié aux lignes sera décrémenté.`))return
   const btn=document.getElementById('sideFactureBtn')
   const txt=btn.textContent
   btn.disabled=true;btn.textContent='Conversion…'
   try{
-    const numFacture=await nextNumero('facture')
     const res=await sb.from('factures').insert({
-      numero:numFacture,
       devis_id:d.id,
       client_id:d.client_id||null,
       client_nom:d.client_nom,
@@ -1946,11 +2123,11 @@ window.convertirEnFacture=async function(){
     const i=allDevis.findIndex(x=>x.id===d.id)
     if(i>=0)Object.assign(allDevis[i],maj)
     Object.assign(courant,maj)
-    facturesLiees.push({id:res.data.id,numero:numFacture,statut:'brouillon',devis_id:d.id,reparation_id:d.reparation_id||null})
+    facturesLiees.push({id:res.data.id,numero:null,statut:'brouillon',devis_id:d.id,reparation_id:d.reparation_id||null})
     closePdf()
     majResume()
     chargerDansFormulaire(courant)
-    showToast(`Facture ${numFacture} créée — à compléter dans Factures`,'ok')
+    showToast('Facture créée en brouillon — à vérifier et émettre dans Factures','ok')
   }catch(e){
     btn.disabled=false;btn.textContent=txt
     showToast('Erreur conversion : '+(e.message||e),'err')
@@ -1959,8 +2136,10 @@ window.convertirEnFacture=async function(){
 
 /* ─── Conversion en réparation ─── */
 window.convertirEnReparation=async function(){
+  if(!courant){showToast("Enregistre d'abord le devis",'err');return}
+  if(courant.converti_reparation_id){showToast('Une réparation a déjà été créée pour ce devis','err');return}
+  if(!(await assurerAcceptation(courant)))return
   const d=courant
-  if(!d){showToast("Enregistre d'abord le devis",'err');return}
   if(d.converti_reparation_id){showToast('Une réparation a déjà été créée pour ce devis','err');return}
   if(!confirm(`Créer un dossier de réparation depuis le devis ${d.numero} ?`))return
   const btn=document.getElementById('sideRepBtn')
@@ -2065,6 +2244,7 @@ await preparerDepuisLien()
     const repondre=m=>window.parent.postMessage(Object.assign({type:'itsoluce-pdf'},m),location.origin)
     const d=allDevis.find(x=>x.id===Number(p.get('id')))
     if(!d)repondre({erreur:'Devis introuvable'})
+    else if(!estEmis(d))repondre({erreur:'Ce devis est un brouillon sans numéro : émets-le depuis Devis avant de le joindre.'})
     else{
       try{
         courant=d
@@ -2191,5 +2371,6 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/libelle-piece.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 <script src="/admin/assets/js/dossier-fil.js"></script>
+<script src="/admin/assets/js/relances.js"></script>
 </body>
 </html>

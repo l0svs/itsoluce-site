@@ -147,6 +147,7 @@ body{font-size:14px;}
 .at-form-top h2{font-size:16px; font-weight:600; letter-spacing:-.02em; color:var(--t1); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .at-form-top .spacer{margin-left:auto;}
 #fil-fac:empty,#etape-fac:empty{display:none;}
+#fil-fac.nc .dfil-next{display:none;}
 .etape{display:flex; gap:8px; flex-wrap:wrap;}
 .etape .btn{flex:1; justify-content:center; min-width:140px;}
 .enc-du{display:flex; align-items:baseline; justify-content:space-between; gap:10px; background:var(--bg3); border-radius:12px; padding:12px 14px;}
@@ -156,6 +157,22 @@ body{font-size:14px;}
 .enc-modes button{padding:10px 6px; border-radius:10px; border:1px solid var(--ln2); background:var(--bg2); color:var(--t1); font:inherit; font-size:13px; cursor:pointer;}
 .enc-modes button.on{border-color:var(--a); background:var(--ad); color:var(--a); font-weight:600;}
 @media(max-width:520px){.enc-modes{grid-template-columns:repeat(2,1fr);}}
+.enc-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px;}
+.fige-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--bg3); border-radius:10px; padding:9px 12px;}
+.fige-note b{color:var(--t1);}
+.fige-note a{color:var(--a); font-weight:500; cursor:pointer; text-decoration:none;}
+.fige-note.brouillon{background:var(--ad);}
+.at-form.fige .ligne-del,.at-form.fige .ligne-outils,.at-form.fige #cancelBtn,.at-form.fige .l-stock,.at-form.fige .lie{display:none !important;}
+.at-form.fige input:disabled,.at-form.fige select:disabled,.at-form.fige textarea:disabled{opacity:1; color:var(--t1); -webkit-text-fill-color:var(--t1); cursor:default;}
+.nc-choix{display:flex; flex-direction:column; gap:6px;}
+.nc-choix button{display:flex; flex-direction:column; gap:2px; text-align:left; padding:10px 12px; border-radius:10px; border:1px solid var(--ln2); background:var(--bg2); color:var(--t1); font:inherit; cursor:pointer;}
+.nc-choix button b{font-size:13px;}
+.nc-choix button em{font-style:normal; font-size:12px; color:var(--t2);}
+.nc-choix button.on{border-color:var(--a); background:var(--ad);}
+.nc-choix button:disabled{opacity:.5; cursor:not-allowed;}
+.nc-case{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--t2); line-height:1.45; cursor:pointer;}
+.email-body .nc-case input{width:auto; flex-shrink:0; margin:2px 0 0; padding:0;}
+.at-form.fige input:disabled::placeholder,.at-form.fige textarea:disabled::placeholder{color:transparent; -webkit-text-fill-color:transparent;}
 .grp-lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); margin-top:3px;}
 .sep{height:1px; background:var(--ln);}
 .fg{margin:0;}
@@ -255,6 +272,7 @@ body{font-size:14px;}
 .email-close:hover{color:var(--t1);}
 .email-body{padding:20px; display:flex; flex-direction:column; gap:14px;}
 .email-body label{display:block; font-size:12px; font-weight:500; color:var(--t2); margin-bottom:5px;}
+.email-body select{width:100%; padding:9px 12px; background:var(--bg3); border:1px solid transparent; border-radius:10px; color:var(--t1); font-size:13.5px; font-family:inherit; outline:none;}
 .email-body input,.email-body textarea{width:100%; padding:9px 12px; background:var(--bg3); border:1px solid transparent; border-radius:10px; color:var(--t1); font-size:13.5px; font-family:inherit; box-sizing:border-box; outline:none;}
 .email-body input:focus,.email-body textarea:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
 .email-body textarea{resize:vertical; line-height:1.55;}
@@ -651,6 +669,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <span class="spacer"></span>
               <span class="dirty" id="dirty" style="display:none;">Modifications non enregistrées</span>
             </div>
+            <div class="fige-note" id="fige-note" style="display:none;"></div>
             <div id="fil-fac"></div>
             <div class="etape" id="etape-fac"></div>
 
@@ -770,6 +789,12 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <button class="btn btn-secondary" onclick="telechargerPdf()" id="sidePdfBtn">PDF</button>
               <button class="btn btn-secondary" onclick="preparerEmail()" id="sideSendBtn">Envoyer</button>
             </div>
+            <div class="prev-acts" id="rowRelance" style="display:none;">
+              <button class="btn btn-secondary" onclick="relancerClient()" id="sideRelBtn">Relancer le client</button>
+            </div>
+            <div class="prev-acts" id="rowNC" style="display:none;">
+              <button class="btn btn-secondary" onclick="ouvrirNoteCredit()" id="sideNCBtn">Note de crédit (corriger / rembourser)</button>
+            </div>
             <div class="prev-acts">
               <button class="btn btn-secondary" onclick="telechargerRecu()" id="sideRecuBtn">Reçu d'acompte</button>
               <button class="btn btn-secondary" onclick="envoyerRecu()" id="sideRecuMailBtn">Envoyer le reçu</button>
@@ -819,11 +844,43 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         </div>
       </div>
       <div class="paie-msg" id="enc-msg" style="display:none;"></div>
-      <div class="fg"><label for="enc-date">Encaissé le</label><input type="date" id="enc-date"/></div>
+      <div class="fg"><label for="enc-date" id="enc-date-lab">Encaissé le</label><input type="date" id="enc-date"/></div>
+      <div class="enc-note" id="enc-note" style="display:none;"></div>
     </div>
     <div class="email-foot">
       <button class="btn btn-secondary" onclick="fermerEncaissement()" style="flex:1;">Annuler</button>
       <button class="btn btn-primary" onclick="confirmerEncaissement()" id="enc-ok" style="flex:2;">Confirmer l'encaissement</button>
+    </div>
+  </div>
+</div>
+<!-- NOTE DE CRÉDIT -->
+<div class="email-overlay" id="ncOverlay">
+  <div class="email-box" style="max-width:520px;">
+    <div class="email-head"><span id="nc-titre">Note de crédit</span><button class="email-close" onclick="fermerNoteCredit()" aria-label="Fermer">×</button></div>
+    <div class="email-body">
+      <div class="enc-note" id="nc-explic"></div>
+      <div>
+        <label>Que veux-tu faire ?</label>
+        <div class="nc-choix" id="nc-choix"></div>
+      </div>
+      <div class="fg" id="nc-montant-wrap" style="display:none;"><label for="nc-montant">Montant à rembourser (€)</label><input type="number" id="nc-montant" min="0.01" step="0.01" oninput="majNoteCredit()"/></div>
+      <label class="nc-case" id="nc-corrigee-wrap"><input type="checkbox" id="nc-corrigee" checked/> Préparer une facture corrigée (copie en brouillon, à modifier puis émettre)</label>
+      <div class="fg"><label for="nc-motif">Motif (figure sur la note de crédit)</label>
+        <select id="nc-motif" onchange="majNoteCredit()">
+          <option value="Erreur de facturation">Erreur de facturation</option>
+          <option value="Geste commercial">Geste commercial</option>
+          <option value="Annulation de la prestation">Annulation de la prestation</option>
+          <option value="Retour de pièce">Retour de pièce</option>
+          <option value="Litige réglé à l'amiable">Litige réglé à l'amiable</option>
+          <option value="autre">Autre…</option>
+        </select>
+      </div>
+      <div class="fg" id="nc-autre-wrap" style="display:none;"><label for="nc-autre">Précise le motif</label><input type="text" id="nc-autre" maxlength="140" oninput="majNoteCredit()"/></div>
+      <div class="enc-du"><span id="nc-resume">Note de crédit</span><b id="nc-total">0,00 €</b></div>
+    </div>
+    <div class="email-foot">
+      <button class="btn btn-secondary" onclick="fermerNoteCredit()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmerNoteCredit()" id="nc-ok" style="flex:2;">Émettre la note de crédit</button>
     </div>
   </div>
 </div>
@@ -950,13 +1007,27 @@ const STATUTS={
   annulee:  {label:'Annulée',  cls:'t-annulee'},
   // Facture à 0 € d'un appareil non réparable (diagnostic offert) : rien
   // à encaisser, elle sort du suivi des paiements.
-  non_reparable:{label:'Non réparable',cls:'t-nonrep'}
+  non_reparable:{label:'Non réparable',cls:'t-nonrep'},
+  // Facture annulée par une note de crédit : statut définitif.
+  creditee: {label:'Créditée',  cls:'t-annulee'},
+  // Notes de crédit
+  imputee:      {label:'Imputée',      cls:'t-annulee'},
+  a_rembourser: {label:'À rembourser', cls:'t-retard'},
+  remboursee:   {label:'Remboursée',   cls:'t-payee'}
 }
+/* Numérotation légale : un brouillon n'a pas de numéro ; le numéro est
+   attribué par la base au moment où la facture est émise (envoi, PDF,
+   encaissement). Une facture émise ne se modifie plus et ne se supprime
+   plus : elle se corrige par une note de crédit. */
+const estEmise=f=>!!(f&&f.emise_le)
+const estNC=f=>!!(f&&f.type_document==='note_credit')
+const nomDoc=f=>estNC(f)?'note de crédit':'facture'
+const refDoc=f=>f&&f.numero?f.numero:'Brouillon'
 const MODES={especes:'espèces',carte:'carte',virement:'virement',mixte:'carte + espèces'}
 /* En retard : envoyée et échéance dépassée. L'échéance n'était jamais
    enregistrée, ce qui rendait cet état impossible à atteindre. */
 function enRetard(f){
-  return f.statut==='envoyee'&&f.date_echeance&&new Date(f.date_echeance)<new Date()
+  return !estNC(f)&&f.statut==='envoyee'&&f.date_echeance&&new Date(f.date_echeance)<new Date()
 }
 function etatAffiche(f){
   if(enRetard(f))return {label:'En retard',cls:'t-retard',cle:'retard'}
@@ -1109,13 +1180,18 @@ function majResume(){
     el.textContent='Aucune facture pour le moment. Crée la première avec le formulaire.'
     return
   }
-  const payees=allFactures.filter(f=>f.statut==='payee')
-  const encaisse=payees.reduce((a,f)=>a+(Number(f.total)||0),0)
-  const attente=allFactures.filter(f=>f.statut==='envoyee')
+  // Encaissé net : factures payées moins les notes de crédit remboursées.
+  const payees=allFactures.filter(f=>!estNC(f)&&f.statut==='payee')
+  const rembourses=allFactures.filter(f=>estNC(f)&&f.statut==='remboursee')
+  const encaisse=payees.concat(rembourses).reduce((a,f)=>a+(Number(f.total)||0),0)
+  const attente=allFactures.filter(f=>!estNC(f)&&f.statut==='envoyee')
   const retards=attente.filter(enRetard)
   const duMontant=attente.reduce((a,f)=>a+(Number(f.total)||0),0)
   const brouillons=allFactures.filter(f=>f.statut==='brouillon').length
-  const bouts=[`<b>${allFactures.length} facture${allFactures.length>1?'s':''}</b>`,`<b>${eur(encaisse)}</b> encaissés`]
+  const nbFac=allFactures.filter(f=>!estNC(f)).length
+  const aRembourser=allFactures.filter(f=>estNC(f)&&f.statut==='a_rembourser')
+  const bouts=[`<b>${nbFac} facture${nbFac>1?'s':''}</b>`,`<b>${eur(encaisse)}</b> encaissés`]
+  if(aRembourser.length)bouts.push(`<span class="alerte">${eur(Math.abs(aRembourser.reduce((a,f)=>a+(Number(f.total)||0),0)))} à rembourser</span>`)
   if(retards.length){
     const n=Math.max(...retards.map(f=>joursDepuis(f.date_echeance)??0))
     bouts.push(`<span class="alerte">${retards.length} en retard depuis ${n} jour${n>1?'s':''}</span>`)
@@ -1129,11 +1205,13 @@ function majResume(){
 /* ─── Rail ─── */
 const GROUPES=[
   {cle:'retard',    titre:'En retard',    test:enRetard, chaud:true},
-  {cle:'encaisser', titre:'À encaisser',  test:f=>f.statut==='envoyee'&&!enRetard(f)},
-  {cle:'brouillon', titre:'Brouillons',   test:f=>f.statut==='brouillon'},
-  {cle:'payee',     titre:'Payées',       test:f=>f.statut==='payee'},
+  {cle:'encaisser', titre:'À encaisser',  test:f=>!estNC(f)&&f.statut==='envoyee'&&!enRetard(f)},
+  {cle:'rembourser',titre:'Notes de crédit à rembourser', test:f=>estNC(f)&&f.statut==='a_rembourser', chaud:true},
+  {cle:'brouillon', titre:'Brouillons', test:f=>f.statut==='brouillon'},
+  {cle:'payee',     titre:'Payées',       test:f=>!estNC(f)&&f.statut==='payee'},
   {cle:'nonrep',    titre:'Non réparables', test:f=>f.statut==='non_reparable'},
-  {cle:'annulee',   titre:'Annulées',     test:f=>f.statut==='annulee'}
+  {cle:'nc',        titre:'Notes de crédit', test:f=>estNC(f)&&f.statut!=='a_rembourser'},
+  {cle:'annulee',   titre:'Annulées / créditées', test:f=>['annulee','creditee'].includes(f.statut)}
 ]
 
 window.renderRail=function renderRail(){
@@ -1151,7 +1229,7 @@ window.renderRail=function renderRail(){
     html+=items.map(f=>{
       const e=etatAffiche(f)
       return `<button type="button" class="rail-item s-${escHtml(e.cle)}${courante&&courante.id===f.id?' on':''}" onclick="ouvrirFacture(${f.id})">
-        <span class="ref">${escHtml(f.numero||'—')}</span>
+        <span class="ref">${escHtml(refDoc(f))}</span>
         <b>${escHtml(f.client_societe||f.client_nom||'Sans client')}</b>
         <em>${eur(f.total)} · ${escHtml(e.label.toLowerCase())}</em>
       </button>`
@@ -1372,8 +1450,8 @@ function totalAffiche(){
 window.onStatutChange=function(){
   const st=document.getElementById('f-statut').value
   const box=document.getElementById('fg-date-paiement')
-  box.style.display=st==='payee'?'':'none'
-  if(st==='payee'&&!document.getElementById('f-date-paiement').value){
+  box.style.display=['payee','remboursee'].includes(st)?'':'none'
+  if(['payee','remboursee'].includes(st)&&!document.getElementById('f-date-paiement').value){
     document.getElementById('f-date-paiement').value=ymd(new Date())
   }
   surModification()
@@ -1456,7 +1534,7 @@ function lireFormulaire(){
     // donc jamais s'allumer, et le PDF affichait « à réception » en dur.
     date_echeance:g('f-date-echeance')||null,
     statut,
-    date_paiement:statut==='payee'?(g('f-date-paiement')||ymd(new Date())):null,
+    date_paiement:['payee','remboursee'].includes(statut)?(g('f-date-paiement')||ymd(new Date())):null,
     mode_paiement:mode,
     montant_donne:mode==='especes'?num(g('f-montant-donne')):null,
     montant_carte:mode==='mixte'?num(g('f-mixte-carte')):null,
@@ -1487,6 +1565,7 @@ function chargerDansFormulaire(f){
   document.getElementById('f-remise-type').value='euro'
   set('f-acompte',f?(f.acompte||0):0)
   document.getElementById('f-acompte-type').value='euro'
+  majOptionsStatut(f)
   set('f-statut',f?(f.statut||'brouillon'):'brouillon')
   set('f-notes',f?f.notes:'')
   set('f-date-emission',f&&f.date_emission?f.date_emission:ymd(new Date()))
@@ -1518,10 +1597,11 @@ function chargerDansFormulaire(f){
   const tag=document.getElementById('tag-courant')
   tag.className='tag '+e.cls
   tag.textContent=e.label
-  document.getElementById('ref-courant').textContent=f?(f.numero||'—'):'Nouvelle'
+  document.getElementById('ref-courant').textContent=f?refDoc(f):'Nouvelle'
   document.getElementById('titre-courant').textContent=f?(f.client_societe||f.client_nom||'Facture'):'Nouvelle facture'
-  document.getElementById('saveBtn').textContent=f?'Mettre à jour':'Enregistrer'
-  document.getElementById('delBtn').style.display=f?'inline-flex':'none'
+  document.getElementById('saveBtn').textContent=estEmise(f)?'Enregistrer le règlement':f?'Mettre à jour':'Enregistrer'
+  document.getElementById('delBtn').style.display=f&&!estEmise(f)?'inline-flex':'none'
+  document.getElementById('delBtn').textContent='Supprimer ce brouillon'
 
   onStatutChange()
   onPaiementChange()
@@ -1531,18 +1611,81 @@ function chargerDansFormulaire(f){
   renderRail()
   rafraichirApercu()
   const fil=document.getElementById('fil-fac')
-  if(window.DossierFil){if(f)DossierFil.afficher(fil,{facture:f.id},'facture');else DossierFil.vider(fil)}
+  // Note de crédit : on montre le dossier de la facture qu'elle corrige.
+  fil.classList.toggle('nc',estNC(f))   // la « prochaine étape » du dossier ne concerne pas la note
+  if(window.DossierFil){if(f)DossierFil.afficher(fil,{facture:estNC(f)?f.facture_origine_id:f.id},estNC(f)?null:'facture');else DossierFil.vider(fil)}
+  verrouillerFormulaire(f)
   majEtapeFacture()
+}
+
+/* ─── Document émis : formulaire verrouillé ───
+   Seuls le règlement et les coordonnées de contact restent modifiables ;
+   la base refuserait de toute façon tout autre changement. */
+const LIBRES_APRES_EMISSION=['f-statut','f-date-paiement','f-paiement','f-montant-donne','f-mixte-carte','f-mixte-especes','f-date-echeance','f-email','f-tel']
+function verrouillerFormulaire(f){
+  const fige=estEmise(f)
+  const form=document.querySelector('.at-form')
+  form.classList.toggle('fige',fige)
+  form.querySelectorAll('input,select,textarea,button.tog,button.add-ligne').forEach(el=>{
+    if(el.type==='hidden')return
+    if(!fige){
+      if(el.dataset.figeAvant!=null){el.disabled=el.dataset.figeAvant==='1';delete el.dataset.figeAvant}
+      return
+    }
+    if(LIBRES_APRES_EMISSION.includes(el.id)&&!(estNC(f)&&f.statut==='imputee'))return
+    if(el.dataset.figeAvant==null)el.dataset.figeAvant=el.disabled?'1':'0'
+    el.disabled=true
+  })
+  if(fige&&document.getElementById('f-statut').options.length<2)document.getElementById('f-statut').disabled=true
+  const rep=document.getElementById('f-rep')
+  if(rep&&rep.closest('.fg'))rep.closest('.fg').style.display=fige?'none':''
+  const note=document.getElementById('fige-note')
+  note.className='fige-note'
+  if(!f){note.style.display='none';return}
+  let html
+  if(!fige){
+    note.classList.add('brouillon')
+    html="<b>Brouillon</b> : pas encore de numéro. Il sera attribué automatiquement à l'envoi, au téléchargement du PDF ou à l'encaissement. Tant que c'est un brouillon, tu peux le modifier ou le supprimer."
+  }else if(estNC(f)){
+    const o=allFactures.find(x=>x.id===f.facture_origine_id)
+    html=`<b>Note de crédit ${escHtml(f.numero)}</b> émise le ${dateCourte(f.date_emission)}${o?` sur la facture <a onclick="ouvrirFacture(${o.id})">${escHtml(o.numero)}</a>`:''}${f.motif_credit?` · motif : ${escHtml(f.motif_credit)}`:''}. Contenu verrouillé.`
+  }else{
+    const ncs=allFactures.filter(x=>estNC(x)&&x.facture_origine_id===f.id)
+    html=`<b>Facture ${escHtml(f.numero)}</b> émise le ${dateCourte(f.date_emission)} : son contenu est verrouillé.`
+    if(ncs.length)html+=` Notes de crédit : ${ncs.map(n=>`<a onclick="ouvrirFacture(${n.id})">${escHtml(n.numero)}</a>`).join(', ')}.`
+    if(!['creditee','annulee'].includes(f.statut))html+=` Une erreur, un remboursement ? <a onclick="ouvrirNoteCredit()">Faire une note de crédit</a>`
+  }
+  note.innerHTML=html
+  note.style.display=''
+}
+function majOptionsStatut(f){
+  const sel=document.getElementById('f-statut')
+  let opts
+  if(estNC(f))opts=f.statut==='imputee'?[['imputee','Imputée (déduite de la facture)']]:[['a_rembourser','À rembourser'],['remboursee','Remboursée']]
+  else if(!estEmise(f))opts=[['brouillon','Brouillon (pas encore de numéro)'],['envoyee','Émise — à encaisser'],['payee','Payée'],['non_reparable','Non réparable (diagnostic)']]
+  else if(['creditee','annulee'].includes(f.statut))opts=[[f.statut,STATUTS[f.statut].label]]
+  else{
+    opts=[['envoyee','Émise — à encaisser'],['payee','Payée']]
+    if(f.statut==='non_reparable')opts.push(['non_reparable','Non réparable (diagnostic)'])
+  }
+  sel.innerHTML=opts.map(([v,l])=>`<option value="${v}">${escHtml(l)}</option>`).join('')
 }
 
 /* ─── Étape suivante ───
    Brouillon : on l'envoie, ou on encaisse directement au comptoir.
    Envoyée : on encaisse. Payée, annulée : plus rien à faire. */
-function resteAPayer(f){return Math.max(0,(Number(f.total)||0)-(Number(f.acompte)||0))}
+function resteAPayer(f){
+  if(estNC(f))return Math.abs(Number(f.total)||0)
+  return Math.max(0,(Number(f.total)||0)-(Number(f.acompte)||0))
+}
 function majEtapeFacture(){
   const el=document.getElementById('etape-fac')
   const f=courante
-  if(!f||!['brouillon','envoyee'].includes(f.statut)){el.innerHTML='';return}
+  if(f&&estNC(f)&&f.statut==='a_rembourser'){
+    el.innerHTML=`<button class="btn btn-primary" onclick="ouvrirEncaissement()">Rembourser ${eur(resteAPayer(f))}</button>`
+    return
+  }
+  if(!f||estNC(f)||!['brouillon','envoyee'].includes(f.statut)){el.innerHTML='';return}
   const enc=`<button class="btn btn-primary" onclick="ouvrirEncaissement()">Encaisser ${eur(resteAPayer(f))}</button>`
   el.innerHTML=f.statut==='brouillon'
     ?`<button class="btn btn-secondary" onclick="preparerEmail()">Envoyer par mail</button>${enc}`
@@ -1559,8 +1702,15 @@ window.ouvrirEncaissement=function(){
   if(!f)return
   if(sale){showToast("Enregistre d'abord tes modifications",'err');return}
   const reste=resteAPayer(f)
-  document.getElementById('enc-titre').textContent=`Encaisser la facture ${f.numero||''}`
-  document.getElementById('enc-lab').textContent=Number(f.acompte)>0?`Reste à encaisser (acompte de ${eur(f.acompte)} déduit)`:'Montant à encaisser'
+  const nc=estNC(f)
+  document.getElementById('enc-titre').textContent=nc?`Rembourser la note de crédit ${f.numero}`:`Encaisser la facture ${f.numero||'(brouillon)'}`
+  document.getElementById('enc-lab').textContent=nc?'Montant à rembourser au client':Number(f.acompte)>0?`Reste à encaisser (acompte de ${eur(f.acompte)} déduit)`:'Montant à encaisser'
+  document.getElementById('enc-date-lab').textContent=nc?'Remboursé le':'Encaissé le'
+  document.getElementById('enc-ok').textContent=nc?'Confirmer le remboursement':"Confirmer l'encaissement"
+  document.querySelector('#enc-modes [data-m="mixte"]').style.display=nc?'none':''
+  const encNote=document.getElementById('enc-note')
+  encNote.style.display=estEmise(f)?'none':''
+  encNote.textContent=estEmise(f)?'':"Cette facture est encore un brouillon : elle sera émise à l'encaissement (numéro définitif et date du jour), puis verrouillée.";
   document.getElementById('enc-montant').textContent=eur(reste)
   document.getElementById('enc-date').value=ymd(new Date())
   ;['enc-donne','enc-carte','enc-cash'].forEach(id=>document.getElementById(id).value='')
@@ -1571,7 +1721,7 @@ window.fermerEncaissement=function(){document.getElementById('encOverlay').style
 window.choisirMode=function(m){
   _modeEnc=m||''
   document.querySelectorAll('#enc-modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===_modeEnc))
-  document.getElementById('enc-especes').classList.toggle('on',_modeEnc==='especes')
+  document.getElementById('enc-especes').classList.toggle('on',_modeEnc==='especes'&&!estNC(courante))
   document.getElementById('enc-mixte').classList.toggle('on',_modeEnc==='mixte')
   majEncaissement()
 }
@@ -1603,20 +1753,24 @@ window.confirmerEncaissement=async function(){
   if(_modeEnc==='especes'&&n('enc-donne')>0&&n('enc-donne')<reste-0.005){showToast('Le montant donné est inférieur au montant dû','err');return}
   if(_modeEnc==='mixte'&&Math.abs(n('enc-carte')+n('enc-cash')-reste)>=0.01){showToast('Carte + espèces doit être égal au montant dû','err');return}
   const set=(id,v)=>{document.getElementById(id).value=v}
-  set('f-statut','payee')
+  const nc=estNC(f)
+  if(!estEmise(f))majOptionsStatut({})
+  set('f-statut',nc?'remboursee':'payee')
   set('f-date-paiement',document.getElementById('enc-date').value||ymd(new Date()))
   set('f-paiement',_modeEnc)
-  set('f-montant-donne',_modeEnc==='especes'&&n('enc-donne')>0?n('enc-donne'):'')
+  set('f-montant-donne',!nc&&_modeEnc==='especes'&&n('enc-donne')>0?n('enc-donne'):'')
   set('f-mixte-carte',_modeEnc==='mixte'?n('enc-carte'):'')
   set('f-mixte-especes',_modeEnc==='mixte'?n('enc-cash'):'')
   onStatutChange()
   onPaiementChange()
   const btn=document.getElementById('enc-ok')
   btn.disabled=true
-  try{await saveFacture()}finally{btn.disabled=false}
-  if(courante&&courante.statut==='payee'){
+  _emissionConfirmee=true   // la modale l'a annoncé : pas de seconde confirmation
+  try{await saveFacture()}finally{btn.disabled=false;_emissionConfirmee=false}
+  if(courante&&['payee','remboursee'].includes(courante.statut)){
     fermerEncaissement()
-    showToast(`Facture ${courante.numero} encaissée · ${eur(reste)} en ${({especes:'espèces',carte:'carte',virement:'virement',mixte:'mixte'})[_modeEnc]}`,'ok')
+    const mode=({especes:'espèces',carte:'carte',virement:'virement',mixte:'mixte'})[_modeEnc]
+    showToast(nc?`Note de crédit ${courante.numero} remboursée · ${eur(reste)} en ${mode}`:`Facture ${courante.numero} encaissée · ${eur(reste)} en ${mode}`,'ok')
   }
 }
 
@@ -1637,6 +1791,9 @@ function brancherEcoute(){
 
 /* ─── Aperçu en direct ─── */
 function docCourant(){
+  // Document émis : on montre ce qui est en base, pas le formulaire (les
+  // montants négatifs d'une note de crédit y seraient ramenés à zéro).
+  if(estEmise(courante))return courante
   return {...(courante||{}),...lireFormulaire(),
     numero:document.getElementById('f-numero').value||'—',
     reparation_numero:_repLien?_repLien.numero:null}
@@ -1669,6 +1826,8 @@ function majEtatApercu(){
   const bRecu=document.getElementById('sideRecuBtn'), bRecuMail=document.getElementById('sideRecuMailBtn')
   const enregistree=!!f
   ;[bPdf,bSend,bAgr].forEach(b=>{if(b)b.disabled=!enregistree})
+  document.getElementById('rowNC').style.display=(enregistree&&!estNC(f)&&estEmise(f)&&!['creditee','annulee'].includes(f.statut))?'':'none'
+  majRelance(f)
   const aAcompte=enregistree&&Number(f.acompte||0)>0
   ;[bRecu,bRecuMail].forEach(b=>{if(b)b.disabled=!aAcompte})
   if(!enregistree){
@@ -1676,13 +1835,14 @@ function majEtatApercu(){
     note.textContent="Enregistre la facture pour pouvoir la télécharger ou l'envoyer."
     return
   }
-  etat.textContent=f.email_envoye?'envoyée':'non envoyée'
+  etat.textContent=!estEmise(f)?'brouillon':f.email_envoye?'envoyée':'non envoyée'
   const bouts=[]
+  if(!estEmise(f))bouts.push("Brouillon : le numéro sera attribué à l'envoi, au PDF ou à l'encaissement")
   if(f.email_envoye)bouts.push(`Envoyée au client le ${dateCourte(f.date_envoi)}`)
   if(enRetard(f))bouts.push(`Échéance dépassée depuis ${joursDepuis(f.date_echeance)} jours`)
   if(f.devis_id)bouts.push(`Issue du devis ${numerosDevis.get(f.devis_id)||'—'}`)
   if(f.reparation_numero)bouts.push(`Réparation ${f.reparation_numero}`)
-  if(f.stock_decremente)bouts.push('Stock déjà décrémenté')
+  if(f.stock_decremente&&!estNC(f))bouts.push('Stock déjà décrémenté')
   if(!aAcompte)bouts.push("Aucun acompte : le reçu n'est pas disponible")
   if(!f.client_id)bouts.push('Aucune fiche client rattachée')
   note.textContent=bouts.join(' · ')
@@ -1729,11 +1889,227 @@ async function bougerStock(lignes,sens){
 }
 
 /* ─── Enregistrement ─── */
+/* ─── Relances ─── (règles communes : assets/js/relances.js) */
+let _jetonRel=0
+async function majRelance(f){
+  const row=document.getElementById('rowRelance')
+  const visible=!!(f&&window.Relances&&!estNC(f)&&f.statut==='envoyee'&&estEmise(f))
+  row.style.display=visible?'':'none'
+  if(!visible)return
+  const t=++_jetonRel
+  const h=await Relances.historique('facture',f.id).catch(()=>[])
+  if(t!==_jetonRel)return
+  document.getElementById('sideRelBtn').textContent=h.length?`Relancer le client (${h.length} relance${h.length>1?'s':''} faite${h.length>1?'s':''})`:'Relancer le client'
+}
+window.relancerClient=async function(){
+  if(!courante||!window.Relances)return
+  const e=await Relances.pourDocument('facture',courante.id)
+  if(!e){showToast('Toutes les relances prévues ont été faites pour cette facture','err');return}
+  Relances.ouvrir(e,()=>majRelance(courante))
+}
+
+/* ─── Note de crédit ───
+   Facture NON payée : on l'annule entièrement (note de crédit « imputée »,
+   la facture passe « Créditée ») et on prépare au besoin une facture
+   corrigée en brouillon. C'est la méthode propre : la facture d'origine
+   n'est jamais modifiée.
+   Facture PAYÉE : remboursement total ou partiel (note « à rembourser »,
+   puis « remboursée » quand l'argent est rendu). */
+let _nc=null
+function ncDejaCredite(f){
+  return allFactures.filter(x=>estNC(x)&&x.facture_origine_id===f.id).reduce((a,x)=>a+Math.abs(Number(x.total)||0),0)
+}
+window.ouvrirNoteCredit=function(){
+  const f=courante
+  if(!f||estNC(f)||!estEmise(f)){showToast('Une note de crédit se fait sur une facture émise','err');return}
+  if(['creditee','annulee'].includes(f.statut)){showToast('Cette facture est déjà annulée','err');return}
+  if(sale){showToast("Enregistre d'abord tes modifications",'err');return}
+  const deja=ncDejaCredite(f)
+  const max=Math.round(Math.max(0,(Number(f.total)||0)-deja)*100)/100
+  if(max<=0){showToast('Cette facture est déjà entièrement créditée','err');return}
+  const paye=f.statut==='payee'
+  _nc={f,deja,max,paye,mode:null}
+  document.getElementById('nc-titre').textContent=`Note de crédit sur la facture ${f.numero}`
+  let ex=paye
+    ?`La facture ${escHtml(f.numero)} (${eur(f.total)}) est <b>payée</b>. La note de crédit constate ce que tu rembourses au client ; tu la marqueras « remboursée » quand l'argent sera rendu.`
+    :`La facture ${escHtml(f.numero)} (${eur(f.total)}) n'est <b>pas payée</b>. Pour la corriger, on l'annule entièrement par une note de crédit puis on émet une facture corrigée : la facture d'origine n'est jamais modifiée.`
+  if(deja>0)ex+=` Déjà crédité : ${eur(deja)}.`
+  if(!paye&&Number(f.acompte)>0)ex+=` L'acompte de ${eur(f.acompte)} déjà reçu est repris sur la facture corrigée.`
+  document.getElementById('nc-explic').innerHTML=ex
+  const choix=paye
+    ?[{k:'total',b:'Rembourser la totalité',em:`Note de crédit de ${eur(-max)}`},{k:'partiel',b:'Rembourser une partie',em:'Geste commercial, pièce retournée… tu indiques le montant'}]
+    :[{k:'annuler',b:'Annuler toute la facture',em:`Note de crédit de ${eur(-max)} · la facture passe en « Créditée »`},{k:'partiel',b:'Rembourser une partie',em:'Uniquement sur une facture payée',off:true}]
+  document.getElementById('nc-choix').innerHTML=choix.map(c=>`<button type="button" data-k="${c.k}"${c.off?' disabled':''} onclick="choisirNC('${c.k}')"><b>${c.b}</b><em>${c.em}</em></button>`).join('')
+  document.getElementById('nc-motif').value=paye?'Geste commercial':'Erreur de facturation'
+  document.getElementById('nc-autre').value=''
+  document.getElementById('nc-montant').value=''
+  document.getElementById('nc-corrigee').checked=true
+  choisirNC(choix[0].k)
+  document.getElementById('ncOverlay').style.display='flex'
+}
+window.fermerNoteCredit=function(){document.getElementById('ncOverlay').style.display='none';_nc=null}
+window.choisirNC=function(k){
+  if(!_nc)return
+  _nc.mode=k
+  document.querySelectorAll('#nc-choix button').forEach(b=>b.classList.toggle('on',b.dataset.k===k))
+  document.getElementById('nc-montant-wrap').style.display=k==='partiel'?'':'none'
+  document.getElementById('nc-corrigee-wrap').style.display=k==='annuler'?'':'none'
+  majNoteCredit()
+}
+function montantNC(){
+  if(!_nc)return 0
+  if(_nc.mode!=='partiel')return _nc.max
+  return Math.round((Number(document.getElementById('nc-montant').value)||0)*100)/100
+}
+window.majNoteCredit=function(){
+  if(!_nc)return
+  document.getElementById('nc-autre-wrap').style.display=document.getElementById('nc-motif').value==='autre'?'':'none'
+  const m=montantNC()
+  document.getElementById('nc-total').textContent=eur(-m)
+  document.getElementById('nc-resume').textContent=_nc.paye?'Note de crédit · à rembourser':'Note de crédit · annule la facture'
+}
+window.confirmerNoteCredit=async function(){
+  if(!_nc)return
+  const {f,max,paye,deja}=_nc
+  const mode=_nc.mode
+  let motif=document.getElementById('nc-motif').value
+  if(motif==='autre')motif=document.getElementById('nc-autre').value.trim()
+  if(!motif){showToast('Indique le motif','err');return}
+  const m=montantNC()
+  if(!(m>0)||m>max+0.005){showToast(`Montant entre 0,01 € et ${eur(max)}`,'err');return}
+  let lignes
+  if(mode!=='partiel'&&deja===0){
+    // Annulation complète : les lignes de la facture, en négatif.
+    lignes=(f.lignes||[]).map(l=>({description:l.description,quantite:l.quantite,prix_unitaire:-(Number(l.prix_unitaire)||0),total:-(Number(l.total)||0),stock_id:''}))
+    if(Number(f.remise)>0)lignes.push({description:'Remise accordée sur la facture',quantite:1,prix_unitaire:Number(f.remise),total:Number(f.remise),stock_id:''})
+  }else{
+    lignes=[{description:mode==='partiel'?`Remboursement partiel — facture ${f.numero}`:`Remboursement du solde — facture ${f.numero}`,quantite:1,prix_unitaire:-m,total:-m,stock_id:''}]
+  }
+  if(!confirm(`Émettre une note de crédit de ${eur(-m)} sur la facture ${f.numero} ?\n\nElle reçoit un numéro de la série des notes de crédit et ne pourra plus être modifiée.`))return
+  const btn=document.getElementById('nc-ok')
+  btn.disabled=true
+  try{
+    const res=await sb.from('factures').insert({
+      type_document:'note_credit', facture_origine_id:f.id,
+      statut:paye?'a_rembourser':'imputee',
+      client_id:f.client_id||null, client_nom:f.client_nom, client_email:f.client_email||null,
+      client_telephone:f.client_telephone||null, client_adresse:f.client_adresse||null,
+      client_societe:f.client_societe||null, client_tva:f.client_tva||null,
+      date_emission:ymd(new Date()), lignes, total:-m, remise:0, acompte:0, acompte_type:'euro',
+      motif_credit:motif, notes:null,
+      // Aucun mouvement de stock : une pièce retournée se remet en stock dans Stock.
+      stock_decremente:true, updated_at:new Date().toISOString()
+    }).select().single()
+    if(res.error)throw new Error(res.error.message)
+    await verifierNumerotation(res.data)
+    const nc=res.data
+    allFactures.unshift(nc)
+    let ouvrir=nc
+    if(!paye){
+      const ro=await sb.from('factures').update({statut:'creditee',updated_at:new Date().toISOString()}).eq('id',f.id).select().single()
+      if(ro.error)throw new Error(ro.error.message)
+      const i=allFactures.findIndex(x=>x.id===f.id); if(i>=0)allFactures[i]=ro.data
+      if(document.getElementById('nc-corrigee').checked){
+        const echeance=new Date();echeance.setDate(echeance.getDate()+30)
+        const rc=await sb.from('factures').insert({
+          client_id:f.client_id||null, client_nom:f.client_nom, client_email:f.client_email||null,
+          client_telephone:f.client_telephone||null, client_adresse:f.client_adresse||null,
+          client_societe:f.client_societe||null, client_tva:f.client_tva||null,
+          reparation_id:f.reparation_id||null, reparation_numero:f.reparation_numero||null, devis_id:f.devis_id||null,
+          date_emission:ymd(new Date()), date_echeance:ymd(echeance), statut:'brouillon',
+          lignes:f.lignes||[], total:f.total, remise:f.remise||0, acompte:f.acompte||0, acompte_type:'euro',
+          notes:f.notes||null, stock_decremente:true, updated_at:new Date().toISOString()
+        }).select().single()
+        if(rc.error)throw new Error('Note de crédit émise, mais la facture corrigée n\'a pas pu être préparée : '+rc.error.message)
+        allFactures.unshift(rc.data)
+        ouvrir=rc.data
+        // Le dossier et le devis pointent désormais vers la facture corrigée.
+        if(f.reparation_id)await sb.from('reparations').update({converti_facture_id:rc.data.id}).eq('id',f.reparation_id).eq('converti_facture_id',f.id)
+        if(f.devis_id)await sb.from('devis').update({converti_facture_id:rc.data.id}).eq('id',f.devis_id).eq('converti_facture_id',f.id)
+      }
+    }
+    fermerNoteCredit()
+    majResume()
+    chargerDansFormulaire(ouvrir)
+    showToast(ouvrir===nc
+      ?`Note de crédit ${nc.numero} émise (${eur(nc.total)})`
+      :`Note de crédit ${nc.numero} émise · facture corrigée prête en brouillon`,'ok')
+  }catch(e){
+    showToast('Erreur : '+(e.message||e),'err')
+  }finally{btn.disabled=false}
+}
+async function preparerEmailNC(f){
+  const o=allFactures.find(x=>x.id===f.facture_origine_id)
+  const prenom=(f.client_nom||'').split(' ')[0]||''
+  const montant=eur(Math.abs(Number(f.total)||0))
+  const mode=f.mode_paiement?(MODES[f.mode_paiement]||f.mode_paiement):''
+  const suite=f.statut==='imputee'
+    ?`Elle annule la facture ${o?o.numero:''} : vous n'avez rien à régler pour cette facture.`
+    :f.statut==='remboursee'
+    ?`Le montant de ${montant} vous a été remboursé${mode?` par ${mode}`:''}${f.date_paiement?` le ${dateLongue(f.date_paiement)}`:''}.`
+    :`Le montant de ${montant} vous sera remboursé dans les meilleurs délais.`
+  await ouvrirModaleEmail({
+    html:buildTemplateHTML(f,true),
+    pdfName:`Note_de_credit_${f.numero}.pdf`,
+    sujet:`Note de crédit ${f.numero} — ${ENTREPRISE.nom}`,
+    message:`Bonjour ${prenom},\n\nVous trouverez ci-joint la note de crédit ${f.numero} relative à la facture ${o?o.numero:''}${f.motif_credit?` (motif : ${f.motif_credit.toLowerCase()})`:''}.\n\n${suite}\n\nJe reste à votre disposition pour toute question.`,
+    type:'note_credit'
+  })
+}
+let _emissionConfirmee=false
+/* Garde-fou : si la base n'a pas attribué de numéro à un document émis,
+   la numérotation légale n'est pas active (migration non appliquée). On
+   remet le document en brouillon plutôt que de laisser une facture sans numéro. */
+async function verifierNumerotation(f){
+  if(!f||f.statut==='brouillon'||f.numero)return
+  await sb.from('factures').update({statut:'brouillon'}).eq('id',f.id)
+  f.statut='brouillon'
+  throw new Error("la numérotation légale n'est pas active en base : le document reste en brouillon.")
+}
+/* Émet un brouillon (numéro + date) avant un PDF, un envoi ou un reçu. */
+async function assurerEmission(f){
+  if(!f)return null
+  if(estEmise(f))return f
+  if(sale){showToast("Enregistre d'abord tes modifications",'err');return null}
+  if(!confirm(TEXTE_EMISSION(f)))return null
+  const rienDu=dossierNonReparable(f)&&Number(f.total||0)<=0
+  const {data,error}=await sb.from('factures')
+    .update({statut:rienDu?'non_reparable':'envoyee',updated_at:new Date().toISOString()})
+    .eq('id',f.id).select().single()
+  if(error){showToast('Émission impossible : '+error.message,'err');return null}
+  try{await verifierNumerotation(data)}catch(e){showToast('Émission impossible : '+e.message,'err');return null}
+  const i=allFactures.findIndex(x=>x.id===f.id)
+  if(i>=0)allFactures[i]=data
+  majResume()
+  chargerDansFormulaire(data)
+  showToast(`Facture émise : n° ${data.numero} du ${dateCourte(data.date_emission)}`,'ok')
+  return data
+}
+const TEXTE_EMISSION=f=>`Émettre ${estNC(f)?'la note de crédit':'la facture'} ?\n\nElle reçoit maintenant son numéro définitif et la date d'aujourd'hui.\nEnsuite, elle ne pourra plus être modifiée ni supprimée : toute correction passera par une note de crédit.`
+// Champs encore modifiables sur une facture émise : le règlement et les
+// coordonnées de contact (le contenu de la facture, lui, est figé en base).
+const CHAMPS_APRES_EMISSION=['statut','date_paiement','mode_paiement','montant_donne','montant_carte','montant_especes','date_echeance','client_email','client_telephone']
 window.saveFacture=async function(){
-  const payload=lireFormulaire()
+  let payload=lireFormulaire()
   if(!payload.client_nom){showToast('Le nom du client est requis','err');return}
   if(!payload.lignes.length){showToast('Ajoute au moins une ligne','err');return}
   const id=document.getElementById('f-id').value
+  const dejaEmise=!!(id&&estEmise(courante))
+  if(dejaEmise){
+    const p={};CHAMPS_APRES_EMISSION.forEach(k=>{p[k]=payload[k]})
+    p.updated_at=new Date().toISOString()
+    const res=await sb.from('factures').update(p).eq('id',id).select().single()
+    if(res.error){showToast('Erreur : '+res.error.message,'err');return}
+    const i=allFactures.findIndex(x=>x.id===Number(id))
+    if(i>=0)allFactures[i]=res.data
+    majResume()
+    chargerDansFormulaire(res.data)
+    showToast(`${estNC(res.data)?'Note de crédit':'Facture'} ${res.data.numero} mise à jour`,'ok')
+    return
+  }
+  // Un brouillon qui change de statut est émis : on prévient avant.
+  if(payload.statut!=='brouillon'&&!_emissionConfirmee&&!confirm(TEXTE_EMISSION(courante||{})))return
+  _emissionConfirmee=false
   const clientSelId=document.getElementById('f-client-select').value
   const btn=document.getElementById('saveBtn')
   btn.textContent='Enregistrement…'
@@ -1781,25 +2157,28 @@ window.saveFacture=async function(){
 
     let enregistree
     if(id){
-      const res=await sb.from('factures').update(payload).eq('id',id)
+      // .select() : la base renvoie le numéro et la date si elle vient d'émettre la facture.
+      const res=await sb.from('factures').update(payload).eq('id',id).select().single()
       if(res.error)throw new Error(res.error.message)
       const i=allFactures.findIndex(x=>x.id===Number(id))
-      enregistree={...(i>=0?allFactures[i]:{}),...payload,id:Number(id)}
+      enregistree=res.data
       if(i>=0)allFactures[i]=enregistree
     }else{
-      payload.numero=await nextNumero('facture')
       const res=await sb.from('factures').insert(payload).select().single()
       if(res.error)throw new Error(res.error.message)
       enregistree=res.data
       allFactures.unshift(enregistree)
     }
+    await verifierNumerotation(enregistree)
 
     if(sortie==='sortir')await bougerStock(lignesStock,-1)
     if(sortie==='rendre')await bougerStock(courante?courante.lignes:[],+1)
 
     majResume()
     chargerDansFormulaire(enregistree)
-    showToast(id?`Facture ${enregistree.numero} mise à jour`:`Facture ${enregistree.numero} créée`,'ok')
+    showToast(enregistree.numero
+      ?(id?`Facture ${enregistree.numero} enregistrée`:`Facture ${enregistree.numero} émise`)
+      :(id?'Brouillon mis à jour':'Brouillon créé — il recevra son numéro à l\'émission'),'ok')
   }catch(e){
     showToast('Erreur : '+(e.message||e),'err')
   }finally{
@@ -1811,7 +2190,8 @@ window.saveFacture=async function(){
 window.supprimerCourante=async function(){
   if(!courante)return
   const f=courante
-  if(!confirm(`Supprimer la facture ${f.numero} ?\n\nEn comptabilité, une facture émise s'annule plutôt qu'elle ne se supprime : passe-la en « Annulée » si elle a déjà été envoyée au client.`))return
+  if(estEmise(f)){showToast(`${f.numero} est émise : elle ne se supprime pas. Utilise une note de crédit.`,'err');return}
+  if(!confirm('Supprimer ce brouillon ?\n\nIl n\'a pas encore de numéro : sa suppression ne crée aucun trou dans la numérotation.'))return
   const {error}=await sb.from('factures').delete().eq('id',f.id)
   if(error){showToast('Erreur : '+error.message,'err');return}
   // Les pièces sorties du stock pour cette facture y sont remises.
@@ -1819,7 +2199,7 @@ window.supprimerCourante=async function(){
   allFactures=allFactures.filter(x=>x.id!==f.id)
   majResume()
   chargerDansFormulaire(allFactures[0]||null)
-  showToast(`Facture ${f.numero} supprimée`,'ok')
+  showToast('Brouillon supprimé','ok')
 }
 
 /* ─── Document PDF ─── */
@@ -1833,6 +2213,9 @@ function appareilDe(r){return String(r.modele||r.appareil||'').trim()}
 
 function buildTemplateHTML(f,forPdf){
   const nonRep=dossierNonReparable(f)
+  const nc=estNC(f)
+  const origine=nc?allFactures.find(x=>x.id===f.facture_origine_id):null
+  const ncs=nc?[]:allFactures.filter(x=>estNC(x)&&x.facture_origine_id===f.id)
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
@@ -1872,23 +2255,30 @@ function buildTemplateHTML(f,forPdf){
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;">
       <div>
         <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">FACTURE</span>
+          <span style="font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-1px;">${nc?'NOTE DE CRÉDIT':'FACTURE'}</span>
+          ${!f.numero?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#c8362c;border:2px dashed #c8362c;border-radius:6px;padding:3px 10px;letter-spacing:1px;">BROUILLON</span>`:''}
+          ${f.statut==='creditee'?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#c8362c;border:2px solid #c8362c;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">CRÉDITÉE</span>`:''}
+          ${nc&&f.statut==='remboursee'?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">REMBOURSÉE</span>`:''}
           ${estPayee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#16a34a;border:2px solid #16a34a;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">PAYÉE</span>`:''}
           ${estAnnulee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#c8362c;border:2px solid #c8362c;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">ANNULÉE</span>`:''}
           ${nonRep&&!estAnnulee?`<span style="display:inline-block;font-size:13px;font-weight:700;color:#b25e09;border:2px solid #b25e09;border-radius:6px;padding:3px 10px;transform:rotate(-4deg);letter-spacing:1px;">NON RÉPARABLE</span>`:''}
         </div>
-        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">N° ${escHtml(f.numero)}</div>
+        <div style="font-size:14px;color:#1d4ed8;font-weight:600;font-family:monospace;margin-top:2px;">${f.numero?`N° ${escHtml(f.numero)}`:'Sans numéro — document provisoire, sans valeur'}</div>
+        ${nc&&origine?`<div style="font-size:11.5px;color:#555;margin-top:4px;">Se rapporte à la facture <strong>${escHtml(origine.numero)}</strong> du ${dateLongue(origine.date_emission)}</div>`:''}
+        ${nc&&f.motif_credit?`<div style="font-size:11.5px;color:#555;margin-top:2px;">Motif : ${escHtml(f.motif_credit)}</div>`:''}
         ${f.reparation_numero?`<div style="font-size:11px;color:#888;margin-top:3px;">Réf. réparation : ${escHtml(f.reparation_numero)}</div>`:''}
       </div>
       <div style="text-align:right;font-size:12px;color:#555;">
         <div>Date d'émission : <strong>${dateEm}</strong></div>
-        ${estPayee
+        ${nc
+          ? (f.statut==='remboursee'?`<div style="margin-top:3px;color:#16a34a;">Remboursée${modePaie?` par ${escHtml(modePaie)}`:''}${f.date_paiement?` le ${dateLongue(f.date_paiement)}`:''}</div>`:'')
+          : estPayee
           ? `<div style="margin-top:3px;color:#16a34a;">Réglée${modePaie?` par ${escHtml(modePaie)}`:''}${f.date_paiement?` le ${dateLongue(f.date_paiement)}`:''}</div>`
-          : nonRep&&total<=0?'':`<div style="margin-top:3px;">Échéance : <strong>${dateEch||'à réception'}</strong></div>`}
+          : nonRep&&total<=0||f.statut==='creditee'?'':`<div style="margin-top:3px;">Échéance : <strong>${dateEch||'à réception'}</strong></div>`}
       </div>
     </div>
     <div style="background:#f7f8fa;border-radius:10px;padding:16px 18px;margin-bottom:30px;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">Facturé à</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#999;margin-bottom:6px;">${nc?'Client':'Facturé à'}</div>
       ${f.client_societe?`<div style="font-size:15px;font-weight:700;color:#1a1a1a;text-transform:uppercase;letter-spacing:.3px;">${escHtml(f.client_societe)}</div>`:''}
       <div style="font-size:${f.client_societe?'13px':'15px'};font-weight:600;color:#1a1a1a;">${escHtml(f.client_nom)}</div>
       ${f.client_tva?`<div style="font-size:12px;color:#555;margin-top:2px;">N° TVA : ${escHtml(f.client_tva)}</div>`:''}
@@ -1939,7 +2329,11 @@ function buildTemplateHTML(f,forPdf){
     ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${escHtml(f.notes)}</div>`:''}
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
-      ${nonRep&&total<=0
+      ${nc
+        ? `<div><strong style="color:#555;">Note de crédit de ${euro(Math.abs(total))}</strong> ${f.statut==='imputee'?`: elle annule la facture ${escHtml(origine?origine.numero:'')}, aucun montant n'est dû pour celle-ci.`:f.statut==='remboursee'?'remboursée au client.':'à rembourser au client.'}</div>`
+        : f.statut==='creditee'
+        ? `<div><strong style="color:#c8362c;">Facture annulée</strong> par ${ncs.length?`la note de crédit ${ncs.map(x=>escHtml(x.numero)).join(', ')}`:'note de crédit'} : aucun montant n'est dû.</div>`
+        : nonRep&&total<=0
         ? `<div><strong style="color:#555;">Aucun montant à régler.</strong></div>`
         : estPayee
         ? `<div><strong style="color:#16a34a;">Facture acquittée</strong>${modePaie?` — réglée par ${escHtml(modePaie)}`:''}. Merci de votre paiement.</div>`
@@ -2049,14 +2443,16 @@ async function genererPDF(html){
 
 window.telechargerPdf=async function(){
   if(!courante){showToast("Enregistre d'abord la facture",'err');return}
+  if(!(await assurerEmission(courante)))return
   showToast('Génération du PDF…','ok')
   try{
     const pdf=await genererPDF(buildTemplateHTML(courante,true))
-    pdf.save(`Facture_${courante.numero}.pdf`)
+    pdf.save(`${estNC(courante)?'Note_de_credit':'Facture'}_${courante.numero}.pdf`)
   }catch(e){showToast('Erreur PDF : '+(e.message||e),'err')}
 }
 window.telechargerRecu=async function(){
   if(!courante||Number(courante.acompte||0)<=0){showToast('Aucun acompte sur cette facture','err');return}
+  if(!(await assurerEmission(courante)))return
   showToast('Génération du reçu…','ok')
   try{
     const pdf=await genererPDF(buildRecuHTML(courante))
@@ -2123,7 +2519,9 @@ async function ouvrirModaleEmail({html,pdfName,sujet,message,type}){
 window.preparerEmail=async function(){
   if(!courante){showToast("Enregistre d'abord la facture",'err');return}
   if(!courante.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
+  if(!(await assurerEmission(courante)))return
   const f=courante
+  if(estNC(f))return preparerEmailNC(f)
   const prenom=(f.client_nom||'').split(' ')[0]||''
   const mode=f.mode_paiement?(MODES[f.mode_paiement]||f.mode_paiement):''
   const acompte=Number(f.acompte||0)
@@ -2159,6 +2557,7 @@ window.preparerEmail=async function(){
 window.envoyerRecu=async function(){
   if(!courante||Number(courante.acompte||0)<=0){showToast('Aucun acompte sur cette facture','err');return}
   if(!courante.client_email){showToast("Ce client n'a pas d'email renseigné",'err');return}
+  if(!(await assurerEmission(courante)))return
   const f=courante
   const prenom=(f.client_nom||'').split(' ')[0]||''
   const acompte=Number(f.acompte||0)
@@ -2216,7 +2615,7 @@ window.confirmerEnvoiEmail=async function(){
     if(courante&&courante.id===f.id){Object.assign(courante,maj);chargerDansFormulaire(courante)}
     closeEmailModal();closePdf()
     majResume();renderRail()
-    showToast(`Facture ${f.numero} envoyée à ${to}`,'ok')
+    showToast(`${estNC(f)?'Note de crédit':'Facture'} ${f.numero} envoyée à ${to}`,'ok')
   }catch(e){
     showToast('Erreur envoi : '+(e.message||e),'err')
   }finally{
@@ -2261,6 +2660,7 @@ window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/l
 
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return
+  if(document.getElementById('ncOverlay').style.display==='flex'){fermerNoteCredit();return}
   if(document.getElementById('encOverlay').style.display==='flex'){fermerEncaissement();return}
   if(document.getElementById('emailOverlay').style.display==='flex'){closeEmailModal();return}
   if(document.getElementById('pdfOverlay').classList.contains('open')){closePdf();return}
@@ -2277,10 +2677,11 @@ await load()
     const repondre=m=>window.parent.postMessage(Object.assign({type:'itsoluce-pdf'},m),location.origin)
     const f=allFactures.find(x=>x.id===Number(p.get('id')))
     if(!f)repondre({erreur:'Facture introuvable'})
+    else if(!estEmise(f))repondre({erreur:'Cette facture est un brouillon sans numéro : émets-la depuis Factures avant de la joindre.'})
     else{
       try{
         const pdf=await genererPDF(buildTemplateHTML(f,true))
-        repondre({nom:`Facture_${f.numero}.pdf`,base64:pdf.output('datauristring').split(',')[1]})
+        repondre({nom:`${estNC(f)?'Note_de_credit':'Facture'}_${f.numero}.pdf`,base64:pdf.output('datauristring').split(',')[1]})
       }catch(e){repondre({erreur:e.message||String(e)})}
     }
   }
@@ -2401,5 +2802,6 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/libelle-piece.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 <script src="/admin/assets/js/dossier-fil.js"></script>
+<script src="/admin/assets/js/relances.js"></script>
 </body>
 </html>

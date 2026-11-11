@@ -224,6 +224,14 @@ body{font-size:14px;}
 .det-acts{display:flex; gap:7px; flex-wrap:wrap;}
 .etape{display:flex; gap:7px; flex-wrap:wrap;}
 .etape .etape-btn{flex:1; justify-content:center;}
+.apres{display:flex; flex-direction:column; gap:7px;}
+.apres:empty{display:none;}
+.apres .btn{justify-content:center;}
+.apres-txt{font-size:12.5px; color:var(--t2);}
+.apres-txt.ok{color:var(--ok); font-weight:500;}
+.gar-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px;}
+.gar-note a{color:var(--a); cursor:pointer; font-weight:500;}
+.tag-gar{font-size:10px; font-weight:600; color:var(--a); background:var(--ad); border-radius:6px; padding:1px 6px; margin-left:4px; vertical-align:1px;}
 .det-acts .btn{flex:1; min-width:120px;}
 
 /* ── État vide ── */
@@ -1257,7 +1265,7 @@ function ligne(r){
       onclick="selectRep(${r.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRep(${r.id})}">
     <span class="ref">${escHtml(r.numero||'—')}</span>
     <span class="row-who">
-      <b>${escHtml(r.client_nom||'Client inconnu')}</b>
+      <b>${escHtml(r.client_nom||'Client inconnu')}${r.garantie_de_id?' <span class="tag-gar">Garantie</span>':''}</b>
       <em>${escHtml(sous||'—')}</em>
     </span>
     <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" title="Changer le statut">${escHtml(st.court)}</button>
@@ -1368,8 +1376,10 @@ function renderDetail(){
         ${!r.client_id?'<span>Non rattaché à une fiche client</span>':''}
       </div>
     </div>
+    ${r.garantie_de_id?`<div class="gar-note">Retour <b>sous garantie</b> du dossier ${(()=>{const o=allReps.find(x=>x.id===r.garantie_de_id);return o?`<a onclick="selectRep(${o.id})">${escHtml(o.numero||'d\u2019origine')}</a>`:'d\u2019origine'})()} : rien à facturer, sauf si le problème n'est pas couvert (casse, oxydation…).</div>`:''}
     <div id="fil-rep"></div>
     ${etapeSuivante(r)}
+    <div id="apres-rep" class="apres"></div>
     <div class="sep"></div>
     <dl class="dl">
       <div><dt>Appareil</dt><dd>${escHtml(r.appareil||'—')}</dd></div>
@@ -1406,6 +1416,7 @@ function renderDetail(){
   </div>`
   if(window.DossierFil){
     DossierFil.afficher(document.getElementById('fil-rep'),{reparation:r.id},'reparation').then(d=>{
+      majApresVente(r)
       if(!d||selectedId!==r.id)return
       const b=document.getElementById('btn-devis-rep')
       if(b&&!d.devis)b.style.display=''
@@ -1433,9 +1444,77 @@ function etapeSuivante(r){
   }
   let bouton=''
   if(S[r.statut])bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'${S[r.statut].vers}')">${S[r.statut].label}</button>`
-  else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
+  else if(r.statut==='pret'&&r.garantie_de_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (sous garantie)</button>`
+  else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id)bouton=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
   else if(r.statut==='pret')bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
   return bouton?`<div class="etape">${bouton}</div>`:''
+}
+/* ─── Après-vente ───
+   Prêt : relance si le client ne vient pas. Rendu : garantie (retour en un
+   clic), demande d'avis Google une fois la facture payée. */
+let _garantieMois=null
+async function garantieMois(){
+  if(_garantieMois)return _garantieMois
+  const {data}=await sb.from('settings').select('cle,valeur').eq('cle','garantie_mois')
+  const n=parseInt(data&&data[0]&&data[0].valeur,10)
+  _garantieMois=n>0?n:3
+  return _garantieMois
+}
+async function majApresVente(r){
+  const el=document.getElementById('apres-rep')
+  if(!el)return
+  const bouts=[]
+  const nomRel=t=>({mail:'mail',telephone:'appel',ignore:'rappel ignoré'})[t]||t
+  if(r.statut==='pret'&&window.Relances){
+    const [e,h]=await Promise.all([Relances.pourDocument('pret',r.id),Relances.historique('pret',r.id)])
+    if(e)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('pret',${r.id})">Relancer le client · ${escHtml(e.libelleNiveau.toLowerCase())}${e.estDu?'':' (prévu le '+dateCourte(e.du)+')'}</button>`)
+    if(h.length)bouts.push(`<div class="apres-txt">Relances : ${h.map(x=>nomRel(x.canal)+' le '+dateCourte(x.fait_le)).join(', ')}</div>`)
+  }
+  if(r.statut==='rendu'){
+    const mois=await garantieMois()
+    const fin=new Date(r.date_fin||r.updated_at||r.created_at);fin.setMonth(fin.getMonth()+mois)
+    const sous=fin>=new Date(new Date().toDateString())
+    bouts.push(`<div class="apres-txt ${sous?'ok':''}">${sous?`Sous garantie jusqu'au ${dateCourte(fin)} (${mois} mois)`:`Garantie terminée le ${dateCourte(fin)}`}</div>`)
+    if(sous)bouts.push(`<button class="btn btn-secondary" onclick="retourGarantie(${r.id})">Retour sous garantie</button>`)
+    if(window.Relances){
+      const [a,h]=await Promise.all([Relances.pourDocument('avis',r.id),Relances.historique('avis',r.id)])
+      if(a)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('avis',${r.id})">Demander un avis Google</button>`)
+      else if(h.length)bouts.push(`<div class="apres-txt">Avis Google demandé le ${dateCourte(h[h.length-1].fait_le)}</div>`)
+    }
+  }
+  if(selectedId!==r.id)return
+  el.innerHTML=bouts.join('')
+}
+window.relancerRep=async function(type,id){
+  if(!window.Relances)return
+  const e=await Relances.pourDocument(type,id)
+  if(!e){showToast('Rien à envoyer pour ce dossier','err');return}
+  Relances.ouvrir(e,()=>renderDetail())
+}
+window.retourGarantie=async function(id){
+  const r=allReps.find(x=>x.id===id)
+  if(!r)return
+  const symptome=prompt(`Retour sous garantie — ${r.numero}\n\nQuel problème le client constate-t-il ?`)
+  if(symptome===null)return
+  const mois=await garantieMois()
+  const fin=new Date(r.date_fin||r.updated_at||r.created_at);fin.setMonth(fin.getMonth()+mois)
+  try{
+    const numero=await nextNumero('reparation','REP')
+    const res=await sb.from('reparations').insert({
+      numero, garantie_de_id:r.id,
+      client_id:r.client_id||null, client_nom:r.client_nom, client_email:r.client_email||null, client_telephone:r.client_telephone||null,
+      appareil:r.appareil||null, modele:r.modele||null,
+      panne_description:`Retour sous garantie (dossier ${r.numero}) : ${symptome.trim()||'à préciser'}`,
+      statut:'recu', prix_devis:0, prix_final:0, piece_id:null, cout_pieces:0, pieces:[],
+      notes:`Dossier d'origine ${r.numero}, rendu le ${dateCourte(r.date_fin||r.updated_at)} — garantie jusqu'au ${dateCourte(fin)}.`,
+      updated_at:new Date().toISOString()
+    }).select().single()
+    if(res.error)throw new Error(res.error.message)
+    allReps.unshift(res.data)
+    renderAll()
+    selectRep(res.data.id)
+    showToast(`Dossier ${numero} ouvert sous garantie`,'ok')
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
 }
 window.passerStatut=function(id,statut){
   window.currentStatusId=id
@@ -1474,17 +1553,12 @@ async function creerFactureDepuis(r,offert=false){
     :nonRep
     ?`Créer la facture du diagnostic pour le dossier ${r.numero} (appareil non réparable) ?\n\nMontant : ${eur(prix)}`
     :`Créer une facture pour le dossier ${r.numero} ?\n\nMontant : ${eur(prix)}`
-  if(!confirm(`${question}\n\nElle sera créée en brouillon, à compléter dans Factures.`))return
-  const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','facture').single()
-  const seq=(cpt?.valeur||0)+1
-  await sb.from('compteurs').update({valeur:seq}).eq('cle','facture')
-  const numFacture=`${new Date().getFullYear()}-${String(seq).padStart(4,'0')}`
+  if(!confirm(`${question}\n\nElle sera créée en brouillon (sans numéro) : le numéro définitif est attribué à son émission, dans Factures.`))return
   const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
   const desc=nonRep
     ?`Diagnostic${app?' '+app:''} — appareil non réparable`
     :`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
   const res=await sb.from('factures').insert({
-    numero:numFacture,
     reparation_id:r.id,
     reparation_numero:r.numero,
     devis_id:devisLie?devisLie.id:null,
@@ -1513,7 +1587,7 @@ async function creerFactureDepuis(r,offert=false){
   await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
   r.converti_facture_id=res.data.id
   renderDetail()
-  showToast(`Facture ${numFacture} créée — à compléter dans Factures`,'ok')
+  showToast('Facture créée en brouillon — à vérifier et émettre dans Factures','ok')
 }
 /* Devis lié au dossier : créé depuis le devis (« Créer la réparation ») ou
    fait depuis le dossier (« Faire un devis »). Le plus récent l'emporte. */
@@ -1707,13 +1781,27 @@ window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/l
 
 await loadReps()
 
-// Lien direct ?q=… (page Messages, palette de recherche) : pré-remplit la recherche.
+// Depuis la fiche client : reparations.html?nouveau=1&client=ID ouvre un dossier
+// avec le client déjà choisi.
+{
+  const p=new URLSearchParams(location.search)
+  if(p.get('nouveau')==='1'){
+    history.replaceState(null,'',location.pathname)
+    openPanel(null)
+    const sel=document.getElementById('f-client-select')
+    const cid=p.get('client')
+    if(cid&&sel&&[...sel.options].some(o=>o.value===cid)){sel.value=cid;window.onClientSelect()}
+  }
+}
+// Lien direct ?q=… (page Mails, palette de recherche) : pré-remplit la recherche.
 {
   const q=new URLSearchParams(location.search).get('q')
   if(q){
     document.getElementById('searchInput').value=q
     renderCards()
     const r=allReps.find(x=>x.numero===q)
+    // Dossier clôturé (rendu, annulé…) : le filtre « Ouverts » le masquait.
+    if(r&&CLOS.includes(r.statut))window.setFilter('tous')
     if(r)selectRep(r.id)
     history.replaceState(null,'',location.pathname)
   }
@@ -1835,5 +1923,6 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 <script src="/admin/assets/js/dossier-fil.js"></script>
+<script src="/admin/assets/js/relances.js"></script>
 </body>
 </html>
