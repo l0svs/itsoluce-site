@@ -70,9 +70,9 @@
   var MODELES = {
     devis: {
       1: { objet: 'Votre devis {devis}',
-           corps: "Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d'un montant de {montant}, envoyé le {date_doc}. Avez-vous pu en prendre connaissance ?\n\nSi la proposition vous convient, vous pouvez l'accepter en ligne en un clic :\n\n{lien_devis}\n\nUne simple réponse à ce mail suffit aussi pour lancer la réparation. Je reste à votre disposition pour toute question ou adaptation." },
+           corps: "Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d'un montant de {montant}, envoyé le {date_doc}. Avez-vous pu en prendre connaissance ?\n\nSi la proposition vous convient, vous pouvez l'accepter en ligne en un clic.\n\n{lien_devis}\n\nUne simple réponse à ce mail suffit aussi pour lancer la réparation. Je reste à votre disposition pour toute question ou adaptation." },
       2: { objet: "Votre devis {devis} — valable jusqu'au {validite}",
-           corps: "Bonjour {prenom},\n\nPetit rappel : le devis {devis} d'un montant de {montant} reste valable jusqu'au {validite}. Passé cette date, le prix des pièces peut évoluer.\n\nSouhaitez-vous que je lance la réparation ? Vous pouvez accepter le devis en ligne en un clic :\n\n{lien_devis}\n\nou simplement répondre à ce mail." }
+           corps: "Bonjour {prenom},\n\nPetit rappel : le devis {devis} d'un montant de {montant} reste valable jusqu'au {validite}. Passé cette date, le prix des pièces peut évoluer.\n\nSouhaitez-vous que je lance la réparation ? Vous pouvez accepter le devis en ligne en un clic.\n\n{lien_devis}\n\nou simplement répondre à ce mail." }
     },
     facture: {
       1: { objet: 'Rappel — facture {facture}',
@@ -127,7 +127,7 @@
       if (lienAvis) h = h.split(esc(lienAvis)).join('<a href="' + esc(lienAvis) + '" style="color:#1d4ed8;">Laisser un avis Google</a>');
       // Lien d'acceptation d'un devis : bouton, comme dans le mail d'envoi du devis.
       h = h.replace(/https:\/\/itsoluce\.be\/devis-en-ligne\.html\?t=[0-9a-f-]{36}/g, function (u) {
-        return '<a href="' + u + '" style="display:inline-block;background:#0052CC;color:#ffffff;text-decoration:none;font-weight:bold;padding:11px 20px;border-radius:8px;">Consulter et accepter le devis</a>';
+        return '<a href="' + u + '" style="display:inline-block;background:#0052CC;color:#ffffff;text-decoration:none;font-weight:bold;padding:11px 20px;border-radius:8px;">Consulter et répondre au devis</a>';
       });
       return '<p>' + h + '</p>';
     }).join('');

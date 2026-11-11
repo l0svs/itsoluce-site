@@ -6,6 +6,8 @@
 //  client a accepté son devis. Envoie :
 //   1. au client : la confirmation avec le récapitulatif ;
 //   2. à IT Soluce : la notification « devis accepté ».
+//  Avec { type: "refus" } : le client a décliné le devis ; IT Soluce reçoit
+//  le motif (et la demande de recontact éventuelle), le client un accusé.
 //
 //  SÉCURITÉ — appelée par un visiteur anonyme, comme
 //  send-demande-confirmation :
@@ -173,6 +175,45 @@ function mailNotification(d: any): string {
   );
 }
 
+const MOTIFS: Record<string, string> = {
+  prix: "Le prix est trop élevé",
+  autre_solution: "A trouvé une autre solution",
+  plus_besoin: "Ne fait finalement plus réparer",
+  delai: "Le délai est trop long",
+  autre: "Autre raison",
+};
+
+// deno-lint-ignore no-explicit-any
+function mailRefusClient(d: any, ent: Entreprise): string {
+  const prenom = String(d.client_nom || "").trim().split(/\s+/)[0] || "";
+  return enveloppe(
+    P(prenom ? `Bonjour ${escHtml(prenom)},` : "Bonjour,") +
+    P(`J'ai bien reçu votre réponse concernant le devis <b>${escHtml(d.numero)}</b>.<br>Merci d'avoir pris le temps de répondre.`) +
+    P(d.recontact_souhaite
+      ? "Je vous recontacte rapidement avec une solution moins chère."
+      : "Si vous changez d'avis ou si votre besoin évolue, n'hésitez pas à me contacter.") +
+    signatureHtml(ent),
+  );
+}
+
+// deno-lint-ignore no-explicit-any
+function mailRefusNotification(d: any): string {
+  const { date, heure } = dateHeure(d.refuse_en_ligne_le);
+  const lienErp = `https://itsoluce.be/admin/devis.html?q=${encodeURIComponent(d.numero)}`;
+  return enveloppe(
+    P(`<b>Le devis ${escHtml(d.numero)} a été refusé en ligne.</b>`) +
+    (d.recontact_souhaite
+      ? `<p style="margin:0 0 12px;padding:10px 14px;background:#fff6e8;border-left:3px solid #b25e09;color:#7a4206;"><b>Le client souhaite être recontacté pour une solution moins chère.</b></p>`
+      : "") +
+    P(`Client : ${escHtml(d.client_societe || d.client_nom)}${d.client_telephone ? ` · ${escHtml(d.client_telephone)}` : ""}${d.client_email ? ` · ${escHtml(d.client_email)}` : ""}<br>` +
+      `Refusé le ${escHtml(date)} à ${escHtml(heure)}.<br>` +
+      `Motif : <b>${escHtml(MOTIFS[d.motif_refus] || d.motif_refus || "non précisé")}</b>`) +
+    (d.commentaire_refus ? P(`Commentaire du client :<br><i>${escHtml(d.commentaire_refus).replace(/\n/g, "<br>")}</i>`) : "") +
+    recapHtml(d) +
+    P(`<a href="${lienErp}" style="color:#0052CC;font-weight:bold;">Ouvrir le devis dans l'ERP</a>`),
+  );
+}
+
 async function envoyer(cle: string, ent: Entreprise, to: string, subject: string, html: string): Promise<boolean> {
   if (!(await consommerQuota(to))) {
     console.error("Limite d'envois atteinte (devis-accepte)");
@@ -202,20 +243,24 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Méthode non supportée" }, 405);
 
   try {
-    const { jeton } = await req.json();
+    const { jeton, type } = await req.json();
+    const refus = type === "refus";
     if (typeof jeton !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jeton)) {
       return json({ ok: true });
     }
 
     // Claim atomique : seulement un devis réellement accepté en ligne,
     // dont les mails ne sont pas encore partis.
+    const filtre = refus
+      ? `statut=eq.refuse&refuse_en_ligne_le=not.is.null&refus_notifie_le=is.null`
+      : `statut=eq.accepte&accepte_en_ligne_le=not.is.null&confirmation_envoyee_le=is.null`;
     const claim = await fetch(
-      `${SUPABASE_URL}/rest/v1/devis?jeton_public=eq.${jeton}&statut=eq.accepte&accepte_en_ligne_le=not.is.null&confirmation_envoyee_le=is.null&supprime_le=is.null` +
-        `&select=numero,client_nom,client_societe,client_email,client_telephone,lignes,total,remise,acompte,accepte_en_ligne_le,accepte_par_nom,jeton_public`,
+      `${SUPABASE_URL}/rest/v1/devis?jeton_public=eq.${jeton}&${filtre}&supprime_le=is.null` +
+        `&select=numero,client_nom,client_societe,client_email,client_telephone,lignes,total,remise,acompte,accepte_en_ligne_le,accepte_par_nom,jeton_public,refuse_en_ligne_le,motif_refus,commentaire_refus,recontact_souhaite`,
       {
         method: "PATCH",
         headers: { ...svc, "Content-Type": "application/json", Prefer: "return=representation" },
-        body: JSON.stringify({ confirmation_envoyee_le: new Date().toISOString() }),
+        body: JSON.stringify(refus ? { refus_notifie_le: new Date().toISOString() } : { confirmation_envoyee_le: new Date().toISOString() }),
       },
     );
     if (!claim.ok) {
@@ -233,6 +278,13 @@ Deno.serve(async (req) => {
     }
     const ent = await chargerEntreprise();
     const client = String(d.client_email || "").trim();
+    if (refus) {
+      if (client) await envoyer(cle, ent, client, `Votre réponse au devis ${d.numero}`, mailRefusClient(d, ent));
+      await envoyer(cle, ent, ent.email || ENTREPRISE_DEFAUT.email,
+        `Devis ${d.numero} refusé${d.recontact_souhaite ? " — à recontacter" : ""} — ${d.client_societe || d.client_nom || "client"}`,
+        mailRefusNotification(d));
+      return json({ ok: true });
+    }
     if (client) {
       await envoyer(cle, ent, client, `Confirmation — devis ${d.numero} accepté`, mailClient(d, ent));
     }
