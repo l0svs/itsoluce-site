@@ -395,7 +395,9 @@
     document.getElementById('rl-titre').textContent = e.type === 'avis' ? 'Demander un avis Google' : e.libelleNiveau + ' · ' + e.titre;
     var info = e.type === 'avis'
       ? 'Une seule demande par dossier, envoyée après le rendu et le paiement.'
-      : e.titre + ' — ' + esc(e.nom || '') + ' · ' + e.sous + (e.estDu ? '' : ' · ce rappel est normalement prévu le ' + dateCourte(e.du));
+      // Tout est échappé : le titre peut contenir l'appareil saisi par un
+      // visiteur dans le formulaire public du site.
+      : esc(e.titre) + ' — ' + esc(e.nom || '') + ' · ' + esc(e.sous) + (e.estDu ? '' : ' · ce rappel est normalement prévu le ' + esc(dateCourte(e.du)));
     if (e.type === 'facture' && e.niveau >= 2) info += '<br>Particuliers : pas de frais ni d’intérêts ajoutés automatiquement. Avant d’en réclamer, vérifie les règles avec ton comptable ou l’UCM.';
     document.getElementById('rl-info').innerHTML = info;
     document.getElementById('rl-a').value = e.email || '';

@@ -157,11 +157,15 @@ body{font-size:14px;}
 .enc-modes button{padding:10px 6px; border-radius:10px; border:1px solid var(--ln2); background:var(--bg2); color:var(--t1); font:inherit; font-size:13px; cursor:pointer;}
 .enc-modes button.on{border-color:var(--a); background:var(--ad); color:var(--a); font-weight:600;}
 @media(max-width:520px){.enc-modes{grid-template-columns:repeat(2,1fr);}}
+.lien-archive{color:var(--w); cursor:pointer; text-decoration:underline;}
 .enc-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px;}
 .fige-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--bg3); border-radius:10px; padding:9px 12px;}
 .fige-note b{color:var(--t1);}
 .fige-note a{color:var(--a); font-weight:500; cursor:pointer; text-decoration:none;}
 .fige-note.brouillon{background:var(--ad);}
+.fige-note .archive{display:block; margin-top:4px; font-size:12px;}
+.fige-note .archive.ok{color:var(--ok);}
+.fige-note .archive.ko{color:var(--w);}
 .at-form.fige .ligne-del,.at-form.fige .ligne-outils,.at-form.fige #cancelBtn,.at-form.fige .l-stock,.at-form.fige .lie{display:none !important;}
 .at-form.fige input:disabled,.at-form.fige select:disabled,.at-form.fige textarea:disabled{opacity:1; color:var(--t1); -webkit-text-fill-color:var(--t1); cursor:default;}
 .nc-choix{display:flex; flex-direction:column; gap:6px;}
@@ -1114,25 +1118,9 @@ try{
   }
 }catch(e){console.warn('Coordonnées entreprise : valeurs par défaut conservées.',e)}
 
-/* ─── Numérotation ─── */
-const PREFIXES={facture:null,devis:'DEV',reparation:'REP',client:'CLI'}
-const TABLES={facture:'factures',devis:'devis',reparation:'reparations',client:'clients'}
-/* Le compteur n'est pas atomique : après écriture on vérifie qu'aucun
-   document ne porte déjà ce numéro, et on retente le cas échéant. */
-async function nextNumero(cle){
-  for(let essai=0;essai<5;essai++){
-    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
-    const valeur=(cpt?.valeur||0)+1
-    await sb.from('compteurs').update({valeur}).eq('cle',cle)
-    const seq=String(valeur).padStart(4,'0')
-    const numero=cle==='facture'?`${new Date().getFullYear()}-${seq}`:`${PREFIXES[cle]}-${seq}`
-    const table=TABLES[cle]
-    if(!table)return numero
-    const {count}=await sb.from(table).select('id',{count:'exact',head:true}).eq('numero',numero)
-    if(!count)return numero
-  }
-  return `${PREFIXES[cle]||new Date().getFullYear()}-${Date.now().toString().slice(-6)}`
-}
+/* ─── Numérotation ───
+   Tous les numéros (devis, factures, notes de crédit, clients, dossiers)
+   sont attribués par la base : voir supabase/migrations. */
 
 /* ─── Chargement ─── */
 async function load(){
@@ -1199,6 +1187,8 @@ function majResume(){
     bouts.push(`${eur(duMontant)} à encaisser`)
   }
   if(brouillons)bouts.push(`${brouillons} brouillon${brouillons>1?'s':''}`)
+  const sansArchive=allFactures.filter(f=>estEmise(f)&&!f.pdf_chemin).length
+  if(sansArchive)bouts.push(`<a class="lien-archive" onclick="archiverManquantes()">${sansArchive} sans archive PDF — archiver</a>`)
   el.innerHTML=bouts.join(' · ')
 }
 
@@ -1655,6 +1645,9 @@ function verrouillerFormulaire(f){
     if(ncs.length)html+=` Notes de crédit : ${ncs.map(n=>`<a onclick="ouvrirFacture(${n.id})">${escHtml(n.numero)}</a>`).join(', ')}.`
     if(!['creditee','annulee'].includes(f.statut))html+=` Une erreur, un remboursement ? <a onclick="ouvrirNoteCredit()">Faire une note de crédit</a>`
   }
+  if(fige)html+=f.pdf_chemin
+    ?`<span class="archive ok">Original archivé le ${dateCourte(f.pdf_archive_le)}${f.pdf_reconstitue?' (reconstitué)':''} · <a onclick="telechargerOriginal()">télécharger l'original</a></span>`
+    :`<span class="archive ko">Original pas encore archivé · <a onclick="archiverCourante()">archiver maintenant</a></span>`
   note.innerHTML=html
   note.style.display=''
 }
@@ -2002,8 +1995,8 @@ window.confirmerNoteCredit=async function(){
     }).select().single()
     if(res.error)throw new Error(res.error.message)
     await verifierNumerotation(res.data)
-    const nc=res.data
-    allFactures.unshift(nc)
+    allFactures.unshift(res.data)
+    const nc=await archiverSansBloquer(res.data)
     let ouvrir=nc
     if(!paye){
       const ro=await sb.from('factures').update({statut:'creditee',updated_at:new Date().toISOString()}).eq('id',f.id).select().single()
@@ -2066,6 +2059,82 @@ async function verifierNumerotation(f){
   f.statut='brouillon'
   throw new Error("la numérotation légale n'est pas active en base : le document reste en brouillon.")
 }
+/* ─── Archive PDF ───
+   À l'émission, le PDF exact est déposé dans l'espace privé
+   « factures-archives » (AAAA/numéro.pdf) avec son empreinte SHA-256. La base
+   refuse ensuite tout changement : c'est la preuve de ce que le client a reçu.
+   Si le dépôt échoue (réseau…), la facture le signale et propose de réessayer. */
+const BUCKET_ARCHIVES='factures-archives'
+const cheminArchive=f=>`${String(f.date_emission).slice(0,4)}/${f.numero}.pdf`
+async function sha256Hex(buf){
+  const h=await crypto.subtle.digest('SHA-256',buf)
+  return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')
+}
+async function archiverPDF(f,{reconstitue=false}={}){
+  if(!f||!estEmise(f)||f.pdf_chemin)return f
+  const chemin=cheminArchive(f)
+  const pdf=await genererPDF(buildTemplateHTML(f,true))
+  let octets=pdf.output('arraybuffer')
+  const up=await sb.storage.from(BUCKET_ARCHIVES).upload(chemin,new Blob([octets],{type:'application/pdf'}),{contentType:'application/pdf',upsert:false})
+  if(up.error){
+    // Déjà déposé lors d'une tentative interrompue : c'est ce fichier qui fait foi.
+    if(!/exist|duplicate/i.test(up.error.message||''))throw new Error(up.error.message)
+    const dl=await sb.storage.from(BUCKET_ARCHIVES).download(chemin)
+    if(dl.error)throw new Error(dl.error.message)
+    octets=await dl.data.arrayBuffer()
+  }
+  const sha=await sha256Hex(octets)
+  const {data,error}=await sb.from('factures').update({pdf_chemin:chemin,pdf_sha256:sha,pdf_reconstitue:reconstitue}).eq('id',f.id).select().single()
+  if(error)throw new Error(error.message)
+  const i=allFactures.findIndex(x=>x.id===f.id)
+  if(i>=0)allFactures[i]=data
+  if(courante&&courante.id===f.id){courante=data;verrouillerFormulaire(data)}
+  majResume()
+  return data
+}
+/* Archive sans jamais bloquer l'action en cours : en cas d'échec, la facture
+   reste émise et le bandeau propose « archiver maintenant ». */
+async function archiverSansBloquer(f){
+  try{return await archiverPDF(f)||f}
+  catch(e){showToast(`Archive PDF de ${f.numero} à refaire : ${e.message||e}`,'err');return f}
+}
+window.archiverCourante=async function(){
+  if(!courante)return
+  const tard=Date.now()-new Date(courante.emise_le).getTime()>3600000
+  try{
+    const d=await archiverPDF(courante,{reconstitue:tard})
+    showToast(`Original de ${d.numero} archivé${tard?' (reconstitué)':''}`,'ok')
+  }catch(e){showToast('Archive impossible : '+(e.message||e),'err')}
+}
+/* Rattrapage : factures émises avant la mise en place (ou dont l'archive a
+   échoué). Leur PDF est recalculé aujourd'hui : il est marqué « reconstitué ». */
+window.archiverManquantes=async function(){
+  const liste=allFactures.filter(f=>estEmise(f)&&!f.pdf_chemin)
+  if(!liste.length)return
+  if(!confirm(`Archiver ${liste.length} document${liste.length>1?'s':''} émis sans archive ?\n\nLeur PDF est recalculé maintenant avec le modèle actuel : ils seront marqués « reconstitués » (ce n'est pas l'original envoyé à l'époque).`))return
+  let ok=0,ko=0
+  for(const f of liste){
+    showToast(`Archivage ${ok+ko+1}/${liste.length} : ${f.numero}…`,'ok')
+    try{await archiverPDF(f,{reconstitue:true});ok++}catch(e){ko++}
+  }
+  majResume()
+  showToast(ko?`${ok} archivé${ok>1?'s':''}, ${ko} en échec`:`${ok} document${ok>1?'s':''} archivé${ok>1?'s':''}`,ko?'err':'ok')
+}
+window.telechargerOriginal=async function(){
+  const f=courante
+  if(!f||!f.pdf_chemin)return
+  const dl=await sb.storage.from(BUCKET_ARCHIVES).download(f.pdf_chemin)
+  if(dl.error){showToast('Téléchargement impossible : '+dl.error.message,'err');return}
+  const octets=await dl.data.arrayBuffer()
+  const sha=await sha256Hex(octets)
+  const url=URL.createObjectURL(new Blob([octets],{type:'application/pdf'}))
+  const a=document.createElement('a')
+  a.href=url;a.download=`${estNC(f)?'Note_de_credit':'Facture'}_${f.numero}_original.pdf`;a.click()
+  setTimeout(()=>URL.revokeObjectURL(url),1500)
+  if(sha===f.pdf_sha256)showToast('Original téléchargé · empreinte vérifiée, fichier intact','ok')
+  else showToast("ATTENTION : l'empreinte du fichier ne correspond pas à celle enregistrée",'err')
+}
+
 /* Émet un brouillon (numéro + date) avant un PDF, un envoi ou un reçu. */
 async function assurerEmission(f){
   if(!f)return null
@@ -2083,7 +2152,7 @@ async function assurerEmission(f){
   majResume()
   chargerDansFormulaire(data)
   showToast(`Facture émise : n° ${data.numero} du ${dateCourte(data.date_emission)}`,'ok')
-  return data
+  return await archiverSansBloquer(data)
 }
 const TEXTE_EMISSION=f=>`Émettre ${estNC(f)?'la note de crédit':'la facture'} ?\n\nElle reçoit maintenant son numéro définitif et la date d'aujourd'hui.\nEnsuite, elle ne pourra plus être modifiée ni supprimée : toute correction passera par une note de crédit.`
 // Champs encore modifiables sur une facture émise : le règlement et les
@@ -2125,7 +2194,6 @@ window.saveFacture=async function(){
       else{
         const isPro=document.getElementById('f-is-pro').value==='true'
         const rc=await sb.from('clients').insert({
-          numero:await nextNumero('client'),
           nom:payload.client_nom,
           email:email,
           telephone:payload.client_telephone,
@@ -2170,6 +2238,7 @@ window.saveFacture=async function(){
       allFactures.unshift(enregistree)
     }
     await verifierNumerotation(enregistree)
+    if(estEmise(enregistree)&&!enregistree.pdf_chemin)enregistree=await archiverSansBloquer(enregistree)
 
     if(sortie==='sortir')await bougerStock(lignesStock,-1)
     if(sortie==='rendre')await bougerStock(courante?courante.lignes:[],+1)
@@ -2678,6 +2747,16 @@ await load()
     const f=allFactures.find(x=>x.id===Number(p.get('id')))
     if(!f)repondre({erreur:'Facture introuvable'})
     else if(!estEmise(f))repondre({erreur:'Cette facture est un brouillon sans numéro : émets-la depuis Factures avant de la joindre.'})
+    else if(f.pdf_chemin){
+      // L'original archivé, tel qu'émis.
+      const dl=await sb.storage.from(BUCKET_ARCHIVES).download(f.pdf_chemin)
+      if(dl.error)repondre({erreur:dl.error.message})
+      else{
+        const b=new Uint8Array(await dl.data.arrayBuffer());let bin=''
+        for(let i=0;i<b.length;i+=0x8000)bin+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000))
+        repondre({nom:`${estNC(f)?'Note_de_credit':'Facture'}_${f.numero}.pdf`,base64:btoa(bin)})
+      }
+    }
     else{
       try{
         const pdf=await genererPDF(buildTemplateHTML(f,true))

@@ -1131,22 +1131,6 @@ window.onClientSelect=function(){
   }
 }
 
-/* ─── Numérotation séquentielle ───
-   Le compteur n'est pas atomique côté PostgREST : on vérifie donc que le
-   numéro obtenu n'est pas déjà porté par un dossier avant de le rendre. */
-async function nextNumero(cle,prefix){
-  for(let essai=0;essai<5;essai++){
-    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle',cle).single()
-    const valeur=(cpt?.valeur||0)+1
-    await sb.from('compteurs').update({valeur}).eq('cle',cle)
-    const numero=`${prefix}-${String(valeur).padStart(4,'0')}`
-    const table=cle==='client'?'clients':'reparations'
-    const {count}=await sb.from(table).select('id',{count:'exact',head:true}).eq('numero',numero)
-    if(!count)return numero
-  }
-  return `${prefix}-${Date.now().toString().slice(-6)}`
-}
-window.nextNumero=nextNumero
 
 /* ─── Chargement ─── */
 async function loadReps(){
@@ -1165,13 +1149,8 @@ async function loadReps(){
     showToast(`Seuls ${allReps.length} dossiers sur ${rRep.count} ont été chargés.`,'err')
   }
 
-  // Dossiers créés ailleurs sans numéro (page Demandes) : on leur en attribue un
-  const sansNumero=allReps.filter(r=>!r.numero).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
-  for(const r of sansNumero){
-    const num=await nextNumero('reparation','REP')
-    await sb.from('reparations').update({numero:num}).eq('id',r.id)
-    r.numero=num
-  }
+  // Les numéros REP sont attribués par la base à la création du dossier,
+  // quelle que soit la page d'origine : plus de dossier sans numéro.
 
   renderAll()
   document.getElementById('ldr').style.display='none'
@@ -1499,9 +1478,8 @@ window.retourGarantie=async function(id){
   const mois=await garantieMois()
   const fin=new Date(r.date_fin||r.updated_at||r.created_at);fin.setMonth(fin.getMonth()+mois)
   try{
-    const numero=await nextNumero('reparation','REP')
     const res=await sb.from('reparations').insert({
-      numero, garantie_de_id:r.id,
+      garantie_de_id:r.id,
       client_id:r.client_id||null, client_nom:r.client_nom, client_email:r.client_email||null, client_telephone:r.client_telephone||null,
       appareil:r.appareil||null, modele:r.modele||null,
       panne_description:`Retour sous garantie (dossier ${r.numero}) : ${symptome.trim()||'à préciser'}`,
@@ -1513,7 +1491,7 @@ window.retourGarantie=async function(id){
     allReps.unshift(res.data)
     renderAll()
     selectRep(res.data.id)
-    showToast(`Dossier ${numero} ouvert sous garantie`,'ok')
+    showToast(`Dossier ${res.data.numero||''} ouvert sous garantie`,'ok')
   }catch(e){showToast('Erreur : '+(e.message||e),'err')}
 }
 window.passerStatut=function(id,statut){
@@ -1697,7 +1675,6 @@ window.saveDossier=async function(){
       if(existant)clientLieId=existant.id
       else{
         const resCli=await sb.from('clients').insert({
-          numero:await nextNumero('client','CLI'),
           nom,
           email:email||null,
           telephone:document.getElementById('f-tel').value.trim()||null,
@@ -1741,7 +1718,7 @@ window.saveDossier=async function(){
       if(idx>=0)allReps[idx]={...allReps[idx],...payload,id:Number(id)}
       selectedId=Number(id)
     }else{
-      payload.numero=await nextNumero('reparation','REP')
+      // Numéro attribué par la base (série sans doublon), comme les factures.
       const res=await sb.from('reparations').insert(payload).select().single()
       if(res.error)throw new Error(res.error.message)
       if(res.data){allReps.unshift(res.data);selectedId=res.data.id}

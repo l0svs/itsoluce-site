@@ -47,6 +47,33 @@ const MAX_SUBJECT = 300;
 const MAX_HTML = 200_000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/**
+ * Une session valide ne suffit pas : le compte doit être actif dans l'ERP et
+ * avoir accès à l'une des pages qui utilisent cette fonction (même règle que
+ * les politiques RLS). Sans ce contrôle, un compte désactivé — ou un compte
+ * créé hors de l'ERP si l'inscription publique était ouverte — pouvait
+ * appeler la fonction. La fiche est lue avec la session de l'utilisateur.
+ */
+async function profilAutorise(
+  req: Request, userId: string, pages: string[],
+): Promise<{ ecriture: boolean } | null> {
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profils?id=eq.${encodeURIComponent(userId)}&select=role,pages,actif,lecture_seule`,
+      { headers: { apikey: ANON_KEY, Authorization: `Bearer ${jwt}` } },
+    );
+    if (!res.ok) return null;
+    const p = (await res.json())[0];
+    if (!p || p.actif !== true) return null;
+    const proprio = p.role === "proprietaire";
+    if (!proprio && !(p.pages || []).some((x: string) => pages.includes(x))) return null;
+    return { ecriture: proprio || !p.lecture_seule };
+  } catch {
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("Origin"));
   const json = (body: unknown, status: number) =>
@@ -61,6 +88,10 @@ Deno.serve(async (req) => {
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return json({ error: "Authentification requise." }, 401);
+  }
+  const droits = await profilAutorise(req, user.id, ["planning", "dashboard", "devis", "factures", "reparations", "clients", "demandes"]);
+  if (!droits || !droits.ecriture) {
+    return json({ error: "Compte inactif, en lecture seule ou sans accès à l'ERP." }, 403);
   }
 
   try {
