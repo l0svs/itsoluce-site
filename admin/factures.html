@@ -146,6 +146,16 @@ body{font-size:14px;}
 .at-form-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
 .at-form-top h2{font-size:16px; font-weight:600; letter-spacing:-.02em; color:var(--t1); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .at-form-top .spacer{margin-left:auto;}
+#fil-fac:empty,#etape-fac:empty{display:none;}
+.etape{display:flex; gap:8px; flex-wrap:wrap;}
+.etape .btn{flex:1; justify-content:center; min-width:140px;}
+.enc-du{display:flex; align-items:baseline; justify-content:space-between; gap:10px; background:var(--bg3); border-radius:12px; padding:12px 14px;}
+.enc-du span{font-size:12.5px; color:var(--t2);}
+.enc-du b{font-size:22px; font-weight:600; letter-spacing:-.02em; color:var(--t1); font-variant-numeric:tabular-nums;}
+.enc-modes{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
+.enc-modes button{padding:10px 6px; border-radius:10px; border:1px solid var(--ln2); background:var(--bg2); color:var(--t1); font:inherit; font-size:13px; cursor:pointer;}
+.enc-modes button.on{border-color:var(--a); background:var(--ad); color:var(--a); font-weight:600;}
+@media(max-width:520px){.enc-modes{grid-template-columns:repeat(2,1fr);}}
 .grp-lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); margin-top:3px;}
 .sep{height:1px; background:var(--ln);}
 .fg{margin:0;}
@@ -571,15 +581,15 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   </div>
   <nav class="hnav">
     <a href="/admin/dashboard.html" class="hnl">Dashboard</a>
-    <a href="/admin/clients.html" class="hnl">Clients</a>
     <a href="/admin/demandes.html" class="hnl">Demandes<span class="nc" id="nb-dem" style="display:none"></span></a>
     <a href="/admin/devis.html" class="hnl">Devis</a>
-    <a href="/admin/factures.html" class="hnl active">Factures</a>
     <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
+    <a href="/admin/factures.html" class="hnl active">Factures</a>
+    <a href="/admin/clients.html" class="hnl">Clients</a>
+    <a href="/admin/planning.html" class="hnl">Planning</a>
+    <a href="/admin/messages.html" class="hnl">Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert" style="display:none"></span></a>
     <a href="/admin/catalogue.html" class="hnl">Catalogue</a>
-    <a href="/admin/planning.html" class="hnl">Planning</a>
-    <a href="/admin/messages.html" class="hnl">Messages<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/gestion.html" class="hnl">Gestion</a>
   </nav>
 </header>
@@ -587,24 +597,21 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   <aside class="sidebar">
       <a href="/admin/dashboard.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
 
-      <div class="nl-group">Commercial</div>
-      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
-      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
-      <a href="/admin/factures.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
-
-      <div class="nl-group">Technique</div>
+      <div class="nl-group">Dossiers clients</div>
       <a href="/admin/demandes.html" class="nl"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes<span class="nc" id="nb-dem" style="display:none"></span></a>
+      <a href="/admin/devis.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
       <a href="/admin/reparations.html" class="nl"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
-
-      <div class="nl-group">Gestion</div>
+      <a href="/admin/factures.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
+      <div class="nl-group">Relation client</div>
+      <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
+      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
+      <div class="nl-group">Atelier</div>
       <a href="/admin/stock.html" class="nl"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Stock<span class="nc w" id="nb-alert" style="display:none"></span></a>
       <a href="/admin/catalogue.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue Foneday</a>
-
-      <div class="nl-group">Organisation</div>
-      <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
-      <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Messages<span class="nc" id="nb-mail" style="display:none"></span></a>
+      <div class="nl-group">Administration</div>
       <a href="/admin/gestion.html" class="nl"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.17-2.82H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1.17-2.82V2a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 2.82 1.17H22a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gestion</a>
-      <div class="sf">IT Soluce ERP · v1.2</div>
+      <div class="sf">IT Soluce ERP · v1.3</div>
       </aside>
   <div class="content" id="mainContent">
     <div class="loader" id="ldr"><div class="spin"></div>Chargement</div>
@@ -644,6 +651,8 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <span class="spacer"></span>
               <span class="dirty" id="dirty" style="display:none;">Modifications non enregistrées</span>
             </div>
+            <div id="fil-fac"></div>
+            <div class="etape" id="etape-fac"></div>
 
             <div class="sep"></div>
             <div class="grp-lab">Client</div>
@@ -785,6 +794,39 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
   <div class="pdf-modal" id="pdfModal"></div>
 </div>
 
+<!-- ENCAISSEMENT -->
+<div class="email-overlay" id="encOverlay">
+  <div class="email-box" style="max-width:460px;">
+    <div class="email-head"><span id="enc-titre">Encaisser</span><button class="email-close" onclick="fermerEncaissement()" aria-label="Fermer">×</button></div>
+    <div class="email-body">
+      <div class="enc-du"><span id="enc-lab">Reste à encaisser</span><b id="enc-montant">0,00 €</b></div>
+      <div>
+        <label>Mode de paiement</label>
+        <div class="enc-modes" id="enc-modes">
+          <button type="button" data-m="especes" onclick="choisirMode('especes')">Espèces</button>
+          <button type="button" data-m="carte" onclick="choisirMode('carte')">Carte</button>
+          <button type="button" data-m="virement" onclick="choisirMode('virement')">Virement</button>
+          <button type="button" data-m="mixte" onclick="choisirMode('mixte')">Mixte</button>
+        </div>
+      </div>
+      <div class="paie-box" id="enc-especes">
+        <div class="fg"><label for="enc-donne">Montant donné par le client (€) — facultatif</label><input type="number" id="enc-donne" min="0" step="0.01" oninput="majEncaissement()"/></div>
+      </div>
+      <div class="paie-box" id="enc-mixte">
+        <div class="duo">
+          <div class="fg"><label for="enc-carte">En carte (€)</label><input type="number" id="enc-carte" min="0" step="0.01" oninput="majEncaissement()"/></div>
+          <div class="fg"><label for="enc-cash">En espèces (€)</label><input type="number" id="enc-cash" min="0" step="0.01" oninput="majEncaissement()"/></div>
+        </div>
+      </div>
+      <div class="paie-msg" id="enc-msg" style="display:none;"></div>
+      <div class="fg"><label for="enc-date">Encaissé le</label><input type="date" id="enc-date"/></div>
+    </div>
+    <div class="email-foot">
+      <button class="btn btn-secondary" onclick="fermerEncaissement()" style="flex:1;">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmerEncaissement()" id="enc-ok" style="flex:2;">Confirmer l'encaissement</button>
+    </div>
+  </div>
+</div>
 <!-- ENVOI PAR EMAIL -->
 <div class="email-overlay" id="emailOverlay">
   <div class="email-box">
@@ -1046,13 +1088,16 @@ async function load(){
   fillPrestaSelect()
   majResume()
   renderRail()
-  const ouvrir=new URLSearchParams(location.search).get('open')
+  const _lien=new URLSearchParams(location.search)
+  const ouvrir=_lien.get('open')
   const cible=ouvrir?allFactures.find(f=>f.id===Number(ouvrir)):null
   if(ouvrir&&!cible)showToast('Facture introuvable','err')
   if(ouvrir)history.replaceState(null,'','/admin/factures.html')
   chargerDansFormulaire(cible||allFactures[0]||null)
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
+  // Lien « Encaisser » depuis une réparation : la modale s'ouvre directement.
+  if(cible&&_lien.get('encaisser')==='1'&&['brouillon','envoyee'].includes(cible.statut))setTimeout(()=>window.ouvrirEncaissement(),0)
   brancherEcoute()
   window.addEventListener('resize',ajusterApercu)
 }
@@ -1485,6 +1530,94 @@ function chargerDansFormulaire(f){
   marquerPropre()
   renderRail()
   rafraichirApercu()
+  const fil=document.getElementById('fil-fac')
+  if(window.DossierFil){if(f)DossierFil.afficher(fil,{facture:f.id},'facture');else DossierFil.vider(fil)}
+  majEtapeFacture()
+}
+
+/* ─── Étape suivante ───
+   Brouillon : on l'envoie, ou on encaisse directement au comptoir.
+   Envoyée : on encaisse. Payée, annulée : plus rien à faire. */
+function resteAPayer(f){return Math.max(0,(Number(f.total)||0)-(Number(f.acompte)||0))}
+function majEtapeFacture(){
+  const el=document.getElementById('etape-fac')
+  const f=courante
+  if(!f||!['brouillon','envoyee'].includes(f.statut)){el.innerHTML='';return}
+  const enc=`<button class="btn btn-primary" onclick="ouvrirEncaissement()">Encaisser ${eur(resteAPayer(f))}</button>`
+  el.innerHTML=f.statut==='brouillon'
+    ?`<button class="btn btn-secondary" onclick="preparerEmail()">Envoyer par mail</button>${enc}`
+    :enc
+}
+
+/* ─── Encaissement en un clic ───
+   Remplit le bloc « Règlement » du formulaire (statut Payée, date, mode,
+   montants) puis l'enregistre avec la même fonction que le bouton
+   « Mettre à jour » : mêmes règles, même stock, même historique. */
+let _modeEnc=''
+window.ouvrirEncaissement=function(){
+  const f=courante
+  if(!f)return
+  if(sale){showToast("Enregistre d'abord tes modifications",'err');return}
+  const reste=resteAPayer(f)
+  document.getElementById('enc-titre').textContent=`Encaisser la facture ${f.numero||''}`
+  document.getElementById('enc-lab').textContent=Number(f.acompte)>0?`Reste à encaisser (acompte de ${eur(f.acompte)} déduit)`:'Montant à encaisser'
+  document.getElementById('enc-montant').textContent=eur(reste)
+  document.getElementById('enc-date').value=ymd(new Date())
+  ;['enc-donne','enc-carte','enc-cash'].forEach(id=>document.getElementById(id).value='')
+  choisirMode(f.mode_paiement&&f.mode_paiement!==''?f.mode_paiement:'')
+  document.getElementById('encOverlay').style.display='flex'
+}
+window.fermerEncaissement=function(){document.getElementById('encOverlay').style.display='none'}
+window.choisirMode=function(m){
+  _modeEnc=m||''
+  document.querySelectorAll('#enc-modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===_modeEnc))
+  document.getElementById('enc-especes').classList.toggle('on',_modeEnc==='especes')
+  document.getElementById('enc-mixte').classList.toggle('on',_modeEnc==='mixte')
+  majEncaissement()
+}
+window.majEncaissement=function(){
+  const msg=document.getElementById('enc-msg')
+  const reste=courante?resteAPayer(courante):0
+  const n=id=>Number(document.getElementById(id).value)||0
+  let txt='',cls='ok'
+  if(_modeEnc==='especes'&&n('enc-donne')>0){
+    const r=n('enc-donne')-reste
+    if(r>=0)txt=`À rendre au client : ${eur(r)}`
+    else{txt=`Montant insuffisant : il manque ${eur(-r)}`;cls='bad'}
+  }else if(_modeEnc==='mixte'&&(n('enc-carte')+n('enc-cash'))>0){
+    const diff=n('enc-carte')+n('enc-cash')-reste
+    if(Math.abs(diff)<0.01)txt=`Total réglé : ${eur(reste)}`
+    else if(diff>0){txt=`Trop perçu de ${eur(diff)} — à rendre en espèces`;cls='warn'}
+    else{txt=`Il manque ${eur(-diff)}`;cls='bad'}
+  }
+  msg.style.display=txt?'':'none'
+  msg.className='paie-msg '+cls
+  msg.textContent=txt
+}
+window.confirmerEncaissement=async function(){
+  const f=courante
+  if(!f)return
+  if(!_modeEnc){showToast('Choisis le mode de paiement','err');return}
+  const reste=resteAPayer(f)
+  const n=id=>Number(document.getElementById(id).value)||0
+  if(_modeEnc==='especes'&&n('enc-donne')>0&&n('enc-donne')<reste-0.005){showToast('Le montant donné est inférieur au montant dû','err');return}
+  if(_modeEnc==='mixte'&&Math.abs(n('enc-carte')+n('enc-cash')-reste)>=0.01){showToast('Carte + espèces doit être égal au montant dû','err');return}
+  const set=(id,v)=>{document.getElementById(id).value=v}
+  set('f-statut','payee')
+  set('f-date-paiement',document.getElementById('enc-date').value||ymd(new Date()))
+  set('f-paiement',_modeEnc)
+  set('f-montant-donne',_modeEnc==='especes'&&n('enc-donne')>0?n('enc-donne'):'')
+  set('f-mixte-carte',_modeEnc==='mixte'?n('enc-carte'):'')
+  set('f-mixte-especes',_modeEnc==='mixte'?n('enc-cash'):'')
+  onStatutChange()
+  onPaiementChange()
+  const btn=document.getElementById('enc-ok')
+  btn.disabled=true
+  try{await saveFacture()}finally{btn.disabled=false}
+  if(courante&&courante.statut==='payee'){
+    fermerEncaissement()
+    showToast(`Facture ${courante.numero} encaissée · ${eur(reste)} en ${({especes:'espèces',carte:'carte',virement:'virement',mixte:'mixte'})[_modeEnc]}`,'ok')
+  }
 }
 
 function marquerPropre(){sale=false;document.getElementById('dirty').style.display='none'}
@@ -2128,6 +2261,7 @@ window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/l
 
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return
+  if(document.getElementById('encOverlay').style.display==='flex'){fermerEncaissement();return}
   if(document.getElementById('emailOverlay').style.display==='flex'){closeEmailModal();return}
   if(document.getElementById('pdfOverlay').classList.contains('open')){closePdf();return}
   fermerApercuLateral()
@@ -2160,10 +2294,10 @@ await load()
 <div class="mobile-bottombar">
   <div class="mobile-bottombar-inner">
     <a href="/admin/dashboard.html" class="mbb-item" data-page="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Accueil</a>
+    <a href="/admin/demandes.html" class="mbb-item" data-page="demandes"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandes</a>
+    <a href="/admin/devis.html" class="mbb-item" data-page="devis"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Devis</a>
     <a href="/admin/reparations.html" class="mbb-item" data-page="reparations"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Répar.</a>
-    <a href="/admin/stock.html" class="mbb-item" data-page="stock"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Stock</a>
-    <a href="/admin/catalogue.html" class="mbb-item" data-page="catalogue"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Catalogue</a>
-    <a href="/admin/clients.html" class="mbb-item" data-page="clients"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a href="/admin/factures.html" class="mbb-item" data-page="factures"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
   </div>
 </div>
 
@@ -2266,5 +2400,6 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/libelle-piece.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
+<script src="/admin/assets/js/dossier-fil.js"></script>
 </body>
 </html>

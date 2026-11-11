@@ -56,7 +56,13 @@
     '#cp-trigger{position:fixed;right:18px;bottom:64px;z-index:850;display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg2);border:1px solid var(--ln2);border-radius:99px;color:var(--t2);font-size:11px;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);}' +
     '#cp-trigger:hover{color:var(--t1);border-color:var(--a);}' +
     '#cp-trigger kbd{font:inherit;font-size:10px;padding:1px 5px;border-radius:4px;background:var(--bg3);border:1px solid var(--ln2);}' +
-    '@media(max-width:900px){#cp-trigger{display:none;}}';
+    '@media(max-width:900px){#cp-trigger{display:none;}}' +
+    // Dans la barre du haut : le bouton flottant recouvrait les boutons
+    // d'action en bas des panneaux (ex. « Créer une facture » en Réparations).
+    '#cp-trigger.cp-top{position:static;flex-shrink:0;margin-left:10px;padding:6px 10px;border-radius:8px;box-shadow:none;background:var(--bg3);border-color:var(--ln);}' +
+    '#cp-trigger.cp-top .cp-lab{display:none;}' +
+    '@media(min-width:1600px){#cp-trigger.cp-top .cp-lab{display:inline;}}' +
+    '@media(max-width:900px){#cp-trigger.cp-top{display:flex;margin-left:auto;}#cp-trigger.cp-top kbd{display:none;}}';
   document.head.appendChild(style);
 
   // ---- Déclencheur flottant (indépendant du contenu de la topbar, qui varie légèrement d'une page à l'autre) ----
@@ -64,8 +70,12 @@
   var trigger = document.createElement('button');
   trigger.id = 'cp-trigger';
   trigger.type = 'button';
-  trigger.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Rechercher<kbd>' + (isMac ? '⌘K' : 'Ctrl K') + '</kbd>';
-  document.body.appendChild(trigger);
+  trigger.title = 'Rechercher (' + (isMac ? '⌘K' : 'Ctrl K') + ')';
+  trigger.setAttribute('aria-label', 'Rechercher');
+  trigger.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="cp-lab">Rechercher</span><kbd>' + (isMac ? '⌘K' : 'Ctrl K') + '</kbd>';
+  var barre = document.querySelector('header.topbar');
+  if (barre) { trigger.classList.add('cp-top'); barre.appendChild(trigger); }
+  else document.body.appendChild(trigger);
 
   var overlay = document.createElement('div');
   overlay.id = 'cp-overlay';
@@ -83,15 +93,15 @@
   // de la barre de navigation pour qu'on cherche avec les mots qu'on voit.
   var PAGES = [
     { label: 'Dashboard', href: '/admin/dashboard.html' },
-    { label: 'Clients', href: '/admin/clients.html' },
-    { label: 'Devis', href: '/admin/devis.html' },
-    { label: 'Factures', href: '/admin/factures.html' },
     { label: 'Demandes', href: '/admin/demandes.html' },
+    { label: 'Devis', href: '/admin/devis.html' },
     { label: 'Réparations', href: '/admin/reparations.html' },
+    { label: 'Factures', href: '/admin/factures.html' },
+    { label: 'Clients', href: '/admin/clients.html' },
+    { label: 'Planning', href: '/admin/planning.html' },
+    { label: 'Mails', href: '/admin/messages.html' },
     { label: 'Stock', href: '/admin/stock.html' },
     { label: 'Catalogue Foneday', href: '/admin/catalogue.html' },
-    { label: 'Planning', href: '/admin/planning.html' },
-    { label: 'Messages', href: '/admin/messages.html' },
     { label: 'Gestion', href: '/admin/gestion.html' }
   ];
 
