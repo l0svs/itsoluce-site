@@ -552,6 +552,7 @@ body{font-size:14px;}
   .hnav .hnl{flex-shrink:0;}
 }
 </style>
+<script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
@@ -1885,7 +1886,7 @@ function buildTemplateHTML(f,forPdf){
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
       <div><strong style="color:#555;">Validité :</strong> Ce devis est valable jusqu'au ${dateVal}. Passé ce délai, les prix sont susceptibles d'être révisés.</div>
-      <div><strong style="color:#555;">Acceptation :</strong> Pour accepter ce devis, merci de nous retourner votre accord par email ou de nous contacter. Tout accord vaut commande.</div>${Number(f.acompte||0)>0?`<div style="margin-top:4px;"><strong style="color:#1d4ed8;">Acompte :</strong> Un acompte de ${Number(f.acompte||0).toFixed(2).replace('.',',')} € sera demandé à l'acceptation du devis. Solde restant : ${Math.max(0,Number(f.total||0)-Number(f.acompte||0)).toFixed(2).replace('.',',')} €.</div>`:''}
+      <div style="display:flex;gap:12px;align-items:center;"><div style="flex:1;"><strong style="color:#555;">Acceptation :</strong> ${f.jeton_public&&f.numero?`Pour accepter ce devis : en ligne via le bouton reçu par email ou en scannant ce QR code, par simple retour d'email, ou en nous contactant.`:`Pour accepter ce devis, merci de nous retourner votre accord par email ou de nous contacter.`} Tout accord vaut commande.</div>${qrAcceptation(f)}</div>${Number(f.acompte||0)>0?`<div style="margin-top:4px;"><strong style="color:#1d4ed8;">Acompte :</strong> Un acompte de ${Number(f.acompte||0).toFixed(2).replace('.',',')} € sera demandé à l'acceptation du devis. Solde restant : ${Math.max(0,Number(f.total||0)-Number(f.acompte||0)).toFixed(2).replace('.',',')} €.</div>`:''}
       <div style="margin-top:6px;font-style:italic;">${ENTREPRISE.mention_tva}</div>
       <div style="margin-top:12px;padding-top:10px;border-top:1px dotted #ddd;">
         <div style="font-size:8.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Conditions générales</div>
@@ -1952,6 +1953,15 @@ window.telechargerPdf=async function(){
 let _enAttente=null
 const alaLigne=t=>String(t||'').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g,'.\n')  // une phrase par ligne dans les mails
 const lienDevisEnLigne=d=>d&&d.jeton_public?`https://itsoluce.be/devis-en-ligne.html?t=${d.jeton_public}`:''
+// QR imprimé sur le PDF : le client qui a le devis papier en main l'accepte depuis son téléphone.
+function qrAcceptation(f){
+  if(!f||!f.numero||!f.jeton_public||typeof qrcode!=='function')return ''
+  try{
+    qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8']
+    const q=qrcode(0,'M');q.addData(lienDevisEnLigne(f),'Byte');q.make()
+    return `<div style="text-align:center;flex:none;"><img src="${q.createDataURL(3,2)}" style="width:68px;height:68px;display:block;" alt=""><div style="font-size:8px;color:#888;margin-top:2px;">Accepter en ligne</div></div>`
+  }catch(e){return ''}
+}
 // Le lien d'acceptation devient un bouton dans le mail.
 function textToHtml(t){return t.split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')
   .replace(/https:\/\/itsoluce\.be\/devis-en-ligne\.html\?t=[0-9a-f-]{36}/g,u=>`<a href="${u}" style="display:inline-block;background:#0052CC;color:#ffffff;text-decoration:none;font-weight:bold;padding:11px 20px;border-radius:8px;">Consulter et accepter le devis</a>`)}
