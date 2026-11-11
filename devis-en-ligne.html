@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Votre devis — IT Soluce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--a:#0052CC;--a2:#e8f0fc;--t1:#12212e;--t2:#5a6b7b;--ln:#e3e8ee;--bg:#f5f7fa;--ok:#13795b;--okd:#e6f5ef;--warn:#9a5b00;--warnd:#fff4e0;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--t1);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.55;}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 40px;}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+header img{height:34px;width:auto;display:block;}
+header span{font-size:12.5px;color:var(--t2);}
+.card{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:20px;margin-bottom:14px;}
+h1{font-size:21px;margin:0 0 4px;font-weight:700;}
+.sub{color:var(--t2);font-size:13.5px;margin:0;}
+.etat{display:inline-block;font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;margin-top:10px;background:var(--a2);color:var(--a);}
+.etat.ok{background:var(--okd);color:var(--ok);}
+.etat.warn{background:var(--warnd);color:var(--warn);}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{text-align:left;font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.03em;padding:0 0 8px;border-bottom:1px solid var(--ln);}
+td{padding:10px 0;border-bottom:1px solid var(--ln);vertical-align:top;}
+td.n,th.n{text-align:right;white-space:nowrap;padding-left:12px;}
+.qte{color:var(--t2);font-size:12.5px;}
+.tot{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--t2);}
+.tot.big{font-size:19px;font-weight:700;color:var(--t1);padding-top:12px;}
+.mention{font-size:12px;color:var(--t2);margin-top:8px;}
+label{display:block;font-size:13px;font-weight:600;margin:0 0 6px;}
+input[type=text]{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--ln);border-radius:10px;background:#fff;color:var(--t1);}
+input[type=text]:focus{outline:2px solid var(--a);outline-offset:1px;border-color:var(--a);}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin:14px 0 16px;cursor:pointer;}
+.chk input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--a);}
+.chk a{color:var(--a);font-weight:500;}
+.btn{display:block;width:100%;font:inherit;font-size:16px;font-weight:600;padding:14px;border-radius:12px;border:0;background:var(--a);color:#fff;cursor:pointer;}
+.btn:disabled{opacity:.55;cursor:default;}
+.err{color:#b42318;font-size:13.5px;margin-top:10px;display:none;}
+.aide{font-size:13.5px;color:var(--t2);text-align:center;}
+.aide a{color:var(--a);text-decoration:none;font-weight:500;}
+.confirm{text-align:center;}
+.confirm .rond{width:54px;height:54px;border-radius:50%;background:var(--okd);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:700;}
+.vide{text-align:center;color:var(--t2);padding:40px 20px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/img/logo-full.png" alt="IT Soluce">
+    <span>Réparations informatiques &amp; électroniques</span>
+  </header>
+  <main id="app"><div class="card vide">Chargement de votre devis…</div></main>
+  <p class="aide">Une question ? <a href="tel:+32474056659">+32 474 05 66 59</a> · <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>
+</div>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const sb=createClient('https://esltsiutcjcwdbhkkvms.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo',{auth:{persistSession:false,autoRefreshToken:false}})
+const app=document.getElementById('app')
+const jeton=new URLSearchParams(location.search).get('t')||''
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
+const EUR=new Intl.NumberFormat('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2})
+const eur=v=>EUR.format(Number(v)||0)+' €'
+const date=d=>{if(!d)return '';const x=new Date(d);return isNaN(x)?'':x.toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'})}
+const heure=d=>{const x=new Date(d);return isNaN(x)?'':x.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})}
+let D=null
+
+function introuvable(){
+  document.title='Devis introuvable — IT Soluce'
+  app.innerHTML=`<div class="card vide"><b>Ce lien ne correspond à aucun devis.</b><br>Vérifiez que le lien du mail a été copié en entier, ou contactez-moi.</div>`
+}
+function lignesHTML(d){
+  const l=(d.lignes||[]).map(x=>`<tr><td>${esc(x.description)}${Number(x.quantite)>1?`<div class="qte">${esc(x.quantite)} × ${eur(x.prix_unitaire)}</div>`:''}</td><td class="n">${eur(x.total??(Number(x.quantite)||1)*(Number(x.prix_unitaire)||0))}</td></tr>`).join('')
+  const remise=Number(d.remise)||0, acompte=Number(d.acompte)||0
+  return `<table><thead><tr><th>Prestation</th><th class="n">Montant</th></tr></thead><tbody>${l}</tbody></table>
+    ${remise>0?`<div class="tot"><span>Remise</span><span>− ${eur(remise)}</span></div>`:''}
+    <div class="tot big"><span>Total</span><span>${eur(d.total)}</span></div>
+    ${acompte>0?`<div class="tot"><span>Acompte demandé à l'acceptation</span><span>${eur(acompte)}</span></div>`:''}
+    <div class="mention">TVA non applicable, art. 56bis du Code de la TVA. · <a href="https://itsoluce.be/#conditions" target="_blank" rel="noopener" style="color:var(--a);text-decoration:none;">Conditions générales de service</a></div>`
+}
+function rendu(){
+  const d=D
+  document.title=`Devis ${d.numero} — IT Soluce`
+  const ETATS={ouvert:['À accepter',''],accepte:['Accepté','ok'],expire:['Expiré','warn'],refuse:['Refusé','warn'],remplace:['Remplacé par un nouveau devis','warn']}
+  const [lib,cls]=ETATS[d.etat]||[d.etat,'']
+  const entete=`<div class="card">
+      <h1>Devis ${esc(d.numero)}</h1>
+      <p class="sub">${esc(d.client_societe||d.client_nom)} · émis le ${date(d.date_emission)}${d.date_validite?` · valable jusqu'au ${date(d.date_validite)}`:''}</p>
+      <span class="etat ${cls}">${esc(lib)}</span>
+    </div>
+    <div class="card">${lignesHTML(d)}</div>`
+  let bas=''
+  if(d.etat==='ouvert'){
+    bas=`<div class="card">
+      <label for="nom">Votre nom</label>
+      <input type="text" id="nom" autocomplete="name" maxlength="120" value="${esc(d.client_nom||'')}">
+      <label class="chk"><input type="checkbox" id="ok"> <span>J'ai lu ce devis et je l'accepte. Je demande à IT Soluce de réaliser la réparation aux conditions indiquées et aux <a href="https://itsoluce.be/#conditions" target="_blank" rel="noopener">conditions générales de service</a>.</span></label>
+      <button class="btn" id="go" disabled>Accepter le devis</button>
+      <div class="err" id="err"></div>
+    </div>`
+  }else if(d.etat==='accepte'){
+    bas=`<div class="card confirm"><div class="rond">✓</div>
+      <b>Devis accepté${d.accepte_en_ligne_le?` le ${date(d.accepte_en_ligne_le)} à ${heure(d.accepte_en_ligne_le)}`:''}${d.accepte_par_nom?` par ${esc(d.accepte_par_nom)}`:''}.</b>
+      <p class="sub" style="margin-top:6px;">Merci pour votre confiance.<br>Un mail de confirmation vous est envoyé.<br>Je vous recontacte rapidement pour organiser la réparation.</p></div>`
+  }else if(d.etat==='expire'){
+    bas=`<div class="card vide" style="padding:20px;">Ce devis a expiré le ${date(d.date_validite)}.<br>Contactez-moi pour un devis à jour : le prix des pièces a pu changer.</div>`
+  }else{
+    bas=`<div class="card vide" style="padding:20px;">Ce devis n'est plus valable.<br>Contactez-moi si vous avez une question.</div>`
+  }
+  app.innerHTML=entete+bas
+  if(d.etat==='ouvert'){
+    const nom=document.getElementById('nom'),ok=document.getElementById('ok'),go=document.getElementById('go')
+    const maj=()=>{go.disabled=!(ok.checked&&nom.value.trim().length>=2)}
+    nom.addEventListener('input',maj);ok.addEventListener('change',maj)
+    go.addEventListener('click',accepter)
+  }
+}
+async function accepter(){
+  const go=document.getElementById('go'),err=document.getElementById('err')
+  go.disabled=true;go.textContent='Envoi…';err.style.display='none'
+  const {data,error}=await sb.rpc('accepter_devis_en_ligne',{p_jeton:jeton,p_nom:document.getElementById('nom').value.trim()})
+  if(error||!data){
+    err.textContent=(error&&error.message)||'Une erreur est survenue, réessayez ou contactez-moi.'
+    err.style.display='block';go.disabled=false;go.textContent='Accepter le devis';return
+  }
+  D=data;rendu();window.scrollTo({top:0,behavior:'smooth'})
+  // Confirmation au client et notification à IT Soluce (envoyées une seule
+  // fois côté serveur ; un échec ici ne remet pas l'acceptation en cause).
+  sb.functions.invoke('devis-accepte',{body:{jeton}}).catch(()=>{})
+}
+;(async()=>{
+  if(!/^[0-9a-f-]{36}$/i.test(jeton))return introuvable()
+  const {data,error}=await sb.rpc('devis_public',{p_jeton:jeton})
+  if(error||!data)return introuvable()
+  D=data;rendu()
+})()
+</script>
+</body>
+</html>

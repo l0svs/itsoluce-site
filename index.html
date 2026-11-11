@@ -3684,6 +3684,8 @@ const closeM = () => {
 };
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => openM(b.dataset.m)));
 document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeM));
+// Lien direct vers les conditions (page d'acceptation des devis, mails) : itsoluce.be/#conditions
+if (location.hash === '#conditions') openM('terms');
 window.addEventListener('keydown', e => e.key === 'Escape' && closeM());
 
 /* FAQ accordéon */
