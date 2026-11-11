@@ -651,7 +651,7 @@ async function chargerContexte(){
     sb.from('demandes_formulaire').select('id,prenom,nom,email,appareil,description,created_at').not('email','is',null).order('created_at',{ascending:false}).limit(2000),
     sb.from('fournisseurs').select('nom,email,site_web').limit(500),
     sb.from('reparations').select('id,numero,client_id,client_email,client_nom,appareil,modele,panne_description,statut,created_at').order('created_at',{ascending:false}).limit(2000),
-    sb.from('devis').select('id,numero,client_id,client_email,client_nom,total,statut,date_emission,date_validite,created_at').order('created_at',{ascending:false}).limit(2000),
+    sb.from('devis').select('id,numero,client_id,client_email,client_nom,total,statut,date_emission,date_validite,created_at,jeton_public').order('created_at',{ascending:false}).limit(2000),
     sb.from('factures').select('id,numero,client_email,client_nom,total,date_emission').order('date_emission',{ascending:false}).limit(2000),
     sb.from('rendezvous').select('id,client_id,client_nom,reparation_id,date_debut,lieu,termine').gte('date_debut',new Date(Date.now()-86400000).toISOString()).order('date_debut',{ascending:true}).limit(500)
   ])
@@ -1037,6 +1037,7 @@ function contexteMail(email,indices){
     devis:(dv&&dv.numero)||'',
     montant_devis:dv&&Number(dv.total)>0?eur(dv.total):'',
     validite_devis:dv&&dv.date_validite?new Date(dv.date_validite).toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'}):'',
+    lien_devis:dv&&dv.jeton_public&&dv.numero?`https://itsoluce.be/devis-en-ligne.html?t=${dv.jeton_public}`:'',
     date_rdv:rdv?new Date(rdv.date_debut).toLocaleString('fr-BE',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).replace(':','h').replace(' à ',' à '):'',
     lieu_rdv:(rdv&&rdv.lieu)||''
   }

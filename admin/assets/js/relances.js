@@ -70,9 +70,9 @@
   var MODELES = {
     devis: {
       1: { objet: 'Votre devis {devis}',
-           corps: "Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d'un montant de {montant}, envoyé le {date_doc}. Avez-vous pu en prendre connaissance ?\n\nSi la proposition vous convient, une simple réponse à ce mail suffit pour lancer la réparation. Je reste à votre disposition pour toute question ou adaptation." },
+           corps: "Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d'un montant de {montant}, envoyé le {date_doc}. Avez-vous pu en prendre connaissance ?\n\nSi la proposition vous convient, vous pouvez l'accepter en ligne en un clic :\n\n{lien_devis}\n\nUne simple réponse à ce mail suffit aussi pour lancer la réparation. Je reste à votre disposition pour toute question ou adaptation." },
       2: { objet: "Votre devis {devis} — valable jusqu'au {validite}",
-           corps: "Bonjour {prenom},\n\nPetit rappel : le devis {devis} d'un montant de {montant} reste valable jusqu'au {validite}. Passé cette date, le prix des pièces peut évoluer.\n\nSouhaitez-vous que je lance la réparation ? Il suffit de répondre à ce mail." }
+           corps: "Bonjour {prenom},\n\nPetit rappel : le devis {devis} d'un montant de {montant} reste valable jusqu'au {validite}. Passé cette date, le prix des pièces peut évoluer.\n\nSouhaitez-vous que je lance la réparation ? Vous pouvez accepter le devis en ligne en un clic :\n\n{lien_devis}\n\nou simplement répondre à ce mail." }
     },
     facture: {
       1: { objet: 'Rappel — facture {facture}',
@@ -125,6 +125,10 @@
     return String(t).split(/\n\s*\n/).map(function (p) {
       var h = esc(p).replace(/\n/g, '<br>');
       if (lienAvis) h = h.split(esc(lienAvis)).join('<a href="' + esc(lienAvis) + '" style="color:#1d4ed8;">Laisser un avis Google</a>');
+      // Lien d'acceptation d'un devis : bouton, comme dans le mail d'envoi du devis.
+      h = h.replace(/https:\/\/itsoluce\.be\/devis-en-ligne\.html\?t=[0-9a-f-]{36}/g, function (u) {
+        return '<a href="' + u + '" style="display:inline-block;background:#0052CC;color:#ffffff;text-decoration:none;font-weight:bold;padding:11px 20px;border-radius:8px;">Consulter et accepter le devis</a>';
+      });
       return '<p>' + h + '</p>';
     }).join('');
   }
@@ -142,7 +146,7 @@
     var sb = await client();
     if (!sb) throw new Error('Connexion impossible');
     var res = await Promise.all([
-      lire(sb, 'devis', 'id,numero,client_id,client_nom,client_email,total,statut,date_emission,date_validite,date_envoi,emis_le', function (q) { return q.eq('statut', 'envoye'); }),
+      lire(sb, 'devis', 'id,numero,client_id,client_nom,client_email,total,statut,date_emission,date_validite,date_envoi,emis_le,jeton_public', function (q) { return q.eq('statut', 'envoye'); }),
       lire(sb, 'factures', 'id,numero,client_id,client_nom,client_email,total,acompte,statut,type_document,date_emission,date_echeance,date_paiement,reparation_id'),
       lire(sb, 'reparations', 'id,numero,client_id,client_nom,client_email,appareil,modele,statut,date_fin,converti_facture_id,garantie_de_id'),
       lire(sb, 'demandes_formulaire', 'id,prenom,nom,email,appareil,en_attente_depuis,converti_reparation_id,converti_devis_id'),
@@ -183,7 +187,8 @@
       e.titre = 'Devis ' + (doc.numero || ''); e.montant = Number(doc.total) || 0;
       e.sous = 'envoyé le ' + dateCourte(doc.date_envoi || doc.date_emission) + (doc.date_validite ? ' · valable jusqu’au ' + dateCourte(doc.date_validite) : '');
       e.href = '/admin/devis.html?q=' + encodeURIComponent(doc.numero || '');
-      Object.assign(v, { devis: doc.numero, montant: eur(doc.total), date_doc: dateLongue(doc.date_envoi || doc.date_emission), validite: dateLongue(doc.date_validite) });
+      Object.assign(v, { devis: doc.numero, montant: eur(doc.total), date_doc: dateLongue(doc.date_envoi || doc.date_emission), validite: dateLongue(doc.date_validite),
+                         lien_devis: doc.jeton_public ? 'https://itsoluce.be/devis-en-ligne.html?t=' + doc.jeton_public : '' });
       e.pdf = { type: 'devis', id: doc.id };
     } else if (type === 'facture') {
       var solde = Math.max(0, (Number(doc.total) || 0) - (Number(doc.acompte) || 0));
