@@ -10,6 +10,11 @@
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// Plafond d'envois par utilisateur et par heure. Très au-dessus d'un usage
+// normal, mais suffisant pour qu'une session volée ne serve pas de canon à spam.
+const LIMITE_HORAIRE = 60;
 
 const ALLOWED_ORIGINS = new Set([
   "https://itsoluce.be",
@@ -46,6 +51,42 @@ async function getAuthenticatedUser(req: Request): Promise<{ id: string; email?:
 const MAX_SUBJECT = 300;
 const MAX_HTML = 200_000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/**
+ * Consomme un jeton du quota horaire et journalise l'envoi dans email_envois.
+ * Renvoie false si le quota est atteint.
+ *
+ * En cas d'indisponibilité de la base on laisse passer : la protection
+ * principale reste l'authentification ci-dessus, et bloquer un envoi client
+ * coûte plus cher qu'un compteur momentanément imprécis.
+ * (Code repris de la version en production, qui n'était pas dans le dépôt.)
+ */
+async function consommerQuota(userId: string, destinataire: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/enregistrer_envoi_email`, {
+      method: "POST",
+      headers: {
+        apikey: SERVICE_KEY,
+        Authorization: `Bearer ${SERVICE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_user_id: userId,
+        p_destinataire: destinataire,
+        p_fonction: "send-reminder",
+        p_limite: LIMITE_HORAIRE,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Compteur d'envois indisponible", res.status, await res.text());
+      return true;
+    }
+    return (await res.json()) !== false;
+  } catch (err) {
+    console.error("Compteur d'envois indisponible", err);
+    return true;
+  }
+}
 
 /**
  * Une session valide ne suffit pas : le compte doit être actif dans l'ERP et
@@ -113,6 +154,12 @@ Deno.serve(async (req) => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (!resendApiKey) {
       return json({ error: "Configuration serveur manquante (RESEND_API_KEY)" }, 500);
+    }
+
+    if (!await consommerQuota(user.id, to.trim())) {
+      return json({
+        error: `Limite d'envois atteinte (${LIMITE_HORAIRE} par heure). Réessayez plus tard.`,
+      }, 429);
     }
 
     const resendRes = await fetch("https://api.resend.com/emails", {

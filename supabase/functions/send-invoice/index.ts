@@ -15,6 +15,11 @@
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// Plafond d'envois par utilisateur et par heure. Très au-dessus d'un usage
+// normal, mais suffisant pour qu'une session volée ne serve pas de canon à spam.
+const LIMITE_HORAIRE = 60;
 
 // Origines autorisées à appeler la fonction depuis un navigateur.
 // Note : le CORS ne protège que du navigateur, pas d'un appel curl —
@@ -64,6 +69,42 @@ const MAX_HTML = 200_000;        // ~200 Ko de HTML
 const MAX_PDF_BASE64 = 8_000_000; // ~6 Mo de PDF réel une fois décodé
 const MAX_FILENAME = 200;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/**
+ * Consomme un jeton du quota horaire et journalise l'envoi dans email_envois.
+ * Renvoie false si le quota est atteint.
+ *
+ * En cas d'indisponibilité de la base on laisse passer : la protection
+ * principale reste l'authentification ci-dessus, et bloquer un envoi client
+ * coûte plus cher qu'un compteur momentanément imprécis.
+ * (Code repris de la version en production, qui n'était pas dans le dépôt.)
+ */
+async function consommerQuota(userId: string, destinataire: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/enregistrer_envoi_email`, {
+      method: "POST",
+      headers: {
+        apikey: SERVICE_KEY,
+        Authorization: `Bearer ${SERVICE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_user_id: userId,
+        p_destinataire: destinataire,
+        p_fonction: "send-invoice",
+        p_limite: LIMITE_HORAIRE,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Compteur d'envois indisponible", res.status, await res.text());
+      return true;
+    }
+    return (await res.json()) !== false;
+  } catch (err) {
+    console.error("Compteur d'envois indisponible", err);
+    return true;
+  }
+}
 
 /**
  * Une session valide ne suffit pas : le compte doit être actif dans l'ERP et
@@ -142,6 +183,12 @@ Deno.serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!RESEND_API_KEY) {
       return json({ error: "Clé API Resend non configurée" }, 500);
+    }
+
+    if (!await consommerQuota(user.id, to.trim())) {
+      return json({
+        error: `Limite d'envois atteinte (${LIMITE_HORAIRE} par heure). Réessayez plus tard.`,
+      }, 429);
     }
 
     const emailBody: Record<string, unknown> = {
