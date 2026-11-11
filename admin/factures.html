@@ -2656,6 +2656,7 @@ function signatureHTML(variante){
     `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">${entete}${corps}</table>`
 }
 
+const alaLigne=t=>String(t||'').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g,'.\n')  // une phrase par ligne dans les mails
 async function ouvrirModaleEmail({html,pdfName,sujet,message,type}){
   const btns=[document.getElementById('sideSendBtn'),document.getElementById('pdfSendBtn'),document.getElementById('sideRecuMailBtn')].filter(Boolean)
   btns.forEach(b=>{b.disabled=true})
@@ -2664,7 +2665,7 @@ async function ouvrirModaleEmail({html,pdfName,sujet,message,type}){
     _enAttente={doc:courante,pdfBase64:pdf.output('datauristring').split(',')[1],pdfName,type}
     document.getElementById('em-to').value=courante.client_email
     document.getElementById('em-subject').value=sujet
-    document.getElementById('em-body').value=message
+    document.getElementById('em-body').value=alaLigne(message)
     document.getElementById('em-pdfname').textContent=pdfName
     document.getElementById('emailOverlay').style.display='flex'
   }catch(e){showToast('Erreur de préparation : '+(e.message||e),'err')}
