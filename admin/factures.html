@@ -1842,6 +1842,11 @@ window.confirmerEncaissement=async function(){
     fermerEncaissement()
     const mode=({especes:'espèces',carte:'carte',virement:'virement',mixte:'mixte'})[_modeEnc]
     showToast(nc?`Note de crédit ${courante.numero} remboursée · ${eur(reste)} en ${mode}`:`Facture ${courante.numero} encaissée · ${eur(reste)} en ${mode}`,'ok')
+    // Juste après le paiement : proposer la demande d'avis Google (une fois par client).
+    const fp=courante
+    if(!nc&&fp.client_email&&window.Relances&&window.Relances.demanderAvis){
+      setTimeout(()=>window.Relances.demanderAvis({client_id:fp.client_id,reparation_id:fp.reparation_id,nom:fp.client_nom,email:fp.client_email,siJamaisDemande:true}).catch(()=>{}),900)
+    }
   }
 }
 

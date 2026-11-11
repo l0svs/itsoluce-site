@@ -1094,6 +1094,18 @@ function lienMessages(o){
   return '/admin/messages.html?'+p.toString()
 }
 
+window.demanderAvisClient=async function(id){
+  const c=allClients.find(x=>x.id===id)
+  if(!c||!window.Relances){showToast('Module de relance indisponible, recharge la page','err');return}
+  const nom=c.nom||c.societe||''
+  try{
+    await window.Relances.demanderAvis({client_id:c.id,nom,email:c.email},async()=>{
+      const r=await sb.from('relances').select('*')
+      if(!r.error)allRelances=r.data||[]
+      showDetail(id)
+    })
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
+}
 window.showDetail=function(id){
   const c=allClients.find(x=>x.id===id)
   if(!c)return
@@ -1180,6 +1192,7 @@ window.showDetail=function(id){
       <a class="btn btn-primary" href="/admin/devis.html?client=${c.id}">Nouveau devis</a>
       <a class="btn btn-secondary" href="/admin/reparations.html?nouveau=1&client=${c.id}">Nouveau dossier</a>
       ${c.email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:c.email,client:c.id}))}">✉ Mail</a>`:''}
+      ${c.email?`<button class="btn btn-secondary" onclick="demanderAvisClient(${c.id})">★ Demander un avis</button>`:''}
     </div>
     ${suivre.length?`<div><div class="fi-tt">À suivre (${suivre.length})</div>${suivre.map(e=>ligneEv({...e,d:null})).join('')}</div>`:''}
     <div class="fi-bloc">
@@ -1437,6 +1450,7 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
+<script src="/admin/assets/js/relances.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 </body>
