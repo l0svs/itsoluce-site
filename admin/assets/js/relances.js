@@ -245,6 +245,8 @@
         var payee = d.factures.some(function (f) { return f.reparation_id === x.id && f.statut === 'payee' && f.type_document !== 'note_credit'; })
           && !d.factures.some(function (f) { return f.reparation_id === x.id && f.statut === 'creditee'; });
         if (!payee) return;
+        // Un client déjà sollicité (depuis sa fiche ou à l'encaissement) ne l'est pas deux fois.
+        if (x.client_id && d.relances.some(function (r) { return r.type === 'avis' && Number(r.client_id) === Number(x.client_id); })) return;
         var pa = prochain(d, 'avis', x.id, x.date_fin);
         if (pa) out.push(construire(d, 'avis', x, pa));
       }
@@ -394,7 +396,7 @@
     courant = e; apresAction = apres || null;
     document.getElementById('rl-titre').textContent = e.type === 'avis' ? 'Demander un avis Google' : e.libelleNiveau + ' · ' + e.titre;
     var info = e.type === 'avis'
-      ? 'Une seule demande par dossier, envoyée après le rendu et le paiement.'
+      ? 'Le mail contient le lien direct vers ta fiche Google : le client n’a qu’à cliquer.'
       // Tout est échappé : le titre peut contenir l'appareil saisi par un
       // visiteur dans le formulaire public du site.
       : esc(e.titre) + ' — ' + esc(e.nom || '') + ' · ' + esc(e.sous) + (e.estDu ? '' : ' · ce rappel est normalement prévu le ' + esc(dateCourte(e.du)));
@@ -418,8 +420,31 @@
     }, 50);
   }
 
+  /* Demande d'avis immédiate : depuis la fiche client ou juste après
+     l'encaissement. Rattachée au dernier dossier du client s'il y en a un
+     (document_id 0 sinon) ; l'historique est celui du client.
+     o : { client_id, reparation_id, nom, email, siJamaisDemande } */
+  async function demanderAvis(o, apres) {
+    var d = await donnees(true);
+    var rep = null;
+    if (o.reparation_id) rep = d.reps.filter(function (r) { return r.id === Number(o.reparation_id); })[0] || null;
+    if (!rep && o.client_id) rep = d.reps.filter(function (r) { return Number(r.client_id) === Number(o.client_id); })
+      .sort(function (a, b) { return b.id - a.id; })[0] || null;
+    var doc = rep ? Object.assign({}, rep) : { id: 0, numero: '' };
+    doc.client_id = doc.client_id || o.client_id || null;
+    doc.client_nom = o.nom || doc.client_nom || '';
+    doc.client_email = o.email || doc.client_email || '';
+    var h = d.relances.filter(function (r) {
+      return r.type === 'avis' && (doc.client_id ? Number(r.client_id) === Number(doc.client_id) : (doc.id && Number(r.document_id) === Number(doc.id)));
+    }).sort(function (a, b) { return new Date(a.fait_le) - new Date(b.fait_le); });
+    if (o.siJamaisDemande && h.length) return false;
+    ouvrir(construire(d, 'avis', doc, { niveau: 1, du: new Date(), historique: h }), apres);
+    return true;
+  }
+
   window.Relances = {
     REGLES: REGLES,
+    demanderAvis: demanderAvis,
     charger: async function (force) {
       var d = await donnees(force !== false);
       return candidats(d).filter(function (e) { return e.estDu; })
