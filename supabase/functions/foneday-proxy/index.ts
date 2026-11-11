@@ -74,6 +74,33 @@ function validerArticles(articles: unknown): string | null {
   return null;
 }
 
+/**
+ * Une session valide ne suffit pas : le compte doit être actif dans l'ERP et
+ * avoir accès à l'une des pages qui utilisent cette fonction (même règle que
+ * les politiques RLS). Sans ce contrôle, un compte désactivé — ou un compte
+ * créé hors de l'ERP si l'inscription publique était ouverte — pouvait
+ * appeler la fonction. La fiche est lue avec la session de l'utilisateur.
+ */
+async function profilAutorise(
+  req: Request, userId: string, pages: string[],
+): Promise<{ ecriture: boolean } | null> {
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profils?id=eq.${encodeURIComponent(userId)}&select=role,pages,actif,lecture_seule`,
+      { headers: { apikey: ANON_KEY, Authorization: `Bearer ${jwt}` } },
+    );
+    if (!res.ok) return null;
+    const p = (await res.json())[0];
+    if (!p || p.actif !== true) return null;
+    const proprio = p.role === "proprietaire";
+    if (!proprio && !(p.pages || []).some((x: string) => pages.includes(x))) return null;
+    return { ecriture: proprio || !p.lecture_seule };
+  } catch {
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("Origin"));
   const json = (body: unknown, status: number) =>
@@ -91,6 +118,10 @@ Deno.serve(async (req) => {
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return json({ ok: false, error: "Authentification requise." }, 401);
+  }
+  const droits = await profilAutorise(req, user.id, ["catalogue", "gestion", "stock"]);
+  if (!droits) {
+    return json({ ok: false, error: "Compte inactif ou sans accès au catalogue." }, 403);
   }
 
   try {
@@ -126,6 +157,7 @@ Deno.serve(async (req) => {
         url = `${FONEDAY_BASE}/shopping-cart`;
         break;
       case "cart-add": {
+        if (!droits.ecriture) throw new Error("Compte en lecture seule");
         const err = validerArticles(body.articles);
         if (err) throw new Error(err);
         url = `${FONEDAY_BASE}/shopping-cart-add-items`;
@@ -134,6 +166,7 @@ Deno.serve(async (req) => {
         break;
       }
       case "cart-remove": {
+        if (!droits.ecriture) throw new Error("Compte en lecture seule");
         const err = validerArticles(body.articles);
         if (err) throw new Error(err);
         url = `${FONEDAY_BASE}/shopping-cart-remove-items`;

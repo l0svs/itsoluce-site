@@ -920,20 +920,6 @@ function etatFacture(f){
   return ET_FAC[f.statut]||ET_FAC.brouillon
 }
 
-/* ═══════════ Numérotation ═══════════
-   Le compteur n'est pas atomique : après écriture on vérifie qu'aucun
-   client ne porte déjà ce numéro, et on retente le cas échéant. */
-async function nextNumero(){
-  for(let essai=0;essai<5;essai++){
-    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','client').single()
-    const valeur=(cpt?.valeur||0)+1
-    await sb.from('compteurs').update({valeur}).eq('cle','client')
-    const numero=`CLI-${String(valeur).padStart(4,'0')}`
-    const {count}=await sb.from('clients').select('id',{count:'exact',head:true}).eq('numero',numero)
-    if(!count)return numero
-  }
-  return `CLI-${Date.now().toString().slice(-6)}`
-}
 
 /* ═══════════ Chargement ═══════════ */
 let allRelances=[], garantieMois=3
@@ -960,7 +946,6 @@ async function load(){
   if(tronque.length)showToast('Liste tronquée ('+tronque.join(', ')+') : au-delà de 5 000 lignes les totaux sont incomplets.','err')
 
   indexer(reps,devs,facs)
-  await attribuerNumerosManquants()
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
@@ -996,15 +981,6 @@ function indexer(reps,devs,facs){
   })
 }
 
-async function attribuerNumerosManquants(){
-  const sansNumero=allClients.filter(c=>!c.numero)
-    .sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0))
-  for(const c of sansNumero){
-    const num=await nextNumero()
-    const {error}=await sb.from('clients').update({numero:num}).eq('id',c.id)
-    if(!error)c.numero=num
-  }
-}
 
 /* ═══════════ Rendu ═══════════ */
 function renderAll(){
@@ -1264,7 +1240,7 @@ window.saveClient=async function(){
       if(c)Object.assign(c,payload)
     }
   } else {
-    payload.numero=await nextNumero()
+    // Numéro attribué par la base (série sans doublon), comme les factures.
     const res=await sb.from('clients').insert(payload).select().single()
     error=res.error
     if(!error&&res.data){

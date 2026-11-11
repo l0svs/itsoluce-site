@@ -675,20 +675,6 @@ window.supprimer=async function(id){
   showToast('Demande supprimée','ok')
 }
 
-/* Numérotation client : même format que partout ailleurs dans l'ERP.
-   Le compteur n'est pas atomique côté PostgREST, le numéro est donc
-   vérifié avant d'être attribué. */
-async function nextNumeroClient(){
-  for(let essai=0;essai<5;essai++){
-    const {data:cpt}=await sb.from('compteurs').select('valeur').eq('cle','client').single()
-    const valeur=(cpt?.valeur||0)+1
-    await sb.from('compteurs').update({valeur}).eq('cle','client')
-    const numero=`CLI-${String(valeur).padStart(4,'0')}`
-    const {count}=await sb.from('clients').select('id',{count:'exact',head:true}).eq('numero',numero)
-    if(!count)return numero
-  }
-  return `CLI-${Date.now().toString().slice(-6)}`
-}
 
 /* Transformation en dossier réparation. Ne se déclenche jamais
    automatiquement : uniquement sur clic explicite. */
@@ -710,7 +696,6 @@ window.transformer=async function(id){
     }
     if(!clientId){
       const {data:nouveau,error:errCli}=await sb.from('clients').insert({
-        numero:await nextNumeroClient(),
         nom:nomComplet,
         email:d.email||null,
         telephone:d.telephone||null,

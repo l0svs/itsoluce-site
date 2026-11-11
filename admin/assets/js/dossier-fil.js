@@ -124,8 +124,12 @@
   /* La prochaine chose à faire pour avancer le dossier, en une phrase. */
   function prochaine(d) {
     var dev = d.devis, rep = d.reparation, fac = d.facture;
-    if (fac && fac.statut === 'payee' && rep && rep.statut === 'pret') return "Rendre l'appareil au client";
-    if (fac && (fac.statut === 'payee' || fac.statut === 'non_reparable')) return null;
+    // Payé ne veut pas dire terminé : l'appareil peut encore être en atelier.
+    if (fac && (fac.statut === 'payee' || fac.statut === 'non_reparable')) {
+      if (rep && rep.statut === 'pret') return "Rendre l'appareil au client";
+      if (rep && ['attente_reception', 'recu', 'attente', 'encours'].indexOf(rep.statut) >= 0) return 'Terminer la réparation (déjà payée)';
+      return null;
+    }
     if (fac && fac.statut === 'envoyee') return 'Encaisser ' + eur(fac.total);
     if (fac && fac.statut === 'brouillon') return 'Vérifier et émettre la facture';
     if (fac && fac.statut === 'creditee') return 'Émettre la facture corrigée';

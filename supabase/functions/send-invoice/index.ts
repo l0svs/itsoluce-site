@@ -15,6 +15,11 @@
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// Plafond d'envois par utilisateur et par heure. Très au-dessus d'un usage
+// normal, mais suffisant pour qu'une session volée ne serve pas de canon à spam.
+const LIMITE_HORAIRE = 60;
 
 // Origines autorisées à appeler la fonction depuis un navigateur.
 // Note : le CORS ne protège que du navigateur, pas d'un appel curl —
@@ -65,6 +70,69 @@ const MAX_PDF_BASE64 = 8_000_000; // ~6 Mo de PDF réel une fois décodé
 const MAX_FILENAME = 200;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/**
+ * Consomme un jeton du quota horaire et journalise l'envoi dans email_envois.
+ * Renvoie false si le quota est atteint.
+ *
+ * En cas d'indisponibilité de la base on laisse passer : la protection
+ * principale reste l'authentification ci-dessus, et bloquer un envoi client
+ * coûte plus cher qu'un compteur momentanément imprécis.
+ * (Code repris de la version en production, qui n'était pas dans le dépôt.)
+ */
+async function consommerQuota(userId: string, destinataire: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/enregistrer_envoi_email`, {
+      method: "POST",
+      headers: {
+        apikey: SERVICE_KEY,
+        Authorization: `Bearer ${SERVICE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_user_id: userId,
+        p_destinataire: destinataire,
+        p_fonction: "send-invoice",
+        p_limite: LIMITE_HORAIRE,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Compteur d'envois indisponible", res.status, await res.text());
+      return true;
+    }
+    return (await res.json()) !== false;
+  } catch (err) {
+    console.error("Compteur d'envois indisponible", err);
+    return true;
+  }
+}
+
+/**
+ * Une session valide ne suffit pas : le compte doit être actif dans l'ERP et
+ * avoir accès à l'une des pages qui utilisent cette fonction (même règle que
+ * les politiques RLS). Sans ce contrôle, un compte désactivé — ou un compte
+ * créé hors de l'ERP si l'inscription publique était ouverte — pouvait
+ * appeler la fonction. La fiche est lue avec la session de l'utilisateur.
+ */
+async function profilAutorise(
+  req: Request, userId: string, pages: string[],
+): Promise<{ ecriture: boolean } | null> {
+  const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/profils?id=eq.${encodeURIComponent(userId)}&select=role,pages,actif,lecture_seule`,
+      { headers: { apikey: ANON_KEY, Authorization: `Bearer ${jwt}` } },
+    );
+    if (!res.ok) return null;
+    const p = (await res.json())[0];
+    if (!p || p.actif !== true) return null;
+    const proprio = p.role === "proprietaire";
+    if (!proprio && !(p.pages || []).some((x: string) => pages.includes(x))) return null;
+    return { ecriture: proprio || !p.lecture_seule };
+  } catch {
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("Origin"));
   const json = (body: unknown, status: number) =>
@@ -80,6 +148,10 @@ Deno.serve(async (req) => {
   const user = await getAuthenticatedUser(req);
   if (!user) {
     return json({ error: "Authentification requise." }, 401);
+  }
+  const droits = await profilAutorise(req, user.id, ["devis", "factures"]);
+  if (!droits || !droits.ecriture) {
+    return json({ error: "Compte inactif, en lecture seule ou sans accès aux devis et factures." }, 403);
   }
 
   try {
@@ -111,6 +183,12 @@ Deno.serve(async (req) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!RESEND_API_KEY) {
       return json({ error: "Clé API Resend non configurée" }, 500);
+    }
+
+    if (!await consommerQuota(user.id, to.trim())) {
+      return json({
+        error: `Limite d'envois atteinte (${LIMITE_HORAIRE} par heure). Réessayez plus tard.`,
+      }, 429);
     }
 
     const emailBody: Record<string, unknown> = {

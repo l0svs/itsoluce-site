@@ -75,6 +75,13 @@ function marqueAutorisee(prod) {
   return MARQUES.some((m) => champs.includes(m));
 }
 
+function egaliteConstante(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+
 Deno.serve(async (req) => {
   try {
     const FONEDAY_TOKEN = Deno.env.get("FONEDAY_TOKEN");
@@ -83,6 +90,19 @@ Deno.serve(async (req) => {
 
     if (!FONEDAY_TOKEN) throw new Error("FONEDAY_TOKEN manquant dans les secrets");
     const sb = createClient(SUPABASE_URL!, SERVICE_KEY!);
+
+    // ─── Accès réservé à la tâche planifiée ───
+    // La fonction était appelable par n'importe qui (verify_jwt désactivé pour
+    // le cron) : synchro déclenchable à volonté et prix d'achat lisibles dans
+    // la réponse. Le cron envoie désormais le jeton de la table sync_jeton,
+    // comme la synchronisation des mails (mail_jeton).
+    const recu = req.headers.get("x-sync-jeton") ?? "";
+    const { data: ligneJeton } = await sb.from("sync_jeton").select("jeton").eq("id", 1).maybeSingle();
+    if (recu.length < 32 || !ligneJeton || !egaliteConstante(recu, String(ligneJeton.jeton))) {
+      return new Response(JSON.stringify({ ok: false, error: "Accès refusé" }), {
+        headers: { "Content-Type": "application/json" }, status: 401,
+      });
+    }
 
     const url = new URL(req.url);
     const dryRun = url.searchParams.get("dry") === "1";
