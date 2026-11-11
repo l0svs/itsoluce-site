@@ -1842,10 +1842,15 @@ window.confirmerEncaissement=async function(){
     fermerEncaissement()
     const mode=({especes:'espèces',carte:'carte',virement:'virement',mixte:'mixte'})[_modeEnc]
     showToast(nc?`Note de crédit ${courante.numero} remboursée · ${eur(reste)} en ${mode}`:`Facture ${courante.numero} encaissée · ${eur(reste)} en ${mode}`,'ok')
-    // Juste après le paiement : proposer la demande d'avis Google (une fois par client).
+    // Juste après le paiement : d'abord l'envoi de la facture, puis (à la
+    // fermeture de cette fenêtre) la demande d'avis Google, une fois par client.
     const fp=courante
-    if(!nc&&fp.client_email&&window.Relances&&window.Relances.demanderAvis){
-      setTimeout(()=>window.Relances.demanderAvis({client_id:fp.client_id,reparation_id:fp.reparation_id,nom:fp.client_nom,email:fp.client_email,siJamaisDemande:true}).catch(()=>{}),900)
+    if(!nc&&fp.client_email){
+      _avisApresEnvoi={facture_id:fp.id,client_id:fp.client_id,reparation_id:fp.reparation_id,nom:fp.client_nom,email:fp.client_email,siJamaisDemande:true}
+      setTimeout(()=>{Promise.resolve(window.preparerEmail()).catch(()=>{}).then(()=>{
+        // Fenêtre de la facture non ouverte (erreur PDF…) : on passe à l'avis.
+        if(document.getElementById('emailOverlay').style.display!=='flex')lancerAvisEnAttente()
+      })},400)
     }
   }
 }
@@ -2615,7 +2620,6 @@ window.telechargerRecu=async function(){
 /* ─── Envoi par email ─── */
 let _enAttente=null
 function textToHtml(t){return t.split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')}
-const AVIS_HTML=`<p>Votre satisfaction est ma priorité. Si l'intervention vous a convenu, je vous serais reconnaissant de partager votre expérience via un avis Google : <a href="https://maps.app.goo.gl/txUcSmNZTpqiAyDN9" style="color:#1d4ed8;text-decoration:none;">laisser un avis</a>.</p>`
 /* ─── Signature e-mail ───
    Deux variantes du même bloc : « compacte » pour les échanges courants,
    « complete » pour les documents commerciaux. Les coordonnées viennent des
@@ -2726,9 +2730,18 @@ window.envoyerRecu=async function(){
   })
 }
 
+let _avisApresEnvoi=null
+function lancerAvisEnAttente(){
+  const o=_avisApresEnvoi;_avisApresEnvoi=null
+  if(!o||!window.Relances||!window.Relances.demanderAvis)return
+  setTimeout(()=>window.Relances.demanderAvis(o).catch(()=>{}),600)
+}
 window.closeEmailModal=function(){
   document.getElementById('emailOverlay').style.display='none'
+  const f=_enAttente&&_enAttente.doc
   _enAttente=null
+  // Facture envoyée (ou envoi refusé par l'utilisateur) : vient la demande d'avis.
+  if(_avisApresEnvoi&&(!f||f.id===_avisApresEnvoi.facture_id))lancerAvisEnAttente()
 }
 window.confirmerEnvoiEmail=async function(){
   if(!_enAttente)return
@@ -2742,11 +2755,9 @@ window.confirmerEnvoiEmail=async function(){
   try{
     const corps=textToHtml(document.getElementById('em-body').value)
     const sig=signatureHTML('complete')
-    /* L'avis Google n'a de sens qu'une fois la prestation réglée. Il était
-       ajouté à toutes les factures : réclamer le paiement et un avis dans
-       le même message n'aide ni l'un ni l'autre. */
-    const avis=(type!=='acompte'&&f.statut==='payee')?AVIS_HTML:''
-    const html=corps+avis+sig
+    // Pas d'encart « avis Google » dans la facture : la demande d'avis part
+    // dans un mail dédié, juste après l'envoi de la facture payée.
+    const html=corps+sig
     const {data:{session}}=await sb.auth.getSession()
     const envoi=await envoyerMailERP({SB,jeton:session.access_token,to,subject,html,pdfBase64,pdfName,repli:'send-invoice'})
     if(envoi.avertissement)setTimeout(()=>showToast(envoi.avertissement,'err'),3600)
