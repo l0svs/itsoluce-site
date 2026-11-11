@@ -1450,6 +1450,10 @@ function verrouillerDevis(d){
   }else{
     const lance=d.converti_reparation_id||factureDe(d)
     html=`<b>Devis ${escHtml(d.numero)}</b> émis le ${dateCourte(d.date_emission)} : son contenu ne se modifie plus.`
+    if(d.refuse_en_ligne_le&&d.statut==='refuse'){
+      const MOTIFS={prix:'prix trop élevé',autre_solution:'autre solution trouvée',plus_besoin:'ne fait plus réparer',delai:'délai trop long',autre:'autre raison'}
+      html=`<b>Refusé en ligne</b> le ${new Date(d.refuse_en_ligne_le).toLocaleString('fr-BE',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})} · motif : ${escHtml(MOTIFS[d.motif_refus]||d.motif_refus||'non précisé')}${d.recontact_souhaite?' · <b>souhaite être recontacté pour moins cher</b>':''}${d.commentaire_refus?`<br>« ${escHtml(d.commentaire_refus)} »`:''}<br>`+html
+    }
     if(d.accepte_en_ligne_le)html=`<b>Accepté en ligne</b> le ${new Date(d.accepte_en_ligne_le).toLocaleString('fr-BE',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})}${d.accepte_par_nom?` par ${escHtml(d.accepte_par_nom)}`:''}. `+html
     if(ancienne)html+=` Remplace ${escHtml(refDevis(ancienne))}.`
     if(!lance)html+=` Un changement ? <a onclick="reviserDevis()">Réviser le devis</a> (nouvelle version, nouveau numéro).`
@@ -1971,7 +1975,7 @@ function qrAcceptation(f){
 }
 // Le lien d'acceptation devient un bouton dans le mail.
 function textToHtml(t){return t.split(/\n\s*\n/).map(p=>`<p>${escHtml(p).replace(/\n/g,'<br>')}</p>`).join('')
-  .replace(/https:\/\/itsoluce\.be\/devis-en-ligne\.html\?t=[0-9a-f-]{36}/g,u=>`<a href="${u}" style="display:inline-block;background:#0052CC;color:#ffffff;text-decoration:none;font-weight:bold;padding:11px 20px;border-radius:8px;">Consulter et accepter le devis</a>`)}
+  .replace(/https:\/\/itsoluce\.be\/devis-en-ligne\.html\?t=[0-9a-f-]{36}/g,u=>`<a href="${u}" style="display:inline-block;background:#0052CC;color:#ffffff;text-decoration:none;font-weight:bold;padding:11px 20px;border-radius:8px;">Consulter et répondre au devis</a>`)}
 /* ─── Signature e-mail ───
    Deux variantes du même bloc : « compacte » pour les échanges courants,
    « complete » pour les documents commerciaux. Les coordonnées viennent des
@@ -2034,7 +2038,7 @@ window.preparerEmail=async function(){
       `Bonjour ${prenom},\n\nVous trouverez ci-joint le devis ${courant.numero} d'un montant de ${eur(courant.total)}.`+
       (acompte>0?`\n\nUn acompte de ${eur(acompte)} sera demandé à l'acceptation du devis. Solde restant : ${eur(solde)}.`:'')+
       (validite?`\n\nIl est valable jusqu'au ${validite}.`:'')+
-      (lien?`\n\nVous pouvez le consulter et l'accepter en ligne en un clic :\n\n${lien}\n\nVous pouvez aussi simplement me répondre par email. N'hésitez pas à me contacter pour toute question.`
+      (lien?`\n\nVous pouvez le consulter, l'accepter ou le refuser en ligne en un clic.\n\n${lien}\n\nVous pouvez aussi simplement me répondre par email. N'hésitez pas à me contacter pour toute question.`
            :`\n\nPour l'accepter, il vous suffit de me répondre par email. N'hésitez pas à me contacter pour toute question.`))
     document.getElementById('em-pdfname').textContent=pdfName
     document.getElementById('emailOverlay').style.display='flex'

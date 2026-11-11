@@ -38,5 +38,5 @@ window.MAIL_MODELES_DEFAUT = [
     corps: 'Bonjour {prenom},\n\nJe vous confirme notre rendez-vous le {date_rdv}.\nLieu : {lieu_rdv}' },
   { cle: 'relance', nom: 'Relance devis',
     objet: 'Votre devis {devis}',
-    corps: 'Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d\'un montant de {montant_devis}, valable jusqu\'au {validite_devis}. Avez-vous pu en prendre connaissance ?\n\nVous pouvez l\'accepter en ligne en un clic :\n{lien_devis}\n\nJe reste disponible pour toute question.' }
+    corps: 'Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d\'un montant de {montant_devis}, valable jusqu\'au {validite_devis}. Avez-vous pu en prendre connaissance ?\n\nVous pouvez l\'accepter en ligne en un clic.\n{lien_devis}\n\nJe reste disponible pour toute question.' }
 ];

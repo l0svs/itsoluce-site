@@ -40,6 +40,14 @@ input[type=text]:focus{outline:2px solid var(--a);outline-offset:1px;border-colo
 .btn{display:block;width:100%;font:inherit;font-size:16px;font-weight:600;padding:14px;border-radius:12px;border:0;background:var(--a);color:#fff;cursor:pointer;}
 .btn:disabled{opacity:.55;cursor:default;}
 .err{color:#b42318;font-size:13.5px;margin-top:10px;display:none;}
+.refus-lien{display:block;width:100%;margin-top:12px;background:none;border:0;font:inherit;font-size:14px;color:var(--t2);text-decoration:underline;cursor:pointer;padding:6px;}
+.refus{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--ln);}
+.refus.on{display:block;}
+.refus h3{font-size:15px;margin:0 0 10px;}
+.motif{display:flex;gap:10px;align-items:center;font-size:14px;padding:9px 12px;border:1px solid var(--ln);border-radius:10px;margin-bottom:8px;cursor:pointer;}
+.motif input{width:18px;height:18px;margin:0;accent-color:var(--a);flex:none;}
+textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;min-height:80px;resize:vertical;color:var(--t1);background:#fff;}
+.btn.sec{background:#fff;color:var(--t1);border:1px solid var(--ln);}
 .aide{font-size:13.5px;color:var(--t2);text-align:center;}
 .aide a{color:var(--a);text-decoration:none;font-weight:500;}
 .confirm{text-align:center;}
@@ -51,7 +59,7 @@ input[type=text]:focus{outline:2px solid var(--a);outline-offset:1px;border-colo
 <div class="wrap">
   <header>
     <img src="/img/logo-full.png" alt="IT Soluce">
-    <span>Réparations informatiques &amp; électroniques</span>
+    <span>Réparations informatiques</span>
   </header>
   <main id="app"><div class="card vide">Chargement de votre devis…</div></main>
   <p class="aide">Une question ? <a href="tel:+32474056659">+32 474 05 66 59</a> · <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>
@@ -103,11 +111,26 @@ function rendu(){
       <label class="chk"><input type="checkbox" id="ok"> <span>J'ai lu ce devis et je l'accepte. Je demande à IT Soluce de réaliser la réparation aux conditions indiquées et aux <a href="https://itsoluce.be/#conditions" target="_blank" rel="noopener">conditions générales de service</a>.</span></label>
       <button class="btn" id="go" disabled>Accepter le devis</button>
       <div class="err" id="err"></div>
+      <button type="button" class="refus-lien" id="refus-ouvrir">Je ne souhaite pas donner suite</button>
+      <div class="refus" id="refus">
+        <h3>Pouvez-vous m'indiquer pourquoi ?</h3>
+        ${[['prix','Le prix est trop élevé'],['autre_solution',"J'ai trouvé une autre solution"],['plus_besoin','Je ne fais finalement plus réparer'],['delai','Le délai est trop long'],['autre','Autre raison']]
+          .map(([v,l])=>`<label class="motif"><input type="radio" name="motif" value="${v}"> ${l}</label>`).join('')}
+        <label class="chk" id="recontact-wrap" style="display:none;margin:6px 0 12px;"><input type="checkbox" id="recontact"> <span>Je souhaite être recontacté pour une solution moins chère (pièce d'une autre qualité, par exemple).</span></label>
+        <label for="commentaire" style="margin-top:6px;">Un commentaire ? (facultatif)</label>
+        <textarea id="commentaire" maxlength="1000"></textarea>
+        <button class="btn sec" id="refus-go" style="margin-top:12px;" disabled>Confirmer le refus</button>
+        <div class="err" id="refus-err"></div>
+      </div>
     </div>`
   }else if(d.etat==='accepte'){
     bas=`<div class="card confirm"><div class="rond">✓</div>
       <b>Devis accepté${d.accepte_en_ligne_le?` le ${date(d.accepte_en_ligne_le)} à ${heure(d.accepte_en_ligne_le)}`:''}${d.accepte_par_nom?` par ${esc(d.accepte_par_nom)}`:''}.</b>
       <p class="sub" style="margin-top:6px;">Merci pour votre confiance.<br>Un mail de confirmation vous est envoyé.<br>Je vous recontacte rapidement pour organiser la réparation.</p></div>`
+  }else if(d.etat==='refuse'&&d.refuse_en_ligne_le){
+    bas=`<div class="card confirm">
+      <b>Votre réponse est bien enregistrée.</b>
+      <p class="sub" style="margin-top:6px;">Merci d'avoir pris le temps de répondre.${d.recontact_souhaite?'<br>Je vous recontacte rapidement avec une solution moins chère.':'<br>Si vous changez d\'avis, n\'hésitez pas à me contacter.'}</p></div>`
   }else if(d.etat==='expire'){
     bas=`<div class="card vide" style="padding:20px;">Ce devis a expiré le ${date(d.date_validite)}.<br>Contactez-moi pour un devis à jour : le prix des pièces a pu changer.</div>`
   }else{
@@ -119,6 +142,13 @@ function rendu(){
     const maj=()=>{go.disabled=!(ok.checked&&nom.value.trim().length>=2)}
     nom.addEventListener('input',maj);ok.addEventListener('change',maj)
     go.addEventListener('click',accepter)
+    const zone=document.getElementById('refus'),rgo=document.getElementById('refus-go')
+    document.getElementById('refus-ouvrir').addEventListener('click',()=>{zone.classList.toggle('on');if(zone.classList.contains('on'))zone.scrollIntoView({behavior:'smooth',block:'start'})})
+    zone.querySelectorAll('input[name=motif]').forEach(r=>r.addEventListener('change',()=>{
+      rgo.disabled=false
+      document.getElementById('recontact-wrap').style.display=r.value==='prix'&&r.checked?'flex':'none'
+    }))
+    rgo.addEventListener('click',refuser)
   }
 }
 async function accepter(){
@@ -133,6 +163,22 @@ async function accepter(){
   // Confirmation au client et notification à IT Soluce (envoyées une seule
   // fois côté serveur ; un échec ici ne remet pas l'acceptation en cause).
   sb.functions.invoke('devis-accepte',{body:{jeton}}).catch(()=>{})
+}
+async function refuser(){
+  const rgo=document.getElementById('refus-go'),err=document.getElementById('refus-err')
+  const m=document.querySelector('input[name=motif]:checked')
+  if(!m)return
+  rgo.disabled=true;rgo.textContent='Envoi…';err.style.display='none'
+  const {data,error}=await sb.rpc('refuser_devis_en_ligne',{p_jeton:jeton,p_motif:m.value,
+    p_commentaire:document.getElementById('commentaire').value.trim(),
+    p_recontact:m.value==='prix'&&document.getElementById('recontact').checked})
+  if(error||!data){
+    err.textContent=(error&&error.message)||'Une erreur est survenue, réessayez ou contactez-moi.'
+    err.style.display='block';rgo.disabled=false;rgo.textContent='Confirmer le refus';return
+  }
+  D=data;rendu();window.scrollTo({top:0,behavior:'smooth'})
+  // Notification à IT Soluce et petit mail au client (une seule fois côté serveur).
+  sb.functions.invoke('devis-accepte',{body:{jeton,type:'refus'}}).catch(()=>{})
 }
 ;(async()=>{
   if(!/^[0-9a-f-]{36}$/i.test(jeton))return introuvable()
