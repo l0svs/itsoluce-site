@@ -53,10 +53,21 @@ alter table public.devis
 
 -- ─── 3. Reprise de l'existant ─────────────────────────────────────
 -- Tout ce qui n'est pas un brouillon est considéré comme émis.
+-- La reprise ne doit ni changer la date « modifié le » des documents
+-- existants ni remplir le journal : ces déclencheurs sont suspendus le
+-- temps de la mise à jour (dans la même transaction).
+alter table public.factures disable trigger factures_auteur;
+alter table public.factures disable trigger factures_journal;
+alter table public.devis    disable trigger devis_auteur;
+alter table public.devis    disable trigger devis_journal;
 update public.factures set emise_le = coalesce(date_emission::timestamptz, created_at)
  where statut <> 'brouillon' and emise_le is null;
 update public.devis set emis_le = coalesce(date_emission::timestamptz, created_at)
  where statut <> 'brouillon' and emis_le is null;
+alter table public.factures enable trigger factures_auteur;
+alter table public.factures enable trigger factures_journal;
+alter table public.devis    enable trigger devis_auteur;
+alter table public.devis    enable trigger devis_journal;
 
 -- Les séries repartent du plus grand numéro existant (corbeille comprise),
 -- pour ne jamais réattribuer un numéro déjà utilisé.
