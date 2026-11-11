@@ -156,6 +156,15 @@ body{font-size:14px;}
 .enc-modes{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
 .enc-modes button{padding:10px 6px; border-radius:10px; border:1px solid var(--ln2); background:var(--bg2); color:var(--t1); font:inherit; font-size:13px; cursor:pointer;}
 .enc-modes button.on{border-color:var(--a); background:var(--ad); color:var(--a); font-weight:600;}
+.qr-zone{display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;}
+.qr-img{width:200px; height:200px; background:#fff; padding:6px; border-radius:10px;}
+.qr-img svg{width:100%; height:100%; display:block;}
+.qr-ref{font-size:12.5px; color:var(--t2);}
+.qr-plein{position:fixed; inset:0; z-index:3000; background:#fff; color:#111; display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:20px; text-align:center;}
+.qr-plein .qr-img{width:min(86vw,62vh); height:min(86vw,62vh); padding:0;}
+.qr-plein .qr-m{font-size:34px; font-weight:700;}
+.qr-plein .qr-t{font-size:15px; color:#444;}
+.qr-plein button{margin-top:6px; padding:12px 28px; border-radius:10px; border:1px solid #ccc; background:#f2f2f2; color:#111; font:inherit; font-size:15px; cursor:pointer;}
 @media(max-width:520px){.enc-modes{grid-template-columns:repeat(2,1fr);}}
 .lien-archive{color:var(--w); cursor:pointer; text-decoration:underline;}
 .enc-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px;}
@@ -576,6 +585,7 @@ body{font-size:14px;}
   .hnav .hnl{flex-shrink:0;}
 }
 </style>
+<script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
@@ -834,13 +844,14 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <div class="enc-modes" id="enc-modes">
           <button type="button" data-m="especes" onclick="choisirMode('especes')">Espèces</button>
           <button type="button" data-m="carte" onclick="choisirMode('carte')">Carte</button>
-          <button type="button" data-m="virement" onclick="choisirMode('virement')">Virement</button>
+          <button type="button" data-m="virement" onclick="choisirMode('virement')">Virement / QR</button>
           <button type="button" data-m="mixte" onclick="choisirMode('mixte')">Mixte</button>
         </div>
       </div>
       <div class="paie-box" id="enc-especes">
         <div class="fg"><label for="enc-donne">Montant donné par le client (€) — facultatif</label><input type="number" id="enc-donne" min="0" step="0.01" oninput="majEncaissement()"/></div>
       </div>
+      <div class="paie-box" id="enc-qr"><div class="qr-zone" id="enc-qr-zone"></div></div>
       <div class="paie-box" id="enc-mixte">
         <div class="duo">
           <div class="fg"><label for="enc-carte">En carte (€)</label><input type="number" id="enc-carte" min="0" step="0.01" oninput="majEncaissement()"/></div>
@@ -856,6 +867,15 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <button class="btn btn-primary" onclick="confirmerEncaissement()" id="enc-ok" style="flex:2;">Confirmer l'encaissement</button>
     </div>
   </div>
+</div>
+<!-- QR DE PAIEMENT EN PLEIN ÉCRAN (à montrer au client) -->
+<div class="qr-plein" id="qrPlein">
+  <div class="qr-t" id="qrp-nom"></div>
+  <div class="qr-img" id="qrp-img"></div>
+  <div class="qr-m" id="qrp-montant"></div>
+  <div class="qr-t" id="qrp-ref"></div>
+  <div class="qr-t">Scannez avec votre application bancaire</div>
+  <button type="button" onclick="fermerQRPlein()">Fermer</button>
 </div>
 <!-- NOTE DE CRÉDIT -->
 <div class="email-overlay" id="ncOverlay">
@@ -1711,11 +1731,69 @@ window.ouvrirEncaissement=function(){
   document.getElementById('encOverlay').style.display='flex'
 }
 window.fermerEncaissement=function(){document.getElementById('encOverlay').style.display='none'}
+
+/* ─── QR de paiement (virement SEPA, norme EPC) ───
+   Le client scanne avec son app bancaire : bénéficiaire, IBAN, montant et
+   communication (le numéro de la facture) sont pré-remplis. L'argent arrive
+   directement sur le compte ; l'encaissement se confirme ensuite à la main,
+   après avoir vu le paiement dans l'app CBC. */
+// BIC facultatif dans la norme (version 002) ; mis seulement pour un compte CBC
+// (code banque 732), la configuration testée avec succès.
+const bicDe=iban=>/^BE\d{2}732/.test(iban)?'CREGBEBB':''
+const escQR=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
+function contenuQR(f){
+  const montant=resteAPayer(f)
+  if(!f||!f.numero||!(montant>0)||montant>999999999.99)return null
+  const iban=ENTREPRISE.iban.replace(/\s+/g,'').toUpperCase()
+  return ['BCD','002','1','SCT',bicDe(iban),ENTREPRISE.nom.slice(0,70),
+    iban,'EUR'+montant.toFixed(2),
+    '','',String(f.numero).slice(0,140)].join('\n')
+}
+function svgQR(texte){
+  if(typeof qrcode!=='function')return null
+  qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8']
+  const q=qrcode(0,'M');q.addData(texte,'Byte');q.make()
+  return q.createSvgTag({cellSize:4,margin:4,scalable:true})
+}
+function majQR(){
+  const zone=document.getElementById('enc-qr-zone')
+  const f=courante
+  const actif=_modeEnc==='virement'&&f&&!estNC(f)
+  document.getElementById('enc-qr').classList.toggle('on',!!actif)
+  if(!actif){zone.innerHTML='';return}
+  if(!estEmise(f)){
+    zone.innerHTML=`<div class="qr-ref">Le QR reprend le numéro de la facture comme communication : elle doit d'abord être émise.</div>
+      <button type="button" class="btn btn-primary" onclick="emettrePourQR()">Émettre et afficher le QR</button>`
+    return
+  }
+  const t=contenuQR(f), svg=t&&svgQR(t)
+  if(!svg){zone.innerHTML=`<div class="qr-ref">${!t?'Rien à payer : pas de QR.':'Générateur de QR indisponible, recharge la page.'}</div>`;return}
+  zone.innerHTML=`<div class="qr-img">${svg}</div>
+    <div class="qr-ref">${escQR(ENTREPRISE.nom)} · ${escQR(ENTREPRISE.iban)}<br>Communication : <b>${escQR(f.numero)}</b></div>
+    <button type="button" class="btn btn-primary" onclick="afficherQRPlein()">Afficher en plein écran pour le client</button>`
+}
+window.emettrePourQR=async function(){
+  const r=await assurerEmission(courante)
+  if(!r)return
+  window.ouvrirEncaissement()
+  choisirMode('virement')
+}
+window.afficherQRPlein=function(){
+  const f=courante, t=contenuQR(f), svg=t&&svgQR(t)
+  if(!svg)return
+  document.getElementById('qrp-img').innerHTML=svg
+  document.getElementById('qrp-nom').textContent=ENTREPRISE.nom
+  document.getElementById('qrp-montant').textContent=eur(resteAPayer(f))
+  document.getElementById('qrp-ref').textContent='Facture '+f.numero
+  document.getElementById('qrPlein').style.display='flex'
+}
+window.fermerQRPlein=function(){document.getElementById('qrPlein').style.display='none'}
 window.choisirMode=function(m){
   _modeEnc=m||''
   document.querySelectorAll('#enc-modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===_modeEnc))
   document.getElementById('enc-especes').classList.toggle('on',_modeEnc==='especes'&&!estNC(courante))
   document.getElementById('enc-mixte').classList.toggle('on',_modeEnc==='mixte')
+  majQR()
   majEncaissement()
 }
 window.majEncaissement=function(){
