@@ -170,7 +170,11 @@ function mailNotification(d: any): string {
     P(`Client : ${escHtml(d.client_societe || d.client_nom)}${d.client_telephone ? ` · ${escHtml(d.client_telephone)}` : ""}${d.client_email ? ` · ${escHtml(d.client_email)}` : ""}<br>` +
       `Accepté le ${escHtml(date)} à ${escHtml(heure)}${d.accepte_par_nom ? ` par ${escHtml(d.accepte_par_nom)}` : ""}.`) +
     recapHtml(d) +
-    P(`Prochaine étape : créer la réparation.<br><a href="${lienErp}" style="color:#0052CC;font-weight:bold;">Ouvrir le devis dans l'ERP</a>`) +
+    (d.reparation_numero
+      ? P(`Le dossier de réparation <b>${escHtml(d.reparation_numero)}</b> est prêt dans l'ERP (à réceptionner).<br>` +
+          `<a href="https://itsoluce.be/admin/reparations.html?q=${encodeURIComponent(d.reparation_numero)}" style="color:#0052CC;font-weight:bold;">Ouvrir le dossier ${escHtml(d.reparation_numero)}</a>` +
+          ` · <a href="${lienErp}" style="color:#0052CC;">Voir le devis</a>`)
+      : P(`Prochaine étape : créer la réparation.<br><a href="${lienErp}" style="color:#0052CC;font-weight:bold;">Ouvrir le devis dans l'ERP</a>`)) +
     P(d.client_email ? "Le client a reçu un mail de confirmation." : "Pas d'adresse e-mail : le client n'a pas reçu de confirmation."),
   );
 }
@@ -256,7 +260,7 @@ Deno.serve(async (req) => {
       : `statut=eq.accepte&accepte_en_ligne_le=not.is.null&confirmation_envoyee_le=is.null`;
     const claim = await fetch(
       `${SUPABASE_URL}/rest/v1/devis?jeton_public=eq.${jeton}&${filtre}&supprime_le=is.null` +
-        `&select=numero,client_nom,client_societe,client_email,client_telephone,lignes,total,remise,acompte,accepte_en_ligne_le,accepte_par_nom,jeton_public,refuse_en_ligne_le,motif_refus,commentaire_refus,recontact_souhaite`,
+        `&select=numero,client_nom,client_societe,client_email,client_telephone,lignes,total,remise,acompte,accepte_en_ligne_le,accepte_par_nom,reparation_numero,jeton_public,refuse_en_ligne_le,motif_refus,commentaire_refus,recontact_souhaite`,
       {
         method: "PATCH",
         headers: { ...svc, "Content-Type": "application/json", Prefer: "return=representation" },

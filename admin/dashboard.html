@@ -698,8 +698,8 @@ const aujourdhui=debutJour(maintenant)
    tronquée ou en erreur passait inaperçue derrière un « data || [] ». */
 const tables=[
   ['reparations','id,numero,client_nom,appareil,modele,statut,prix_final,prix_devis,cout_pieces,date_fin,converti_facture_id,garantie_de_id,created_at',3000],
-  ['factures','id,numero,client_nom,statut,total,acompte,type_document,date_emission,date_echeance,date_paiement,reparation_id,created_at',3000],
-  ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,converti_reparation_id,created_at',3000],
+  ['factures','id,numero,client_nom,statut,total,acompte,type_document,date_emission,date_echeance,date_paiement,reparation_id,devis_id,created_at',3000],
+  ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,converti_reparation_id,reparation_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
   ['stock','id,nom,modele,quantite,seuil_alerte',5000],
   ['demandes_formulaire','id,prenom,nom,email,appareil,description,vue,en_attente_depuis,converti_reparation_id,created_at',3000],
@@ -1039,7 +1039,10 @@ function rendrePipe(){
     &&(r.statut==='pret'||new Date(r.date_fin||r.created_at)>=il90))
   const montantAFacturer=aFacturer.reduce((a,r)=>a+(Number(r.prix_final)||Number(r.prix_devis)||0),0)
   const enAtelier=repsActives.filter(r=>r.statut!=='pret')
-  const devisAccLancer=devis.filter(d=>d.statut==='accepte'&&!d.converti_reparation_id&&!d.converti_facture_id)
+  // « À lancer » : accepté sans dossier ni facture. La facture peut avoir été
+  // faite depuis le devis (devis_id) sans passer par un dossier.
+  const facParDevis=new Set(factures.filter(f=>f.devis_id&&!['annulee','creditee'].includes(f.statut)).map(f=>f.devis_id))
+  const devisAccLancer=devis.filter(d=>d.statut==='accepte'&&!d.converti_reparation_id&&!d.reparation_id&&!d.converti_facture_id&&!facParDevis.has(d.id))
   const montantDevis=devisAttente.reduce((a,d)=>a+(Number(d.total)||0),0)
   const argent=v=>VOIT_ARGENT?escHtml(eur(v)):''
   const et=(href,lab,n,sous,cls)=>`<a href="${href}" class="${n?cls:'vide'}"><span class="pipe-lab">${lab}</span><span class="pipe-n">${n}</span><span class="pipe-s">${sous}</span></a>`
