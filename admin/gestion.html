@@ -1949,6 +1949,7 @@ window.renderPrestations=function(){
       <span class="lrow-v">${escHtml(prixLabel(s))}</span>
       ${s.actif===false?'<span class="tag t-of">Inactive</span>':''}
       ${s.vitrine===true?'<span class="tag t-on">En ligne</span>':''}
+      ${s.categorie==='intervention'?'<span class="tag">Intervention</span>':''}
     </div>`).join('')
     : `<div class="vide-l"><h4>Aucune prestation${q||_fPrest?' ne correspond':''}</h4><p>${_prest.length?'Change de filtre ou vide la recherche.':'Ajoute ta première prestation pour la retrouver dans tes devis.'}</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvellePrestation()">Ajouter une prestation</button></div>`
   if(_selPrest&&_selPrest!=='__neuf'&&!_prest.some(s=>String(s.id)===String(_selPrest)))_selPrest=null
@@ -1963,7 +1964,7 @@ function dessinerDetailPrest(){
     return
   }
   const neuf=_selPrest==='__neuf'
-  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true,vitrine:false}:_prest.find(x=>String(x.id)===String(_selPrest))
+  const s=neuf?{nom:'',prix:'',prix_max:'',unite:'',detail:'',actif:true,vitrine:false,categorie:'reparation'}:_prest.find(x=>String(x.id)===String(_selPrest))
   if(!s){_selPrest=null;return dessinerDetailPrest()}
   box.innerHTML=`
     <div class="detail-h">${neuf?'Nouvelle prestation':escHtml(s.nom)}</div>
@@ -1974,6 +1975,11 @@ function dessinerDetailPrest(){
       <input type="number" step="0.01" min="0" id="p-prixmax" value="${s.prix_max==null?'':escHtml(s.prix_max)}" placeholder="max (facultatif)"/>
     </div></div>
     <div class="fg"><label for="p-unite">Unité</label><input type="text" id="p-unite" value="${escHtml(s.unite||'')}" placeholder="/h — laisser vide si forfait"/></div>
+    <div class="fg"><label for="p-cat">Type de dossier</label><select id="p-cat">
+      <option value="reparation"${(s.categorie||'reparation')==='reparation'?' selected':''}>Réparation (appareil, pièces)</option>
+      <option value="intervention"${s.categorie==='intervention'?' selected':''}>Intervention (assistance, logiciel, données)</option>
+      <option value="neutre"${s.categorie==='neutre'?' selected':''}>Les deux (diagnostic, déduction…)</option>
+    </select></div>
     <div class="fg"><label for="p-detail">Détail</label><textarea id="p-detail" placeholder="Ce qui est inclus">${escHtml(s.detail||'')}</textarea></div>
     <div class="toggle-l"><span>Prestation active</span><div class="tog ${s.actif!==false?'on':''}" id="p-actif" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
     <!-- La colonne « Service supplémentaire » du site vitrine lit cette table.
@@ -2000,7 +2006,9 @@ window.enregistrerPrestation=async function(){
     unite:document.getElementById('p-unite').value.trim()||null,
     detail:document.getElementById('p-detail').value.trim()||null,
     actif:document.getElementById('p-actif').classList.contains('on'),
-    vitrine:document.getElementById('p-vitrine').classList.contains('on')
+    vitrine:document.getElementById('p-vitrine').classList.contains('on'),
+    // Sert à reconnaître une intervention quand un devis est accepté
+    categorie:document.getElementById('p-cat').value
   }
   try{
     if(_selPrest==='__neuf'){

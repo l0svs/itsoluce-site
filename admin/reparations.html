@@ -232,6 +232,11 @@ body{font-size:14px;}
 .gar-note{font-size:12.5px; line-height:1.5; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px;}
 .gar-note a{color:var(--a); cursor:pointer; font-weight:500;}
 .tag-gar{font-size:10px; font-weight:600; color:var(--a); background:var(--ad); border-radius:6px; padding:1px 6px; margin-left:4px; vertical-align:1px;}
+.tag-int{font-size:10px; font-weight:600; color:#0f766e; background:rgba(20,184,166,.13); border-radius:6px; padding:1px 6px; margin-left:4px; vertical-align:1px;}
+.type-seg{display:flex; gap:6px; margin-bottom:12px;}
+.type-seg button{flex:1; border:1px solid var(--ln2); background:var(--bg3); color:var(--t2); border-radius:10px; padding:9px 10px; font:inherit; font-size:13px; cursor:pointer; text-align:left; line-height:1.3;}
+.type-seg button em{display:block; font-style:normal; font-size:11.5px; color:var(--t3); margin-top:1px;}
+.type-seg button.on{border-color:var(--a); background:var(--ad); color:var(--t1); font-weight:600;}
 .det-acts .btn{flex:1; min-width:120px;}
 
 /* ── État vide ── */
@@ -763,9 +768,14 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       </div>
 
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span>Appareil</span></div>
+        <div class="form-section-head"><div class="form-section-ico" style="background:rgba(139,92,246,.15);color:#7c3aed;"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><span id="f-sec-titre">Appareil</span></div>
+        <input type="hidden" id="f-type" value="reparation"/>
+        <div class="type-seg" role="radiogroup" aria-label="Type de dossier">
+          <button type="button" data-type="reparation" onclick="choisirType('reparation')">Réparation<em>Appareil à réparer, pièces</em></button>
+          <button type="button" data-type="intervention" onclick="choisirType('intervention')">Intervention<em>Assistance, logiciel, données</em></button>
+        </div>
         <div class="fg">
-          <label>Type d'appareil *</label>
+          <label id="f-app-lab">Type d'appareil *</label>
           <select id="f-appareil">
             <option value="">Choisir...</option>
             <option>Smartphone</option>
@@ -782,10 +792,10 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           </select>
         </div>
         <div class="fg"><label>Modèle</label><input type="text" id="f-modele" placeholder="ex : Apple iPhone 13 Pro, Samsung Galaxy S22"/></div>
-        <div class="fg"><label>Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
+        <div class="fg"><label id="f-panne-lab">Description de la panne *</label><textarea id="f-panne" placeholder="Décris le problème du client..."></textarea></div>
       </div>
 
-      <div class="form-section">
+      <div class="form-section" id="sec-pieces">
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(16,185,129,.15);color:#10b981;"><svg viewBox="0 0 24 24"><path d="M20.59 13.41L13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><span>Pièces</span></div>
         <div class="fg">
           <label>Pièces utilisées (depuis le stock)</label>
@@ -884,6 +894,36 @@ const STATUTS={
   annule:          {label:'Annulé',court:'Annulé',cls:'s-annule'}
 }
 window.STATUTS=STATUTS
+/* Intervention (assistance, conseil, logiciel, données…) : mêmes statuts en
+   base, libellés et étapes adaptés — pas d'appareil à réceptionner ni de
+   pièce à attendre. */
+const estInter=r=>!!r&&r.type==='intervention'
+window.estInter=estInter
+const LIB_INTER={
+  attente_reception:{label:'Planifiée',court:'Planifiée'},
+  recu:            {label:'Planifiée',court:'Planifiée'},
+  attente:         {label:'En attente',court:'En attente'},
+  encours:         {label:'Intervention en cours',court:'En cours'},
+  pret:            {label:'Réalisée',court:'Réalisée'},
+  rendu:           {label:'Terminée',court:'Terminée'}
+}
+function stDe(r){
+  const base=STATUTS[r.statut]||{label:r.statut,court:r.statut,cls:'s-recu'}
+  return estInter(r)&&LIB_INTER[r.statut]?{...base,...LIB_INTER[r.statut]}:base
+}
+window.stDe=stDe
+window.choisirType=function(t){
+  document.getElementById('f-type').value=t
+  document.querySelectorAll('.type-seg button').forEach(b=>b.classList.toggle('on',b.dataset.type===t))
+  const inter=t==='intervention'
+  document.getElementById('f-sec-titre').textContent=inter?'Intervention':'Appareil'
+  document.getElementById('f-app-lab').textContent=inter?"Appareil concerné (facultatif)":"Type d'appareil *"
+  document.getElementById('f-panne-lab').textContent=inter?'Demande du client *':'Description de la panne *'
+  document.getElementById('f-panne').placeholder=inter?'Ex : transférer les photos et contacts vers le nouveau téléphone…':'Décris le problème du client...'
+  // Pas de pièces pour une intervention, sauf si le dossier en a déjà.
+  const aDesPieces=document.querySelectorAll('#piecesList > *').length>0
+  document.getElementById('sec-pieces').style.display=inter&&!aDesPieces?'none':''
+}
 const CLOS=['rendu','non_reparable','annule']
 window.CLOS=CLOS
 
@@ -945,6 +985,7 @@ function openPanel(r=null){
   document.getElementById('f-email').value=r?.client_email||''
   document.getElementById('f-tel').value=r?.client_telephone||''
   document.getElementById('f-appareil').value=r?.appareil||''
+  choisirType(r?.type==='intervention'?'intervention':'reparation')
   document.getElementById('f-modele').value=r?.modele||''
   document.getElementById('f-panne').value=r?.panne_description||''
   document.getElementById('f-prix').value=r?.prix_final?Number(r.prix_final).toFixed(2):''
@@ -959,6 +1000,7 @@ function openPanel(r=null){
     window.addPieceLigne(`stock-${r.piece_id}`,1,r.cout_pieces||0)
   }
 
+  choisirType(r?.type==='intervention'?'intervention':'reparation')
   // Champs client : verrouillés seulement si un client existant est rattaché
   verrouillerClient(!!(csel&&csel.value))
   majMargeRep()
@@ -1379,10 +1421,12 @@ function renderAll(){
 const GROUPES=[
   {cle:'reception',titre:'À réceptionner',statuts:['attente_reception']},
   {cle:'atelier',  titre:'En atelier',    statuts:['recu','attente','encours']},
+  {cle:'interventions',titre:'Interventions',statuts:[]},
   {cle:'pret',     titre:'Prêt à récupérer',statuts:['pret']},
   {cle:'clos',     titre:'Clos',          statuts:CLOS}
 ]
 function groupeDe(r){
+  if(estInter(r)&&!CLOS.includes(r.statut))return 'interventions'
   const g=GROUPES.find(g=>g.statuts.includes(r.statut))
   return g?g.cle:'atelier'
 }
@@ -1415,6 +1459,7 @@ const FILTRES=[
   {cle:'ouverts',   label:'Ouverts'},
   {cle:'reception', label:'À réceptionner'},
   {cle:'atelier',   label:'En atelier'},
+  {cle:'interventions',label:'Interventions'},
   {cle:'pret',      label:'Prêts'},
   {cle:'clos',      label:'Clos'},
   {cle:'tous',      label:'Tous'}
@@ -1447,7 +1492,7 @@ function getFiltered(){
 }
 
 function ligne(r){
-  const st=STATUTS[r.statut]||{court:r.statut,cls:'s-recu'}
+  const st=stDe(r)
   const sous=[r.modele||r.appareil,r.panne_description].filter(Boolean).join(' · ')
   const n=jours(r.updated_at||r.created_at)
   const vieux=!CLOS.includes(r.statut)&&n!==null&&n>=7
@@ -1455,7 +1500,7 @@ function ligne(r){
       onclick="selectRep(${r.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRep(${r.id})}">
     <span class="ref">${escHtml(r.numero||'—')}</span>
     <span class="row-who">
-      <b>${escHtml(r.client_nom||'Client inconnu')}${r.garantie_de_id?' <span class="tag-gar">Garantie</span>':''}</b>
+      <b>${escHtml(r.client_nom||'Client inconnu')}${r.garantie_de_id?' <span class="tag-gar">Garantie</span>':''}${estInter(r)?' <span class="tag-int">Intervention</span>':''}</b>
       <em>${escHtml(sous||'—')}</em>
     </span>
     <button class="statut ${st.cls}" onclick="event.stopPropagation();openStatusMenu(${r.id},this)" title="Changer le statut">${escHtml(st.court)}</button>
@@ -1518,7 +1563,22 @@ const PARCOURS=[
   {cle:'pret',label:'Prêt à récupérer'},
   {cle:'rendu',label:'Rendu au client'}
 ]
+const PARCOURS_INTER=[
+  {cle:'attente_reception',label:'Planifiée'},
+  {cle:'encours',label:'Intervention en cours'},
+  {cle:'rendu',label:'Terminée'}
+]
 function etapes(r){
+  if(estInter(r)&&!['non_reparable','annule'].includes(r.statut)){
+    const pos={attente_reception:0,recu:0,attente:1,encours:1,pret:2,rendu:2}[r.statut]??0
+    return `<div class="steps">${PARCOURS_INTER.map((e,i)=>{
+      const cls=i<pos?'done':i===pos?'now':''
+      let detail=''
+      if(i===0)detail=` <em>· ${dateCourte(r.created_at)}</em>`
+      if(i===2&&r.date_fin&&pos===2)detail=` <em>· ${dateCourte(r.date_fin)}</em>`
+      return `<div class="step ${cls}"><i></i>${e.label}${detail}</div>`
+    }).join('')}</div>`
+  }
   if(r.statut==='non_reparable'||r.statut==='annule'){
     const st=STATUTS[r.statut]
     return `<div class="steps">
@@ -1547,7 +1607,8 @@ function renderDetail(){
     box.innerHTML=`<div class="det-vide"><p>Sélectionne un dossier dans la liste pour voir l'appareil, la panne et les pièces montées.</p></div>`
     return
   }
-  const st=STATUTS[r.statut]||{label:r.statut,cls:'s-recu'}
+  const st=stDe(r)
+  const inter=estInter(r)
   const pieces=Array.isArray(r.pieces)?r.pieces:[]
   const appareil=r.modele||''
   box.innerHTML=`
@@ -1572,28 +1633,29 @@ function renderDetail(){
     <div id="apres-rep" class="apres"></div>
     <div class="sep"></div>
     <dl class="dl">
-      <div><dt>Appareil</dt><dd>${escHtml(r.appareil||'—')}</dd></div>
+      ${inter?`<div><dt>Type</dt><dd>Intervention</dd></div>`:''}
+      ${!inter||r.appareil?`<div><dt>Appareil</dt><dd>${escHtml(r.appareil||'—')}</dd></div>`:''}
       ${appareil?`<div><dt>Modèle</dt><dd>${escHtml(appareil)}</dd></div>`:''}
-      <div><dt>Reçu le</dt><dd>${dateCourte(r.created_at)}</dd></div>
+      <div><dt>${inter?'Créée le':'Reçu le'}</dt><dd>${dateCourte(r.created_at)}</dd></div>
       ${r.date_fin?`<div><dt>Terminé le</dt><dd>${dateCourte(r.date_fin)}</dd></div>`:''}
     </dl>
     <div>
-      <div class="det-lab" style="margin-bottom:5px;">Panne</div>
+      <div class="det-lab" style="margin-bottom:5px;">${inter?'Demande du client':'Panne'}</div>
       <div class="det-note">${escHtml(r.panne_description||'—')}</div>
     </div>
     ${r.motif?`<div class="det-motif">Motif : ${escHtml(r.motif)}</div>`:''}
-    <div class="sep"></div>
+    ${inter&&!pieces.length?'':`<div class="sep"></div>
     <div>
       <div class="det-lab" style="margin-bottom:7px;">Pièces et prestations</div>
       ${pieces.length?`<dl class="dl">${pieces.map(p=>
         `<div><dt>${escHtml(p.nom||'—')}${ligneTrace(p)}</dt><dd class="num">×${Number(p.qte)||1}</dd></div>`
       ).join('')}</dl>`:'<div class="det-note">Aucune pièce enregistrée</div>'}
-    </div>
-    <div>
+    </div>`}
+    ${inter?'':`<div>
       <div class="det-lab" style="margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px;">Commandes de pièces
         <button class="btn btn-secondary" style="padding:5px 10px;font-size:12px;" onclick="nouvelleCommande(${r.id})">+ Commande</button></div>
       ${blocCommandes(r)}
-    </div>
+    </div>`}
     ${r.notes?`<div class="sep"></div><div><div class="det-lab" style="margin-bottom:5px;">Notes internes</div><div class="det-note">${escHtml(r.notes)}</div></div>`:''}
     <div class="sep"></div>
     ${etapes(r)}
@@ -1631,6 +1693,13 @@ function renderDetail(){
    Un seul bouton, toujours au même endroit, qui fait avancer le dossier :
    plus besoin de chercher le bon statut dans le menu. */
 function etapeSuivante(r){
+  if(estInter(r)){
+    let b=''
+    if(['attente_reception','recu','attente'].includes(r.statut))b=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'encours')">Démarrer l'intervention</button>`
+    else if(r.statut==='encours')b=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Intervention terminée</button>`
+    else if(['pret','rendu'].includes(r.statut)&&!r.converti_facture_id)b=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
+    return b?`<div class="etape">${b}</div>`:''
+  }
   const S={
     attente_reception:{vers:'recu',  label:'Appareil reçu'},
     recu:             {vers:'encours',label:'Démarrer la réparation'},
@@ -1665,7 +1734,7 @@ async function majApresVente(r){
     if(e)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('pret',${r.id})">Relancer le client · ${escHtml(e.libelleNiveau.toLowerCase())}${e.estDu?'':' (prévu le '+dateCourte(e.du)+')'}</button>`)
     if(h.length)bouts.push(`<div class="apres-txt">Relances : ${h.map(x=>nomRel(x.canal)+' le '+dateCourte(x.fait_le)).join(', ')}</div>`)
   }
-  if(r.statut==='rendu'){
+  if(r.statut==='rendu'&&!estInter(r)){
     const mois=await garantieMois()
     const fin=new Date(r.date_fin||r.updated_at||r.created_at);fin.setMonth(fin.getMonth()+mois)
     const sous=fin>=new Date(new Date().toDateString())
@@ -1676,6 +1745,11 @@ async function majApresVente(r){
       if(a)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('avis',${r.id})">Demander un avis Google</button>`)
       else if(h.length)bouts.push(`<div class="apres-txt">Avis Google demandé le ${dateCourte(h[h.length-1].fait_le)}</div>`)
     }
+  }
+  if(r.statut==='rendu'&&estInter(r)&&window.Relances){
+    const [a,h]=await Promise.all([Relances.pourDocument('avis',r.id),Relances.historique('avis',r.id)])
+    if(a)bouts.push(`<button class="btn btn-secondary" onclick="relancerRep('avis',${r.id})">Demander un avis Google</button>`)
+    else if(h.length)bouts.push(`<div class="apres-txt">Avis Google demandé le ${dateCourte(h[h.length-1].fait_le)}</div>`)
   }
   if(selectedId!==r.id)return
   el.innerHTML=bouts.join('')
@@ -1751,7 +1825,7 @@ async function creerFactureDepuis(r,offert=false){
   const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
   const desc=nonRep
     ?`Diagnostic${app?' '+app:''} — appareil non réparable`
-    :`Réparation${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
+    :`${estInter(r)?'Intervention':'Réparation'}${app?' '+app:''}${r.panne_description?' — '+r.panne_description:''}`.trim()
   const res=await sb.from('factures').insert({
     reparation_id:r.id,
     reparation_numero:r.numero,
@@ -1832,7 +1906,7 @@ window.changeStatut=async function(statut){
 
   if(doitDecrementer)await decrementerStock(pieces)
   renderAll()
-  showToast(`${escHtml(r.client_nom||'Dossier')} · ${STATUTS[statut]?.label||statut}`,'ok')
+  showToast(`${escHtml(r.client_nom||'Dossier')} · ${stDe(r).label||statut}`,'ok')
 }
 
 async function decrementerStock(pieces){
@@ -1867,8 +1941,9 @@ window.saveDossier=async function(){
   const appareil=document.getElementById('f-appareil').value
   const panne=document.getElementById('f-panne').value.trim()
   if(!nom){showToast('Le nom du client est requis','err');return}
-  if(!appareil){showToast("Le type d'appareil est requis",'err');return}
-  if(!panne){showToast('La description de la panne est requise','err');return}
+  const typeDos=document.getElementById('f-type').value==='intervention'?'intervention':'reparation'
+  if(!appareil&&typeDos==='reparation'){showToast("Le type d'appareil est requis",'err');return}
+  if(!panne){showToast(typeDos==='intervention'?'Décris la demande du client':'La description de la panne est requise','err');return}
 
   const piecesData=getPiecesData()
   const nouveauStatut=document.getElementById('f-statut').value
@@ -1909,7 +1984,8 @@ window.saveDossier=async function(){
       client_nom:nom,
       client_email:document.getElementById('f-email').value.trim()||null,
       client_telephone:document.getElementById('f-tel').value.trim()||null,
-      appareil,
+      appareil:appareil||'',
+      type:typeDos,
       modele:document.getElementById('f-modele').value.trim()||null,
       panne_description:panne,
       statut:nouveauStatut,
@@ -1956,7 +2032,7 @@ window.saveDossier=async function(){
 /* ─── Export ─── */
 window.exportCSV=function(){
   if(!allReps.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['numero','client_nom','client_email','client_telephone','appareil','modele','panne_description','statut','cout_pieces','prix_final','motif','notes','created_at','date_fin']
+  const cols=['numero','type','client_nom','client_email','client_telephone','appareil','modele','panne_description','statut','cout_pieces','prix_final','motif','notes','created_at','date_fin']
   const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
   const csv=[cols.join(';'),...allReps.map(r=>cols.map(c=>cell(r[c])).join(';'))].join('\r\n')
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})
