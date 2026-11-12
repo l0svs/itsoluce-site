@@ -1866,8 +1866,8 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 }
 
 .fab {
-  width: 54px;
-  height: 54px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: #0052CC;
   color: #ffffff;
@@ -1882,7 +1882,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   box-shadow: 0 4px 16px rgba(0,82,204,.35);
   opacity: .85;
 }
-.fab svg { width: 24px; height: 24px; display: block; }
+.fab svg { width: 20px; height: 20px; display: block; }
 
 .fab--wa {
   background: #25D366;
@@ -1973,8 +1973,8 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 
 @media (max-width: 480px) {
   .fabs { right: 14px; bottom: 16px; gap: 10px; }
-  .fab { width: 52px; height: 52px; }
-  .fab svg { width: 23px; height: 23px; }
+  .fab { width: 44px; height: 44px; }
+  .fab svg { width: 19px; height: 19px; }
   .modal__box { margin: 16px auto; }
 }
 /* ── Informations légales : onglets + sommaire ── */
@@ -2585,17 +2585,15 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 }
 
 /* Boutons flottants : respiration + onde pour attirer l'œil */
-.fab{position:relative;animation:fabSouffle 2.8s ease-in-out infinite}
-.fab--wa{animation-delay:1.4s}
+.fab{position:relative}
 .fab::after{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;animation:fabOnde 2.8s ease-out infinite}
 .fab--tel::after{box-shadow:0 0 0 0 rgba(0,82,204,.45);--onde:rgba(0,82,204,0)}
 .fab--wa::after{box-shadow:0 0 0 0 rgba(37,211,102,.5);animation-name:fabOndeWa;animation-delay:1.4s}
-.fab:hover{animation-play-state:paused}
-@keyframes fabSouffle{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.fab:hover::after{animation-play-state:paused}
 @keyframes fabOnde{0%{box-shadow:0 0 0 0 rgba(0,82,204,.45)}75%{box-shadow:0 0 0 16px rgba(0,82,204,0)}100%{box-shadow:0 0 0 16px rgba(0,82,204,0)}}
 @keyframes fabOndeWa{0%{box-shadow:0 0 0 0 rgba(37,211,102,.5)}75%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 16px rgba(37,211,102,0)}}
-.fab--wa svg{width:28px;height:28px}
-@media (max-width:480px){.fab--wa svg{width:26px;height:26px}}
+.fab--wa svg{width:23px;height:23px}
+@media (max-width:480px){.fab--wa svg{width:22px;height:22px}}
 @media (prefers-reduced-motion:reduce){.fab,.fab::after{animation:none}}
 </style>
 <style id="absence">
