@@ -211,6 +211,15 @@ body{font-size:14px;}
 .fi-rail div.du{background:rgba(200,54,44,.10);}
 .fi-rail div.du b{color:var(--d);}
 .fi-ev .dt:empty{display:none;}
+/* Parrainage */
+.parr-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.04em; font-weight:600;}
+.fi-mini{border:1px solid var(--ln); background:var(--bg2); color:var(--t2); border-radius:8px; padding:3px 9px; font-size:11.5px; font-family:inherit; cursor:pointer; margin-left:6px; vertical-align:1px;}
+.fi-mini:hover{color:var(--a); border-color:var(--a);}
+.fi-line b a{color:var(--a); text-decoration:none;}
+.parr-lier{display:inline-flex; gap:6px; align-items:center;}
+.parr-lier input{width:128px; border:1px solid var(--ln); background:var(--bg2); color:var(--t1); border-radius:8px; padding:4px 8px; font-size:12px; font-family:inherit; text-transform:uppercase;}
+.parr-lier input::placeholder{text-transform:none; color:var(--t3);}
+.parr-lier .fi-mini{margin-left:0;}
 .fi-note{font-size:12.5px; color:var(--t2); background:var(--bg3); border-radius:11px; padding:10px 12px; white-space:pre-wrap; word-break:break-word;}
 
 .pill{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; flex-shrink:0; align-self:flex-start;}
@@ -922,17 +931,19 @@ function etatFacture(f){
 
 
 /* ═══════════ Chargement ═══════════ */
-let allRelances=[], garantieMois=3
+let allRelances=[], allParrainage=[], garantieMois=3
 async function load(){
-  const [rCli,rRep,rDev,rFac,rRel,rSet]=await Promise.all([
+  const [rCli,rRep,rDev,rFac,rRel,rSet,rParr]=await Promise.all([
     sb.from('clients').select('*',{count:'exact'}).order('nom',{ascending:true}).limit(5000),
     sb.from('reparations').select('id,numero,client_id,appareil,modele,panne_description,statut,prix_final,date_fin,garantie_de_id,created_at',{count:'exact'}).limit(5000),
     sb.from('devis').select('id,numero,client_id,statut,total,date_emission,date_validite,created_at',{count:'exact'}).limit(5000),
     sb.from('factures').select('id,numero,client_id,statut,total,acompte,type_document,facture_origine_id,reparation_id,date_emission,date_echeance,date_paiement,created_at',{count:'exact'}).limit(5000),
     sb.from('relances').select('*').limit(5000),
-    sb.from('settings').select('cle,valeur').eq('cle','garantie_mois')
+    sb.from('settings').select('cle,valeur').eq('cle','garantie_mois'),
+    sb.from('parrainage_mouvements').select('client_id,type,montant,created_at').limit(5000)
   ])
   allRelances=rRel.error?[]:(rRel.data||[])
+  allParrainage=rParr.error?[]:(rParr.data||[])
   {const n=parseInt(rSet.data&&rSet.data[0]&&rSet.data[0].valeur,10);garantieMois=n>0?n:3}
   if(rCli.error)throw new Error('Clients : '+rCli.error.message)
 
@@ -1106,6 +1117,26 @@ window.demanderAvisClient=async function(id){
     })
   }catch(e){showToast('Erreur : '+(e.message||e),'err')}
 }
+/* Parrainage : copier le code, lier un parrain (vérifié par la base). */
+window.copierCodeParrainage=async function(id){
+  const c=allClients.find(x=>x.id===id)
+  if(!c||!c.code_parrainage)return
+  try{await navigator.clipboard.writeText(c.code_parrainage);showToast('Code copié : '+c.code_parrainage,'ok')}
+  catch(e){prompt('Code de parrainage :',c.code_parrainage)}
+}
+window.lierParrainClient=async function(id){
+  const champ=document.getElementById('parr-code-'+id)
+  const code=String(champ&&champ.value||'').trim().toUpperCase()
+  if(!code){showToast('Indique le code de parrainage du parrain','err');if(champ)champ.focus();return}
+  const {error}=await sb.rpc('lier_parrain',{p_client_id:id,p_code:code})
+  if(error){showToast(error.message||'Lien impossible','err');return}
+  const r=await sb.from('clients').select('id,parrain_id,parraine_le').eq('id',id).maybeSingle()
+  const c=allClients.find(x=>x.id===id)
+  if(c&&r.data)Object.assign(c,r.data)
+  const p=c&&allClients.find(x=>x.id===c.parrain_id)
+  showToast('Parrain lié'+(p?' : '+(p.nom||p.societe):''),'ok')
+  showDetail(id)
+}
 window.showDetail=function(id){
   const c=allClients.find(x=>x.id===id)
   if(!c)return
@@ -1171,6 +1202,15 @@ window.showDetail=function(id){
   const avisDemande=relClient.filter(x=>x.type==='avis'&&x.canal==='mail').sort((a,b)=>new Date(b.fait_le)-new Date(a.fait_le))[0]
   const fidele=c._reps.length>=2
 
+  // ── Parrainage : son code, son parrain, ses filleuls, sa réduction disponible
+  const parrain=c.parrain_id?allClients.find(x=>x.id===c.parrain_id):null
+  const filleuls=allClients.filter(x=>x.parrain_id===c.id)
+  const mvts=allParrainage.filter(x=>x.client_id===c.id)
+  const soldeParr=Math.round(mvts.filter(x=>['gain','utilisation','annulation'].includes(x.type)).reduce((t,x)=>t+Number(x.montant||0),0)*100)/100
+  const gagne=mvts.filter(x=>x.type==='gain').reduce((t,x)=>t+Number(x.montant||0),0)
+  const nomCli=x=>escHtml((x.type==='entreprise'&&x.societe)||x.nom||x.numero||'client')
+  const lienCli=x=>`<a href="#" onclick="showDetail(${x.id});return false">${nomCli(x)}</a>`
+
   const champ=(lib,val)=>`<div class="fi-line"><span>${lib}</span><b class="${val?'':'z'}">${val?escHtml(val):'—'}</b></div>`
   const ligneEv=e=>`<div class="fi-ev">
         <span class="dt">${e.d===null?'':(dateMini(e.d)||'—')}</span>
@@ -1201,6 +1241,17 @@ window.showDetail=function(id){
       ${champ('Adresse',c.adresse)}
       ${pro?champ('Société',c.societe)+champ('N° TVA / BCE',c.tva):''}
       <div class="fi-line"><span>Avis Google</span><b class="${avisDemande?'':'z'}">${avisDemande?'demandé le '+escHtml(dateCourte(avisDemande.fait_le)):'pas encore demandé'}</b></div>
+    </div>
+    <div>
+      <div class="fi-tt">Parrainage</div>
+      <div class="fi-bloc">
+        <div class="fi-line"><span>Son code</span><b class="${c.code_parrainage?'':'z'}">${c.code_parrainage?`<i class="parr-code" style="font-style:normal;">${escHtml(c.code_parrainage)}</i><button type="button" class="fi-mini" onclick="copierCodeParrainage(${c.id})">Copier</button>`:'—'}</b></div>
+        <div class="fi-line"><span>Parrainé par</span><b>${parrain?lienCli(parrain)
+          :`<i class="parr-lier" style="font-style:normal;"><input id="parr-code-${c.id}" placeholder="Code du parrain" maxlength="20" autocomplete="off" onkeydown="if(event.key==='Enter')lierParrainClient(${c.id})"><button type="button" class="fi-mini" onclick="lierParrainClient(${c.id})">Lier</button></i>`}</b></div>
+        <div class="fi-line"><span>Filleuls</span><b class="${filleuls.length?'':'z'}">${filleuls.length?filleuls.map(lienCli).join(', '):'aucun pour l’instant'}</b></div>
+        <div class="fi-line"><span>Réduction disponible</span><b class="${soldeParr>0?'':'z'}">${soldeParr>0?eur(soldeParr)+' (à appliquer sur sa prochaine facture)':(gagne>0?'tout utilisée':'—')}</b></div>
+      </div>
+      ${c.email&&c.code_parrainage?`<div class="fi-acts" style="margin-top:8px;"><a class="btn btn-secondary" href="${escHtml(lienMessages({a:c.email,client:c.id,modele:'parrainage'}))}">✉ Envoyer son code par mail</a></div>`:''}
     </div>
     ${c.notes?`<div><div class="fi-tt">Notes</div><div class="fi-note">${escHtml(c.notes)}</div></div>`:''}
     ${lignesApp?`<div><div class="fi-tt">Appareils confiés</div>${lignesApp}</div>`:''}

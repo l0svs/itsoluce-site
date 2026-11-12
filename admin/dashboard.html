@@ -728,6 +728,13 @@ if(VOIT_MAILS){
   if(!rM.error)mailsRecents=rM.data||[]
   if(!rN.error)mailsNonLus=rN.count||0
 }
+/* Pièces commandées pas encore reçues (Réparations › Commandes de pièces). */
+let commandesAttente=[]
+try{
+  const rc=await sb.from('commandes_pieces').select('id,reparation_id,fournisseur,numero_commande,articles,statut,commandee_le')
+    .in('statut',['commandee','expediee']).order('commandee_le',{ascending:true}).limit(50)
+  if(!rc.error)commandesAttente=rc.data||[]
+}catch(e){}
 const reps=donnees.reparations, factures=donnees.factures, devis=donnees.devis
 const rdvs=donnees.rendezvous, stock=donnees.stock
 const demandes=donnees.demandes_formulaire
@@ -983,6 +990,17 @@ function rendreGrille(){
         droite:`<span class="pill ${rupture?'p-d':'p-w'}">${rupture?'Rupture':'Faible'}</span>`})
     }).join('')
     grid.appendChild(carte('c-stk','Alertes stock','/admin/stock.html',alertesStock.length,'bad',corps,''))
+  }
+  if(commandesAttente.length){
+    const corps=commandesAttente.slice(0,6).map(c=>{
+      const r=reps.find(x=>x.id===c.reparation_id)
+      const j=c.commandee_le?joursEntre(new Date(c.commandee_le+'T12:00:00'),aujourdhui):0
+      return ligne({href:r?`/admin/reparations.html?q=${encodeURIComponent(r.numero||'')}`:'/admin/reparations.html',ico:'stk',cls:'i-stk',
+        titre:`${escHtml(c.articles||'Pièce')}${r?' · '+escHtml(r.numero||''):''}`,
+        sous:`${escHtml(c.fournisseur)}${c.numero_commande?' n° '+escHtml(c.numero_commande):''} · commandée il y a ${j} ${pluriel(j,'jour')}`,
+        droite:`<span class="pill ${c.statut==='expediee'?'p-ok':'p-w'}">${c.statut==='expediee'?'Expédiée':'Commandée'}</span>`})
+    }).join('')
+    grid.appendChild(carte('c-cmd','Pièces en attente','/admin/reparations.html',commandesAttente.length,'hot',corps,''))
   }
 }
 

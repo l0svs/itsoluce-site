@@ -917,6 +917,16 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="card-lbl">Mentions légales</div>
               <div class="row"><div class="row-l"><b>Mention TVA</b><em>Affichée en bas de chaque document</em></div><div class="row-f"><input type="text" id="s-tva" data-cle="finance_mention_tva" placeholder="TVA non applicable, article 56bis du Code TVA"/></div></div>
             </div>
+
+            <div class="card">
+              <div class="card-lbl">Parrainage</div>
+              <div class="row"><div class="row-l"><b>Programme de parrainage</b><em>Désactivé : plus de nouvelles réductions ; celles déjà gagnées restent utilisables.</em></div><div class="row-f"><select id="s-parr-actif" data-cle="parrainage_actif"><option value="oui">Actif</option><option value="non">Désactivé</option></select></div></div>
+              <div class="row"><div class="row-l"><b>Réduction de bienvenue</b><em>En euros, pour le nouveau client, sur sa première réparation</em></div><div class="row-f"><input type="number" id="s-parr-filleul" data-cle="parrainage_remise_filleul" min="0" max="500" step="1" placeholder="10"/></div></div>
+              <div class="row"><div class="row-l"><b>Récompense du parrain</b><em>En euros, gagnée quand la facture du filleul est payée</em></div><div class="row-f"><input type="number" id="s-parr-recompense" data-cle="parrainage_recompense" min="0" max="500" step="1" placeholder="10"/></div></div>
+              <div class="row"><div class="row-l"><b>Montant minimum</b><em>En euros : réparation minimale du filleul pour la réduction et la récompense</em></div><div class="row-f"><input type="number" id="s-parr-minimum" data-cle="parrainage_minimum" min="0" max="5000" step="1" placeholder="30"/></div></div>
+              <div class="row"><div class="row-l"><b>Parrainages récompensés par an</b><em>Par parrain et par année civile</em></div><div class="row-f"><input type="number" id="s-parr-max" data-cle="parrainage_max_an" min="0" max="100" step="1" placeholder="5"/></div></div>
+              <p class="sec-desc" style="margin:10px 0 0;font-size:12px;">Ces règles figurent aussi dans les conditions générales du site (10 € de bienvenue dès 30 €, 10 € pour le parrain, 5 par an) : si tu changes ces montants, les conditions générales doivent être mises à jour.</p>
+            </div>
           </section>
 
           <!-- ── GRILLE TARIFAIRE ── -->
@@ -975,6 +985,18 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="int-row"><div class="int-ico">🌐</div><div class="int-info"><div class="int-name">itsoluce.be</div><div class="int-desc">Site public, hébergé par GitHub Pages</div></div><a href="https://itsoluce.be" target="_blank" rel="noopener" class="btn btn-secondary">Visiter</a></div>
               <div class="int-row"><div class="int-ico">📧</div><div class="int-info"><div class="int-name">OVH Zimbra</div><div class="int-desc">contact@itsoluce.be</div></div><a href="https://webmail.ovh.net" target="_blank" rel="noopener" class="btn btn-secondary">Webmail</a></div>
               <div class="int-row"><div class="int-ico">📦</div><div class="int-info"><div class="int-name">Foneday</div><div class="int-desc">Catalogue de pièces et commandes fournisseur</div></div><span class="int-state">Connecté</span></div>
+            </div>
+          
+            <div class="card" id="agenda-card">
+              <div class="card-lbl">Agenda synchronisé</div>
+              <p style="font-size:13.5px;color:var(--t2);line-height:1.55;margin:0 0 12px;">Tes rendez-vous du Planning apparaissent dans le calendrier de ton téléphone. Sens unique : tu crées et modifies toujours les rendez-vous dans l'ERP. L'iPhone actualise en général toutes les 15 minutes à 1 heure, Google Agenda peut mettre plusieurs heures.</p>
+              <div class="row"><div class="row-l"><b>Lien d'abonnement</b><span style="display:block;font-size:12px;color:var(--t3);margin-top:2px;">Secret : il donne accès aux noms et adresses de tes clients.</span></div><div class="row-f"><input type="text" id="agenda-url" readonly value="Chargement…" onclick="this.select()"/></div></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+                <a class="btn btn-primary" id="agenda-iphone" href="#" style="display:inline-flex;">Ajouter au calendrier de l'iPhone</a>
+                <button class="btn btn-secondary" type="button" onclick="copierAgenda()">Copier le lien</button>
+                <button class="btn btn-secondary" type="button" onclick="regenererAgenda()">Régénérer le lien</button>
+              </div>
+              <p style="font-size:12.5px;color:var(--t3);line-height:1.55;margin:12px 0 0;">Google Agenda : sur ordinateur, « Autres agendas » › « + » › « À partir de l'URL », puis colle le lien.</p>
             </div>
           </section>
 
@@ -1529,6 +1551,7 @@ window.chargerSection=async function(id){
     else if(id==='fournisseurs')await loadFournisseurs()
     else if(id==='commandes')await loadCommandes()
     else if(id==='garanties')await loadGaranties()
+    else if(id==='integrations')await loadAgenda()
   }catch(err){
     _charge[id]=false
     showToast('Erreur de chargement : '+(err.message||err),'err')
@@ -2402,6 +2425,30 @@ function dessinerDetailGar(){
 }
 
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
+
+/* ── Agenda synchronisé (abonnement iCal) ─────────────────────── */
+const AGENDA_BASE=SB+'/functions/v1/agenda-ics?t='
+function afficherAgenda(jeton){
+  const url=AGENDA_BASE+jeton
+  document.getElementById('agenda-url').value=url
+  document.getElementById('agenda-iphone').href=url.replace(/^https:/,'webcal:')
+}
+async function loadAgenda(){
+  const {data,error}=await sb.rpc('agenda_jeton_lire',{p_regenerer:false})
+  if(error){document.getElementById('agenda-url').value='Indisponible : '+error.message;throw error}
+  afficherAgenda(data)
+}
+window.copierAgenda=async function(){
+  const v=document.getElementById('agenda-url').value
+  try{await navigator.clipboard.writeText(v);showToast('Lien copié','ok')}
+  catch(e){document.getElementById('agenda-url').select();showToast('Sélectionne le lien et copie-le','err')}
+}
+window.regenererAgenda=async function(){
+  if(!confirm("Régénérer le lien ?\n\nL'ancien lien cessera de fonctionner : tu devras réabonner ton calendrier avec le nouveau."))return
+  const {data,error}=await sb.rpc('agenda_jeton_lire',{p_regenerer:true})
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  afficherAgenda(data);showToast('Nouveau lien généré','ok')
+}
 
 /* ── Ouverture directe d'une section via l'ancre ─────────────── */
 const ancre=(location.hash||'').replace('#','')

@@ -474,6 +474,7 @@ function statutOf(d){
   return 'traite'
 }
 
+let parrainsParCode=new Map()
 async function load(){
   const {data,error,count}=await sb.from('demandes_formulaire')
     .select('*',{count:'exact'})
@@ -481,6 +482,12 @@ async function load(){
     .limit(2000)
   if(error)throw new Error(error.message)
   allDemandes=data||[]
+  // Parrains des codes indiqués dans le formulaire (nom affiché sur la fiche)
+  const codes=[...new Set(allDemandes.map(d=>d.code_parrainage).filter(Boolean))]
+  if(codes.length){
+    const rp=await sb.from('clients').select('id,numero,nom,code_parrainage').in('code_parrainage',codes)
+    parrainsParCode=new Map((rp.data||[]).map(c=>[String(c.code_parrainage).toUpperCase(),c]))
+  }
   if(typeof count==='number'&&count>allDemandes.length){
     showToast(`Seules ${allDemandes.length} demandes sur ${count} ont été chargées.`,'err')
   }
@@ -593,6 +600,7 @@ function fiche(d){
       <div><span class="k">Téléphone</span>${tel?`<a href="tel:${escHtml(tel)}">${escHtml(d.telephone)}</a>`:'<span class="val">—</span>'}</div>
       <div><span class="k">Appareil</span><span class="val">${escHtml(d.appareil||'—')}</span></div>
       <div><span class="k">Intervention</span><span class="val">${modeComplet}</span></div>
+      ${d.code_parrainage?(()=>{const p=parrainsParCode.get(String(d.code_parrainage).toUpperCase());return `<div><span class="k">Parrainage</span><span class="val"><b style="font-weight:600;letter-spacing:.03em;">${escHtml(d.code_parrainage)}</b>${p?` · parrain : <a href="/admin/clients.html?q=${encodeURIComponent(p.numero||p.nom||'')}">${escHtml(p.nom||'')}</a>`:''}</span></div>`})():''}
     </div>
     <div class="panne">${escHtml(d.description||'—')}</div>
     ${(s==='converti'||s==='devis')?`<div class="fil" data-dem="${d.id}"></div>`:''}
@@ -745,7 +753,7 @@ window.transformer=async function(id){
 
 window.exportCSV=function(){
   if(!allDemandes.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','vue','en_attente_depuis','email_confirmation_envoye','converti_reparation_id']
+  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','code_parrainage','vue','en_attente_depuis','email_confirmation_envoye','converti_reparation_id']
   const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
   const csv=[cols.join(';'),...allDemandes.map(d=>cols.map(c=>cell(d[c])).join(';'))].join('\r\n')
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})

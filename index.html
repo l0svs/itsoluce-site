@@ -2526,6 +2526,11 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 .ct-form__titre { font-size: 20px; font-weight: 600; color: #1d1d1f; margin-bottom: 20px; }
 .ct-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
 .ct-opt { color: #aeaeb2; font-weight: 400; }
+.f-parr-lien { background: none; border: none; padding: 0; margin: 0 0 4px; font: inherit; font-size: 13px; color: #0052CC; cursor: pointer; }
+.f-parr-lien:hover { opacity: .75; }
+.f-parr-lien[aria-expanded="true"] { display: none; }
+#f-parrain { text-transform: uppercase; letter-spacing: .04em; }
+#f-parrain::placeholder { text-transform: none; letter-spacing: 0; }
 .ct-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #f5f5f7; border-radius: 12px; }
 .ct-seg .mode-card { display: block; border: none; background: none; padding: 10px; border-radius: 9px; font: inherit; font-size: 14px; color: #6e6e73; cursor: pointer; text-align: center; transition: background .15s, color .15s; }
 .ct-seg .mode-card:hover { color: #1d1d1f; }
@@ -3073,6 +3078,15 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
               <label class="fl" for="f-desc">La panne</label>
               <textarea class="fi fi-ta ct-ta" id="f-desc" name="description" placeholder="Marque, modèle et ce qui ne va pas" rows="5" required></textarea>
             </div>
+            <div class="fg">
+              <button type="button" class="f-parr-lien" id="parrLien" aria-expanded="false" aria-controls="parrSlide">J'ai un code de parrainage</button>
+              <div class="slide" id="parrSlide">
+                <div class="slide__inner">
+                  <label class="fl" for="f-parrain">Code de parrainage <span class="ct-opt">(facultatif)</span></label>
+                  <input class="fi" id="f-parrain" type="text" name="code_parrainage" placeholder="Ex. IT-MARC-7KX" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false">
+                </div>
+              </div>
+            </div>
             <button class="btn-send" type="submit" id="submitBtn">
               <span class="btn-send__label">Envoyer ma demande</span>
               <span class="btn-send__spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 0 1 10 10"/></svg></span>
@@ -3481,6 +3495,21 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     
   });
 
+  // Parrainage : champ replié ; ouvert et prérempli si le visiteur arrive
+  // par le lien de son parrain (itsoluce.be/?parrain=IT-XXXX-XXX#contact).
+  var parrLien = document.getElementById('parrLien');
+  var parrSlide = document.getElementById('parrSlide');
+  var parrInput = document.getElementById('f-parrain');
+  function ouvrirParrainage(){
+    parrSlide.classList.add('is-open');
+    parrLien.setAttribute('aria-expanded','true');
+  }
+  if (parrLien) parrLien.addEventListener('click', function(){ ouvrirParrainage(); parrInput.focus(); });
+  try {
+    var codeLien = (new URLSearchParams(location.search).get('parrain') || '').trim().toUpperCase();
+    if (/^[A-Z0-9-]{4,20}$/.test(codeLien)) { parrInput.value = codeLien; ouvrirParrainage(); }
+  } catch (e) {}
+
   var modeCards = document.querySelectorAll('.mode-card');
   var modeInput = document.getElementById('modeInterventionInput');
   var modeHint = document.getElementById('modeHint');
@@ -3547,6 +3576,7 @@ function submitForm(e){
   const modeIntervention = data.get('mode_intervention') || '';
   const adresse = data.get('adresse') || '';
   const description = data.get('description') || '';
+  const codeParrainage = String(data.get('code_parrainage') || '').trim().toUpperCase();
 
   async function saveToSupabase() {
     try {
@@ -3565,7 +3595,9 @@ function submitForm(e){
           p_appareil: appareil || null,
           p_mode_intervention: modeIntervention || null,
           p_adresse: adresse || null,
-          p_description: description || null
+          p_description: description || null,
+          // envoyé seulement s'il est rempli : la base ignore un code inconnu
+          ...(codeParrainage ? { p_code_parrainage: codeParrainage.slice(0, 30) } : {})
         })
       });
       if (!res.ok) {
@@ -3668,7 +3700,7 @@ var legal = {
   },
   terms: {
     t: "Conditions générales de service",
-    b: "<h4>Objet</h4><p>Les présentes Conditions Générales de Service régissent les prestations de diagnostic, réparation et assistance informatique fournies par <strong>IT Soluce</strong> (ci-après « le Prestataire ») à ses clients particuliers et professionnels (ci-après « le Client »).</p><h4>Prestations proposées</h4><ul><li>Réparation de smartphones, tablettes, ordinateurs et consoles</li><li>Remplacement d'écrans, batteries, composants</li><li>Diagnostic et réparation de pannes logicielles et matérielles</li><li>Récupération de données</li><li>Assistance et conseils informatiques</li></ul><h4>Zone d'intervention</h4><p>Le Prestataire intervient dans le Brabant wallon, la Région de Bruxelles-Capitale, la province de Namur et la région de Charleroi, et principalement à Tubize et ses environs. Toute intervention en dehors de cette zone est soumise à accord préalable. Les interventions se font à domicile, sur dépôt ou par échange à distance, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Tout devis est gratuit et sans engagement.</li><li>Le devis est communiqué au Client par écrit (email) avant toute intervention payante.</li><li>L'intervention démarre uniquement après l'accord explicite du Client sur le devis.</li><li>Lorsque la panne doit être identifiée avant l'établissement du devis, ou à la demande du Client, un diagnostic est facturé 30 €, quel que soit l'appareil. Ce montant est annoncé au Client avant toute intervention.</li><li>Si le Client confie ensuite la réparation au Prestataire, le montant du diagnostic est déduit du devis et de la facture finale. À défaut, notamment en cas de refus du devis ou d'appareil non réparable, le diagnostic reste dû.</li></ul><h4>Délais d'intervention</h4><p>Les délais communiqués sont indicatifs et dépendent de la disponibilité des pièces détachées. Le Prestataire s'engage à informer le Client en cas de retard ou de difficulté imprévue.</p><h4>Sauvegarde des données</h4><ul><li>Le Client demeure seul responsable de la sauvegarde de ses données avant toute intervention.</li><li>Le Prestataire ne pourra être tenu responsable d'une éventuelle perte de données survenant pendant la réparation.</li><li>Les identifiants et mots de passe communiqués à des fins de réparation ne sont jamais conservés après l'intervention.</li><li>En cas de récupération de données, le Prestataire met tout en œuvre pour récupérer un maximum d'informations sans toutefois garantir un résultat exhaustif.</li></ul><h4>Pièces détachées et garanties</h4><ul><li>Les pièces utilisées peuvent être neuves ou reconditionnées selon l'accord conclu avec le Client.</li><li>Les pièces remplacées bénéficient d'une garantie de <strong>3 mois pièces et main d'œuvre</strong>, sauf mention contraire au devis.</li><li>La garantie ne couvre pas : les chocs, oxydations, dégâts des eaux, mauvaise utilisation, ou toute intervention ultérieure réalisée par un tiers.</li><li>Les pièces défectueuses remplacées peuvent être restituées au Client sur demande, sauf accord contraire.</li></ul><h4>Responsabilité</h4><p>Le Prestataire s'engage à apporter tout le soin nécessaire à l'exécution de ses prestations. Sa responsabilité ne peut être engagée :</p><ul><li>Pour des dommages liés à un défaut antérieur de l'appareil non identifié au moment du diagnostic</li><li>Pour la perte de données non sauvegardées par le Client</li><li>Pour des appareils confiés en mauvais état général ou présentant des signes de corrosion / oxydation</li></ul><h4>Paiement</h4><ul><li>Le paiement est exigible à la fin de l'intervention, sauf accord contraire.</li><li>Modes de paiement acceptés : espèces, Bancontact, virement bancaire, paiement par carte (Tap to Pay).</li><li>Régime TVA : Franchise de la taxe — article 56bis du Code TVA. Aucune TVA n'est appliquée sur les factures émises.</li><li>En cas de retard de paiement, des intérêts de retard pourront être appliqués conformément à la loi du 2 août 2002 relative aux retards de paiement.</li></ul><h4>Annulation et rétractation</h4><p>Conformément à la législation belge, le Client particulier dispose d'un droit de rétractation de 14 jours pour les prestations à distance. Ce droit ne s'applique pas dès lors que la prestation a commencé avec l'accord exprès du Client.</p><h4>Litiges et droit applicable</h4><p>Les présentes conditions sont régies par le droit belge. En cas de litige, une solution amiable sera privilégiée. À défaut, les tribunaux de l'arrondissement judiciaire du Brabant wallon seront seuls compétents.</p><h4>Médiation</h4><p>En cas de différend non résolu à l'amiable, le Client consommateur peut recourir au Service de Médiation pour le Consommateur — Boulevard du Roi Albert II 8, 1000 Bruxelles — <a href='https://www.mediationconsommateur.be' target='_blank'>www.mediationconsommateur.be</a></p>"
+    b: "<h4>Objet</h4><p>Les présentes Conditions Générales de Service régissent les prestations de diagnostic, réparation et assistance informatique fournies par <strong>IT Soluce</strong> (ci-après « le Prestataire ») à ses clients particuliers et professionnels (ci-après « le Client »).</p><h4>Prestations proposées</h4><ul><li>Réparation de smartphones, tablettes, ordinateurs et consoles</li><li>Remplacement d'écrans, batteries, composants</li><li>Diagnostic et réparation de pannes logicielles et matérielles</li><li>Récupération de données</li><li>Assistance et conseils informatiques</li></ul><h4>Zone d'intervention</h4><p>Le Prestataire intervient dans le Brabant wallon, la Région de Bruxelles-Capitale, la province de Namur et la région de Charleroi, et principalement à Tubize et ses environs. Toute intervention en dehors de cette zone est soumise à accord préalable. Les interventions se font à domicile, sur dépôt ou par échange à distance, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Tout devis est gratuit et sans engagement.</li><li>Le devis est communiqué au Client par écrit (email) avant toute intervention payante.</li><li>L'intervention démarre uniquement après l'accord explicite du Client sur le devis.</li><li>Lorsque la panne doit être identifiée avant l'établissement du devis, ou à la demande du Client, un diagnostic est facturé 30 €, quel que soit l'appareil. Ce montant est annoncé au Client avant toute intervention.</li><li>Si le Client confie ensuite la réparation au Prestataire, le montant du diagnostic est déduit du devis et de la facture finale. À défaut, notamment en cas de refus du devis ou d'appareil non réparable, le diagnostic reste dû.</li></ul><h4>Délais d'intervention</h4><p>Les délais communiqués sont indicatifs et dépendent de la disponibilité des pièces détachées. Le Prestataire s'engage à informer le Client en cas de retard ou de difficulté imprévue.</p><h4>Sauvegarde des données</h4><ul><li>Le Client demeure seul responsable de la sauvegarde de ses données avant toute intervention.</li><li>Le Prestataire ne pourra être tenu responsable d'une éventuelle perte de données survenant pendant la réparation.</li><li>Les identifiants et mots de passe communiqués à des fins de réparation ne sont jamais conservés après l'intervention.</li><li>En cas de récupération de données, le Prestataire met tout en œuvre pour récupérer un maximum d'informations sans toutefois garantir un résultat exhaustif.</li></ul><h4>Pièces détachées et garanties</h4><ul><li>Les pièces utilisées peuvent être neuves ou reconditionnées selon l'accord conclu avec le Client.</li><li>Les pièces remplacées bénéficient d'une garantie de <strong>3 mois pièces et main d'œuvre</strong>, sauf mention contraire au devis.</li><li>La garantie ne couvre pas : les chocs, oxydations, dégâts des eaux, mauvaise utilisation, ou toute intervention ultérieure réalisée par un tiers.</li><li>Les pièces défectueuses remplacées peuvent être restituées au Client sur demande, sauf accord contraire.</li></ul><h4>Responsabilité</h4><p>Le Prestataire s'engage à apporter tout le soin nécessaire à l'exécution de ses prestations. Sa responsabilité ne peut être engagée :</p><ul><li>Pour des dommages liés à un défaut antérieur de l'appareil non identifié au moment du diagnostic</li><li>Pour la perte de données non sauvegardées par le Client</li><li>Pour des appareils confiés en mauvais état général ou présentant des signes de corrosion / oxydation</li></ul><h4>Paiement</h4><ul><li>Le paiement est exigible à la fin de l'intervention, sauf accord contraire.</li><li>Modes de paiement acceptés : espèces, Bancontact, virement bancaire, paiement par carte (Tap to Pay).</li><li>Régime TVA : Franchise de la taxe — article 56bis du Code TVA. Aucune TVA n'est appliquée sur les factures émises.</li><li>En cas de retard de paiement, des intérêts de retard pourront être appliqués conformément à la loi du 2 août 2002 relative aux retards de paiement.</li></ul><h4>Annulation et rétractation</h4><p>Conformément à la législation belge, le Client particulier dispose d'un droit de rétractation de 14 jours pour les prestations à distance. Ce droit ne s'applique pas dès lors que la prestation a commencé avec l'accord exprès du Client.</p><h4>Parrainage</h4><ul><li>Chaque client reçoit un code de parrainage personnel.</li><li>Un nouveau client qui communique ce code lors de sa première demande bénéficie d'une réduction de bienvenue de 10 € sur sa première réparation d'au moins 30 €.</li><li>Lorsque la facture de ce nouveau client est réglée, le parrain reçoit une réduction de 10 € à valoir sur une prochaine prestation, dans la limite de 5 parrainages récompensés par année civile.</li><li>Le parrainage est réservé aux nouveaux clients : un client ne peut pas se parrainer lui-même.</li><li>Les réductions ne sont pas échangeables contre de l'argent et ne peuvent pas rendre une facture négative.</li><li>Le Prestataire peut modifier ou arrêter le programme à tout moment ; les réductions déjà acquises restent utilisables.</li></ul><h4>Litiges et droit applicable</h4><p>Les présentes conditions sont régies par le droit belge. En cas de litige, une solution amiable sera privilégiée. À défaut, les tribunaux de l'arrondissement judiciaire du Brabant wallon seront seuls compétents.</p><h4>Médiation</h4><p>En cas de différend non résolu à l'amiable, le Client consommateur peut recourir au Service de Médiation pour le Consommateur — Boulevard du Roi Albert II 8, 1000 Bruxelles — <a href='https://www.mediationconsommateur.be' target='_blank'>www.mediationconsommateur.be</a></p>"
   }
 };
 const openM = k => {
