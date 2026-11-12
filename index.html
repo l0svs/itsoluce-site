@@ -2583,6 +2583,20 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   .ct-cols { grid-template-columns: 1fr; }
   .ct-form { padding: 24px 20px; }
 }
+
+/* Boutons flottants : respiration + onde pour attirer l'œil */
+.fab{position:relative;animation:fabSouffle 2.8s ease-in-out infinite}
+.fab--wa{animation-delay:1.4s}
+.fab::after{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;animation:fabOnde 2.8s ease-out infinite}
+.fab--tel::after{box-shadow:0 0 0 0 rgba(0,82,204,.45);--onde:rgba(0,82,204,0)}
+.fab--wa::after{box-shadow:0 0 0 0 rgba(37,211,102,.5);animation-name:fabOndeWa;animation-delay:1.4s}
+.fab:hover{animation-play-state:paused}
+@keyframes fabSouffle{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes fabOnde{0%{box-shadow:0 0 0 0 rgba(0,82,204,.45)}75%{box-shadow:0 0 0 16px rgba(0,82,204,0)}100%{box-shadow:0 0 0 16px rgba(0,82,204,0)}}
+@keyframes fabOndeWa{0%{box-shadow:0 0 0 0 rgba(37,211,102,.5)}75%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 16px rgba(37,211,102,0)}}
+.fab--wa svg{width:28px;height:28px}
+@media (max-width:480px){.fab--wa svg{width:26px;height:26px}}
+@media (prefers-reduced-motion:reduce){.fab,.fab::after{animation:none}}
 </style>
 <style id="absence">
 /* ═══ Bandeau « Absence » ═══
@@ -3324,11 +3338,8 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 
 <!-- Boutons d'appel et WhatsApp, toujours visibles pendant le défilement -->
 <div class="fabs" aria-label="Me contacter">
-  <a class="fab" href="tel:+32474056659" aria-label="Appeler IT Soluce au +32 474 05 66 59" title="Appeler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
-  <a class="fab fab--wa fab--pulse" href="https://wa.me/32474056659" target="_blank" rel="noopener" aria-label="Écrire à IT Soluce sur WhatsApp" title="WhatsApp"><svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
-            <path d="M19.11 17.36c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.13-.42-2.16-1.34-.8-.71-1.34-1.6-1.5-1.87-.16-.27-.02-.41.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.99-.22-.53-.44-.46-.6-.47h-.51c-.18 0-.47.07-.71.34-.24.27-.93.91-.93 2.22s.96 2.58 1.09 2.76c.13.18 1.89 2.88 4.58 4.04.64.28 1.14.44 1.53.56.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.8-1.27.22-.62.22-1.16.15-1.27-.07-.11-.24-.18-.51-.32z"/>
-            <path d="M26.67 15.97c0 5.89-4.79 10.67-10.67 10.67-1.88 0-3.72-.5-5.33-1.45L5.33 26.67l1.52-5.12c-.99-1.68-1.52-3.6-1.52-5.58C5.33 10.09 10.11 5.33 16 5.33c5.88 0 10.67 4.76 10.67 10.64zm-10.67-8.96c-4.94 0-8.96 4.02-8.96 8.96 0 1.86.57 3.66 1.65 5.19l.12.17-.9 3.02 3.1-.88.16.1c1.48.96 3.2 1.47 4.83 1.47 4.94 0 8.96-4.02 8.96-8.96 0-4.94-4.02-8.96-8.96-8.96z"/>
-          </svg></a>
+  <a class="fab fab--tel" href="tel:+32474056659" aria-label="Appeler IT Soluce au +32 474 05 66 59" title="Appeler"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></a>
+  <a class="fab fab--wa" href="https://wa.me/32474056659" target="_blank" rel="noopener" aria-label="Écrire à IT Soluce sur WhatsApp" title="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
 </div>
 
 <!-- FOOTER -->
