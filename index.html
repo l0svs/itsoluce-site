@@ -1971,6 +1971,38 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   .fab svg { width: 16px; height: 16px; }
   .modal__box { margin: 16px auto; }
 }
+/* ── Informations légales : onglets + sommaire ── */
+#legalModal .modal__box{width:min(960px,calc(100% - 32px));margin:48px auto;display:flex;flex-direction:column;max-height:calc(100vh - 96px)}
+#legalModal .modal__top{padding:14px 16px 14px 20px;gap:12px}
+.lg-tabs{display:flex;gap:4px;background:#f5f5f7;border-radius:12px;padding:4px;overflow-x:auto;scrollbar-width:none}
+.lg-tabs::-webkit-scrollbar{display:none}
+.lg-tab{flex-shrink:0;border:none;background:none;font:inherit;font-size:13.5px;font-weight:500;color:#6e6e73;padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.lg-tab:hover{color:#1d1d1f}
+.lg-tab.on{background:#fff;color:#0052CC;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.lg-wrap{display:flex;min-height:0;flex:1}
+.lg-toc{width:230px;flex-shrink:0;border-right:1px solid #f0f0f0;padding:22px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.lg-toc::before{content:'Sur cette page';font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:#aeaeb2;padding:0 10px 8px}
+.lg-toc a{font-size:13px;color:#6e6e73;text-decoration:none;padding:6px 10px;border-radius:8px;line-height:1.35}
+.lg-toc a:hover{background:#f5f5f7;color:#1d1d1f}
+.lg-toc a.on{background:rgba(0,82,204,.08);color:#0052CC;font-weight:500}
+.lg-main{flex:1;min-width:0;display:flex;flex-direction:column;padding:22px 28px 0}
+.lg-main .modal__h{font-size:22px;letter-spacing:-.3px;margin-bottom:4px}
+#legalModal .modal__body{padding:0 4px 24px 0;max-height:none;flex:1;min-height:0}
+#legalModal .modal__body h4{font-size:15px;margin:22px 0 6px;padding-top:14px;border-top:1px solid #f0f0f0}
+#legalModal .modal__body ul{padding-left:20px;margin:6px 0}
+#legalModal .modal__body h4:first-child{border-top:none;padding-top:0;margin-top:10px}
+.lg-toc-sel{display:none}
+.lg-pied{font-size:12.5px;color:#86868b;border-top:1px solid #f0f0f0;padding:12px 0 16px;margin:0}
+.lg-pied a{color:#0052CC}
+@media (max-width:760px){
+  #legalModal .modal__box{width:100%;margin:0;border-radius:0;border:none;height:100%;max-height:none}
+  .lg-toc{display:none}
+  .lg-main{padding:16px 18px 0}
+  .lg-main .modal__h{font-size:20px}
+  .lg-toc-sel{display:block;width:100%;margin:8px 0 6px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#f5f5f7;font:inherit;font-size:14px;color:#1d1d1f}
+  .lg-tab{padding:8px 11px;font-size:13px}
+}
+
 .faq {
   background: #f5f5f7;
   border-top: 1px solid #d2d2d7;
@@ -3598,10 +3630,23 @@ const legalModalHTML = `
   <div class="modal__bg" data-close></div>
   <div class="modal__box">
     <div class="modal__top">
-      <h3 class="modal__h" id="mH">—</h3>
-      <button class="modal__x" data-close>✕</button>
+      <div class="lg-tabs" role="tablist" aria-label="Informations légales">
+        <button class="lg-tab" type="button" role="tab" data-k="mentions">Mentions légales</button>
+        <button class="lg-tab" type="button" role="tab" data-k="privacy">Confidentialité</button>
+        <button class="lg-tab" type="button" role="tab" data-k="cookies">Cookies</button>
+        <button class="lg-tab" type="button" role="tab" data-k="terms">Conditions</button>
+      </div>
+      <button class="modal__x" data-close aria-label="Fermer">✕</button>
     </div>
-    <div class="modal__body" id="mB"></div>
+    <div class="lg-wrap">
+      <nav class="lg-toc" aria-label="Sur cette page"></nav>
+      <div class="lg-main">
+        <h3 class="modal__h" id="mH">—</h3>
+        <select class="lg-toc-sel" aria-label="Aller à la section"></select>
+        <div class="modal__body" id="mB"></div>
+        <p class="lg-pied">Une question sur ces informations ? <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>
+      </div>
+    </div>
   </div>
 </div>`;
 document.body.insertAdjacentHTML('beforeend', legalModalHTML);
@@ -3620,28 +3665,58 @@ var legal = {
   },
   cookies: {
     t: "Politique des cookies",
-    b: "<h4>Qu'est-ce qu'un cookie ?</h4><p>Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, smartphone, tablette) lors de la visite d'un site web. Il permet au site de mémoriser certaines informations relatives à votre navigation.</p><h4>Cookies utilisés sur ce site</h4><p>Le site itsoluce.be fonctionne <strong>sans cookies de tracking ni cookies publicitaires</strong>. Aucun outil d'analyse comportementale ou de profilage n'est actif sur ce site.</p><h4>Cookies techniques</h4><p>Le site peut utiliser uniquement des cookies strictement nécessaires à son bon fonctionnement (par exemple : maintien de la session, préférences d'affichage). Ces cookies ne nécessitent pas de consentement préalable conformément à la réglementation en vigueur.</p><h4>Cookies tiers</h4><p>Aucun cookie tiers (Google Analytics, Facebook Pixel, régies publicitaires, etc.) n'est déposé par ce site.</p><h4>Gestion des cookies</h4><p>Vous pouvez à tout moment configurer votre navigateur pour accepter, refuser ou supprimer les cookies. La procédure varie selon le navigateur utilisé :</p><ul><li><strong>Chrome</strong> : Paramètres → Confidentialité et sécurité → Cookies</li><li><strong>Firefox</strong> : Paramètres → Vie privée et sécurité</li><li><strong>Safari</strong> : Préférences → Confidentialité</li><li><strong>Edge</strong> : Paramètres → Cookies et autorisations de site</li></ul><h4>Évolution de la politique</h4><p>Cette politique des cookies peut être amenée à évoluer. La date de dernière mise à jour est indiquée en bas de cette section.</p><h4>Contact</h4><p>Pour toute question relative aux cookies ou à la confidentialité : <a href='mailto:contact@itsoluce.be'>contact@itsoluce.be</a></p>"
+    b: "<h4>Qu'est-ce qu'un cookie ?</h4><p>Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, smartphone, tablette) lors de la visite d'un site web. Il permet au site de mémoriser certaines informations relatives à votre navigation.</p><h4>Cookies utilisés sur ce site</h4><p>Le site itsoluce.be fonctionne <strong>sans cookies de tracking ni cookies publicitaires</strong>. Aucun outil d'analyse comportementale ou de profilage n'est actif sur ce site.</p><h4>Cookies techniques</h4><p>Le site peut utiliser uniquement des cookies strictement nécessaires à son bon fonctionnement (par exemple : maintien de la session, préférences d'affichage). Ces cookies ne nécessitent pas de consentement préalable conformément à la réglementation en vigueur.</p><h4>Cookies tiers</h4><p>Aucun cookie tiers (Google Analytics, Facebook Pixel, régies publicitaires, etc.) n'est déposé par ce site.</p><h4>Gestion des cookies</h4><p>Vous pouvez à tout moment configurer votre navigateur pour accepter, refuser ou supprimer les cookies. La procédure varie selon le navigateur utilisé :</p><ul><li><strong>Chrome</strong> : Paramètres → Confidentialité et sécurité → Cookies</li><li><strong>Firefox</strong> : Paramètres → Vie privée et sécurité</li><li><strong>Safari</strong> : Préférences → Confidentialité</li><li><strong>Edge</strong> : Paramètres → Cookies et autorisations de site</li></ul><h4>Évolution de la politique</h4><p>Cette politique des cookies peut être amenée à évoluer.</p><h4>Contact</h4><p>Pour toute question relative aux cookies ou à la confidentialité : <a href='mailto:contact@itsoluce.be'>contact@itsoluce.be</a></p>"
   },
   terms: {
     t: "Conditions générales de service",
     b: "<h4>Objet</h4><p>Les présentes Conditions Générales de Service régissent les prestations de diagnostic, réparation et assistance informatique fournies par <strong>IT Soluce</strong> (ci-après « le Prestataire ») à ses clients particuliers et professionnels (ci-après « le Client »).</p><h4>Prestations proposées</h4><ul><li>Réparation de smartphones, tablettes, ordinateurs et consoles</li><li>Remplacement d'écrans, batteries, composants</li><li>Diagnostic et réparation de pannes logicielles et matérielles</li><li>Récupération de données</li><li>Assistance et conseils informatiques</li></ul><h4>Zone d'intervention</h4><p>Le Prestataire intervient dans le Brabant wallon, la Région de Bruxelles-Capitale, la province de Namur et la région de Charleroi, et principalement à Tubize et ses environs. Toute intervention en dehors de cette zone est soumise à accord préalable. Les interventions se font à domicile, sur dépôt ou par échange à distance, sur rendez-vous.</p><h4>Devis et accord</h4><ul><li>Tout devis est gratuit et sans engagement.</li><li>Le devis est communiqué au Client par écrit (email) avant toute intervention payante.</li><li>L'intervention démarre uniquement après l'accord explicite du Client sur le devis.</li><li>Lorsque la panne doit être identifiée avant l'établissement du devis, ou à la demande du Client, un diagnostic est facturé 30 €, quel que soit l'appareil. Ce montant est annoncé au Client avant toute intervention.</li><li>Si le Client confie ensuite la réparation au Prestataire, le montant du diagnostic est déduit du devis et de la facture finale. À défaut, notamment en cas de refus du devis ou d'appareil non réparable, le diagnostic reste dû.</li></ul><h4>Délais d'intervention</h4><p>Les délais communiqués sont indicatifs et dépendent de la disponibilité des pièces détachées. Le Prestataire s'engage à informer le Client en cas de retard ou de difficulté imprévue.</p><h4>Sauvegarde des données</h4><ul><li>Le Client demeure seul responsable de la sauvegarde de ses données avant toute intervention.</li><li>Le Prestataire ne pourra être tenu responsable d'une éventuelle perte de données survenant pendant la réparation.</li><li>Les identifiants et mots de passe communiqués à des fins de réparation ne sont jamais conservés après l'intervention.</li><li>En cas de récupération de données, le Prestataire met tout en œuvre pour récupérer un maximum d'informations sans toutefois garantir un résultat exhaustif.</li></ul><h4>Pièces détachées et garanties</h4><ul><li>Les pièces utilisées peuvent être neuves ou reconditionnées selon l'accord conclu avec le Client.</li><li>Les pièces remplacées bénéficient d'une garantie de <strong>3 mois pièces et main d'œuvre</strong>, sauf mention contraire au devis.</li><li>La garantie ne couvre pas : les chocs, oxydations, dégâts des eaux, mauvaise utilisation, ou toute intervention ultérieure réalisée par un tiers.</li><li>Les pièces défectueuses remplacées peuvent être restituées au Client sur demande, sauf accord contraire.</li></ul><h4>Responsabilité</h4><p>Le Prestataire s'engage à apporter tout le soin nécessaire à l'exécution de ses prestations. Sa responsabilité ne peut être engagée :</p><ul><li>Pour des dommages liés à un défaut antérieur de l'appareil non identifié au moment du diagnostic</li><li>Pour la perte de données non sauvegardées par le Client</li><li>Pour des appareils confiés en mauvais état général ou présentant des signes de corrosion / oxydation</li></ul><h4>Paiement</h4><ul><li>Le paiement est exigible à la fin de l'intervention, sauf accord contraire.</li><li>Modes de paiement acceptés : espèces, Bancontact, virement bancaire, paiement par carte (Tap to Pay).</li><li>Régime TVA : Franchise de la taxe — article 56bis du Code TVA. Aucune TVA n'est appliquée sur les factures émises.</li><li>En cas de retard de paiement, des intérêts de retard pourront être appliqués conformément à la loi du 2 août 2002 relative aux retards de paiement.</li></ul><h4>Annulation et rétractation</h4><p>Conformément à la législation belge, le Client particulier dispose d'un droit de rétractation de 14 jours pour les prestations à distance. Ce droit ne s'applique pas dès lors que la prestation a commencé avec l'accord exprès du Client.</p><h4>Litiges et droit applicable</h4><p>Les présentes conditions sont régies par le droit belge. En cas de litige, une solution amiable sera privilégiée. À défaut, les tribunaux de l'arrondissement judiciaire du Brabant wallon seront seuls compétents.</p><h4>Médiation</h4><p>En cas de différend non résolu à l'amiable, le Client consommateur peut recourir au Service de Médiation pour le Consommateur — Boulevard du Roi Albert II 8, 1000 Bruxelles — <a href='https://www.mediationconsommateur.be' target='_blank'>www.mediationconsommateur.be</a></p>"
   }
 };
+/* Adresse directe de chaque document : itsoluce.be/#conditions, etc. */
+const LG_ANCRE = { mentions: 'mentions-legales', privacy: 'confidentialite', cookies: 'cookies', terms: 'conditions' };
+const lgToc = modal.querySelector('.lg-toc'), lgSel = modal.querySelector('.lg-toc-sel');
+let lgFige = 0;
+const lgActif = i => lgToc.querySelectorAll('a').forEach((a, k) => a.classList.toggle('on', k === i));
+const lgAller = i => {
+  const h = mB.querySelectorAll('h4')[i]; if (!h) return;
+  lgFige = Date.now() + 800; lgActif(i);   /* la section choisie reste marquée, même en bas de page */
+  mB.scrollTo({ top: h.offsetTop - mB.offsetTop - 8, behavior: 'smooth' });
+};
+const lgSuivre = () => {
+  if (Date.now() < lgFige) return;
+  const hs = [...mB.querySelectorAll('h4')]; let i = 0;
+  hs.forEach((h, k) => { if (h.offsetTop - mB.offsetTop - 30 <= mB.scrollTop) i = k; });
+  lgActif(i);
+};
+mB.addEventListener('scroll', () => requestAnimationFrame(lgSuivre), { passive: true });
+lgSel.addEventListener('change', () => lgAller(+lgSel.value));
 const openM = k => {
   const d = legal[k]; if (!d) return;
   mH.textContent = d.t;
   mB.innerHTML = d.b;
+  mB.scrollTop = 0;
+  modal.querySelectorAll('.lg-tab').forEach(t => { const on = t.dataset.k === k; t.classList.toggle('on', on); t.setAttribute('aria-selected', on); });
+  const titres = [...mB.querySelectorAll('h4')].map(h => h.textContent);
+  lgToc.replaceChildren(...titres.map((t, i) => { const a = document.createElement('a'); a.href = '#'; a.textContent = t; a.addEventListener('click', e => { e.preventDefault(); lgAller(i); }); return a; }));
+  lgSel.replaceChildren(new Option('Aller à…', '', true, true), ...titres.map((t, i) => new Option(t, i)));
+  lgSel.options[0].disabled = true;
+  lgFige = 0; lgSuivre();
+  const ong = modal.querySelector('.lg-tab.on'); if (ong) ong.scrollIntoView({ block: 'nearest', inline: 'center' });
+  try { history.replaceState(null, '', '#' + LG_ANCRE[k]); } catch (e) {}
   modal.classList.add('on');
   document.body.style.overflow = 'hidden';
 };
 const closeM = () => {
+  if (!modal.classList.contains('on')) return;
   modal.classList.remove('on');
   document.body.style.overflow = '';
+  if (Object.values(LG_ANCRE).includes(location.hash.slice(1))) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
 };
+modal.querySelectorAll('.lg-tab').forEach(t => t.addEventListener('click', () => openM(t.dataset.k)));
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => openM(b.dataset.m)));
 document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeM));
-// Lien direct vers les conditions (page d'acceptation des devis, mails) : itsoluce.be/#conditions
-if (location.hash === '#conditions') openM('terms');
+// Liens directs (page d'acceptation des devis, mails…) : itsoluce.be/#conditions
+{ const k = Object.keys(LG_ANCRE).find(c => '#' + LG_ANCRE[c] === location.hash); if (k) openM(k); }
 window.addEventListener('keydown', e => e.key === 'Escape' && closeM());
 
 /* FAQ accordéon */
