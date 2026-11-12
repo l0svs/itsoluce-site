@@ -544,7 +544,7 @@ let redaction=null        // brouillon en cours de rédaction
 let etat=null
 const ctx={clients:new Map(),demandes:new Map(),fournisseurs:[],reps:[],devis:[],factures:[],rdvs:[],demandesListe:[]}
 const alaLigne=t=>String(t||'').replace(/\.[ \t]+(?=[A-ZÀ-ÖØ-Þ0-9])/g,'.\n')  // une phrase par ligne dans les mails
-let reglages={modeles:MAIL_MODELES_DEFAUT,parrainage:{}}
+let reglages={modeles:MAIL_MODELES_DEFAUT}
 let ENT=entrepriseDepuisReglages([])
 
 const app=document.getElementById('pageBody')
@@ -641,14 +641,13 @@ async function chargerReglages(){
     if(r.cle==='mail_modeles_v2'){
       try{const l=JSON.parse(r.valeur||'null');if(Array.isArray(l)&&l.length)reglages.modeles=l}catch(e){}
     }
-    if(String(r.cle).indexOf('parrainage_')===0)reglages.parrainage[r.cle]=r.valeur
   })
 }
 /* Clients, demandes, fournisseurs… : servent aux étiquettes et aux liens.
    Une table inaccessible pour ce compte est simplement ignorée. */
 async function chargerContexte(){
   const [c,d,f,r,dv,fa,rv]=await Promise.all([
-    sb.from('clients').select('id,numero,nom,email,code_parrainage').not('email','is',null).limit(5000),
+    sb.from('clients').select('id,numero,nom,email').not('email','is',null).limit(5000),
     sb.from('demandes_formulaire').select('id,prenom,nom,email,appareil,description,created_at').not('email','is',null).order('created_at',{ascending:false}).limit(2000),
     sb.from('fournisseurs').select('nom,email,site_web').limit(500),
     sb.from('reparations').select('id,numero,client_id,client_email,client_nom,appareil,modele,panne_description,statut,created_at').order('created_at',{ascending:false}).limit(2000),
@@ -1040,20 +1039,9 @@ function contexteMail(email,indices){
     validite_devis:dv&&dv.date_validite?new Date(dv.date_validite).toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'}):'',
     lien_devis:dv&&dv.jeton_public&&dv.numero?`https://itsoluce.be/devis-en-ligne.html?t=${dv.jeton_public}`:'',
     date_rdv:rdv?new Date(rdv.date_debut).toLocaleString('fr-BE',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).replace(':','h').replace(' à ',' à '):'',
-    lieu_rdv:(rdv&&rdv.lieu)||'',
-    // Parrainage : code du client et montants réglés dans Gestion › Facturation.
-    code_parrainage:(cl&&cl.code_parrainage)||'',
-    remise_filleul:montantParrainage('parrainage_remise_filleul',10),
-    recompense_parrain:montantParrainage('parrainage_recompense',10),
-    minimum_parrainage:montantParrainage('parrainage_minimum',30)
+    lieu_rdv:(rdv&&rdv.lieu)||''
   }
   return v
-}
-function montantParrainage(cle,defaut){
-  const brut=String(reglages.parrainage[cle]==null?'':reglages.parrainage[cle]).trim()
-  const n=brut===''?defaut:Number(brut.replace(',','.'))
-  const x=isFinite(n)&&n>=0?n:defaut
-  return (Number.isInteger(x)?String(x):x.toFixed(2).replace('.',','))+' €'
 }
 function remplir(t,v){
   return String(t||'').replace(/\{([a-zA-Z_éèêàû]+)\}/g,(tout,k)=>{
@@ -1342,9 +1330,6 @@ if(P.get('mail'))ouvrirMail(Number(P.get('mail')))
 else if(P.get('nouveau')&&!LECTURE_SEULE){
   const email=norm(P.get('a'))
   nouvelleRedaction({a:email,objet:P.get('objet')||'',indices:{demande:P.get('demande'),reparation:P.get('reparation'),devis:P.get('devis_id'),client:P.get('client')}})
-  // ?modele=parrainage : le modèle demandé est appliqué d'office (s'il existe encore).
-  const iModele=P.get('modele')?reglages.modeles.findIndex(t=>t.cle===P.get('modele')):-1
-  if(iModele>=0)appliquerModele(iModele)
   history.replaceState(null,'','/admin/messages.html')
 }
 
