@@ -31,7 +31,7 @@
   var COLS = {
     demandes_formulaire: 'id,prenom,nom,created_at,converti_reparation_id,converti_devis_id',
     devis: 'id,numero,statut,total,date_validite,reparation_id,converti_reparation_id,converti_facture_id',
-    reparations: 'id,numero,statut,converti_facture_id,date_fin,garantie_de_id',
+    reparations: 'id,numero,statut,type,converti_facture_id,date_fin,garantie_de_id',
     factures: 'id,numero,statut,total,acompte,devis_id,reparation_id,date_paiement'
   };
 
@@ -87,6 +87,7 @@
   }
 
   var DEV = { brouillon: 'brouillon', envoye: 'envoyé', accepte: 'accepté', refuse: 'refusé' };
+  var INTER = { attente_reception: 'planifiée', recu: 'planifiée', attente: 'en attente', encours: 'en cours', pret: 'réalisée', rendu: 'terminée' };
   var REP = { attente_reception: 'à réceptionner', recu: 'appareil reçu', attente: 'attente de pièce', encours: 'en réparation', pret: 'prêt', rendu: 'rendu', non_reparable: 'non réparable', annule: 'annulé' };
   var FAC = { brouillon: 'brouillon, sans numéro', envoyee: 'émise', payee: 'payée', annulee: 'annulée', non_reparable: 'diagnostic offert', creditee: 'annulée par note de crédit' };
 
@@ -100,7 +101,8 @@
         etat: dev.statut === 'accepte' ? 'ok' : dev.statut === 'refuse' ? 'ko' : 'cours', href: '/admin/devis.html?q=' + encodeURIComponent(dev.numero || '') });
     } else e.push({ cle: 'devis', titre: 'Devis', sous: 'aucun', etat: 'vide' });
     if (rep) {
-      e.push({ cle: 'reparation', titre: 'Réparation ' + (rep.numero || ''), sous: REP[rep.statut] || rep.statut,
+      var inter = rep.type === 'intervention';
+      e.push({ cle: 'reparation', titre: (inter ? 'Intervention ' : 'Réparation ') + (rep.numero || ''), sous: (inter && INTER[rep.statut]) || REP[rep.statut] || rep.statut,
         etat: ['pret', 'rendu'].indexOf(rep.statut) >= 0 ? 'ok' : ['non_reparable', 'annule'].indexOf(rep.statut) >= 0 ? 'ko' : 'cours',
         href: '/admin/reparations.html?q=' + encodeURIComponent(rep.numero || '') });
     } else e.push({ cle: 'reparation', titre: 'Réparation', sous: 'pas encore créée', etat: 'vide' });
@@ -143,6 +145,7 @@
     if (rep && rep.statut === 'non_reparable') return 'Facturer le diagnostic (ou l’offrir)';
     if (rep && rep.statut === 'pret') return 'Créer la facture';
     if (rep && rep.statut === 'rendu') return 'Créer la facture';
+    if (rep && rep.type === 'intervention') return ['attente_reception', 'recu', 'attente'].indexOf(rep.statut) >= 0 ? "Démarrer l'intervention" : "Terminer l'intervention";
     if (rep && rep.statut === 'attente_reception') return "Réceptionner l'appareil";
     if (rep) return 'Terminer la réparation';
     if (dev && dev.statut === 'accepte') return 'Créer la réparation';
