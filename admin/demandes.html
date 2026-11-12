@@ -124,6 +124,20 @@ body{font-size:14px;}
 .fiche .fil:empty{display:none;}
 .fiche.cible{box-shadow:0 0 0 2px var(--a);}
 .fiche.st-traite{opacity:.82;}
+.fiche.st-traitee{border-left-color:var(--ok);}
+.sugg{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--t2); background:var(--ad); border-radius:10px; padding:9px 12px; margin:-4px 0 13px;}
+.sugg b{color:var(--t1); font-weight:600;}
+.sugg .btn{padding:6px 11px; font-size:12px;}
+.tr-ov{position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:400; padding:16px;}
+.tr-ov.open{display:flex;}
+.tr-box{background:var(--bg2); border-radius:16px; width:100%; max-width:440px; padding:20px 20px 16px; box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.tr-box h3{font-size:15px; font-weight:600; margin-bottom:4px; color:var(--t1);}
+.tr-box > p{font-size:12.5px; color:var(--t3); margin-bottom:12px;}
+.tr-opt{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--ln); border-radius:11px; margin-bottom:8px; cursor:pointer; font-size:13px; color:var(--t1);}
+.tr-opt:hover{border-color:var(--a);}
+.tr-opt input{margin-top:2px; accent-color:var(--a);}
+.tr-opt em{display:block; font-style:normal; font-size:12px; color:var(--t3); margin-top:1px;}
+.tr-acts{display:flex; justify-content:flex-end; gap:8px; margin-top:12px;}
 .fiche.st-traite:hover{opacity:1;}
 
 .fiche-h{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
@@ -337,6 +351,17 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="tr-ov" id="trOv" onclick="if(event.target===this)fermerTraitee()">
+  <div class="tr-box" role="dialog" aria-modal="true" aria-labelledby="trTitre">
+    <h3 id="trTitre">Demande</h3>
+    <p>Comment cette demande a-t-elle été traitée ?</p>
+    <div id="trOpts"></div>
+    <div class="tr-acts">
+      <button class="btn btn-secondary" onclick="fermerTraitee()">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmerTraitee()">Marquer comme traitée</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* Thème et accent — mêmes valeurs que les autres pages refondues. */
@@ -463,12 +488,13 @@ if(new URLSearchParams(location.search).get('acces')){
 }
 
 
-let allDemandes=[]
+let allDemandes=[], docsClients={devis:[],reps:[]}
 let activeFilter='a_traiter'
 
 function statutOf(d){
   if(d.converti_reparation_id)return 'converti'
   if(d.converti_devis_id)return 'devis'
+  if(d.traitee_le)return 'traitee'
   if(d.en_attente_depuis)return 'attente'
   if(!d.vue)return 'nouveau'
   return 'traite'
@@ -481,6 +507,14 @@ async function load(){
     .limit(2000)
   if(error)throw new Error(error.message)
   allDemandes=data||[]
+  // Devis et dossiers des mêmes clients : pour proposer de rattacher une
+  // demande traitée sans passer par « Faire le devis ». Une page sans accès
+  // à ces tables les ignore simplement.
+  {const [rd,rr]=await Promise.all([
+    sb.from('devis').select('id,numero,client_email,total,statut,date_emission,created_at,converti_reparation_id,reparation_id').not('client_email','is',null).neq('statut','brouillon').limit(3000),
+    sb.from('reparations').select('id,numero,client_email,appareil,modele,statut,created_at').not('client_email','is',null).limit(3000)
+  ])
+  docsClients={devis:rd.error?[]:(rd.data||[]),reps:rr.error?[]:(rr.data||[])}}
   if(typeof count==='number'&&count>allDemandes.length){
     showToast(`Seules ${allDemandes.length} demandes sur ${count} ont été chargées.`,'err')
   }
@@ -498,11 +532,75 @@ async function load(){
 
 function renderAll(){majResume();renderFilters();renderTable()}
 
+/* Documents faits pour le même client (même adresse e-mail) depuis sa
+   demande, pas encore rattachés à une autre demande. */
+function docsPour(d){
+  const mail=String(d.email||'').trim().toLowerCase()
+  if(!mail)return []
+  const depuis=new Date(d.created_at).getTime()-2*86400000
+  const prisD=new Set(allDemandes.filter(x=>x.id!==d.id&&x.converti_devis_id).map(x=>x.converti_devis_id))
+  const prisR=new Set(allDemandes.filter(x=>x.id!==d.id&&x.converti_reparation_id).map(x=>x.converti_reparation_id))
+  const meme=x=>String(x.client_email||'').trim().toLowerCase()===mail&&new Date(x.created_at).getTime()>=depuis
+  const dv=docsClients.devis.filter(x=>meme(x)&&!prisD.has(x.id)).map(x=>({type:'devis',id:x.id,numero:x.numero,
+    detail:`${dateFr(x.date_emission||x.created_at)} · ${eurFr(x.total)}${x.statut==='accepte'?' · accepté':x.statut==='refuse'?' · refusé':''}`,
+    rep:x.converti_reparation_id||x.reparation_id||null,t:new Date(x.created_at).getTime()}))
+  const rp=docsClients.reps.filter(x=>meme(x)&&!prisR.has(x.id)&&!dv.some(v=>v.rep===x.id)).map(x=>({type:'reparation',id:x.id,numero:x.numero,
+    detail:`${dateFr(x.created_at)} · ${[x.appareil,x.modele].filter(Boolean).join(' ')||'dossier'}`,t:new Date(x.created_at).getTime()}))
+  return [...dv,...rp].sort((a,b)=>a.t-b.t)
+}
+const dateFr=v=>v?new Date(v).toLocaleDateString('fr-BE',{day:'numeric',month:'short'}):''
+const eurFr=v=>new Intl.NumberFormat('fr-BE',{style:'currency',currency:'EUR'}).format(Number(v)||0)
+
+/* Marquer comme traitée : rattachée au devis / dossier qui l'a traitée, ou
+   « traitée autrement » (téléphone, conseil, sur place…). */
+let _trId=null
+window.ouvrirTraitee=function(id){
+  const d=allDemandes.find(x=>x.id===id); if(!d)return
+  _trId=id
+  const docs=docsPour(d)
+  const nom=[d.prenom,d.nom].filter(Boolean).join(' ')||'ce visiteur'
+  document.getElementById('trTitre').textContent=`Demande de ${nom}`
+  document.getElementById('trOpts').innerHTML=docs.map((x,i)=>`<label class="tr-opt"><input type="radio" name="tr" value="${x.type}:${x.id}"${i===0?' checked':''}><span>Rattacher ${x.type==='devis'?'au devis':'au dossier'} <b>${escHtml(x.numero||'')}</b><em>${escHtml(x.detail)}</em></span></label>`).join('')
+    +`<label class="tr-opt"><input type="radio" name="tr" value="autre"${docs.length?'':' checked'}><span>Traitée autrement<em>Réponse par téléphone, conseil, intervention sur place…</em></span></label>`
+  document.getElementById('trOv').classList.add('open')
+}
+window.fermerTraitee=function(){document.getElementById('trOv').classList.remove('open');_trId=null}
+window.confirmerTraitee=async function(){
+  const v=(document.querySelector('#trOpts input[name="tr"]:checked')||{}).value
+  const id=_trId; if(!id||!v)return
+  fermerTraitee()
+  if(v==='autre')return changerStatut(id,'traitee')
+  const [type,docId]=v.split(':')
+  return lierDemande(id,type,Number(docId))
+}
+window.lierDemande=async function(id,type,docId){
+  const d=allDemandes.find(x=>x.id===id); if(!d)return
+  const champs={vue:true,en_attente_depuis:null,traitee_le:null}
+  let lib=''
+  if(type==='devis'){
+    const dv=docsClients.devis.find(x=>x.id===docId)
+    champs.converti_devis_id=docId
+    const rep=dv&&(dv.converti_reparation_id||dv.reparation_id)
+    if(rep)champs.converti_reparation_id=rep
+    lib=`devis ${dv?dv.numero:''}`
+  }else{
+    const r=docsClients.reps.find(x=>x.id===docId)
+    champs.converti_reparation_id=docId
+    lib=`dossier ${r?r.numero:''}`
+  }
+  const {error}=await sb.from('demandes_formulaire').update(champs).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  Object.assign(d,champs)
+  renderAll()
+  showToast(`Demande rattachée au ${lib.trim()}`,'ok')
+}
+
 function majResume(){
   const el=document.getElementById('ph-resume')
   const aTraiter=allDemandes.filter(d=>statutOf(d)==='nouveau')
   const convertis=allDemandes.filter(d=>['converti','devis'].includes(statutOf(d))).length
   const traites=allDemandes.filter(d=>statutOf(d)==='traite').length
+  const traitees=allDemandes.filter(d=>statutOf(d)==='traitee').length
   const enAttente=allDemandes.filter(d=>statutOf(d)==='attente').length
   if(!allDemandes.length){
     el.textContent='Aucune demande reçue pour le moment. Elles arriveront ici dès qu’un visiteur remplira le formulaire du site.'
@@ -514,6 +612,7 @@ function majResume(){
     }
     if(enAttente)bouts.push(`${enAttente} en attente de réponse client`)
     if(convertis)bouts.push(`${convertis} passée${convertis>1?'s':''} en devis ou en réparation`)
+    if(traitees)bouts.push(`${traitees} traitée${traitees>1?'s':''} autrement`)
     if(traites)bouts.push(`${traites} sans suite`)
     if(bouts.length===1)bouts.push(`${allDemandes.length} au total`)
     el.innerHTML=bouts.join(' · ')
@@ -529,8 +628,8 @@ const FILTRES=[
   {cle:'a_traiter', label:'À traiter'},
   {cle:'attente',   label:'En attente'},
   {cle:'toutes',    label:'Toutes'},
-  {cle:'traite',    label:'Sans suite'},
-  {cle:'converti',  label:'Devis / réparation'}
+  {cle:'converti',  label:'Traitées'},
+  {cle:'traite',    label:'Sans suite'}
 ]
 // Lien direct vers un filtre (depuis le Dashboard) : demandes.html?filtre=attente
 {const f=new URLSearchParams(location.search).get('filtre');if(FILTRES.some(x=>x.cle===f))activeFilter=f}
@@ -545,6 +644,7 @@ const ETATS={
   nouveau: {label:'À traiter',  cls:'t-nouveau'},
   attente: {label:'En attente client', cls:'t-attente'},
   traite:  {label:'Sans suite', cls:'t-traite'},
+  traitee: {label:'Traitée', cls:'t-converti'},
   devis:   {label:'Devis fait', cls:'t-devis'},
   converti:{label:'En réparation',cls:'t-converti'}
 }
@@ -566,12 +666,20 @@ function fiche(d){
      « Réparation sans devis » reste possible (diagnostic, petite
      intervention), en action secondaire. */
   const faireDevis=`<a class="btn btn-primary" href="/admin/devis.html?demande=${d.id}">Faire le devis</a>`
+  const traitee=`<button class="btn btn-secondary" onclick="ouvrirTraitee(${d.id})">Marquer comme traitée</button>`
+  // Un devis ou un dossier a déjà été fait pour ce client depuis sa demande : on le propose.
+  const docs=['nouveau','attente','traite'].includes(s)?docsPour(d):[]
+  const sugg=docs.length?`<div class="sugg"><span>${docs[0].type==='devis'?'Un devis':'Un dossier'} a déjà été fait pour ce client depuis sa demande : <b>${escHtml(docs[0].numero||'')}</b> (${escHtml(docs[0].detail)}).</span><button class="btn btn-secondary" onclick="lierDemande(${d.id},'${docs[0].type}',${docs[0].id})">Rattacher</button></div>`:''
   const sansDevis=`<button class="btn btn-secondary" onclick="transformer(${d.id})">Réparation sans devis</button>`
   const actions=(s==='converti'||s==='devis')
     ? `${repondre}`
+    : s==='traitee'
+    ? `${repondre}
+       <button class="btn btn-secondary" onclick="changerStatut(${d.id},'nouveau')">Remettre à traiter</button>`
     : s==='traite'
     ? `${repondre}
        <button class="btn btn-secondary" onclick="changerStatut(${d.id},'nouveau')">Remettre à traiter</button>
+       ${traitee}
        ${sansDevis}
        ${faireDevis}`
     : `${repondre}
@@ -579,6 +687,7 @@ function fiche(d){
          ? `<button class="btn btn-secondary" onclick="changerStatut(${d.id},'nouveau')">Réponse reçue</button>`
          : `<button class="btn btn-secondary" onclick="changerStatut(${d.id},'attente')">En attente client</button>`}
        <button class="btn btn-secondary" onclick="changerStatut(${d.id},'traite')">Classer sans suite</button>
+       ${traitee}
        ${sansDevis}
        ${faireDevis}`
   return `<article class="fiche st-${s}" id="dem-${d.id}">
@@ -595,6 +704,7 @@ function fiche(d){
       <div><span class="k">Intervention</span><span class="val">${modeComplet}</span></div>
     </div>
     <div class="panne">${escHtml(d.description||'—')}</div>
+    ${sugg}
     ${(s==='converti'||s==='devis')?`<div class="fil" data-dem="${d.id}"></div>`:''}
     <div class="fiche-acts"${(s==='converti'||s==='devis')?' style="margin-top:12px;"':''}>${actions}</div>
     <div class="fiche-pied">${mail}<button class="lien-suppr" onclick="supprimer(${d.id})">Supprimer la demande</button></div>
@@ -618,7 +728,7 @@ window.renderTable=function renderTable(){
     const s=statutOf(d)
     let okF=true
     if(activeFilter==='a_traiter')okF=s==='nouveau'
-    else if(activeFilter==='converti')okF=s==='converti'||s==='devis'
+    else if(activeFilter==='converti')okF=s==='converti'||s==='devis'||s==='traitee'
     else if(activeFilter!=='toutes')okF=s===activeFilter
     const nom=[d.prenom,d.nom].filter(Boolean).join(' ')
     const okQ=!q||[nom,d.email,d.telephone,d.appareil,d.description,d.adresse]
@@ -648,9 +758,10 @@ window.renderTable=function renderTable(){
    pastille « Demandes » : elle ne demande rien tant que le client n'a pas
    répondu. */
 const CHANGEMENTS={
-  nouveau:{champs:()=>({vue:false,en_attente_depuis:null}),message:'Demande remise à traiter'},
-  attente:{champs:()=>({vue:true,en_attente_depuis:new Date().toISOString()}),message:'Demande en attente de la réponse du client'},
-  traite: {champs:()=>({vue:true,en_attente_depuis:null}),message:'Demande classée sans suite'}
+  nouveau:{champs:()=>({vue:false,en_attente_depuis:null,traitee_le:null}),message:'Demande remise à traiter'},
+  attente:{champs:()=>({vue:true,en_attente_depuis:new Date().toISOString(),traitee_le:null}),message:'Demande en attente de la réponse du client'},
+  traite: {champs:()=>({vue:true,en_attente_depuis:null,traitee_le:null}),message:'Demande classée sans suite'},
+  traitee:{champs:()=>({vue:true,en_attente_depuis:null,traitee_le:new Date().toISOString()}),message:'Demande marquée comme traitée'}
 }
 window.changerStatut=async function(id,vers){
   const d=allDemandes.find(x=>x.id===id)
@@ -745,7 +856,7 @@ window.transformer=async function(id){
 
 window.exportCSV=function(){
   if(!allDemandes.length){showToast('Aucune donnée à exporter','err');return}
-  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','vue','en_attente_depuis','email_confirmation_envoye','converti_reparation_id']
+  const cols=['created_at','prenom','nom','email','telephone','appareil','mode_intervention','adresse','description','vue','en_attente_depuis','traitee_le','email_confirmation_envoye','converti_devis_id','converti_reparation_id']
   const cell=v=>v===null||v===undefined?'""':'"'+String(v).replace(/"/g,'""')+'"'
   const csv=[cols.join(';'),...allDemandes.map(d=>cols.map(c=>cell(d[c])).join(';'))].join('\r\n')
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})

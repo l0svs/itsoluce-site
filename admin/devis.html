@@ -997,6 +997,15 @@ let _source=null    // demande du site à l'origine d'un nouveau devis
 /* Mise à jour d'un devis avec relecture : la base renvoie le numéro qu'elle
    vient d'attribuer. Une révision émise fait passer l'ancienne version en
    « Remplacé ». */
+/* Devis accepté : la base crée (ou rattache) le dossier de réparation.
+   On le lit pour l'afficher tout de suite dans le suivi. */
+async function connaitreDossier(d){
+  const id=d&&(d.converti_reparation_id||d.reparation_id)
+  if(!id||repsLiees.has(id))return
+  const r=await sb.from('reparations').select('id,numero,statut').eq('id',id).maybeSingle()
+  if(!r.error&&r.data)repsLiees.set(r.data.id,r.data)
+}
+const dossierDe=d=>{const id=d&&(d.converti_reparation_id||d.reparation_id);return id?{id,numero:d.reparation_numero||repsLiees.get(id)?.numero||''}:null}
 async function majDevis(d,maj){
   const etaitEmis=estEmis(d)
   const {data,error}=await sb.from('devis').update({...maj,updated_at:new Date().toISOString()}).eq('id',d.id).select().single()
@@ -1009,6 +1018,7 @@ async function majDevis(d,maj){
   if(i>=0)allDevis[i]=data
   if(courant&&courant.id===d.id)courant=data
   if(!etaitEmis&&estEmis(data))await remplacerAncienne(data)
+  await connaitreDossier(data)
   return data
 }
 async function remplacerAncienne(d){
@@ -1561,9 +1571,10 @@ function majEtatApercu(){
     bouts.push(`Facture ${fLiee.numero||''} ${fLiee.statut==='payee'?'payée':fLiee.statut==='brouillon'?'en brouillon':'envoyée, à encaisser'}`)
     if(bFac){bFac.disabled=true;bFac.textContent='Déjà facturé'}
   }else if(bFac)bFac.textContent='Convertir en facture'
-  if(d.converti_reparation_id){
-    bouts.push(`Réparation ${d.reparation_numero||repsLiees.get(d.converti_reparation_id)?.numero||''} créée`.replace('  ',' '))
-    if(bRep){bRep.disabled=true;bRep.textContent='Réparation déjà créée'}
+  const dos=dossierDe(d)
+  if(dos){
+    bouts.push(`Dossier ${dos.numero}`.trim())
+    if(bRep){bRep.disabled=false;bRep.textContent=`Ouvrir le dossier ${dos.numero}`.trim()}
   }else if(bRep)bRep.textContent='Créer la réparation'
   if(!d.client_id)bouts.push('Aucune fiche client rattachée')
   note.textContent=bouts.join(' · ')
@@ -1576,7 +1587,7 @@ function majEtatApercu(){
   ;[bOk,bKo].forEach(b=>{if(b)b.disabled=false})
   let principal=null
   if(enAttenteReponse)principal=d.email_envoye?bOk:bSend
-  else if(d.statut==='accepte'&&!d.converti_reparation_id&&!fLiee)principal=bRep
+  else if(d.statut==='accepte'&&!fLiee)principal=bRep
   if(principal){principal.classList.remove('btn-secondary');principal.classList.add('btn-primary')}
 }
 
@@ -1613,7 +1624,10 @@ window.reponseClient=async function(statut){
   try{x=await majDevis(d,{statut})}catch(e){showToast('Erreur : '+(e.message||e),'err');return}
   majResume()
   chargerDansFormulaire(x)
-  showToast(statut==='accepte'?`Devis ${x.numero} accepté — prochaine étape : créer la réparation`:`Devis ${x.numero} classé refusé`,'ok')
+  const dos=dossierDe(x)
+  showToast(statut==='accepte'
+    ?(dos?`Devis ${x.numero} accepté · dossier ${dos.numero} prêt dans Réparations`:`Devis ${x.numero} accepté`)
+    :`Devis ${x.numero} classé refusé`,'ok')
 }
 
 /* ─── Devis préparé depuis une demande du site ou un dossier ───
@@ -1779,6 +1793,7 @@ window.saveDevis=async function(){
       const res=await sb.from('devis').insert(payload).select().single()
       if(res.error)throw new Error(res.error.message)
       enregistre=res.data
+      await connaitreDossier(enregistre)
       if(enregistre.statut!=='brouillon'&&!enregistre.numero){
         await sb.from('devis').update({statut:'brouillon'}).eq('id',enregistre.id)
         enregistre.statut='brouillon'
@@ -1794,9 +1809,10 @@ window.saveDevis=async function(){
     }
     majResume()
     chargerDansFormulaire(enregistre)
+    {const dos=enregistre.statut==='accepte'?dossierDe(enregistre):null
     showToast(enregistre.numero
-      ?(id?`Devis ${enregistre.numero} enregistré`:`Devis ${enregistre.numero} émis`)
-      :(id?'Brouillon mis à jour':"Brouillon créé — il recevra son numéro à l'émission"),'ok')
+      ?(id?`Devis ${enregistre.numero} enregistré`:`Devis ${enregistre.numero} émis`)+(dos?` · dossier ${dos.numero}`:'')
+      :(id?'Brouillon mis à jour':"Brouillon créé — il recevra son numéro à l'émission"),'ok')}
   }catch(e){
     showToast('Erreur : '+(e.message||e),'err')
   }finally{
@@ -2094,7 +2110,13 @@ window.convertirEnFacture=async function(){
   if(d.converti_facture_id){showToast('Ce devis a déjà été converti en facture','err');return}
   const dejaFacture=factureDe(d)
   if(dejaFacture){showToast(`Ce devis est déjà facturé (facture ${dejaFacture.numero||''}, faite depuis la réparation)`,'err');return}
-  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant : ${eur(d.total)}\n\nLa facture est créée en brouillon (numéro attribué à son émission). Le stock lié aux lignes sera décrémenté.`))return
+  // Dossier du devis : la facture lui est rattachée, et les pièces ne sortent
+  // du stock qu'une fois (ici, ou au passage « Prêt » du dossier si c'est déjà fait).
+  const dos=dossierDe(d)
+  let repDos=null
+  if(dos){const rr=await sb.from('reparations').select('id,numero,stock_decremente,converti_facture_id').eq('id',dos.id).maybeSingle();repDos=rr.data||null}
+  const stockDejaSorti=!!(repDos&&repDos.stock_decremente)
+  if(!confirm(`Convertir le devis ${d.numero} en facture ?\n\nMontant : ${eur(d.total)}\n\nLa facture est créée en brouillon (numéro attribué à son émission).${repDos?` Elle est rattachée au dossier ${repDos.numero}.`:''} ${stockDejaSorti?'Les pièces sont déjà sorties du stock avec le dossier.':'Le stock lié aux lignes sera décrémenté.'}`))return
   const btn=document.getElementById('sideFactureBtn')
   const txt=btn.textContent
   btn.disabled=true;btn.textContent='Conversion…'
@@ -2108,8 +2130,8 @@ window.convertirEnFacture=async function(){
       client_adresse:d.client_adresse||null,
       client_societe:d.client_societe||null,
       client_tva:d.client_tva||null,
-      reparation_id:d.reparation_id||null,
-      reparation_numero:d.reparation_numero||null,
+      reparation_id:repDos?repDos.id:(d.reparation_id||null),
+      reparation_numero:repDos?repDos.numero:(d.reparation_numero||null),
       date_emission:ymd(new Date()),
       statut:'brouillon',
       lignes:d.lignes||[],
@@ -2123,7 +2145,7 @@ window.convertirEnFacture=async function(){
     }).select().single()
     if(res.error)throw new Error(res.error.message)
 
-    for(const l of (d.lignes||[]).filter(l=>l.stock_id)){
+    for(const l of (stockDejaSorti?[]:(d.lignes||[]).filter(l=>l.stock_id))){
       const art=allStock.find(s=>String(s.id)===String(l.stock_id))
       if(!art)continue
       const nouvelle=Math.max(0,Number(art.quantite||0)-Number(l.quantite||1))
@@ -2137,10 +2159,16 @@ window.convertirEnFacture=async function(){
     const maj={statut:'accepte',converti_facture_id:res.data.id,updated_at:new Date().toISOString()}
     const rm=await sb.from('devis').update(maj).eq('id',d.id)
     if(rm.error)throw new Error(rm.error.message)
+    if(repDos){
+      const mr={updated_at:new Date().toISOString()}
+      if(!repDos.converti_facture_id)mr.converti_facture_id=res.data.id
+      if(!stockDejaSorti)mr.stock_decremente=true   // le passage « Prêt » ne ressortira pas les pièces
+      await sb.from('reparations').update(mr).eq('id',repDos.id)
+    }
     const i=allDevis.findIndex(x=>x.id===d.id)
     if(i>=0)Object.assign(allDevis[i],maj)
     Object.assign(courant,maj)
-    facturesLiees.push({id:res.data.id,numero:null,statut:'brouillon',devis_id:d.id,reparation_id:d.reparation_id||null})
+    facturesLiees.push({id:res.data.id,numero:null,statut:'brouillon',devis_id:d.id,reparation_id:repDos?repDos.id:(d.reparation_id||null)})
     closePdf()
     majResume()
     chargerDansFormulaire(courant)
@@ -2154,10 +2182,12 @@ window.convertirEnFacture=async function(){
 /* ─── Conversion en réparation ─── */
 window.convertirEnReparation=async function(){
   if(!courant){showToast("Enregistre d'abord le devis",'err');return}
-  if(courant.converti_reparation_id){showToast('Une réparation a déjà été créée pour ce devis','err');return}
+  const ouvrir=dos=>{location.href='/admin/reparations.html?q='+encodeURIComponent(dos.numero||'')}
+  if(dossierDe(courant)){ouvrir(dossierDe(courant));return}
   if(!(await assurerAcceptation(courant)))return
   const d=courant
-  if(d.converti_reparation_id){showToast('Une réparation a déjà été créée pour ce devis','err');return}
+  // L'acceptation crée le dossier en base : on l'ouvre directement.
+  if(dossierDe(d)){showToast(`Dossier ${dossierDe(d).numero} créé`,'ok');setTimeout(()=>ouvrir(dossierDe(d)),600);return}
   if(!confirm(`Créer un dossier de réparation depuis le devis ${d.numero} ?`))return
   const btn=document.getElementById('sideRepBtn')
   const txt=btn.textContent
