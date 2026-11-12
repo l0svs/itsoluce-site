@@ -2545,84 +2545,39 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   .ct-form { padding: 24px 20px; }
 }
 </style>
-<style id="mode-vacances">
-/* ═══ Mode vacances — temporaire ═══
-   Tout est piloté par la classe « vac » posée sur <html> par le script
-   ci-dessous, uniquement avant la date de retour. Passé cette date rien ne
-   s'applique : le site redevient normal sans intervention. Supprimer ce bloc,
-   le script et les éléments .vac-only rend le retrait définitif. */
-.vac-only{display:none}
-.vac .vac-only{display:block}
-/* « display:block » ci-dessus écrase la mise en page d'origine des éléments
-   qui n'étaient pas des blocs. Une ligne de disponibilité doit rester une
-   grille flexible, sinon ses deux libellés se collent. */
-.vac .vac-only.hrow{display:flex}
-.vac .vac-hide{display:none}
-
-.vac-bandeau{
+<style id="absence">
+/* ═══ Bandeau « Absence » ═══
+   Piloté depuis l'ERP (Gestion › Absence) : le script en bas de page le
+   remplit et pose la classe « abs » sur <html> seulement si la base renvoie
+   une absence à annoncer. Sans réponse, rien ne s'affiche. */
+.abs-bandeau{display:none}
+.abs .abs-bandeau{
+  display:flex;align-items:center;gap:11px;
   position:fixed;top:0;left:0;right:0;z-index:150;
   padding:12px 18px;background:#b25e09;color:#fff;
   font-size:14px;line-height:1.45;
 }
-/* La mise en page du bandeau est réservée au mode actif. Déclarer
-   « display:flex » sur .vac-bandeau l'emporterait sur .vac-only à
-   spécificité égale, et le bandeau resterait affiché après le retour. */
-.vac .vac-bandeau{display:flex;align-items:center;gap:11px}
-.vac-bandeau b{font-weight:600}
-.vac-bandeau__x{
+.abs-bandeau--avant{background:#0052CC !important}
+.abs-bandeau b{font-weight:600}
+.abs-bandeau__x{
   margin-left:auto;flex-shrink:0;background:none;border:none;color:#fff;
   opacity:.65;font-size:21px;line-height:1;cursor:pointer;padding:0 2px;
 }
-.vac-bandeau__x:hover{opacity:1}
-/* La barre de navigation est fixée en haut : elle descend de la hauteur
-   réelle du bandeau, mesurée après rendu pour tenir compte du retour à la
-   ligne sur petit écran. */
-.vac .nav{top:var(--vac-h,52px)}
-.vac body{padding-top:var(--vac-h,52px)}
-
-/* Téléphone neutralisé : affiché, barré, non cliquable. Le masquer
-   donnerait l'impression d'une activité fermée. */
-.vac .irow--off{cursor:default}
-.vac .irow--off .irow__v{text-decoration:line-through;text-decoration-thickness:1px;opacity:.55}
-.vac-note{font-size:12.5px;color:#b25e09;font-weight:500;margin-top:2px}
-.vac-note--ok{color:#1a8a52}
-@media (max-width:600px){.vac-bandeau{font-size:13px;padding:10px 14px}}
+.abs-bandeau__x:hover{opacity:1}
+.abs .nav{top:var(--abs-h,52px)}
+.abs body{padding-top:var(--abs-h,52px)}
+.abs .irow--off{cursor:default}
+.abs .irow--off .irow__v{text-decoration:line-through;text-decoration-thickness:1px;opacity:.55}
+.abs-depots{color:#b25e09;font-weight:500}
+@media (max-width:600px){.abs .abs-bandeau{font-size:13px;padding:10px 14px}}
 </style>
-<script>
-/* La date de retour vit ici, en un seul endroit. Le mode s'éteint tout seul :
-   si personne ne touche à rien, le site est normal le 5 octobre au matin. */
-(function(){
-  var RETOUR = new Date('2026-10-05T00:00:00+02:00');
-  if (Date.now() >= RETOUR.getTime()) return;
-  document.documentElement.classList.add('vac');
-  function mesurer(){
-    var b = document.querySelector('.vac-bandeau');
-    if (b) document.documentElement.style.setProperty('--vac-h', b.offsetHeight + 'px');
-  }
-  document.addEventListener('DOMContentLoaded', function(){
-    mesurer();
-    window.addEventListener('resize', mesurer);
-    /* Un numéro cliquable reste un appel en un geste, bandeau ou pas. */
-    document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
-      a.removeAttribute('href');
-      a.classList.add('irow--off');
-    });
-    var x = document.getElementById('vacFermer');
-    if (x) x.addEventListener('click', function(){
-      var b = document.querySelector('.vac-bandeau');
-      if (b) b.remove();
-      document.documentElement.style.setProperty('--vac-h','0px');
-    });
-  });
-})();
-</script>
 </head>
 <body>
 
-<!-- Mode vacances — temporaire, s'efface seul le 5 octobre 2026 -->
-<div class="vac-bandeau vac-only" role="status">
-  <span>Je suis en congé jusqu'au <b>dimanche 4 octobre</b>. Les demandes envoyées par le formulaire sont traitées dès mon retour, le <b>lundi 5 octobre</b>.</span>
-  <button class="vac-bandeau__x" id="vacFermer" type="button" aria-label="Fermer l'annonce">&times;</button>
+<!-- Bandeau « Absence » : rempli par le script en bas de page (Gestion › Absence) -->
+<div class="abs-bandeau" id="absBandeau" role="status">
+  <span id="absTexte"></span>
+  <button class="abs-bandeau__x" id="absFermer" type="button" aria-label="Fermer l'annonce">&times;</button>
 </div>
 
 <header class="nav">
@@ -2896,7 +2851,8 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <div class="trow"><span>Sauvegarde de données</span><span class="tprice">70€</span></div>
           <div class="trow"><span>Configuration d'un nouvel appareil</span><span class="tprice">70€</span></div>
           <div class="trow"><span>Assistance / conseil</span><span class="tprice">70€</span></div>
-          <div class="trow"><span>Autres interventions</span><span class="tprice">70€</span></div>
+          <div class="trow"><span>Nettoyage manette</span><span class="tprice">35€</span></div>
+          <div class="trow"><span>Autres interventions</span><span class="tprice">Sur devis</span></div>
         </div>
       </div>
 
@@ -2936,7 +2892,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <h3>Dépôt d'appareil — Tubize</h3>
           <p>Chaussée d'Hondzocht<br>1480 Tubize</p>
           <p>Dépôt et retrait sur rendez-vous.<br><a href="tel:+32474056659">+32 474 05 66 59</a></p>
-          <p class="vac-only" style="color:#b25e09;font-weight:500;">Dépôts suspendus jusqu'au 4 octobre.</p>
+          <p class="abs-depots" id="absDepots" hidden></p>
         </div>
       </div>
 
@@ -3840,7 +3796,7 @@ if (prefersReducedMotion) {
 /* ─────────────────────────────────────────────────────────────
    Colonne « Service supplémentaire » de la grille des tarifs.
 
-   Les cinq lignes sont écrites en dur dans le HTML ci-dessus et servent de
+   Les lignes sont écrites en dur dans le HTML ci-dessus et servent de
    repli : si Supabase est injoignable, si la requête échoue ou si elle ne
    ramène rien, le visiteur voit la grille telle qu'elle était au dernier
    déploiement plutôt qu'une colonne vide. En temps normal elles sont
@@ -3855,6 +3811,7 @@ if (prefersReducedMotion) {
   if (!hote) return;
 
   const prixTexte = (s) => {
+    if (s.prix === null || s.prix === undefined || s.prix === '') return 'Sur devis';
     const p = Number(s.prix), pmax = Number(s.prix_max);
     const euro = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',')) + '€';
     if (!Number.isFinite(p)) return 'Sur devis';
@@ -3892,6 +3849,78 @@ if (prefersReducedMotion) {
   } catch (err) {
     /* Les lignes de repli restent affichées : rien à faire de plus. */
     console.warn('Tarifs : lecture Supabase indisponible, grille figée affichée', err);
+  }
+})();
+</script><script>
+/* ─────────────────────────────────────────────────────────────
+   Bandeau « Absence » (Gestion › Absence dans l'ERP).
+
+   site_absence() ne renvoie quelque chose que pendant la période d'annonce
+   (quelques jours avant le départ) et pendant l'absence. En dehors, ou si
+   la base ne répond pas, la page reste normale : rien à retirer au retour.
+   ───────────────────────────────────────────────────────────── */
+(async function chargerAbsence() {
+  const bandeau = document.getElementById('absBandeau');
+  const texte = document.getElementById('absTexte');
+  if (!bandeau || !texte) return;
+  const jour = (iso) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    if (!m) return null;
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  };
+  const nomJour = (d) => {
+    const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+    if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+    return d.toLocaleDateString('fr-BE', opts);
+  };
+  const gras = (t) => { const b = document.createElement('b'); b.textContent = t; return b; };
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/rpc/site_absence', {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    if (!res.ok) return;
+    const a = await res.json();
+    if (!a || typeof a !== 'object') return;
+    const debut = jour(a.debut), fin = jour(a.fin), retour = jour(a.retour);
+    if (!debut || !fin || !retour) return;
+    try { if (sessionStorage.getItem('abs-ferme') === a.debut + a.fin) return; } catch (e) {}
+
+    const morceaux = a.phase === 'avant'
+      ? ['Je serai en congé du ', gras(nomJour(debut)), ' au ', gras(nomJour(fin)),
+         '. Les demandes reçues pendant cette période seront traitées dès mon retour, le ', gras(nomJour(retour)), '.']
+      : ['Je suis en congé jusqu\'au ', gras(nomJour(fin)),
+         '. Les demandes envoyées par le formulaire sont traitées dès mon retour, le ', gras(nomJour(retour)), '.'];
+    if (a.message) morceaux.push(' ' + String(a.message));
+    texte.replaceChildren(...morceaux);
+    if (a.phase === 'avant') bandeau.classList.add('abs-bandeau--avant');
+    document.documentElement.classList.add('abs');
+
+    const mesurer = () => document.documentElement.style.setProperty('--abs-h', bandeau.offsetHeight + 'px');
+    mesurer();
+    window.addEventListener('resize', mesurer);
+
+    if (a.phase === 'pendant') {
+      if (a.depots) {
+        const p = document.getElementById('absDepots');
+        if (p) { p.textContent = 'Dépôts suspendus jusqu\'au ' + nomJour(fin) + '.'; p.hidden = false; }
+      }
+      if (a.telephone) {
+        /* Numéro affiché mais barré : le masquer ferait croire à une activité fermée. */
+        document.querySelectorAll('a[href^="tel:"]').forEach((l) => {
+          l.removeAttribute('href');
+          l.classList.add('irow--off');
+        });
+      }
+    }
+    document.getElementById('absFermer').addEventListener('click', () => {
+      document.documentElement.classList.remove('abs');
+      document.documentElement.style.setProperty('--abs-h', '0px');
+      try { sessionStorage.setItem('abs-ferme', a.debut + a.fin); } catch (e) {}
+    });
+  } catch (err) {
+    console.warn('Absence : lecture indisponible', err);
   }
 })();
 </script>

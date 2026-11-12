@@ -1208,7 +1208,7 @@ function fillPrestaSelect(){
   const sel=document.getElementById('presta-select')
   const actifs=(window.allServices||[]).filter(s=>s.actif!==false)
   sel.innerHTML='<option value="">Ajouter une prestation…</option>'+actifs.map(s=>
-    `<option value="${s.id}">${escHtml(`${s.nom} — ${Number(s.prix||0).toFixed(2)} €${s.unite||''}`)}</option>`
+    `<option value="${s.id}">${escHtml(`${s.nom} — ${s.prix==null?'sur devis':Number(s.prix).toFixed(2)+' €'+(s.unite||'')}`)}</option>`
   ).join('')
 }
 window.ajouterPresta=function(sel){
