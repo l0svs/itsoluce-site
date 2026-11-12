@@ -581,6 +581,34 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+
+/* Traçabilité des pièces et commandes */
+.trace{display:block;font-size:11.5px;color:var(--t3);font-weight:400;margin-top:2px;line-height:1.4;}
+.cmd-list{display:flex;flex-direction:column;gap:8px;}
+.cmd{border:1px solid var(--ln2);border-radius:10px;padding:10px 12px;background:var(--bg3);}
+.cmd-h{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+.cmd-h b{font-size:13px;color:var(--t1);font-variant-numeric:tabular-nums;}
+.cmd-p{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+.cmd-p.commandee{background:rgba(245,158,11,.15);color:#d97706;}
+.cmd-p.expediee{background:rgba(59,130,246,.15);color:#2563eb;}
+.cmd-p.recue{background:rgba(16,185,129,.15);color:#059669;}
+.cmd-p.annulee{background:var(--bg4);color:var(--t3);}
+.cmd-d{font-size:12px;color:var(--t2);margin-top:4px;line-height:1.45;}
+.cmd-a{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.cmd-a button{font:inherit;font-size:12px;padding:5px 10px;border-radius:8px;border:1px solid var(--ln2);background:var(--bg2);color:var(--t1);cursor:pointer;}
+.cmd-a button.ok{background:#059669;border-color:#059669;color:#fff;}
+.cmd-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px;}
+.cmd-ov.open{display:flex;}
+.cmd-box{background:var(--bg2);border:1px solid var(--ln2);border-radius:14px;width:min(460px,100%);max-height:90vh;overflow:auto;padding:18px;}
+.cmd-box h3{font-size:16px;margin:0 0 12px;color:var(--t1);}
+.cmd-box .fg{margin-bottom:10px;}
+.cmd-box label{display:block;font-size:12px;color:var(--t2);margin-bottom:4px;}
+.cmd-box input,.cmd-box select,.cmd-box textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--ln2);background:var(--bg3);color:var(--t1);box-sizing:border-box;}
+.cmd-box textarea{min-height:60px;resize:vertical;}
+.cmd-duo{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cmd-fd{display:flex;gap:6px;}
+.cmd-fd button{flex:none;}
+.cmd-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
 </style>
 <style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
 <script>
@@ -675,6 +703,26 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 </div>
 
 <!-- STATUS MENU -->
+<div class="cmd-ov" id="cmdOv" onclick="if(event.target===this)fermerCommande()">
+  <div class="cmd-box" role="dialog" aria-label="Commande de pièce">
+    <h3 id="cmd-titre">Commande de pièce</h3>
+    <input type="hidden" id="cmd-id"/>
+    <div class="cmd-duo">
+      <div class="fg"><label for="cmd-fournisseur">Fournisseur</label><select id="cmd-fournisseur" onchange="majCmdFoneday()"><option>Foneday</option><option>Utopya</option><option>Autre</option></select></div>
+      <div class="fg"><label for="cmd-date">Commandée le</label><input type="date" id="cmd-date"/></div>
+    </div>
+    <div class="fg"><label for="cmd-numero">N° de commande</label>
+      <div class="cmd-fd"><input type="text" id="cmd-numero" placeholder="ex : 123456"/><button type="button" class="btn btn-secondary" id="cmd-fd-btn" onclick="chargerCmdFoneday()">Mes commandes Foneday</button></div>
+      <select id="cmd-fd-liste" style="display:none;margin-top:6px;" onchange="choisirCmdFoneday(this)"></select>
+    </div>
+    <div class="fg"><label for="cmd-articles">Articles</label><textarea id="cmd-articles" placeholder="ex : Écran iPhone 13, OEM"></textarea></div>
+    <div class="cmd-duo">
+      <div class="fg"><label for="cmd-montant">Montant (€)</label><input type="number" id="cmd-montant" min="0" step="0.01"/></div>
+      <div class="fg"><label for="cmd-notes">Note</label><input type="text" id="cmd-notes" placeholder="facultatif"/></div>
+    </div>
+    <div class="cmd-foot"><button class="btn btn-secondary" type="button" onclick="fermerCommande()">Annuler</button><button class="btn btn-primary" type="button" id="cmd-ok" onclick="enregistrerCommande()">Enregistrer</button></div>
+  </div>
+</div>
 <div class="status-menu" id="statusMenu">
   <button class="sm-item" onclick="changeStatut('attente_reception')"><span class="statut s-attente_reception" style="pointer-events:none;">En attente de réception de l'appareil</span></button>
   <button class="sm-item" onclick="changeStatut('recu')"><span class="statut s-recu" style="pointer-events:none;">Reçu</span></button>
@@ -1085,6 +1133,25 @@ window.recalcCout=function recalcCout(majPrix=false){
   if(majPrix)document.getElementById('f-prix').value=vente>0?vente.toFixed(2):''
   majMargeRep()
 }
+/* Traçabilité : fournisseur, référence et date de pose figés sur la pièce
+   au moment où elle entre dans le dossier. Une fiche stock modifiée plus
+   tard ne réécrit pas l'historique. */
+let _tracesDossier=[]
+function refDepuisNotes(notes){
+  const n=String(notes||'')
+  const m=n.match(/R[ée]f\.?\s*(?:[A-Za-zé]+\s*)?:\s*([^\s—–-][^—–]*?)\s*(?:[—–-]\s*(.+))?$/m)
+  if(m)return {ref:m[1].trim(),qualite:(m[2]||'').trim()}
+  const e=n.match(/EAN\s*:\s*(\d{8,14})/i)
+  return e?{ref:'EAN '+e[1],qualite:''}:{ref:'',qualite:''}
+}
+function traceStock(stockId){
+  const avant=_tracesDossier.find(x=>x.stock_id===stockId&&x.trace)
+  if(avant)return avant.trace
+  const st=allStockPieces.find(x=>x.id===stockId)
+  if(!st)return null
+  const r=refDepuisNotes(st.notes)
+  return {fournisseur:st.fournisseur||'',ref:r.ref,qualite:r.qualite,prix_achat:Number(st.prix_achat)||0,pose_le:new Date().toISOString().slice(0,10)}
+}
 window.getPiecesData=function getPiecesData(){
   const pieces=[]
   document.querySelectorAll('#piecesList .piece-row').forEach(row=>{
@@ -1093,12 +1160,13 @@ window.getPiecesData=function getPiecesData(){
     if(!sel.value)return
     const [kind,rawId]=sel.value.split('-')
     const nom=sel.options[sel.selectedIndex].text.split(' (')[0]
-    if(kind==='stock')pieces.push({stock_id:Number(rawId),service_id:null,nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
+    if(kind==='stock')pieces.push({stock_id:Number(rawId),service_id:null,nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0,trace:traceStock(Number(rawId))})
     else if(kind==='svc')pieces.push({stock_id:null,service_id:Number(rawId),nom,qte:Number(inputs[0].value)||1,cout:Number(inputs[1].value)||0})
   })
   return pieces
 }
 window.loadPiecesData=function loadPiecesData(pieces){
+  _tracesDossier=Array.isArray(pieces)?pieces:[]
   const list=document.getElementById('piecesList')
   list.innerHTML=''
   if(!pieces||pieces.length===0){recalcCout();return}
@@ -1136,7 +1204,7 @@ window.onClientSelect=function(){
 async function loadReps(){
   const [rRep,rStock,rCli,rSvc]=await Promise.all([
     sb.from('reparations').select('*',{count:'exact'}).order('created_at',{ascending:false}).limit(2000),
-    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente').order('nom').limit(5000),
+    sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente,fournisseur,notes').order('nom').limit(5000),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(5000),
     sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true})
   ])
@@ -1145,6 +1213,7 @@ async function loadReps(){
   allStockPieces=rStock.data||[]
   allClientsRep=rCli.data||[]
   allServices=rSvc.data||[]
+  await chargerCommandes()
   if(typeof rRep.count==='number'&&rRep.count>allReps.length){
     showToast(`Seuls ${allReps.length} dossiers sur ${rRep.count} ont été chargés.`,'err')
   }
@@ -1155,6 +1224,148 @@ async function loadReps(){
   renderAll()
   document.getElementById('ldr').style.display='none'
   document.getElementById('pageBody').style.display='flex'
+}
+
+
+/* ─── Traçabilité (affichage) ─── */
+function ligneTrace(p){
+  if(!p.stock_id)return ''
+  const t=p.trace
+  if(t){
+    const bouts=[t.fournisseur,t.ref?('Réf. '+t.ref):'',t.qualite,t.pose_le?('posée le '+new Date(t.pose_le).toLocaleDateString('fr-BE')):'']
+      .filter(Boolean)
+    return bouts.length?`<span class="trace">${escHtml(bouts.join(' · '))}</span>`:''
+  }
+  const st=allStockPieces.find(x=>x.id===p.stock_id)
+  if(!st)return ''
+  const r=refDepuisNotes(st.notes)
+  const b=[st.fournisseur,r.ref?('Réf. '+r.ref):''].filter(Boolean)
+  return b.length?`<span class="trace">${escHtml(b.join(' · '))} <i>(fiche stock actuelle)</i></span>`:''
+}
+
+/* ─── Commandes de pièces ─── */
+let allCommandes=[]
+const CMD_LIB={commandee:'Commandée',expediee:'Expédiée',recue:'Reçue',annulee:'Annulée'}
+async function chargerCommandes(){
+  const {data,error}=await sb.from('commandes_pieces').select('*').order('created_at',{ascending:false}).limit(3000)
+  allCommandes=error?[]:(data||[])
+}
+const jourFr=d=>d?new Date(d+'T12:00:00').toLocaleDateString('fr-BE',{day:'numeric',month:'short'}):''
+function blocCommandes(r){
+  const l=allCommandes.filter(c=>c.reparation_id===r.id)
+  if(!l.length)return '<div class="det-note">Aucune commande liée à ce dossier.</div>'
+  return `<div class="cmd-list">${l.map(c=>{
+    const dates=[c.commandee_le?'commandée le '+jourFr(c.commandee_le):'',c.expediee_le?'expédiée le '+jourFr(c.expediee_le):'',c.recue_le?'reçue le '+jourFr(c.recue_le):''].filter(Boolean).join(' · ')
+    const actions=c.statut==='commandee'
+      ?`<button onclick="majCommande(${c.id},'expediee')">Expédiée</button><button class="ok" onclick="majCommande(${c.id},'recue')">Reçue</button>`
+      :c.statut==='expediee'?`<button class="ok" onclick="majCommande(${c.id},'recue')">Reçue</button>`:''
+    return `<div class="cmd">
+      <div class="cmd-h"><b>${escHtml(c.fournisseur)}${c.numero_commande?' · n° '+escHtml(c.numero_commande):''}</b><span class="cmd-p ${c.statut}">${CMD_LIB[c.statut]||c.statut}</span></div>
+      <div class="cmd-d">${c.articles?escHtml(c.articles)+'<br>':''}${dates}${c.montant!=null?' · '+eur(c.montant):''}${c.notes?'<br>'+escHtml(c.notes):''}</div>
+      <div class="cmd-a">${actions}<button onclick="editerCommande(${c.id})">Modifier</button>${['commandee','expediee'].includes(c.statut)?`<button onclick="majCommande(${c.id},'annulee')">Annuler</button>`:''}</div>
+    </div>`}).join('')}</div>`
+}
+let _cmdRep=null
+function ouvrirCommande(titre){document.getElementById('cmd-titre').textContent=titre;document.getElementById('cmdOv').classList.add('open');majCmdFoneday()}
+window.fermerCommande=function(){document.getElementById('cmdOv').classList.remove('open');document.getElementById('cmd-fd-liste').style.display='none'}
+window.majCmdFoneday=function(){document.getElementById('cmd-fd-btn').style.display=document.getElementById('cmd-fournisseur').value==='Foneday'?'':'none'}
+window.nouvelleCommande=function(repId){
+  const r=allReps.find(x=>x.id===repId);if(!r)return
+  _cmdRep=r
+  document.getElementById('cmd-id').value=''
+  document.getElementById('cmd-fournisseur').value='Foneday'
+  document.getElementById('cmd-date').value=new Date().toISOString().slice(0,10)
+  document.getElementById('cmd-numero').value=''
+  const pcs=(Array.isArray(r.pieces)?r.pieces:[]).filter(p=>p.stock_id).map(p=>p.nom).filter(Boolean)
+  document.getElementById('cmd-articles').value=pcs.join(', ')||[r.appareil,r.modele].filter(Boolean).join(' ')
+  document.getElementById('cmd-montant').value=''
+  document.getElementById('cmd-notes').value=''
+  ouvrirCommande('Nouvelle commande · '+(r.numero||'dossier'))
+}
+window.editerCommande=function(id){
+  const c=allCommandes.find(x=>x.id===id);if(!c)return
+  _cmdRep=allReps.find(x=>x.id===c.reparation_id)||null
+  document.getElementById('cmd-id').value=c.id
+  const f=document.getElementById('cmd-fournisseur')
+  if(![...f.options].some(o=>o.value===c.fournisseur))f.add(new Option(c.fournisseur,c.fournisseur))
+  f.value=c.fournisseur
+  document.getElementById('cmd-date').value=c.commandee_le||''
+  document.getElementById('cmd-numero').value=c.numero_commande||''
+  document.getElementById('cmd-articles').value=c.articles||''
+  document.getElementById('cmd-montant').value=c.montant!=null?c.montant:''
+  document.getElementById('cmd-notes').value=c.notes||''
+  ouvrirCommande('Modifier la commande')
+}
+/* Commandes Foneday lues en direct (même source que Gestion › Commandes). */
+let _cmdFd=[]
+window.chargerCmdFoneday=async function(){
+  const b=document.getElementById('cmd-fd-btn'),sel=document.getElementById('cmd-fd-liste')
+  b.disabled=true;b.textContent='Chargement…'
+  try{
+    const {data:{session:se}}=await sb.auth.getSession()
+    const res=await fetch(`${SB}/functions/v1/foneday-proxy`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${se.access_token}`},body:JSON.stringify({action:'orders'})})
+    const rj=await res.json().catch(()=>({}))
+    if(!res.ok||!rj.ok)throw new Error(rj.error||'Foneday indisponible')
+    const d=rj.data;_cmdFd=Array.isArray(d)?d:(d&&(d.orders||d.data))||[]
+    const ch=(o,cl)=>{for(const c of cl)if(o&&o[c]!=null)return o[c];return null}
+    sel.innerHTML='<option value="">— Choisir une commande Foneday —</option>'+_cmdFd.slice(0,40).map((o,i)=>{
+      const n=ch(o,['order_number','number','id','reference']),dt=ch(o,['created_at','date','order_date']),t=ch(o,['total_incl_vat','total','amount'])
+      return `<option value="${i}">${escHtml(String(n||'—'))}${dt?' · '+escHtml(new Date(dt).toLocaleDateString('fr-BE')):''}${t!=null?' · '+escHtml(eur(t)):''}${ch(o,['status'])?' · '+escHtml(String(ch(o,['status']))):''}</option>`}).join('')
+    sel.style.display=_cmdFd.length?'':'none'
+    if(!_cmdFd.length)showToast('Aucune commande trouvée chez Foneday','err')
+  }catch(e){showToast('Commandes Foneday : '+(e.message||e),'err')}
+  finally{b.disabled=false;b.textContent='Mes commandes Foneday'}
+}
+window.choisirCmdFoneday=function(sel){
+  const o=_cmdFd[Number(sel.value)];if(!o)return
+  const ch=cl=>{for(const c of cl)if(o[c]!=null)return o[c];return null}
+  document.getElementById('cmd-numero').value=String(ch(['order_number','number','id','reference'])||'')
+  const t=ch(['total_incl_vat','total','amount']);if(t!=null)document.getElementById('cmd-montant').value=Number(t).toFixed(2)
+  const dt=ch(['created_at','date','order_date']);if(dt&&!isNaN(new Date(dt)))document.getElementById('cmd-date').value=new Date(dt).toISOString().slice(0,10)
+}
+window.enregistrerCommande=async function(){
+  const id=document.getElementById('cmd-id').value
+  const v=k=>document.getElementById(k).value.trim()
+  const payload={fournisseur:v('cmd-fournisseur')||'Autre',numero_commande:v('cmd-numero')||null,articles:v('cmd-articles')||null,
+    montant:v('cmd-montant')===''?null:Number(v('cmd-montant')),commandee_le:v('cmd-date')||new Date().toISOString().slice(0,10),
+    notes:v('cmd-notes')||null,updated_at:new Date().toISOString()}
+  if(!payload.articles&&!payload.numero_commande){showToast('Indique au moins les articles ou le n° de commande','err');return}
+  const btn=document.getElementById('cmd-ok');btn.disabled=true
+  try{
+    if(id){
+      const {error}=await sb.from('commandes_pieces').update(payload).eq('id',Number(id))
+      if(error)throw error
+      showToast('Commande mise à jour','ok')
+    }else{
+      const r=_cmdRep
+      const {error}=await sb.from('commandes_pieces').insert({...payload,reparation_id:r?r.id:null})
+      if(error)throw error
+      showToast('Commande enregistrée','ok')
+      // La réparation attend désormais sa pièce.
+      if(r&&['attente_reception','recu','encours'].includes(r.statut))await passerStatut(r.id,'attente')
+    }
+    fermerCommande()
+    await chargerCommandes();renderAll()
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
+  finally{btn.disabled=false}
+}
+window.majCommande=async function(id,statut){
+  const c=allCommandes.find(x=>x.id===id);if(!c)return
+  if(statut==='annulee'&&!confirm('Annuler cette commande ?'))return
+  const jour=new Date().toISOString().slice(0,10)
+  const maj={statut,updated_at:new Date().toISOString()}
+  if(statut==='expediee')maj.expediee_le=jour
+  if(statut==='recue')maj.recue_le=jour
+  const {error}=await sb.from('commandes_pieces').update(maj).eq('id',id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  await chargerCommandes()
+  const r=allReps.find(x=>x.id===c.reparation_id)
+  const encore=allCommandes.some(x=>x.reparation_id===c.reparation_id&&['commandee','expediee'].includes(x.statut))
+  if(statut==='recue'&&r&&r.statut==='attente'&&!encore){
+    await passerStatut(r.id,'encours')
+    showToast('Pièce reçue · réparation reprise','ok')
+  }else showToast(statut==='recue'?'Pièce reçue':statut==='expediee'?'Commande expédiée':'Commande annulée','ok')
+  renderAll()
 }
 
 function renderAll(){
@@ -1375,8 +1586,13 @@ function renderDetail(){
     <div>
       <div class="det-lab" style="margin-bottom:7px;">Pièces et prestations</div>
       ${pieces.length?`<dl class="dl">${pieces.map(p=>
-        `<div><dt>${escHtml(p.nom||'—')}</dt><dd class="num">×${Number(p.qte)||1}</dd></div>`
+        `<div><dt>${escHtml(p.nom||'—')}${ligneTrace(p)}</dt><dd class="num">×${Number(p.qte)||1}</dd></div>`
       ).join('')}</dl>`:'<div class="det-note">Aucune pièce enregistrée</div>'}
+    </div>
+    <div>
+      <div class="det-lab" style="margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px;">Commandes de pièces
+        <button class="btn btn-secondary" style="padding:5px 10px;font-size:12px;" onclick="nouvelleCommande(${r.id})">+ Commande</button></div>
+      ${blocCommandes(r)}
     </div>
     ${r.notes?`<div class="sep"></div><div><div class="det-lab" style="margin-bottom:5px;">Notes internes</div><div class="det-note">${escHtml(r.notes)}</div></div>`:''}
     <div class="sep"></div>

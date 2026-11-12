@@ -9,6 +9,7 @@
  * Champs remplis automatiquement quand l'information existe dans l'ERP :
  *   {prenom} {nom} {appareil} {panne} {dossier} {devis} {montant_devis}
  *   {validite_devis} {lien_devis} {date_rdv} {lieu_rdv}
+ *   {code_parrainage} {remise_filleul} {recompense_parrain} {minimum_parrainage}
  * Un champ sans information (ex. {délai}) reste visible : l'envoi est bloqué
  * tant qu'il n'est pas complété à la main.
  *
@@ -38,5 +39,8 @@ window.MAIL_MODELES_DEFAUT = [
     corps: 'Bonjour {prenom},\n\nJe vous confirme notre rendez-vous le {date_rdv}.\nLieu : {lieu_rdv}' },
   { cle: 'relance', nom: 'Relance devis',
     objet: 'Votre devis {devis}',
-    corps: 'Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d\'un montant de {montant_devis}, valable jusqu\'au {validite_devis}. Avez-vous pu en prendre connaissance ?\n\nVous pouvez l\'accepter en ligne en un clic.\n{lien_devis}\n\nJe reste disponible pour toute question.' }
+    corps: 'Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d\'un montant de {montant_devis}, valable jusqu\'au {validite_devis}. Avez-vous pu en prendre connaissance ?\n\nVous pouvez l\'accepter en ligne en un clic.\n{lien_devis}\n\nJe reste disponible pour toute question.' },
+  { cle: 'parrainage', nom: 'Votre code de parrainage',
+    objet: 'Votre code de parrainage IT Soluce',
+    corps: 'Bonjour {prenom},\n\nMerci pour votre confiance.\n\nVoici votre code de parrainage personnel : {code_parrainage}\n\nTransmettez-le à vos proches. À leur première réparation d\'au moins {minimum_parrainage}, ils bénéficient de {remise_filleul} de réduction. Et dès que leur facture est réglée, vous recevez {recompense_parrain} de réduction sur votre prochaine réparation.\n\nLe plus simple est de leur transférer ce lien, le code y est déjà rempli\nhttps://itsoluce.be/?parrain={code_parrainage}#contact\n\nIls peuvent aussi indiquer le code dans le formulaire de demande ou me le communiquer lors de leur prise de contact.' }
 ];

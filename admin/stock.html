@@ -678,6 +678,10 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <label>Notes</label>
           <textarea id="f-notes" placeholder="Informations complémentaires..."></textarea>
         </div>
+        <div class="fg" id="usage-wrap" style="display:none;">
+          <label>Posée dans</label>
+          <div id="usage-liste" style="font-size:13px;line-height:1.6;"></div>
+        </div>
       </div>
 
     </div>
@@ -819,6 +823,7 @@ function openPanel(piece=null){
   }
   selFour.value=fourVal
   document.getElementById('f-notes').value=piece?.notes||''
+  if(window.afficherUsage)window.afficherUsage(piece)
   onAchatChange()
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
@@ -836,6 +841,23 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
+
+/* Traçabilité : réparations dans lesquelles cette pièce a été posée. */
+window.afficherUsage=async function(piece){
+  const wrap=document.getElementById('usage-wrap'),liste=document.getElementById('usage-liste')
+  wrap.style.display='none';liste.innerHTML=''
+  if(!piece||!piece.id)return
+  const {data,error}=await sb.from('reparations').select('id,numero,client_nom,created_at,date_fin,pieces')
+    .contains('pieces',[{stock_id:piece.id}]).order('created_at',{ascending:false}).limit(50)
+  if(error||!data||!data.length)return
+  if(document.getElementById('f-id').value!==String(piece.id))return
+  liste.innerHTML=data.map(r=>{
+    const p=(r.pieces||[]).find(x=>x.stock_id===piece.id)||{}
+    const quand=(p.trace&&p.trace.pose_le)||r.date_fin||r.created_at
+    return `<div><a href="/admin/reparations.html?q=${encodeURIComponent(r.numero||'')}" style="color:var(--a);text-decoration:none;font-weight:500;">${escHtml(r.numero||'Dossier')}</a> · ${escHtml(r.client_nom||'—')} · ${new Date(quand).toLocaleDateString('fr-BE')}${p.trace&&p.trace.ref?' · réf. '+escHtml(p.trace.ref):''}</div>`
+  }).join('')
+  wrap.style.display=''
+}
 
 function showError(msg){
   document.getElementById('ldr').style.display='none'
