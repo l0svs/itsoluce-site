@@ -584,14 +584,6 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
-
-/* Parrainage */
-#parrainage-bandeau{margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--ad,rgba(0,82,204,.08));border:1px solid var(--ln2);font-size:13px;color:var(--t1);display:flex;flex-direction:column;gap:6px;}
-.pb-l{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-.pb-s{color:var(--t2);font-size:12.5px;}
-.pb-b{font:inherit;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;border:0;background:var(--a);color:#fff;cursor:pointer;}
-.pb-code{font-family:ui-monospace,Menlo,monospace;letter-spacing:.3px;}
-.lie.parr{background:rgba(16,185,129,.15);color:#059669;}
 </style>
 <script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -725,7 +717,6 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             <div class="ligne-head"><span>Description</span><span>Qté</span><span>Prix unit. €</span><span>Total</span><span></span></div>
             <div class="lignes" id="lignesBody"></div>
             <div class="ligne-outils">
-              <div id="parrainage-bandeau" style="display:none;"></div>
               <button type="button" class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
               <select id="presta-select" onchange="ajouterPresta(this)" aria-label="Ajouter une prestation"><option value="">Ajouter une prestation…</option></select>
             </div>
@@ -1116,7 +1107,6 @@ if(new URLSearchParams(location.search).get('acces')){
 
 let allFactures=[]
 let allClients=[]
-const PARR={actif:true,filleul:10,recompense:10,minimum:30}
 let allStock=[]
 let allReps=[]
 let numerosDevis=new Map()
@@ -1136,12 +1126,6 @@ try{
   if(_c.entreprise_site)ENTREPRISE.site=_c.entreprise_site.replace(/^https?:\/\//,'').replace(/\/$/,'')
   if(_c.entreprise_bce)ENTREPRISE.bce=_c.entreprise_bce
   if(_c.finance_iban)ENTREPRISE.iban=_c.finance_iban
-  PARR.actif=(_c.parrainage_actif||'oui').toLowerCase()!=='non'
-  {// même lecture que la base : vide ou illisible = valeur par défaut, « 12,5 » accepté
-    const num=v=>{const t=String(v??'').trim().replace(',','.');return /^[0-9]+(\.[0-9]+)?$/.test(t)?Number(t):null}
-    if(num(_c.parrainage_remise_filleul)!==null)PARR.filleul=num(_c.parrainage_remise_filleul)
-    if(num(_c.parrainage_recompense)!==null)PARR.recompense=num(_c.parrainage_recompense)
-    if(num(_c.parrainage_minimum)!==null)PARR.minimum=num(_c.parrainage_minimum)}
   if(_c.finance_mention_tva)ENTREPRISE.mention_tva=_c.finance_mention_tva
   if(_c.entreprise_adresse){
     const i=_c.entreprise_adresse.lastIndexOf(',')
@@ -1162,7 +1146,7 @@ try{
 async function load(){
   const [rFac,rCli,rStock,rSvc,rRep,rDev]=await Promise.all([
     sb.from('factures').select('*',{count:'exact'}).order('date_emission',{ascending:false}).order('id',{ascending:false}).limit(2000),
-    sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva,type,code_parrainage').order('nom').limit(5000),
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva,type').order('nom').limit(5000),
     sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom').limit(5000),
     sb.from('services').select('*').order('ordre',{ascending:true}),
     sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut,motif').order('created_at',{ascending:false}).limit(2000),
@@ -1311,32 +1295,7 @@ window.onClientSelect=function(){
     verrouillerClient(false)
   }
   surModification()
-  majParrainage()
 }
-
-/* ─── Parrainage ─── */
-let _parrTick=0
-async function majParrainage(){
-  const el=document.getElementById('parrainage-bandeau')
-  if(!el||!window.Parrainage)return
-  const cid=document.getElementById('f-client-select').value
-  const tick=++_parrTick
-  const e=cid?await Parrainage.etat(sb,Number(cid)):null
-  if(tick!==_parrTick)return
-  const lignes=getLignes()
-  Parrainage.rendre({el,etat:e,devis:false,emis:estEmise(courante),actif:PARR.actif,remiseFilleul:PARR.filleul,minimum:PARR.minimum,lignes,
-    sousTotal:lignes.filter(l=>!l.parrainage).reduce((t,l)=>t+l.total,0),
-    ajouter:(desc,montant,tag)=>{
-      const vide=[...document.querySelectorAll('#lignesBody .ligne')].find(l=>!l.querySelector('.l-desc').value.trim()&&!Number(l.querySelector('.l-prix').value))
-      if(vide)vide.remove()
-      addLigne(desc,1,montant,'',tag)
-      const der=[...document.querySelectorAll('#lignesBody .ligne')].pop()
-      if(der){const lie=der.querySelector('.lie');if(lie){lie.textContent='parrainage';lie.classList.add('on','parr')}}
-      calcTotaux();surModification();majParrainage()
-    }})
-}
-window.majParrainage=majParrainage
-
 function verrouillerClient(verrou){
   ;['f-client','f-email','f-tel','f-adresse'].forEach(id=>{
     const el=document.getElementById(id)
@@ -1393,12 +1352,11 @@ window.toggleClientPro=function(){
 }
 
 /* ─── Lignes ─── */
-window.addLigne=function addLigne(desc,qte,prix,stockId,parrainage){
+window.addLigne=function addLigne(desc,qte,prix,stockId){
   desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''
   const div=document.createElement('div')
   div.className='ligne'
   div.dataset.stockId=stockId
-  if(parrainage)div.dataset.parrainage=parrainage
   div.innerHTML=`
     <div class="desc-col">
       <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie" oninput="surModification()"/>
@@ -1412,7 +1370,6 @@ window.addLigne=function addLigne(desc,qte,prix,stockId,parrainage){
     <input type="text" class="l-total" value="0,00" readonly aria-label="Total de la ligne"/>
     <button type="button" class="ligne-del" onclick="this.closest('.ligne').remove();calcTotaux()" title="Retirer la ligne"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`
   document.getElementById('lignesBody').appendChild(div)
-  if(parrainage){const lie=div.querySelector('.lie');if(lie){lie.textContent='parrainage';lie.classList.add('on','parr')}}
   const sel=div.querySelector('.l-stock')
   allStock.forEach(s=>{
     const o=document.createElement('option')
@@ -1448,8 +1405,7 @@ function getLignes(){
     const qte=Number(l.querySelector('.l-qte').value)||0
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
-    const parr=l.dataset.parrainage||''
-    if(desc||prix>0||parr){const o={description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null};if(parr)o.parrainage=parr;lignes.push(o)}
+    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
   })
   return lignes
 }
@@ -1644,9 +1600,8 @@ function chargerDansFormulaire(f){
   verrouillerClient(!!csel.value)
 
   document.getElementById('lignesBody').innerHTML=''
-  if(f&&Array.isArray(f.lignes)&&f.lignes.length)f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id,l.parrainage))
+  if(f&&Array.isArray(f.lignes)&&f.lignes.length)f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id))
   else addLigne()
-  majParrainage()
 
   const e=f?etatAffiche(f):STATUTS.brouillon
   const tag=document.getElementById('tag-courant')
@@ -2417,15 +2372,6 @@ function dossierNonReparable(f){
 // Le modèle suffit (« iPhone 12 ») ; à défaut, le type d'appareil.
 function appareilDe(r){return String(r.modele||r.appareil||'').trim()}
 
-/* Encart « Parrainez vos proches » sur la facture, avec le code du client. */
-function encartParrainage(f){
-  if(!PARR.actif||!f||f.type_document==='note_credit'||!f.client_id)return ''
-  const c=allClients.find(x=>x.id===f.client_id)
-  if(!c||!c.code_parrainage)return ''
-  return `<div style="margin-top:16px;font-size:12px;color:#12212e;border:1px dashed #b9c7dd;border-radius:8px;padding:10px 14px;">
-    <b>Parrainez vos proches</b> avec votre code <b style="font-family:monospace;letter-spacing:.3px;">${escHtml(c.code_parrainage)}</b> :
-    ils bénéficient de ${escHtml(eur(PARR.filleul))} de réduction sur leur première réparation${PARR.minimum>0?` (dès ${escHtml(eur(PARR.minimum))})`:''}, et vous de ${escHtml(eur(PARR.recompense))} sur la suivante.</div>`
-}
 function buildTemplateHTML(f,forPdf){
   const nonRep=dossierNonReparable(f)
   const nc=estNC(f)
@@ -2542,7 +2488,6 @@ function buildTemplateHTML(f,forPdf){
       </div>
     </div>
     ${f.notes?`<div style="margin-top:30px;font-size:12px;color:#555;background:#f7f8fa;border-radius:8px;padding:12px 14px;">${escHtml(f.notes)}</div>`:''}
-    ${encartParrainage(f)}
     </div>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid #eee;font-size:10.5px;color:#888;line-height:1.7;">
       ${nc
@@ -3033,7 +2978,6 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/envoi-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/controle-emission.js"></script>
-<script src="/admin/assets/js/parrainage.js"></script>
 <script src="/admin/assets/js/libelle-piece.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 <script src="/admin/assets/js/dossier-fil.js"></script>

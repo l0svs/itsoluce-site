@@ -32,7 +32,7 @@
       var d = String(l.description || '').trim();
       if (!d) p.push('Une ligne n’a pas de description.');
       else if (!(Number(l.quantite) > 0)) p.push('Quantité invalide sur « ' + d + ' ».');
-      else if (Number(l.prix_unitaire) < 0 && !l.parrainage) p.push('Prix négatif sur « ' + d + ' » : utilise la remise.');
+      else if (Number(l.prix_unitaire) < 0) p.push('Prix négatif sur « ' + d + ' » : utilise la remise.');
     });
     if (Number(doc.total) < 0) p.push('Le total est négatif.');
     return p.filter(function (x, i, a) { return a.indexOf(x) === i; });

@@ -551,14 +551,6 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
-
-/* Parrainage */
-#parrainage-bandeau{margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--ad,rgba(0,82,204,.08));border:1px solid var(--ln2);font-size:13px;color:var(--t1);display:flex;flex-direction:column;gap:6px;}
-.pb-l{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-.pb-s{color:var(--t2);font-size:12.5px;}
-.pb-b{font:inherit;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;border:0;background:var(--a);color:#fff;cursor:pointer;}
-.pb-code{font-family:ui-monospace,Menlo,monospace;letter-spacing:.3px;}
-.lie.parr{background:rgba(16,185,129,.15);color:#059669;}
 </style>
 <script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -689,7 +681,6 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             <div class="ligne-head"><span>Description</span><span>Qté</span><span>Prix unit. €</span><span>Total</span><span></span></div>
             <div class="lignes" id="lignesBody"></div>
             <div class="ligne-outils">
-              <div id="parrainage-bandeau" style="display:none;"></div>
               <button type="button" class="add-ligne" onclick="addLigne()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter une ligne</button>
               <select id="presta-select" onchange="ajouterPresta(this)" aria-label="Ajouter une prestation"><option value="">Ajouter une prestation…</option></select>
             </div>
@@ -852,7 +843,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
-const PARR={actif:true,filleul:10,recompense:10,minimum:30}
 const ENTREPRISE={
   nom:'IT Soluce',
   adresse:'Chaussée d\'Hondzocht 164',
@@ -1060,12 +1050,6 @@ try{
   if(_c.entreprise_site)ENTREPRISE.site=_c.entreprise_site.replace(/^https?:\/\//,'').replace(/\/$/,'')
   if(_c.entreprise_bce)ENTREPRISE.bce=_c.entreprise_bce
   if(_c.finance_iban)ENTREPRISE.iban=_c.finance_iban
-  PARR.actif=(_c.parrainage_actif||'oui').toLowerCase()!=='non'
-  {// même lecture que la base : vide ou illisible = valeur par défaut, « 12,5 » accepté
-    const num=v=>{const t=String(v??'').trim().replace(',','.');return /^[0-9]+(\.[0-9]+)?$/.test(t)?Number(t):null}
-    if(num(_c.parrainage_remise_filleul)!==null)PARR.filleul=num(_c.parrainage_remise_filleul)
-    if(num(_c.parrainage_recompense)!==null)PARR.recompense=num(_c.parrainage_recompense)
-    if(num(_c.parrainage_minimum)!==null)PARR.minimum=num(_c.parrainage_minimum)}
   if(_c.finance_mention_tva)ENTREPRISE.mention_tva=_c.finance_mention_tva
   if(_c.entreprise_adresse){
     const i=_c.entreprise_adresse.lastIndexOf(',')
@@ -1202,33 +1186,7 @@ window.onClientSelect=function(){
     verrouillerClient(false)
   }
   surModification()
-  majParrainage()
 }
-
-/* ─── Parrainage ─── */
-let _parrTick=0
-async function majParrainage(){
-  const el=document.getElementById('parrainage-bandeau')
-  if(!el||!window.Parrainage)return
-  const cid=document.getElementById('f-client-select').value
-  const tick=++_parrTick
-  const e=cid?await Parrainage.etat(sb,Number(cid)):null
-  if(tick!==_parrTick)return
-  const lignes=getLignes()
-  Parrainage.rendre({el,etat:e,devis:true,emis:estEmis(courant),actif:PARR.actif,remiseFilleul:PARR.filleul,minimum:PARR.minimum,lignes,
-    codeDemande:_source&&_source.type==='demande'?_source.code_parrainage:'',
-    sousTotal:lignes.filter(l=>!l.parrainage).reduce((t,l)=>t+l.total,0),
-    ajouter:(desc,montant,tag)=>{
-      const vide=[...document.querySelectorAll('#lignesBody .ligne')].find(l=>!l.querySelector('.l-desc').value.trim()&&!Number(l.querySelector('.l-prix').value))
-      if(vide)vide.remove()
-      addLigne(desc,1,montant,'',tag)
-      const der=[...document.querySelectorAll('#lignesBody .ligne')].pop()
-      if(der){const lie=der.querySelector('.lie');if(lie){lie.textContent='parrainage';lie.classList.add('on','parr')}}
-      calcTotaux();surModification();majParrainage()
-    }})
-}
-window.majParrainage=majParrainage
-
 function verrouillerClient(verrou){
   ;['f-client','f-email','f-tel','f-adresse'].forEach(id=>{
     const el=document.getElementById(id)
@@ -1266,12 +1224,11 @@ window.toggleClientPro=function(){
 }
 
 /* ─── Lignes ─── */
-window.addLigne=function addLigne(desc,qte,prix,stockId,parrainage){
+window.addLigne=function addLigne(desc,qte,prix,stockId){
   desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''
   const div=document.createElement('div')
   div.className='ligne'
   div.dataset.stockId=stockId
-  if(parrainage)div.dataset.parrainage=parrainage
   div.innerHTML=`
     <div class="desc-col">
       <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie" oninput="surModification()"/>
@@ -1285,7 +1242,6 @@ window.addLigne=function addLigne(desc,qte,prix,stockId,parrainage){
     <input type="text" class="l-total" value="0,00" readonly aria-label="Total de la ligne"/>
     <button type="button" class="ligne-del" onclick="this.closest('.ligne').remove();calcTotaux()" title="Retirer la ligne"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`
   document.getElementById('lignesBody').appendChild(div)
-  if(parrainage){const lie=div.querySelector('.lie');if(lie){lie.textContent='parrainage';lie.classList.add('on','parr')}}
   const sel=div.querySelector('.l-stock')
   allStock.forEach(s=>{
     const o=document.createElement('option')
@@ -1321,8 +1277,7 @@ function getLignes(){
     const qte=Number(l.querySelector('.l-qte').value)||0
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
-    const parr=l.dataset.parrainage||''
-    if(desc||prix>0||parr){const o={description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null};if(parr)o.parrainage=parr;lignes.push(o)}
+    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
   })
   return lignes
 }
@@ -1443,9 +1398,8 @@ function chargerDansFormulaire(d){
   verrouillerClient(!!csel.value)
 
   document.getElementById('lignesBody').innerHTML=''
-  if(d&&Array.isArray(d.lignes)&&d.lignes.length)d.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id,l.parrainage))
+  if(d&&Array.isArray(d.lignes)&&d.lignes.length)d.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id))
   else addLigne()
-  majParrainage()
 
   const e=d?etatAffiche(d):STATUTS.brouillon
   const tag=document.getElementById('tag-courant')
@@ -1711,9 +1665,8 @@ async function preparerDepuisLien(){
     preremplirClient({nom,email:dem.email,telephone:dem.telephone,adresse:dem.mode_intervention==='domicile'?dem.adresse:''})
     document.getElementById('lignesBody').innerHTML=''
     addLigne(dem.appareil?`Réparation ${dem.appareil}`:'Réparation',1,0)
-    _source={type:'demande',id:dem.id,appareil:dem.appareil||'',panne:dem.description||'',code_parrainage:dem.code_parrainage||''}
+    _source={type:'demande',id:dem.id,appareil:dem.appareil||'',panne:dem.description||''}
     afficherSource(`Devis pour la demande de <b>${escHtml(nom||'ce visiteur')}</b>${dem.appareil?` · ${escHtml(dem.appareil)}`:''}${dem.description?`<q>${escHtml(dem.description)}</q>`:''}`)
-    majParrainage()   // rappel du code de parrainage saisi dans le formulaire
   }else{
     const {data:r,error}=await sb.from('reparations').select('*').eq('id',idRep).maybeSingle()
     if(error||!r){showToast('Dossier introuvable','err');return}
@@ -2432,7 +2385,6 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/envoi-mail.js"></script>
 <script src="/admin/assets/js/admin-palette.js"></script>
 <script src="/admin/assets/js/controle-emission.js"></script>
-<script src="/admin/assets/js/parrainage.js"></script>
 <script src="/admin/assets/js/libelle-piece.js"></script>
 <script src="/admin/assets/js/admin-nav-badges.js"></script>
 <script src="/admin/assets/js/dossier-fil.js"></script>
