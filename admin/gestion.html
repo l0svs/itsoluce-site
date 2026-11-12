@@ -599,6 +599,42 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+/* ── Absence ── */
+.card input[type=date]{width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px; padding:8px 12px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none;}
+.card input[type=date]:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.abs-etat{font-size:13px; line-height:1.55; border-radius:12px; padding:13px 16px; margin-bottom:16px; background:var(--bg2); color:var(--t2); box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.abs-etat b{color:var(--t1); font-weight:600;}
+.abs-etat.on{background:rgba(178,94,9,.1); color:var(--t1);}
+.abs-etat.prog{background:var(--ad); color:var(--t1);}
+.abs-etat.ko{background:rgba(200,54,44,.1); color:var(--d);}
+.abs-apercu{border-radius:12px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.06); margin-bottom:16px;}
+.abs-apercu .bd{display:flex; gap:11px; align-items:center; padding:12px 18px; color:#fff; font-size:14px; line-height:1.45; font-family:'Inter',-apple-system,sans-serif;}
+.abs-apercu .bd b{font-weight:600;}
+.abs-apercu .bd i{margin-left:auto; font-style:normal; opacity:.65; font-size:20px;}
+.abs-apercu .vide{padding:16px 18px; font-size:12.5px; color:var(--t3); background:var(--bg2);}
+
+/* ── Réalisations ── */
+.split-real{grid-template-columns:minmax(0,1fr) 420px;}
+.detail input[type=date]{background:var(--bg3); border:1px solid transparent; border-radius:10px; padding:8px 10px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none;}
+.detail input[type=date]:focus{background:var(--bg2); border-color:var(--a); box-shadow:0 0 0 3px var(--ad);}
+.real-quota{font-size:12.5px; color:var(--t2);}
+.real-quota b{color:var(--t1); font-weight:600;}
+.lrow .rthumb{width:52px; height:40px; border-radius:7px; background:var(--bg4) center/cover no-repeat; flex-shrink:0;}
+.rmedias{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:4px;}
+.rm{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--bg4) center/cover no-repeat; border:1px solid var(--ln);}
+.rm .rm-t{position:absolute; left:6px; top:6px; font-size:10px; font-weight:600; color:#fff; background:rgba(0,0,0,.55); padding:2px 7px; border-radius:20px;}
+.rm .rm-a{position:absolute; left:0; right:0; bottom:0; display:flex; justify-content:space-between; padding:5px; background:linear-gradient(transparent,rgba(0,0,0,.6));}
+.rm .rm-a button{width:24px; height:24px; border-radius:50%; border:none; background:rgba(255,255,255,.92); color:#111; font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.rm .rm-a button:disabled{opacity:.35; cursor:default;}
+.rm .rm-a .rm-x{background:#c8362c; color:#fff;}
+.rm.up{display:flex; align-items:center; justify-content:center; font-size:11.5px; color:var(--t2); text-align:center; padding:8px;}
+.rm.up .spin{width:18px; height:18px; margin:0 auto 6px;}
+.rm-leg{width:100%; margin-top:4px; font-size:11.5px !important; padding:5px 8px !important;}
+.radd{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
+.radd .btn{padding:7px 12px; font-size:12px;}
+.rhint{font-size:11.5px; color:var(--t3); line-height:1.5; margin-top:8px;}
+.rhint b{color:var(--t2); font-weight:600;}
+@media (max-width:1100px){.split-real{grid-template-columns:1fr;}}
 </style>
 <style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
 <script>
@@ -672,6 +708,10 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <button class="sn-item" data-sec="fournisseurs" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="cnt" id="cnt-fournisseurs"></span></button>
         <button class="sn-item" data-sec="commandes" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Commandes<span class="cnt" id="cnt-commandes"></span></button>
         <button class="sn-item" data-sec="garanties" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Garanties<span class="cnt" id="cnt-garanties"></span></button>
+
+        <div class="sn-group">Site vitrine</div>
+        <button class="sn-item" data-sec="absence" onclick="showSec(this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Absence<span class="cnt" id="cnt-absence"></span></button>
+        <button class="sn-item" data-sec="realisations" onclick="showSec(this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Réalisations<span class="cnt" id="cnt-realisations"></span></button>
 
         <div class="sn-group">Réglages</div>
         <button class="sn-item" data-sec="entreprise" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Entreprise</button>
@@ -769,6 +809,46 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             <div class="split">
               <div class="liste" id="liste-gar"></div>
               <div class="detail" id="detail-gar"></div>
+            </div>
+          </section>
+
+          <!-- ── ABSENCE (bandeau du site vitrine) ── -->
+          <section class="sec" id="sec-absence">
+            <h1 class="sec-title">Absence</h1>
+            <p class="sec-desc">Un bandeau en haut du site annonce ton congé. Il apparaît tout seul quelques jours avant le départ et disparaît tout seul au retour : tu peux le régler à l'avance et l'oublier.</p>
+
+            <div class="abs-etat" id="abs-etat"></div>
+
+            <div class="card">
+              <div class="card-lbl">Période</div>
+              <div class="row"><div class="row-l"><b>Bandeau activé</b><em>« Non » le coupe immédiatement, dates conservées</em></div><div class="row-f"><select id="s-abs-actif" data-cle="absence_actif"><option value="non">Non</option><option value="oui">Oui</option></select></div></div>
+              <div class="row"><div class="row-l"><b>Premier jour d'absence</b></div><div class="row-f"><input type="date" id="s-abs-debut" data-cle="absence_debut"/></div></div>
+              <div class="row"><div class="row-l"><b>Dernier jour d'absence</b><em>Le retour est annoncé le lendemain</em></div><div class="row-f"><input type="date" id="s-abs-fin" data-cle="absence_fin"/></div></div>
+              <div class="row"><div class="row-l"><b>Annoncer à l'avance</b><em>Bandeau bleu « Je serai en congé… » avant le départ</em></div><div class="row-f"><select id="s-abs-annonce" data-cle="absence_annonce_jours"><option value="7">7 jours avant</option><option value="0">Non, seulement pendant</option><option value="3">3 jours avant</option><option value="14">14 jours avant</option></select></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-lbl">Pendant l'absence</div>
+              <div class="row"><div class="row-l"><b>Dépôts à Tubize</b></div><div class="row-f"><select id="s-abs-depots" data-cle="absence_depots"><option value="oui">Indiquer « Dépôts suspendus »</option><option value="non">Ne rien indiquer</option></select></div></div>
+              <div class="row"><div class="row-l"><b>Numéro de téléphone</b><em>Barré et non cliquable, pour éviter les appels sans réponse</em></div><div class="row-f"><select id="s-abs-tel" data-cle="absence_telephone"><option value="oui">Barrer le numéro</option><option value="non">Laisser le numéro actif</option></select></div></div>
+              <div class="row"><div class="row-l"><b>Phrase en plus</b><em>Facultatif, ajoutée à la fin du bandeau</em></div><div class="row-f"><input type="text" id="s-abs-msg" data-cle="absence_message" maxlength="160" placeholder="Pour une urgence : contact@itsoluce.be"/></div></div>
+            </div>
+
+            <div class="card-lbl" style="padding:6px 2px 8px;">Aperçu sur le site</div>
+            <div class="abs-apercu" id="abs-apercu"></div>
+          </section>
+
+          <!-- ── RÉALISATIONS (section du site vitrine) ── -->
+          <section class="sec large" id="sec-realisations">
+            <h1 class="sec-title">Réalisations</h1>
+            <p class="sec-desc">Les cartes affichées sous « Avis clients » sur le site. Chaque réalisation peut contenir plusieurs photos et vidéos : elles défilent en carrousel. Rien n'est visible tant que « Publiée sur le site » n'est pas activé.</p>
+            <div class="sec-bar">
+              <div class="real-quota" id="real-quota"></div>
+              <button class="btn btn-primary" style="margin-left:auto;" onclick="nouvelleRealisation()">Ajouter</button>
+            </div>
+            <div class="split split-real">
+              <div class="liste" id="liste-real"></div>
+              <div class="detail" id="detail-real"></div>
             </div>
           </section>
 
@@ -1542,6 +1622,8 @@ window.chargerSection=async function(id){
     else if(id==='commandes')await loadCommandes()
     else if(id==='garanties')await loadGaranties()
     else if(id==='integrations')await loadAgenda()
+    else if(id==='realisations')await loadRealisations()
+    else if(id==='absence')majAbsence()
   }catch(err){
     _charge[id]=false
     showToast('Erreur de chargement : '+(err.message||err),'err')
@@ -1926,6 +2008,7 @@ async function loadPrestations(){
   renderPrestations()
 }
 function prixLabel(s){
+  if(s.prix==null||s.prix==='')return 'Sur devis'
   const u=s.unite?' '+s.unite:''
   return (s.prix_max&&Number(s.prix_max)>Number(s.prix))
     ? `${eur(s.prix)} – ${eur(s.prix_max)}${u}` : `${eur(s.prix)}${u}`
@@ -1970,8 +2053,8 @@ function dessinerDetailPrest(){
     <div class="detail-h">${neuf?'Nouvelle prestation':escHtml(s.nom)}</div>
     <div class="detail-s">${neuf?'Elle apparaîtra dans la liste une fois enregistrée.':'Modifie puis enregistre.'}</div>
     <div class="fg"><label for="p-nom">Nom *</label><input type="text" id="p-nom" value="${escHtml(s.nom)}" placeholder="Transfert de données"/></div>
-    <div class="fg"><label>Prix *</label><div class="duo">
-      <input type="number" step="0.01" id="p-prix" value="${s.prix===''?'':escHtml(s.prix)}" placeholder="50"/>
+    <div class="fg"><label>Prix <span style="font-weight:400;color:var(--t3)">· vide = « Sur devis »</span></label><div class="duo">
+      <input type="number" step="0.01" id="p-prix" value="${s.prix===''||s.prix==null?'':escHtml(s.prix)}" placeholder="Sur devis"/>
       <input type="number" step="0.01" min="0" id="p-prixmax" value="${s.prix_max==null?'':escHtml(s.prix_max)}" placeholder="max (facultatif)"/>
     </div></div>
     <div class="fg"><label for="p-unite">Unité</label><input type="text" id="p-unite" value="${escHtml(s.unite||'')}" placeholder="/h — laisser vide si forfait"/></div>
@@ -1987,22 +2070,24 @@ function dessinerDetailPrest(){
          en ligne sans décision explicite. -->
     <div class="toggle-l"><span>Afficher sur le site<em>Dans la colonne « Service supplémentaire » des tarifs publics</em></span><div class="tog ${s.vitrine===true?'on':''}" id="p-vitrine" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
     <div class="detail-f">
-      ${neuf?'':'<button class="btn btn-danger" onclick="supprimerPrestation()">Supprimer</button>'}
+      ${neuf?'':'<button class="btn btn-secondary" onclick="ordrePrestation(-1)" title="Plus haut dans la liste et sur le site">↑</button><button class="btn btn-secondary" onclick="ordrePrestation(1)" title="Plus bas dans la liste et sur le site">↓</button><button class="btn btn-danger" onclick="supprimerPrestation()">Supprimer</button>'}
       <button class="btn btn-primary" onclick="enregistrerPrestation()">${neuf?'Créer':'Enregistrer'}</button>
     </div>`
 }
 window.enregistrerPrestation=async function(){
   const nom=document.getElementById('p-nom').value.trim()
-  const prix=parseFloat(document.getElementById('p-prix').value)
+  const brutPrix=document.getElementById('p-prix').value.trim()
+  // Vide : « Sur devis » sur le site, 0 € proposé dans un devis.
+  const prix=brutPrix===''?null:parseFloat(brutPrix)
   if(!nom){showToast('Le nom est obligatoire','err');return}
   // Un prix négatif est admis : il sert aux déductions, comme « Diagnostic
   // déduit » (−30 €) ajouté au devis quand un diagnostic a déjà été payé.
-  if(isNaN(prix)){showToast('Prix invalide','err');return}
+  if(prix!==null&&isNaN(prix)){showToast('Prix invalide','err');return}
   const brutMax=document.getElementById('p-prixmax').value
   const pmax=brutMax!==''?parseFloat(brutMax):null
   const data={
     nom, prix,
-    prix_max:(pmax!==null&&!isNaN(pmax))?pmax:null,
+    prix_max:(prix!==null&&pmax!==null&&!isNaN(pmax))?pmax:null,
     unite:document.getElementById('p-unite').value.trim()||null,
     detail:document.getElementById('p-detail').value.trim()||null,
     actif:document.getElementById('p-actif').classList.contains('on'),
@@ -2025,6 +2110,22 @@ window.enregistrerPrestation=async function(){
     renderPrestations(); showToast('Prestation enregistrée','ok')
   }catch(err){showToast('Erreur : '+(err.message||err),'err')}
 }
+// Échange la place avec la voisine (toutes prestations confondues : c'est
+// aussi l'ordre de la colonne « Service supplémentaire » du site).
+window.ordrePrestation=async function(d){
+  const l=_prest.slice().sort((a,b)=>(a.ordre||0)-(b.ordre||0))
+  const i=l.findIndex(x=>String(x.id)===String(_selPrest)),j=i+d
+  if(i<0||j<0||j>=l.length)return
+  const a=l[i],b=l[j]
+  let oa=b.ordre||0,ob=a.ordre||0
+  if(oa===ob)oa=ob+d
+  const r1=await sb.from('services').update({ordre:oa}).eq('id',a.id)
+  const r2=await sb.from('services').update({ordre:ob}).eq('id',b.id)
+  if(r1.error||r2.error){showToast('Erreur : '+((r1.error||r2.error).message),'err');return}
+  a.ordre=oa;b.ordre=ob
+  _prest.sort((x,y)=>(x.ordre||0)-(y.ordre||0))
+  renderPrestations()
+}
 window.supprimerPrestation=async function(){
   const s=_prest.find(x=>String(x.id)===String(_selPrest))
   if(!s)return
@@ -2033,6 +2134,297 @@ window.supprimerPrestation=async function(){
   if(error){showToast('Erreur : '+error.message,'err');return}
   _prest=_prest.filter(x=>String(x.id)!==String(s.id)); _selPrest=null
   renderPrestations(); showToast('Prestation supprimée','ok')
+}
+
+/* ══════════ ABSENCE (bandeau du site vitrine) ══════════
+   Les réglages sont des clés de settings, enregistrées par la barre
+   « Enregistrer » comme le reste. Le site les lit par site_absence(), qui
+   applique exactement les mêmes règles que l'aperçu ci-dessous. */
+function _absJour(iso){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||''));return m?new Date(+m[1],+m[2]-1,+m[3]):null}
+function _absNom(d){const o={weekday:'long',day:'numeric',month:'long'};if(d.getFullYear()!==new Date().getFullYear())o.year='numeric';return d.toLocaleDateString('fr-BE',o)}
+function _absAuj(){const p=new Intl.DateTimeFormat('fr-CA',{timeZone:'Europe/Brussels'}).format(new Date());return _absJour(p)}
+function _absPlus(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function _absTexte(phase,debut,fin,msg){
+  const retour=_absPlus(fin,1),b=t=>'<b>'+escHtml(t)+'</b>'
+  const t=phase==='avant'
+    ? `Je serai en congé du ${b(_absNom(debut))} au ${b(_absNom(fin))}. Les demandes reçues pendant cette période seront traitées dès mon retour, le ${b(_absNom(retour))}.`
+    : `Je suis en congé jusqu'au ${b(_absNom(fin))}. Les demandes envoyées par le formulaire sont traitées dès mon retour, le ${b(_absNom(retour))}.`
+  return t+(msg?' '+escHtml(msg):'')
+}
+function majAbsence(){
+  const v=id=>document.getElementById(id).value
+  const actif=v('s-abs-actif')==='oui',debut=_absJour(v('s-abs-debut')),fin=_absJour(v('s-abs-fin'))
+  const annonce=Number(v('s-abs-annonce'))||0,msg=v('s-abs-msg').trim(),auj=_absAuj()
+  const etat=document.getElementById('abs-etat'),ap=document.getElementById('abs-apercu'),cnt=document.getElementById('cnt-absence')
+  let cls='',txt='',enLigne=false
+  if(!debut||!fin){cls=actif?'ko':'';txt=actif?'Indique le premier et le dernier jour d\'absence.':'Aucune absence programmée. Indique tes dates puis active le bandeau.'}
+  else if(fin<debut){cls='ko';txt='Le dernier jour est avant le premier.'}
+  else if(!actif){txt=`Bandeau désactivé : rien ne s'affiche sur le site. Dates gardées : du <b>${escHtml(_absNom(debut))}</b> au <b>${escHtml(_absNom(fin))}</b>.`}
+  else if(auj>fin){txt=`Cette absence est terminée (retour le ${escHtml(_absNom(_absPlus(fin,1)))}) : plus rien ne s'affiche. Change les dates pour la prochaine.`}
+  else if(auj<debut){
+    const des=_absPlus(debut,-annonce)
+    if(auj<des){cls='prog';txt=`<b>Programmé.</b> Le bandeau apparaîtra le <b>${escHtml(_absNom(des))}</b>${annonce?' (annonce)':''} et disparaîtra seul le <b>${escHtml(_absNom(_absPlus(fin,1)))}</b>.`}
+    else{cls='prog';enLigne=true;txt=`<b>En ligne maintenant</b> (annonce). Ton absence commence le <b>${escHtml(_absNom(debut))}</b>.`}
+  }else{cls='on';enLigne=true;txt=`<b>En ligne maintenant</b> : absent jusqu'au <b>${escHtml(_absNom(fin))}</b>, retour annoncé le <b>${escHtml(_absNom(_absPlus(fin,1)))}</b>.`}
+  if(document.getElementById('saveBar').classList.contains('visible'))txt+=' <span style="color:var(--w)">Pas encore enregistré.</span>'
+  etat.className='abs-etat '+cls;etat.innerHTML=txt
+  cnt.textContent=enLigne?'En ligne':''
+  if(!debut||!fin||fin<debut){ap.innerHTML='<div class="vide">L\'aperçu apparaît dès que les deux dates sont remplies.</div>';return}
+  const bd=(ph,c)=>`<div class="bd" style="background:${c}"><span>${_absTexte(ph,debut,fin,msg)}</span><i>&times;</i></div>`
+  ap.innerHTML=(annonce?bd('avant','#0052CC'):'')+bd('pendant','#b25e09')
+}
+;['s-abs-actif','s-abs-debut','s-abs-fin','s-abs-annonce','s-abs-depots','s-abs-tel','s-abs-msg'].forEach(id=>{
+  const el=document.getElementById(id);el.addEventListener('input',()=>setTimeout(majAbsence));el.addEventListener('change',()=>setTimeout(majAbsence))
+})
+{const _cc=window.cancelChanges;window.cancelChanges=function(){_cc&&_cc.apply(this,arguments);majAbsence()}
+ const _ss=window.saveSettings;window.saveSettings=async function(){const r=await _ss.apply(this,arguments);majAbsence();return r}}
+majAbsence()
+
+/* ══════════ RÉALISATIONS (section du site vitrine) ══════════
+   Photos : redimensionnées dans le navigateur (1600 px + vignette 800 px),
+   réencodées en WebP. Le réencodage retire aussi les métadonnées (position
+   GPS, modèle du téléphone). Vidéos : envoyées telles quelles, avec une
+   image d'aperçu tirée de la vidéo ; le site ne les charge qu'au clic.
+   YouTube : seul l'identifiant est gardé, rien n'est stocké chez nous. */
+const RBUCKET='realisations', R_MAX=50*1024*1024, R_CONSEIL=20*1024*1024, R_QUOTA=1024*1024*1024
+let _real=[], _selReal=null, _rb=null, _rUploads=[], _rRetires=[], _rEnvois=0
+const rUrl=c=>c?sb.storage.from(RBUCKET).getPublicUrl(c).data.publicUrl:''
+const rApercu=m=>m.type==='youtube'?`https://i.ytimg.com/vi/${m.id}/mqdefault.jpg`:rUrl(m.vignette||m.poster||m.chemin)
+const rFichiers=m=>[m.chemin,m.vignette,m.poster].filter(Boolean)
+const rTaille=n=>n>=1048576?(n/1048576).toLocaleString('fr-BE',{maximumFractionDigits:1})+' Mo':Math.max(1,Math.round(n/1024))+' Ko'
+function rChemin(ext){const d=new Date(),r=(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)).replace(/-/g,'').slice(0,10)
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${Date.now().toString(36)}-${r}.${ext}`}
+
+async function loadRealisations(){
+  const {data,error}=await sb.from('realisations').select('*').order('ordre',{ascending:true}).order('date_realisation',{ascending:false}).limit(500)
+  if(error)throw error
+  _real=data||[]
+  renderRealisations()
+}
+function rQuota(){
+  const t=_real.reduce((s,r)=>s+(r.medias||[]).reduce((a,m)=>a+(Number(m.taille)||0),0),0)
+  const el=document.getElementById('real-quota')
+  el.innerHTML=`Espace utilisé : <b>${rTaille(t)}</b> sur 1 Go inclus (partagé avec les PDF de factures) · ${_real.filter(r=>r.publie).length} publiée${_real.filter(r=>r.publie).length>1?'s':''} sur ${_real.length}`
+}
+window.renderRealisations=function(){
+  document.getElementById('cnt-realisations').textContent=_real.filter(r=>r.publie).length||''
+  rQuota()
+  const box=document.getElementById('liste-real')
+  box.innerHTML=_real.length?_real.map(r=>{const m=(r.medias||[])[0];const nb=(r.medias||[]).length
+    return `<div class="lrow ${String(r.id)===String(_selReal)?'sel':''}" onclick="voirRealisation('${escJsAttr(r.id)}')">
+      <div class="rthumb" style="${m?`background-image:url('${escHtml(rApercu(m))}')`:''}"></div>
+      <div class="lrow-n"><b>${escHtml(r.titre)}</b><em>${escHtml([r.appareil,nb+' média'+(nb>1?'s':''),new Date(r.date_realisation).toLocaleDateString('fr-BE',{month:'short',year:'numeric'})].filter(Boolean).join(' · '))}</em></div>
+      ${r.publie?'<span class="tag t-on">En ligne</span>':'<span class="tag t-of">Brouillon</span>'}
+    </div>`}).join('')
+    : `<div class="vide-l"><h4>Aucune réalisation</h4><p>Ajoute ta première intervention avec ses photos avant / après.</p><button class="btn btn-primary" style="display:inline-flex;" onclick="nouvelleRealisation()">Ajouter une réalisation</button></div>`
+  dessinerDetailReal()
+}
+async function rAnnulerBrouillon(){
+  // Fichiers envoyés pendant une édition abandonnée : ils ne sont liés à rien.
+  const orphelins=_rUploads.splice(0)
+  _rRetires=[]
+  if(orphelins.length)await sb.storage.from(RBUCKET).remove(orphelins)
+}
+function rOuvrir(id){
+  _selReal=id
+  const r=id==='__neuf'?{titre:'',appareil:'',description:'',medias:[],publie:false,date_realisation:_absAuj().toLocaleDateString('fr-CA')}:_real.find(x=>String(x.id)===String(id))
+  _rb=r?JSON.parse(JSON.stringify(r)):null
+  if(!_rb)_selReal=null
+  renderRealisations()
+}
+window.nouvelleRealisation=async function(){await rAnnulerBrouillon();rOuvrir('__neuf')}
+window.voirRealisation=async function(id){
+  if(_rEnvois){showToast('Attends la fin de l\'envoi en cours','err');return}
+  await rAnnulerBrouillon()
+  if(String(_selReal)===String(id)){_selReal=null;_rb=null;renderRealisations();return}
+  rOuvrir(id)
+}
+function rLireChamps(){
+  if(!_rb||!document.getElementById('r-titre'))return
+  _rb.titre=document.getElementById('r-titre').value
+  _rb.appareil=document.getElementById('r-app').value
+  _rb.description=document.getElementById('r-desc').value
+  _rb.date_realisation=document.getElementById('r-date').value||_rb.date_realisation
+  _rb.publie=document.getElementById('r-pub').classList.contains('on')
+  document.querySelectorAll('[data-leg]').forEach(i=>{const m=_rb.medias[+i.dataset.leg];if(m)m.legende=i.value.trim()||undefined})
+}
+function dessinerDetailReal(){
+  const box=document.getElementById('detail-real')
+  if(!_selReal||!_rb){box.innerHTML='<div class="detail-vide">Choisis une réalisation pour la modifier,<br>ou clique sur « Ajouter ».</div>';return}
+  const neuf=_selReal==='__neuf',r=_rb,n=r.medias.length
+  const LIB={photo:'Photo',video:'Vidéo',youtube:'YouTube'}
+  box.innerHTML=`
+    <div class="detail-h">${neuf?'Nouvelle réalisation':escHtml(r.titre||'Réalisation')}</div>
+    <div class="detail-s">${neuf?'Ajoute les médias, puis enregistre.':'Modifie puis enregistre.'}</div>
+    <div class="fg"><label for="r-titre">Titre *</label><input type="text" id="r-titre" maxlength="120" value="${escHtml(r.titre||'')}" placeholder="Remplacement d'écran"/></div>
+    <div class="fg"><label>Appareil et date</label><div class="duo">
+      <input type="text" id="r-app" maxlength="80" value="${escHtml(r.appareil||'')}" placeholder="iPhone 13 Pro"/>
+      <input type="date" id="r-date" value="${escHtml(r.date_realisation||'')}" style="max-width:150px;"/></div></div>
+    <div class="fg"><label for="r-desc">Description</label><textarea id="r-desc" maxlength="600" placeholder="Écran fissuré après une chute, remplacé en 45 minutes, test complet de l'affichage et du tactile.">${escHtml(r.description||'')}</textarea></div>
+    <div class="fg"><label>Photos et vidéos (${n}) · la première sert de couverture</label>
+      <div class="rmedias">${r.medias.map((m,i)=>`<div>
+        <div class="rm" style="background-image:url('${escHtml(rApercu(m))}')"><span class="rm-t">${LIB[m.type]||''}${m.taille?' · '+rTaille(m.taille):''}</span>
+          <div class="rm-a"><button type="button" title="Avant" onclick="rDeplacer(${i},-1)" ${i===0?'disabled':''}>‹</button><button type="button" class="rm-x" title="Retirer" onclick="rRetirer(${i})">✕</button><button type="button" title="Après" onclick="rDeplacer(${i},1)" ${i===n-1?'disabled':''}>›</button></div></div>
+        <input type="text" class="rm-leg" data-leg="${i}" maxlength="60" value="${escHtml(m.legende||'')}" placeholder="Légende (Avant, Après…)"/></div>`).join('')}
+        ${Array.from({length:_rEnvois},()=>'<div class="rm up"><div><div class="spin"></div>Envoi…</div></div>').join('')}
+      </div>
+      <div class="radd">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('r-in-photo').click()">+ Photos</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('r-in-video').click()">+ Vidéo</button>
+        <button type="button" class="btn btn-secondary" onclick="rAjouterYoutube()">+ Lien YouTube</button>
+        <input type="file" id="r-in-photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden onchange="rAjouterPhotos(this)"/>
+        <input type="file" id="r-in-video" accept="video/mp4,video/webm,video/quicktime" hidden onchange="rAjouterVideo(this)"/>
+      </div>
+      <div class="rhint"><b>Photos</b> : plusieurs à la fois, compressées ici (environ 150 à 400 Ko chacune), position GPS retirée.<br><b>Vidéo</b> : MP4 de 20 Mo maximum conseillé, 50 Mo au plus. Plus longue : publie-la sur YouTube et colle le lien.<br>Floute les visages, les écrans allumés et les numéros de série avant l'envoi.</div>
+    </div>
+    <div class="toggle-l"><span>Publiée sur le site<em>Sous « Avis clients ». Au moins un média requis.</em></span><div class="tog ${r.publie?'on':''}" id="r-pub" onclick="this.classList.toggle('on')" role="switch" tabindex="0"><i></i></div></div>
+    <div class="detail-f">
+      ${neuf?'':`<button class="btn btn-secondary" onclick="rOrdre(-1)" title="Plus haut sur le site">↑</button><button class="btn btn-secondary" onclick="rOrdre(1)" title="Plus bas sur le site">↓</button><button class="btn btn-danger" onclick="supprimerRealisation()">Supprimer</button>`}
+      <button class="btn btn-primary" onclick="enregistrerRealisation()" ${_rEnvois?'disabled':''}>${neuf?'Créer':'Enregistrer'}</button>
+    </div>`
+}
+window.rDeplacer=function(i,d){rLireChamps();const m=_rb.medias,j=i+d;if(j<0||j>=m.length)return;[m[i],m[j]]=[m[j],m[i]];dessinerDetailReal()}
+window.rRetirer=function(i){
+  rLireChamps()
+  const [m]=_rb.medias.splice(i,1)
+  rFichiers(m).forEach(c=>{const k=_rUploads.indexOf(c);if(k>=0){_rUploads.splice(k,1);sb.storage.from(RBUCKET).remove([c])}else _rRetires.push(c)})
+  dessinerDetailReal()
+}
+async function rEnvoyer(blob,ext,type){
+  const chemin=rChemin(ext)
+  const {error}=await sb.storage.from(RBUCKET).upload(chemin,blob,{contentType:type,cacheControl:'31536000',upsert:false})
+  if(error)throw error
+  _rUploads.push(chemin)
+  return chemin
+}
+function rCanvas(src,w,h,max){const k=Math.min(1,max/Math.max(w,h));const c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(src,0,0,c.width,c.height);return c}
+async function rEncoder(c,q){
+  let b=await new Promise(r=>c.toBlob(r,'image/webp',q))
+  if(b&&b.type==='image/webp')return {blob:b,ext:'webp',type:'image/webp'}
+  b=await new Promise(r=>c.toBlob(r,'image/jpeg',q+0.03))
+  return {blob:b,ext:'jpg',type:'image/jpeg'}
+}
+async function rUnePhoto(f){
+  const u=URL.createObjectURL(f)
+  try{
+    const img=new Image();img.src=u
+    try{await img.decode()}catch(e){throw new Error(`« ${f.name} » : format illisible par ce navigateur${/hei[cf]/i.test(f.type+f.name)?' (HEIC). Sur iPhone : Réglages › Appareil photo › Formats › « Le plus compatible », ou envoie depuis le téléphone':''}.`)}
+    const w=img.naturalWidth,h=img.naturalHeight
+    const grand=await rEncoder(rCanvas(img,w,h,1600),0.82), petit=await rEncoder(rCanvas(img,w,h,800),0.78)
+    const chemin=await rEnvoyer(grand.blob,grand.ext,grand.type)
+    const vignette=await rEnvoyer(petit.blob,petit.ext,petit.type)
+    return {type:'photo',chemin,vignette,l:Math.min(w,1600),h:Math.round(h*Math.min(1,1600/Math.max(w,h))),taille:grand.blob.size+petit.blob.size}
+  }finally{URL.revokeObjectURL(u)}
+}
+window.rAjouterPhotos=async function(inp){
+  const fichiers=[...inp.files];inp.value=''
+  if(!fichiers.length||!_rb)return
+  rLireChamps();_rEnvois+=fichiers.length;dessinerDetailReal()
+  const cible=_rb
+  for(const f of fichiers){
+    try{const m=await rUnePhoto(f);cible.medias.push(m)}
+    catch(e){showToast(e.message||String(e),'err')}
+    finally{_rEnvois--;if(_rb===cible){rLireChamps();dessinerDetailReal()}}
+  }
+}
+async function rInfosVideo(f){
+  const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto'
+  const u=URL.createObjectURL(f);v.src=u
+  try{
+    await new Promise((ok,ko)=>{v.onloadeddata=ok;v.onerror=()=>ko(new Error('illisible'));setTimeout(()=>ko(new Error('délai')),20000)})
+    if(!v.videoWidth)throw new Error('illisible')
+    v.currentTime=Math.min(1,(v.duration||0)/3)
+    await new Promise(r=>{v.onseeked=r;setTimeout(r,4000)})
+    const p=await rEncoder(rCanvas(v,v.videoWidth,v.videoHeight,900),0.8)
+    return {poster:p,l:v.videoWidth,h:v.videoHeight,duree:Math.round(v.duration||0)}
+  }finally{URL.revokeObjectURL(u)}
+}
+window.rAjouterVideo=async function(inp){
+  const f=inp.files[0];inp.value=''
+  if(!f||!_rb)return
+  if(f.size>R_MAX){showToast(`Vidéo trop lourde (${rTaille(f.size)}) : 50 Mo maximum. Publie-la sur YouTube et ajoute le lien.`,'err');return}
+  if(f.size>R_CONSEIL&&!confirm(`Cette vidéo pèse ${rTaille(f.size)}. Chaque visiteur qui la lance la télécharge en entier : au-delà de 20 Mo, un lien YouTube est préférable. L'envoyer quand même ?`))return
+  let inf
+  try{inf=await rInfosVideo(f)}
+  catch(e){showToast('Ce navigateur ne lit pas cette vidéo, les visiteurs non plus (souvent le format HEVC de l\'iPhone). Exporte-la en MP4 (H.264) ou publie-la sur YouTube.','err');return}
+  rLireChamps();_rEnvois++;dessinerDetailReal()
+  const cible=_rb
+  try{
+    const ext=f.type==='video/webm'?'webm':f.type==='video/quicktime'?'mov':'mp4'
+    const chemin=await rEnvoyer(f,ext,f.type||'video/mp4')
+    const poster=await rEnvoyer(inf.poster.blob,inf.poster.ext,inf.poster.type)
+    cible.medias.push({type:'video',chemin,poster,l:inf.l,h:inf.h,duree:inf.duree,taille:f.size+inf.poster.blob.size})
+  }catch(e){showToast('Envoi impossible : '+(e.message||e),'err')}
+  finally{_rEnvois--;if(_rb===cible){rLireChamps();dessinerDetailReal()}}
+}
+function rIdYoutube(s){
+  try{const x=new URL(String(s).trim()),h=x.hostname.replace(/^(www|m)\./,'');let id=null,vertical=false
+    if(h==='youtu.be')id=x.pathname.slice(1).split('/')[0]
+    else if(h==='youtube.com'||h==='youtube-nocookie.com'){
+      if(x.pathname==='/watch')id=x.searchParams.get('v')
+      else{const m=x.pathname.match(/^\/(shorts|embed|live)\/([^/?#]+)/);if(m){id=m[2];vertical=m[1]==='shorts'}}
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id||'')?{id,vertical}:null}catch(e){return null}
+}
+window.rAjouterYoutube=function(){
+  if(!_rb)return
+  const s=prompt('Colle le lien de la vidéo YouTube (vidéo ou Short) :')
+  if(!s)return
+  const y=rIdYoutube(s)
+  if(!y){showToast('Lien YouTube non reconnu','err');return}
+  rLireChamps()
+  _rb.medias.push({type:'youtube',id:y.id,vertical:y.vertical||undefined})
+  dessinerDetailReal()
+}
+window.enregistrerRealisation=async function(){
+  if(_rEnvois)return
+  rLireChamps()
+  const r=_rb,titre=(r.titre||'').trim()
+  if(!titre){showToast('Le titre est obligatoire','err');return}
+  if(r.publie&&!r.medias.length){showToast('Ajoute au moins une photo ou une vidéo avant de publier','err');return}
+  const data={titre,appareil:(r.appareil||'').trim()||null,description:(r.description||'').trim()||null,
+    medias:r.medias.map(m=>JSON.parse(JSON.stringify(m))),publie:!!r.publie,date_realisation:r.date_realisation||null,updated_at:new Date().toISOString()}
+  if(!data.date_realisation)delete data.date_realisation
+  try{
+    if(_selReal==='__neuf'){
+      data.ordre=(_real.length?Math.min(..._real.map(x=>x.ordre||0)):1)-1
+      const {data:res,error}=await sb.from('realisations').insert(data).select().single()
+      if(error)throw error
+      _real.unshift(res);_selReal=res.id;_rb=JSON.parse(JSON.stringify(res))
+    }else{
+      const {error}=await sb.from('realisations').update(data).eq('id',_selReal)
+      if(error)throw error
+      const i=_real.findIndex(x=>String(x.id)===String(_selReal))
+      if(i>=0)_real[i]={..._real[i],...data}
+    }
+    _rUploads=[]
+    const retires=_rRetires.splice(0)
+    if(retires.length)await sb.storage.from(RBUCKET).remove(retires)
+    _real.sort((a,b)=>(a.ordre||0)-(b.ordre||0)||String(b.date_realisation).localeCompare(String(a.date_realisation)))
+    renderRealisations();showToast(data.publie?'Réalisation enregistrée et publiée':'Réalisation enregistrée (non publiée)','ok')
+  }catch(err){showToast('Erreur : '+(err.message||err),'err')}
+}
+window.rOrdre=async function(d){
+  const i=_real.findIndex(x=>String(x.id)===String(_selReal)),j=i+d
+  if(i<0||j<0||j>=_real.length)return
+  const a=_real[i],b=_real[j]
+  let oa=b.ordre||0,ob=a.ordre||0
+  if(oa===ob){oa=ob+d}
+  const r1=await sb.from('realisations').update({ordre:oa}).eq('id',a.id)
+  const r2=await sb.from('realisations').update({ordre:ob}).eq('id',b.id)
+  if(r1.error||r2.error){showToast('Erreur : '+((r1.error||r2.error).message),'err');return}
+  a.ordre=oa;b.ordre=ob;[_real[i],_real[j]]=[b,a]
+  rLireChamps();renderRealisations()
+}
+window.supprimerRealisation=async function(){
+  const r=_real.find(x=>String(x.id)===String(_selReal))
+  if(!r||!confirm(`Supprimer « ${r.titre} » et ses ${(r.medias||[]).length} média(s) ? Ils disparaissent du site.`))return
+  const {error}=await sb.from('realisations').delete().eq('id',r.id)
+  if(error){showToast('Erreur : '+error.message,'err');return}
+  const fichiers=[...(r.medias||[]).flatMap(rFichiers),..._rUploads.splice(0),..._rRetires.splice(0)]
+  if(fichiers.length)await sb.storage.from(RBUCKET).remove(fichiers)
+  _real=_real.filter(x=>x.id!==r.id);_selReal=null;_rb=null
+  renderRealisations();showToast('Réalisation supprimée','ok')
 }
 
 /* ══════════ FOURNISSEURS ══════════ */

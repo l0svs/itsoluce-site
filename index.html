@@ -2545,84 +2545,93 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
   .ct-form { padding: 24px 20px; }
 }
 </style>
-<style id="mode-vacances">
-/* ═══ Mode vacances — temporaire ═══
-   Tout est piloté par la classe « vac » posée sur <html> par le script
-   ci-dessous, uniquement avant la date de retour. Passé cette date rien ne
-   s'applique : le site redevient normal sans intervention. Supprimer ce bloc,
-   le script et les éléments .vac-only rend le retrait définitif. */
-.vac-only{display:none}
-.vac .vac-only{display:block}
-/* « display:block » ci-dessus écrase la mise en page d'origine des éléments
-   qui n'étaient pas des blocs. Une ligne de disponibilité doit rester une
-   grille flexible, sinon ses deux libellés se collent. */
-.vac .vac-only.hrow{display:flex}
-.vac .vac-hide{display:none}
-
-.vac-bandeau{
+<style id="absence-realisations">
+/* ═══ Bandeau « Absence » ═══
+   Piloté depuis l'ERP (Gestion › Absence) : le script en bas de page le
+   remplit et pose la classe « abs » sur <html> seulement si la base renvoie
+   une absence à annoncer. Sans réponse, rien ne s'affiche. */
+.abs-bandeau{display:none}
+.abs .abs-bandeau{
+  display:flex;align-items:center;gap:11px;
   position:fixed;top:0;left:0;right:0;z-index:150;
   padding:12px 18px;background:#b25e09;color:#fff;
   font-size:14px;line-height:1.45;
 }
-/* La mise en page du bandeau est réservée au mode actif. Déclarer
-   « display:flex » sur .vac-bandeau l'emporterait sur .vac-only à
-   spécificité égale, et le bandeau resterait affiché après le retour. */
-.vac .vac-bandeau{display:flex;align-items:center;gap:11px}
-.vac-bandeau b{font-weight:600}
-.vac-bandeau__x{
+.abs-bandeau--avant{background:#0052CC !important}
+.abs-bandeau b{font-weight:600}
+.abs-bandeau__x{
   margin-left:auto;flex-shrink:0;background:none;border:none;color:#fff;
   opacity:.65;font-size:21px;line-height:1;cursor:pointer;padding:0 2px;
 }
-.vac-bandeau__x:hover{opacity:1}
-/* La barre de navigation est fixée en haut : elle descend de la hauteur
-   réelle du bandeau, mesurée après rendu pour tenir compte du retour à la
-   ligne sur petit écran. */
-.vac .nav{top:var(--vac-h,52px)}
-.vac body{padding-top:var(--vac-h,52px)}
+.abs-bandeau__x:hover{opacity:1}
+.abs .nav{top:var(--abs-h,52px)}
+.abs body{padding-top:var(--abs-h,52px)}
+.abs .irow--off{cursor:default}
+.abs .irow--off .irow__v{text-decoration:line-through;text-decoration-thickness:1px;opacity:.55}
+.abs-depots{color:#b25e09;font-weight:500}
+@media (max-width:600px){.abs .abs-bandeau{font-size:13px;padding:10px 14px}}
 
-/* Téléphone neutralisé : affiché, barré, non cliquable. Le masquer
-   donnerait l'impression d'une activité fermée. */
-.vac .irow--off{cursor:default}
-.vac .irow--off .irow__v{text-decoration:line-through;text-decoration-thickness:1px;opacity:.55}
-.vac-note{font-size:12.5px;color:#b25e09;font-weight:500;margin-top:2px}
-.vac-note--ok{color:#1a8a52}
-@media (max-width:600px){.vac-bandeau{font-size:13px;padding:10px 14px}}
+/* ═══ Réalisations ═══ */
+.reals{background:#f5f5f7;border-top:1px solid #d2d2d7;padding:80px 0}
+.reals[hidden]{display:none}
+.reals__inner{max-width:1200px;margin:0 auto;padding:0 22px}
+.reals__header{text-align:center;margin-bottom:44px}
+.reals__label{font-size:12px;font-weight:500;color:#6e6e73;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+.reals__title{font-size:32px;font-weight:600;color:#0052CC;letter-spacing:-.4px;line-height:1.1}
+.reals__sub{font-size:15px;color:#6e6e73;margin-top:10px}
+.reals__grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.real{background:#fff;border:1px solid #e5e5ea;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s ease,transform .2s ease}
+.real:hover{border-color:#0052CC;transform:translateY(-2px)}
+.real__media{position:relative;aspect-ratio:4/3;background:#1d1d1f}
+.real__track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.real__track::-webkit-scrollbar{display:none}
+.real__slide{flex:0 0 100%;height:100%;scroll-snap-align:center;position:relative;border:none;padding:0;margin:0;background:none;cursor:zoom-in}
+.real__slide img{width:100%;height:100%;object-fit:cover;display:block}
+.real__play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.real__play span{width:58px;height:58px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.real__play svg{width:22px;height:22px;fill:#fff;margin-left:3px}
+.real__nav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.88);color:#1d1d1f;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.real__media:hover .real__nav{opacity:1}
+.real__nav--g{left:10px}.real__nav--d{right:10px}
+.real__nav[disabled]{visibility:hidden}
+.real__dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:5px 8px;border-radius:20px;background:rgba(0,0,0,.4);pointer-events:none}
+.real__dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}
+.real__dots i.on{background:#fff}
+.real__cap{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.55);color:#fff;font-size:11.5px;font-weight:500;padding:3px 9px;border-radius:20px;pointer-events:none}
+.real__body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:6px}
+.real__tag{align-self:flex-start;font-size:11.5px;font-weight:500;color:#0052CC;background:rgba(0,82,204,.08);padding:3px 9px;border-radius:20px}
+.real__titre{font-size:16px;font-weight:600;color:#1d1d1f;line-height:1.3}
+.real__desc{font-size:13.5px;color:#6e6e73;line-height:1.6}
+.reals__more{text-align:center;margin-top:28px}
+.reals__more button{font:inherit;font-size:14px;font-weight:500;color:#0052CC;background:#fff;border:1px solid #d2d2d7;border-radius:980px;padding:10px 22px;cursor:pointer}
+.reals__more button:hover{border-color:#0052CC}
+@media (hover:none){.real__nav{opacity:1}}
+@media (max-width:880px){.reals__title{font-size:26px}.reals{padding:60px 0}}
+
+/* Visionneuse plein écran */
+.lb{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:none;flex-direction:column;align-items:center;justify-content:center}
+.lb.open{display:flex}
+.lb__stage{width:min(92vw,1100px);height:min(78vh,820px);display:flex;align-items:center;justify-content:center}
+.lb__stage img,.lb__stage video{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;background:#000}
+.lb__stage iframe{width:100%;height:100%;border:0;border-radius:8px;background:#000}
+.lb__stage iframe.vertical{width:min(100%,calc(78vh * 9 / 16))}
+.lb__cap{color:#f5f5f7;font-size:14px;margin-top:14px;text-align:center;padding:0 20px;max-width:800px}
+.lb__cnt{color:#aeaeb2;font-size:12.5px;margin-top:4px}
+.lb__x,.lb__nav{position:absolute;background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:50%;width:44px;height:44px;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb__x:hover,.lb__nav:hover{background:rgba(255,255,255,.24)}
+.lb__x{top:16px;right:16px}
+.lb__nav--g{left:16px;top:50%;transform:translateY(-50%)}
+.lb__nav--d{right:16px;top:50%;transform:translateY(-50%)}
+.lb__nav[disabled]{visibility:hidden}
+@media (max-width:600px){.lb__nav{top:auto;bottom:18px;transform:none}.lb__stage{height:70vh}}
 </style>
-<script>
-/* La date de retour vit ici, en un seul endroit. Le mode s'éteint tout seul :
-   si personne ne touche à rien, le site est normal le 5 octobre au matin. */
-(function(){
-  var RETOUR = new Date('2026-10-05T00:00:00+02:00');
-  if (Date.now() >= RETOUR.getTime()) return;
-  document.documentElement.classList.add('vac');
-  function mesurer(){
-    var b = document.querySelector('.vac-bandeau');
-    if (b) document.documentElement.style.setProperty('--vac-h', b.offsetHeight + 'px');
-  }
-  document.addEventListener('DOMContentLoaded', function(){
-    mesurer();
-    window.addEventListener('resize', mesurer);
-    /* Un numéro cliquable reste un appel en un geste, bandeau ou pas. */
-    document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
-      a.removeAttribute('href');
-      a.classList.add('irow--off');
-    });
-    var x = document.getElementById('vacFermer');
-    if (x) x.addEventListener('click', function(){
-      var b = document.querySelector('.vac-bandeau');
-      if (b) b.remove();
-      document.documentElement.style.setProperty('--vac-h','0px');
-    });
-  });
-})();
-</script>
 </head>
 <body>
 
-<!-- Mode vacances — temporaire, s'efface seul le 5 octobre 2026 -->
-<div class="vac-bandeau vac-only" role="status">
-  <span>Je suis en congé jusqu'au <b>dimanche 4 octobre</b>. Les demandes envoyées par le formulaire sont traitées dès mon retour, le <b>lundi 5 octobre</b>.</span>
-  <button class="vac-bandeau__x" id="vacFermer" type="button" aria-label="Fermer l'annonce">&times;</button>
+<!-- Bandeau « Absence » : rempli par le script en bas de page (Gestion › Absence) -->
+<div class="abs-bandeau" id="absBandeau" role="status">
+  <span id="absTexte"></span>
+  <button class="abs-bandeau__x" id="absFermer" type="button" aria-label="Fermer l'annonce">&times;</button>
 </div>
 
 <header class="nav">
@@ -2896,7 +2905,8 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <div class="trow"><span>Sauvegarde de données</span><span class="tprice">70€</span></div>
           <div class="trow"><span>Configuration d'un nouvel appareil</span><span class="tprice">70€</span></div>
           <div class="trow"><span>Assistance / conseil</span><span class="tprice">70€</span></div>
-          <div class="trow"><span>Autres interventions</span><span class="tprice">70€</span></div>
+          <div class="trow"><span>Nettoyage manette</span><span class="tprice">35€</span></div>
+          <div class="trow"><span>Autres interventions</span><span class="tprice">Sur devis</span></div>
         </div>
       </div>
 
@@ -2936,7 +2946,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <h3>Dépôt d'appareil — Tubize</h3>
           <p>Chaussée d'Hondzocht<br>1480 Tubize</p>
           <p>Dépôt et retrait sur rendez-vous.<br><a href="tel:+32474056659">+32 474 05 66 59</a></p>
-          <p class="vac-only" style="color:#b25e09;font-weight:500;">Dépôts suspendus jusqu'au 4 octobre.</p>
+          <p class="abs-depots" id="absDepots" hidden></p>
         </div>
       </div>
 
@@ -3321,6 +3331,29 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 
   </div>
 </section>
+
+<!-- RÉALISATIONS : remplie depuis l'ERP (Gestion › Réalisations).
+     Masquée tant qu'aucune réalisation n'est publiée. -->
+<section class="reals" id="realisations" hidden>
+  <div class="reals__inner">
+    <div class="reals__header">
+      <p class="reals__label">En images</p>
+      <h2 class="reals__title">Réalisations</h2>
+      <p class="reals__sub">Quelques interventions récentes, avant et après.</p>
+    </div>
+    <div class="reals__grid" id="realsGrid"></div>
+    <div class="reals__more" id="realsPlus" hidden><button type="button">Voir plus de réalisations</button></div>
+  </div>
+</section>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Visionneuse">
+  <button class="lb__x" type="button" aria-label="Fermer">&times;</button>
+  <button class="lb__nav lb__nav--g" type="button" aria-label="Précédent">&#8249;</button>
+  <div class="lb__stage" id="lbStage"></div>
+  <p class="lb__cap" id="lbCap"></p>
+  <p class="lb__cnt" id="lbCnt"></p>
+  <button class="lb__nav lb__nav--d" type="button" aria-label="Suivant">&#8250;</button>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer" id="footer">
@@ -3840,7 +3873,7 @@ if (prefersReducedMotion) {
 /* ─────────────────────────────────────────────────────────────
    Colonne « Service supplémentaire » de la grille des tarifs.
 
-   Les cinq lignes sont écrites en dur dans le HTML ci-dessus et servent de
+   Les lignes sont écrites en dur dans le HTML ci-dessus et servent de
    repli : si Supabase est injoignable, si la requête échoue ou si elle ne
    ramène rien, le visiteur voit la grille telle qu'elle était au dernier
    déploiement plutôt qu'une colonne vide. En temps normal elles sont
@@ -3855,6 +3888,7 @@ if (prefersReducedMotion) {
   if (!hote) return;
 
   const prixTexte = (s) => {
+    if (s.prix === null || s.prix === undefined || s.prix === '') return 'Sur devis';
     const p = Number(s.prix), pmax = Number(s.prix_max);
     const euro = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',')) + '€';
     if (!Number.isFinite(p)) return 'Sur devis';
@@ -3893,5 +3927,203 @@ if (prefersReducedMotion) {
     /* Les lignes de repli restent affichées : rien à faire de plus. */
     console.warn('Tarifs : lecture Supabase indisponible, grille figée affichée', err);
   }
+})();
+</script><script>
+/* ─────────────────────────────────────────────────────────────
+   Bandeau « Absence » (Gestion › Absence dans l'ERP).
+
+   site_absence() ne renvoie quelque chose que pendant la période d'annonce
+   (quelques jours avant le départ) et pendant l'absence. En dehors, ou si
+   la base ne répond pas, la page reste normale : rien à retirer au retour.
+   ───────────────────────────────────────────────────────────── */
+(async function chargerAbsence() {
+  const bandeau = document.getElementById('absBandeau');
+  const texte = document.getElementById('absTexte');
+  if (!bandeau || !texte) return;
+  const jour = (iso) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    if (!m) return null;
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  };
+  const nomJour = (d) => {
+    const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+    if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+    return d.toLocaleDateString('fr-BE', opts);
+  };
+  const gras = (t) => { const b = document.createElement('b'); b.textContent = t; return b; };
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/rpc/site_absence', {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    if (!res.ok) return;
+    const a = await res.json();
+    if (!a || typeof a !== 'object') return;
+    const debut = jour(a.debut), fin = jour(a.fin), retour = jour(a.retour);
+    if (!debut || !fin || !retour) return;
+    try { if (sessionStorage.getItem('abs-ferme') === a.debut + a.fin) return; } catch (e) {}
+
+    const morceaux = a.phase === 'avant'
+      ? ['Je serai en congé du ', gras(nomJour(debut)), ' au ', gras(nomJour(fin)),
+         '. Les demandes reçues pendant cette période seront traitées dès mon retour, le ', gras(nomJour(retour)), '.']
+      : ['Je suis en congé jusqu\'au ', gras(nomJour(fin)),
+         '. Les demandes envoyées par le formulaire sont traitées dès mon retour, le ', gras(nomJour(retour)), '.'];
+    if (a.message) morceaux.push(' ' + String(a.message));
+    texte.replaceChildren(...morceaux);
+    if (a.phase === 'avant') bandeau.classList.add('abs-bandeau--avant');
+    document.documentElement.classList.add('abs');
+
+    const mesurer = () => document.documentElement.style.setProperty('--abs-h', bandeau.offsetHeight + 'px');
+    mesurer();
+    window.addEventListener('resize', mesurer);
+
+    if (a.phase === 'pendant') {
+      if (a.depots) {
+        const p = document.getElementById('absDepots');
+        if (p) { p.textContent = 'Dépôts suspendus jusqu\'au ' + nomJour(fin) + '.'; p.hidden = false; }
+      }
+      if (a.telephone) {
+        /* Numéro affiché mais barré : le masquer ferait croire à une activité fermée. */
+        document.querySelectorAll('a[href^="tel:"]').forEach((l) => {
+          l.removeAttribute('href');
+          l.classList.add('irow--off');
+        });
+      }
+    }
+    document.getElementById('absFermer').addEventListener('click', () => {
+      document.documentElement.classList.remove('abs');
+      document.documentElement.style.setProperty('--abs-h', '0px');
+      try { sessionStorage.setItem('abs-ferme', a.debut + a.fin); } catch (e) {}
+    });
+  } catch (err) {
+    console.warn('Absence : lecture indisponible', err);
+  }
+})();
+
+/* ─────────────────────────────────────────────────────────────
+   Section « Réalisations » (Gestion › Réalisations dans l'ERP).
+
+   Seules les réalisations publiées sont lisibles sans connexion. Les
+   photos et vidéos sont servies par l'espace de stockage public
+   « realisations ». Les vidéos ne se chargent qu'au clic : la carte
+   n'affiche que leur image d'aperçu.
+   ───────────────────────────────────────────────────────────── */
+(async function chargerRealisations() {
+  const section = document.getElementById('realisations');
+  const grille = document.getElementById('realsGrid');
+  if (!section || !grille) return;
+  const PUB = SB_URL + '/storage/v1/object/public/realisations/';
+  const cheminOk = (c) => typeof c === 'string' && /^[A-Za-z0-9_\-./]+$/.test(c) && !c.includes('..');
+  const ytOk = (id) => typeof id === 'string' && /^[A-Za-z0-9_-]{11}$/.test(id);
+  const url = (c) => PUB + c;
+  const mediaValide = (m) => m && (
+    (m.type === 'photo' && cheminOk(m.chemin)) ||
+    (m.type === 'video' && cheminOk(m.chemin)) ||
+    (m.type === 'youtube' && ytOk(m.id)));
+  const apercu = (m) => m.type === 'photo' ? url(m.chemin)
+    : m.type === 'video' ? (cheminOk(m.poster) ? url(m.poster) : '')
+    : 'https://i.ytimg.com/vi/' + m.id + '/hqdefault.jpg';
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const PLAY = '<span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>';
+
+  let liste;
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/realisations?select=id,titre,appareil,description,medias,date_realisation&order=ordre.asc,date_realisation.desc&limit=48',
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } });
+    if (!res.ok) return;
+    liste = await res.json();
+  } catch (err) { console.warn('Réalisations : lecture indisponible', err); return; }
+  liste = (Array.isArray(liste) ? liste : [])
+    .map((r) => ({ ...r, medias: (Array.isArray(r.medias) ? r.medias : []).filter(mediaValide) }))
+    .filter((r) => r.medias.length && String(r.titre || '').trim());
+  if (!liste.length) return;
+
+  /* ── Visionneuse ── */
+  const lb = document.getElementById('lb'), scene = document.getElementById('lbStage');
+  const lbCap = document.getElementById('lbCap'), lbCnt = document.getElementById('lbCnt');
+  const [lbG, lbD] = [lb.querySelector('.lb__nav--g'), lb.querySelector('.lb__nav--d')];
+  let courant = null, pos = 0, focusAvant = null;
+  const montrer = () => {
+    const m = courant.medias[pos];
+    let n;
+    if (m.type === 'photo') { n = el('img'); n.src = url(m.chemin); n.alt = m.legende || courant.titre; }
+    else if (m.type === 'video') {
+      n = el('video'); n.controls = true; n.playsInline = true; n.preload = 'metadata'; n.autoplay = true;
+      if (cheminOk(m.poster)) n.poster = url(m.poster);
+      n.src = url(m.chemin);
+    } else {
+      n = el('iframe'); n.src = 'https://www.youtube-nocookie.com/embed/' + m.id + '?autoplay=1&rel=0';
+      n.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; n.allowFullscreen = true;
+      n.title = m.legende || courant.titre;
+      if (m.vertical) n.classList.add('vertical');
+    }
+    scene.replaceChildren(n);
+    lbCap.textContent = [courant.titre, m.legende].filter(Boolean).join(' — ');
+    lbCnt.textContent = courant.medias.length > 1 ? (pos + 1) + ' / ' + courant.medias.length : '';
+    lbG.disabled = pos === 0; lbD.disabled = pos === courant.medias.length - 1;
+  };
+  const ouvrir = (r, i) => { courant = r; pos = i; focusAvant = document.activeElement; lb.classList.add('open'); document.body.style.overflow = 'hidden'; montrer(); lb.querySelector('.lb__x').focus(); };
+  const fermer = () => { lb.classList.remove('open'); scene.replaceChildren(); document.body.style.overflow = ''; if (focusAvant) focusAvant.focus(); };
+  lb.querySelector('.lb__x').addEventListener('click', fermer);
+  lbG.addEventListener('click', () => { if (pos > 0) { pos--; montrer(); } });
+  lbD.addEventListener('click', () => { if (pos < courant.medias.length - 1) { pos++; montrer(); } });
+  lb.addEventListener('click', (e) => { if (e.target === lb) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowLeft') lbG.click();
+    if (e.key === 'ArrowRight') lbD.click();
+  });
+
+  /* ── Cartes ── */
+  const carte = (r) => {
+    const a = el('article', 'real');
+    const media = el('div', 'real__media');
+    const piste = el('div', 'real__track');
+    r.medias.forEach((m, i) => {
+      const b = el('button', 'real__slide'); b.type = 'button';
+      b.setAttribute('aria-label', (m.type === 'photo' ? 'Agrandir la photo' : 'Lire la vidéo') + ' : ' + (m.legende || r.titre));
+      const src = apercu(m);
+      if (src) { const img = el('img'); img.src = src; img.alt = m.legende || r.titre; img.loading = 'lazy'; img.decoding = 'async'; b.appendChild(img); }
+      if (m.type !== 'photo') { const p = el('div', 'real__play'); p.innerHTML = PLAY; b.appendChild(p); }
+      b.addEventListener('click', () => ouvrir(r, i));
+      piste.appendChild(b);
+    });
+    media.appendChild(piste);
+    const cap = el('span', 'real__cap'); media.appendChild(cap);
+    const majCap = (i) => { const l = r.medias[i] && r.medias[i].legende; cap.textContent = l || ''; cap.style.display = l ? '' : 'none'; };
+    majCap(0);
+    if (r.medias.length > 1) {
+      const g = el('button', 'real__nav real__nav--g', '‹'), d = el('button', 'real__nav real__nav--d', '›');
+      g.type = d.type = 'button'; g.setAttribute('aria-label', 'Précédent'); d.setAttribute('aria-label', 'Suivant');
+      const pts = el('div', 'real__dots');
+      r.medias.forEach(() => pts.appendChild(el('i')));
+      const indice = () => Math.round(piste.scrollLeft / Math.max(1, piste.clientWidth));
+      const maj = () => { const i = indice(); [...pts.children].forEach((p, k) => p.classList.toggle('on', k === i)); g.disabled = i === 0; d.disabled = i === r.medias.length - 1; majCap(i); };
+      g.addEventListener('click', () => piste.scrollBy({ left: -piste.clientWidth, behavior: 'smooth' }));
+      d.addEventListener('click', () => piste.scrollBy({ left: piste.clientWidth, behavior: 'smooth' }));
+      piste.addEventListener('scroll', () => requestAnimationFrame(maj), { passive: true });
+      media.append(g, d, pts);
+      maj();
+    }
+    const corps = el('div', 'real__body');
+    if (r.appareil) corps.appendChild(el('span', 'real__tag', r.appareil));
+    corps.appendChild(el('h3', 'real__titre', r.titre));
+    if (r.description) corps.appendChild(el('p', 'real__desc', r.description));
+    a.append(media, corps);
+    return a;
+  };
+  const PAR_PAGE = 6;
+  let affiches = 0;
+  const plus = document.getElementById('realsPlus');
+  const suite = () => {
+    liste.slice(affiches, affiches + PAR_PAGE).forEach((r) => grille.appendChild(carte(r)));
+    affiches = Math.min(liste.length, affiches + PAR_PAGE);
+    plus.hidden = affiches >= liste.length;
+  };
+  plus.querySelector('button').addEventListener('click', suite);
+  suite();
+  section.hidden = false;
 })();
 </script>
