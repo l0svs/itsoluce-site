@@ -28,6 +28,7 @@ th{text-align:left;font-size:12px;font-weight:600;color:var(--t2);text-transform
 td{padding:10px 0;border-bottom:1px solid var(--ln);vertical-align:top;}
 td.n,th.n{text-align:right;white-space:nowrap;padding-left:12px;}
 .qte{color:var(--t2);font-size:12.5px;}
+.det{color:var(--t2);font-size:12.5px;line-height:1.45;margin-top:2px;}
 .tot{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--t2);}
 .tot.big{font-size:19px;font-weight:700;color:var(--t1);padding-top:12px;}
 .mention{font-size:12px;color:var(--t2);margin-top:8px;}
@@ -84,7 +85,7 @@ function introuvable(){
   app.innerHTML=`<div class="card vide"><b>Ce lien ne correspond à aucun devis.</b><br>Vérifiez que le lien du mail a été copié en entier, ou contactez-moi.</div>`
 }
 function lignesHTML(d){
-  const l=(d.lignes||[]).map(x=>`<tr><td>${esc(x.description)}${Number(x.quantite)>1?`<div class="qte">${esc(x.quantite)} × ${eur(x.prix_unitaire)}</div>`:''}</td><td class="n">${eur(x.total??(Number(x.quantite)||1)*(Number(x.prix_unitaire)||0))}</td></tr>`).join('')
+  const l=(d.lignes||[]).map(x=>`<tr><td>${esc(x.description)}${x.detail?`<div class="det">${esc(x.detail)}</div>`:''}${Number(x.quantite)>1?`<div class="qte">${esc(x.quantite)} × ${eur(x.prix_unitaire)}</div>`:''}</td><td class="n">${eur(x.total??(Number(x.quantite)||1)*(Number(x.prix_unitaire)||0))}</td></tr>`).join('')
   const remise=Number(d.remise)||0, acompte=Number(d.acompte)||0
   return `<table><thead><tr><th>Prestation</th><th class="n">Montant</th></tr></thead><tbody>${l}</tbody></table>
     ${remise>0?`<div class="tot"><span>Remise</span><span>− ${eur(remise)}</span></div>`:''}
