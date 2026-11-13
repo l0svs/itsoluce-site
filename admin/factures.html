@@ -584,6 +584,9 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+
+/* Ligne de document : détail facultatif sous le titre */
+.ligne .l-detail{font-size:12px;color:var(--t2);padding-top:6px;padding-bottom:6px;}
 </style>
 <script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -985,13 +988,14 @@ const ENTREPRISE={
   bce:'BE 1027.026.003',
   iban:'BE02 7320 8265 2640',
   logo:'https://itsoluce.be/img/logo-full.png',
-  mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
-  conditions:'Paiement comptant à réception de la facture.',
+  mention_tva:'Régime particulier de franchise des petites entreprises',
+  conditions:'Payable à réception de la facture.',
+  conditions_pro:'Payable par virement au plus tard à la date d\'échéance.',
   cgv:[
-    ['Garantie','Les réparations bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre) à compter de la date de restitution, hors casse, oxydation, mauvaise utilisation ou intervention d\'un tiers. La garantie légale de conformité (art. 1649bis et s. du Code civil) reste applicable sur les pièces neuves fournies.'],
-    ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne peut être tenu responsable de la perte de données, de programmes ou de tout dommage indirect survenant lors de la réparation. La responsabilité d\'IT Soluce est limitée au montant de la prestation facturée.'],
-    ['Appareils non récupérés','Tout appareil non récupéré dans un délai de 30 jours après notification de fin d\'intervention pourra être considéré comme abandonné et faire l\'objet d\'un recyclage ou d\'une revente pour couvrir les frais engagés, conformément à la législation en vigueur.'],
-    ['Paiement','Toute facture est payable comptant à réception. Conformément à l\'art. XII et au Code de droit économique, tout retard de paiement entraîne de plein droit un intérêt de retard et une indemnité forfaitaire après mise en demeure restée sans effet.'],
+    ['Garantie','Les réparations bénéficient d\'une garantie de 3 mois (garantie commerciale, pièce et main d\'œuvre) à compter de la date de restitution, hors casse, oxydation, mauvaise utilisation ou intervention d\'un tiers. Elle s\'ajoute à la garantie légale de conformité dont bénéficie le consommateur sur les pièces fournies, neuves ou reconditionnées, et ne la limite en rien.'],
+    ['Responsabilité','Le client est invité à sauvegarder ses données avant toute intervention. Sauf faute lourde ou intentionnelle, IT Soluce ne peut être tenu responsable d\'une perte de données ni d\'un dommage indirect, et sa responsabilité est limitée au montant de la prestation. Ces limitations ne portent pas atteinte aux droits que le consommateur tient de la loi.'],
+    ['Appareils non récupérés','Si un appareil n\'est pas récupéré dans les 30 jours suivant l\'avis de fin d\'intervention, IT Soluce adresse au client une mise en demeure écrite (e-mail ou courrier). Sans réponse dans les 30 jours suivant cette mise en demeure, l\'appareil pourra être considéré comme abandonné et recyclé ou revendu pour couvrir les frais engagés, dans le respect de la législation en vigueur.'],
+    ['Paiement','__PAIEMENT__'],
     ['Litiges','Les présentes conditions sont soumises au droit belge. En cas de litige, les tribunaux de l\'arrondissement du Brabant wallon sont seuls compétents. Le client consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
   ]
 }
@@ -1126,7 +1130,8 @@ try{
   if(_c.entreprise_site)ENTREPRISE.site=_c.entreprise_site.replace(/^https?:\/\//,'').replace(/\/$/,'')
   if(_c.entreprise_bce)ENTREPRISE.bce=_c.entreprise_bce
   if(_c.finance_iban)ENTREPRISE.iban=_c.finance_iban
-  if(_c.finance_mention_tva)ENTREPRISE.mention_tva=_c.finance_mention_tva
+  // L'ancienne formulation par défaut est remplacée par la mention du régime de franchise.
+  if(_c.finance_mention_tva&&!/^TVA non applicable,? (art\.|article) 56bis/i.test(_c.finance_mention_tva.trim()))ENTREPRISE.mention_tva=_c.finance_mention_tva
   if(_c.entreprise_adresse){
     const i=_c.entreprise_adresse.lastIndexOf(',')
     if(i>0){ENTREPRISE.adresse=_c.entreprise_adresse.slice(0,i).trim();ENTREPRISE.cp_ville=_c.entreprise_adresse.slice(i+1).trim()}
@@ -1149,7 +1154,7 @@ async function load(){
     sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva,type').order('nom').limit(5000),
     sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom').limit(5000),
     sb.from('services').select('*').order('ordre',{ascending:true}),
-    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut,motif').order('created_at',{ascending:false}).limit(2000),
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut,motif,date_debut,date_fin').order('created_at',{ascending:false}).limit(2000),
     sb.from('devis').select('id,numero').limit(5000)
   ])
   if(rFac.error)throw new Error(rFac.error.message)
@@ -1272,7 +1277,7 @@ function fillPrestaSelect(){
 }
 window.ajouterPresta=function(sel){
   const s=(window.allServices||[]).find(x=>String(x.id)===String(sel.value))
-  if(s)addLigne(s.detail?`${s.nom} (${s.detail})`:s.nom,1,Number(s.prix||0),'')
+  if(s)addLigne(s.nom,1,Number(s.prix||0),'',s.detail||'')
   sel.value=''
 }
 
@@ -1352,14 +1357,15 @@ window.toggleClientPro=function(){
 }
 
 /* ─── Lignes ─── */
-window.addLigne=function addLigne(desc,qte,prix,stockId){
-  desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''
+window.addLigne=function addLigne(desc,qte,prix,stockId,detail){
+  desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''; detail=detail||''
   const div=document.createElement('div')
   div.className='ligne'
   div.dataset.stockId=stockId
   div.innerHTML=`
     <div class="desc-col">
       <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie" oninput="surModification()"/>
+      <input type="text" class="l-detail" value="${escHtml(detail)}" placeholder="Détail (facultatif) : pièce utilisée, contrôles effectués…" oninput="surModification()" aria-label="Détail de la ligne"/>
       <div style="display:flex;align-items:center;gap:6px;">
         <select class="l-stock" onchange="onStockPick(this)" aria-label="Article du stock"><option value="">Lier un article du stock…</option></select>
         <span class="lie${stockId?' on':''}">lié</span>
@@ -1402,10 +1408,11 @@ function getLignes(){
   const lignes=[]
   document.querySelectorAll('#lignesBody .ligne').forEach(l=>{
     const desc=l.querySelector('.l-desc').value.trim()
+    const det=(l.querySelector('.l-detail')||{value:''}).value.trim()
     const qte=Number(l.querySelector('.l-qte').value)||0
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
-    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
+    if(desc||prix>0)lignes.push({description:desc,...(det?{detail:det}:{}),quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
   })
   return lignes
 }
@@ -1513,7 +1520,8 @@ window.majEcheance=function(){
   if(!em)return
   const d=new Date(em)
   if(isNaN(d))return
-  d.setDate(d.getDate()+30)
+  // Particulier : payable à réception ; entreprise : 30 jours.
+  if(document.getElementById('f-is-pro').value==='true')d.setDate(d.getDate()+30)
   document.getElementById('f-date-echeance').value=ymd(d)
   surModification()
 }
@@ -1600,7 +1608,7 @@ function chargerDansFormulaire(f){
   verrouillerClient(!!csel.value)
 
   document.getElementById('lignesBody').innerHTML=''
-  if(f&&Array.isArray(f.lignes)&&f.lignes.length)f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id))
+  if(f&&Array.isArray(f.lignes)&&f.lignes.length)f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id,l.detail))
   else addLigne()
 
   const e=f?etatAffiche(f):STATUTS.brouillon
@@ -2061,7 +2069,7 @@ window.confirmerNoteCredit=async function(){
   let lignes
   if(mode!=='partiel'&&deja===0){
     // Annulation complète : les lignes de la facture, en négatif.
-    lignes=(f.lignes||[]).map(l=>({description:l.description,quantite:l.quantite,prix_unitaire:-(Number(l.prix_unitaire)||0),total:-(Number(l.total)||0),stock_id:''}))
+    lignes=(f.lignes||[]).map(l=>({description:l.description,...(l.detail?{detail:l.detail}:{}),quantite:l.quantite,prix_unitaire:-(Number(l.prix_unitaire)||0),total:-(Number(l.total)||0),stock_id:''}))
     if(Number(f.remise)>0)lignes.push({description:'Remise accordée sur la facture',quantite:1,prix_unitaire:Number(f.remise),total:Number(f.remise),stock_id:''})
   }else{
     lignes=[{description:mode==='partiel'?`Remboursement partiel — facture ${f.numero}`:`Remboursement du solde — facture ${f.numero}`,quantite:1,prix_unitaire:-m,total:-m,stock_id:''}]
@@ -2365,6 +2373,24 @@ window.supprimerCourante=async function(){
 
 /* ─── Document PDF ─── */
 /** Dossier lié à la facture quand l'appareil s'est révélé non réparable. */
+/* Date d'intervention : fin du dossier lié, affichée quand elle diffère de la
+   date d'émission (une facture établie plus tard doit dater la prestation). */
+function dateIntervention(f){
+  if(!f||estNC(f)||!f.reparation_id)return null
+  const r=allReps.find(x=>String(x.id)===String(f.reparation_id))
+  const d=r&&(r.date_fin||r.date_debut)
+  if(!d)return null
+  const j=String(d).slice(0,10), em=String(f.date_emission||'').slice(0,10)
+  return j&&j!==em?dateLongue(j):null
+}
+/* Client professionnel : société ou numéro de TVA renseigné. */
+function estProDoc(f){return !!(String(f&&f.client_societe||'').trim()||String(f&&f.client_tva||'').trim())}
+/* Clause de paiement : règles différentes pour un consommateur et une entreprise. */
+function clausePaiement(f){
+  return estProDoc(f)
+    ? "Toute facture est payable au plus tard à la date d'échéance indiquée. Entre entreprises, tout retard de paiement entraîne de plein droit l'intérêt de retard prévu par la loi du 2 août 2002 concernant la lutte contre le retard de paiement dans les transactions commerciales, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement."
+    : "Toute facture est payable à réception, au plus tard à la date d'échéance indiquée. En cas de retard, un premier rappel gratuit est adressé au client consommateur ; aucun intérêt ni frais ne peut être réclamé avant l'expiration d'un délai de 14 jours suivant ce rappel, et dans les limites prévues par le livre XIX du Code de droit économique."
+}
 function dossierNonReparable(f){
   const r=f&&f.reparation_id?allReps.find(x=>String(x.id)===String(f.reparation_id)):null
   return r&&r.statut==='non_reparable'?r:null
@@ -2374,12 +2400,13 @@ function appareilDe(r){return String(r.modele||r.appareil||'').trim()}
 
 function buildTemplateHTML(f,forPdf){
   const nonRep=dossierNonReparable(f)
+  const dateInter=dateIntervention(f)
   const nc=estNC(f)
   const origine=nc?allFactures.find(x=>x.id===f.facture_origine_id):null
   const ncs=nc?[]:allFactures.filter(x=>estNC(x)&&x.facture_origine_id===f.id)
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;"><div style="font-weight:600;color:#1a1a1a;">${escHtml(l.description)}</div>${l.detail?`<div style="font-size:10.5px;color:#777;line-height:1.45;margin-top:2px;">${escHtml(l.detail)}</div>`:''}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.quantite}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
@@ -2431,6 +2458,7 @@ function buildTemplateHTML(f,forPdf){
       </div>
       <div style="text-align:right;font-size:12px;color:#555;">
         <div>Date d'émission : <strong>${dateEm}</strong></div>
+        ${dateInter?`<div style="margin-top:3px;">Date d'intervention : <strong>${dateInter}</strong></div>`:''}
         ${nc
           ? (f.statut==='remboursee'?`<div style="margin-top:3px;color:#16a34a;">Remboursée${modePaie?` par ${escHtml(modePaie)}`:''}${f.date_paiement?` le ${dateLongue(f.date_paiement)}`:''}</div>`:'')
           : estPayee
@@ -2498,13 +2526,13 @@ function buildTemplateHTML(f,forPdf){
         ? `<div><strong style="color:#555;">Aucun montant à régler.</strong></div>`
         : estPayee
         ? `<div><strong style="color:#16a34a;">Facture acquittée</strong>${modePaie?` — réglée par ${escHtml(modePaie)}`:''}. Merci de votre paiement.</div>`
-        : `<div><strong style="color:#555;">Conditions de paiement :</strong> ${escHtml(ENTREPRISE.conditions)}${dateEch?` Échéance au ${dateEch}.`:''}</div><div><strong style="color:#555;">Coordonnées bancaires :</strong> ${escHtml(ENTREPRISE.iban)}</div>`}
+        : `<div><strong style="color:#555;">Conditions de paiement :</strong> ${escHtml(estProDoc(f)?ENTREPRISE.conditions_pro:ENTREPRISE.conditions)}${dateEch?` Échéance au ${dateEch}.`:''}</div><div><strong style="color:#555;">Coordonnées bancaires :</strong> ${escHtml(ENTREPRISE.iban)}</div>`}
       ${acompte>0&&!estPayee?`<div><strong style="color:#1d4ed8;">Acompte :</strong> un acompte de ${euro(acompte)} a déjà été reçu. Solde restant dû : ${euro(solde)}.</div>`:''}
       <div style="margin-top:6px;font-style:italic;">${escHtml(ENTREPRISE.mention_tva)}</div>
       <div style="margin-top:12px;padding-top:10px;border-top:1px dotted #ddd;">
         <div style="font-size:8.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Conditions générales de vente</div>
         <div style="font-size:7.2px;color:#999;line-height:1.5;text-align:justify;">
-          ${(ENTREPRISE.cgv||[]).map((c,i)=>`<span><strong style="color:#777;">${i+1}. ${escHtml(c[0])}.</strong> ${escHtml(c[1])}</span>`).join(' ')}
+          ${(ENTREPRISE.cgv||[]).map((c,i)=>`<span><strong style="color:#777;">${i+1}. ${escHtml(c[0])}.</strong> ${escHtml(c[1]==='__PAIEMENT__'?clausePaiement(f):c[1])}</span>`).join(' ')}
         </div>
       </div>
       <div style="margin-top:10px;text-align:center;color:#aaa;">${escHtml(ENTREPRISE.nom)} · ${escHtml(ENTREPRISE.site)} · Merci de votre confiance</div>

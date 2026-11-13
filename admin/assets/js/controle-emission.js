@@ -17,13 +17,14 @@
   }
   window.tvaClientValide = tvaValide;
 
-  window.problemesEmission = function (doc) {
+  window.problemesEmission = function (doc, opts) {
     var p = [];
     if (!doc) return p;
     var vide = function (v) { return !String(v == null ? '' : v).trim(); };
     if (vide(doc.client_nom)) p.push('Nom du client manquant.');
     var pro = !vide(doc.client_societe) || !vide(doc.client_tva);
     if (pro && vide(doc.client_adresse)) p.push('Adresse du client professionnel manquante.');
+    else if (opts && opts.facture && vide(doc.client_adresse)) p.push('Adresse du client manquante (obligatoire sur une facture).');
     if (!vide(doc.client_tva) && !tvaValide(doc.client_tva)) p.push('Numéro de TVA du client invalide (' + String(doc.client_tva).trim() + ').');
     if (doc.type_document === 'note_credit') return p;
     var lignes = Array.isArray(doc.lignes) ? doc.lignes : [];
@@ -40,7 +41,7 @@
 
   /* Message prêt à afficher, ou '' si le document peut être émis. */
   window.messageEmission = function (doc, nom) {
-    var p = window.problemesEmission(doc);
+    var p = window.problemesEmission(doc, { facture: nom === 'la facture' });
     if (!p.length) return '';
     return 'Impossible d\u2019émettre ' + (nom || 'ce document') + ' : ' + p[0] +
       (p.length > 1 ? ' (et ' + (p.length - 1) + ' autre' + (p.length > 2 ? 's' : '') + ' point' + (p.length > 2 ? 's' : '') + ')' : '');
