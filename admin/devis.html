@@ -551,6 +551,9 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+
+/* Ligne de document : détail facultatif sous le titre */
+.ligne .l-detail{font-size:12px;color:var(--t2);padding-top:6px;padding-bottom:6px;}
 </style>
 <script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -853,14 +856,14 @@ const ENTREPRISE={
   bce:'BE 1027.026.003',
   iban:'BE02 7320 8265 2640',
   logo:'https://itsoluce.be/img/logo-full.png',
-  mention_tva:'TVA non applicable, art. 56bis du Code de la TVA',
-  conditions:'Paiement comptant à réception de la facture.',
+  mention_tva:'Régime particulier de franchise des petites entreprises',
+  conditions:'Payable à réception de la facture.',
   cgv:[
     ['Validité de l\'offre','Le présent devis est valable durant la période indiquée ci-dessus. Passé ce délai, IT Soluce se réserve le droit de réviser les prix, notamment en fonction de la disponibilité et du coût des pièces.'],
     ['Acceptation','Le devis devient ferme et vaut commande dès réception de l\'accord écrit du client (email, signature ou confirmation explicite). Toute intervention ne débute qu\'après cette acceptation.'],
-    ['Prix et pièces','Les prix sont exprimés en euros, TVA non applicable (art. 56bis du Code de la TVA). Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord. Lorsqu\'un diagnostic (30 €) a été réalisé, son montant est déduit du présent devis si la réparation est confiée à IT Soluce.'],
-    ['Garantie','Les réparations réalisées bénéficient d\'une garantie de 3 mois (pièce et main d\'œuvre), hors casse, oxydation ou mauvaise utilisation. La garantie légale de conformité reste applicable sur les pièces neuves.'],
-    ['Responsabilité','Le client est tenu de sauvegarder ses données avant toute intervention. IT Soluce ne saurait être tenu responsable d\'une perte de données. Sa responsabilité est limitée au montant de la prestation.'],
+    ['Prix et pièces','Les prix sont exprimés en euros. Régime particulier de franchise des petites entreprises : aucune TVA n\'est appliquée. Le diagnostic peut révéler des pannes supplémentaires : tout surcoût fera l\'objet d\'un nouveau devis soumis à votre accord. Lorsqu\'un diagnostic (30 €) a été réalisé, son montant est déduit du présent devis si la réparation est confiée à IT Soluce.'],
+    ['Garantie','Les réparations bénéficient d\'une garantie de 3 mois (garantie commerciale, pièce et main d\'œuvre), hors casse, oxydation ou mauvaise utilisation. Elle s\'ajoute à la garantie légale de conformité dont bénéficie le consommateur sur les pièces fournies, neuves ou reconditionnées, et ne la limite en rien.'],
+    ['Responsabilité','Le client est invité à sauvegarder ses données avant toute intervention. Sauf faute lourde ou intentionnelle, IT Soluce ne peut être tenu responsable d\'une perte de données ni d\'un dommage indirect, et sa responsabilité est limitée au montant de la prestation. Ces limitations ne portent pas atteinte aux droits que le consommateur tient de la loi.'],
     ['Droit applicable','Le présent devis est soumis au droit belge. En cas de litige, les tribunaux du Brabant wallon sont seuls compétents. Le consommateur peut recourir au Service de Médiation pour le Consommateur (mediationconsommateur.be).']
   ]
 }
@@ -1060,7 +1063,8 @@ try{
   if(_c.entreprise_site)ENTREPRISE.site=_c.entreprise_site.replace(/^https?:\/\//,'').replace(/\/$/,'')
   if(_c.entreprise_bce)ENTREPRISE.bce=_c.entreprise_bce
   if(_c.finance_iban)ENTREPRISE.iban=_c.finance_iban
-  if(_c.finance_mention_tva)ENTREPRISE.mention_tva=_c.finance_mention_tva
+  // L'ancienne formulation par défaut est remplacée par la mention du régime de franchise.
+  if(_c.finance_mention_tva&&!/^TVA non applicable,? (art\.|article) 56bis/i.test(_c.finance_mention_tva.trim()))ENTREPRISE.mention_tva=_c.finance_mention_tva
   if(_c.entreprise_adresse){
     const i=_c.entreprise_adresse.lastIndexOf(',')
     if(i>0){ENTREPRISE.adresse=_c.entreprise_adresse.slice(0,i).trim();ENTREPRISE.cp_ville=_c.entreprise_adresse.slice(i+1).trim()}
@@ -1213,7 +1217,7 @@ function fillPrestaSelect(){
 }
 window.ajouterPresta=function(sel){
   const s=(window.allServices||[]).find(x=>String(x.id)===String(sel.value))
-  if(s)addLigne(s.detail?`${s.nom} (${s.detail})`:s.nom,1,Number(s.prix||0),'')
+  if(s)addLigne(s.nom,1,Number(s.prix||0),'',s.detail||'')
   sel.value=''
 }
 
@@ -1234,14 +1238,15 @@ window.toggleClientPro=function(){
 }
 
 /* ─── Lignes ─── */
-window.addLigne=function addLigne(desc,qte,prix,stockId){
-  desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''
+window.addLigne=function addLigne(desc,qte,prix,stockId,detail){
+  desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''; detail=detail||''
   const div=document.createElement('div')
   div.className='ligne'
   div.dataset.stockId=stockId
   div.innerHTML=`
     <div class="desc-col">
       <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie" oninput="surModification()"/>
+      <input type="text" class="l-detail" value="${escHtml(detail)}" placeholder="Détail (facultatif) : pièce utilisée, contrôles effectués…" oninput="surModification()" aria-label="Détail de la ligne"/>
       <div style="display:flex;align-items:center;gap:6px;">
         <select class="l-stock" onchange="onStockPick(this)" aria-label="Article du stock"><option value="">Lier un article du stock…</option></select>
         <span class="lie${stockId?' on':''}">lié</span>
@@ -1284,10 +1289,11 @@ function getLignes(){
   const lignes=[]
   document.querySelectorAll('#lignesBody .ligne').forEach(l=>{
     const desc=l.querySelector('.l-desc').value.trim()
+    const det=(l.querySelector('.l-detail')||{value:''}).value.trim()
     const qte=Number(l.querySelector('.l-qte').value)||0
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
-    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
+    if(desc||prix>0)lignes.push({description:desc,...(det?{detail:det}:{}),quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
   })
   return lignes
 }
@@ -1408,7 +1414,7 @@ function chargerDansFormulaire(d){
   verrouillerClient(!!csel.value)
 
   document.getElementById('lignesBody').innerHTML=''
-  if(d&&Array.isArray(d.lignes)&&d.lignes.length)d.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id))
+  if(d&&Array.isArray(d.lignes)&&d.lignes.length)d.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id,l.detail))
   else addLigne()
 
   const e=d?etatAffiche(d):STATUTS.brouillon
@@ -1837,7 +1843,7 @@ window.supprimerCourant=async function(){
 function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;"><div style="font-weight:600;color:#1a1a1a;">${escHtml(l.description)}</div>${l.detail?`<div style="font-size:10.5px;color:#777;line-height:1.45;margin-top:2px;">${escHtml(l.detail)}</div>`:''}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.quantite}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
