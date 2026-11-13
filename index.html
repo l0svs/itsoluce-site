@@ -819,6 +819,7 @@ button { cursor: pointer; font: inherit; }
 .hero__modes svg{width:17px;height:17px;flex-shrink:0}
 @media (max-width:600px){.hero__modes{gap:8px}.hero__modes li{font-size:13px;padding:7px 12px}}
 
+.hero__zones{white-space:nowrap}
 /* Indicateurs */
 .hero__dots {
   position: absolute;
@@ -2696,7 +2697,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
 
   <div class="hero__inner">
     <h1 class="hero__title">Réparation informatique</h1>
-    <p class="hero__sub">PC, smartphone, console, tablette<br>Tubize · Brabant&nbsp;wallon · Charleroi · Namur&nbsp;·&nbsp;Bruxelles</p>
+    <p class="hero__sub">PC, smartphone, console, tablette<br><span class="hero__zones">Tubize · Brabant&nbsp;wallon · Charleroi</span><br><span class="hero__zones">Namur · Bruxelles</span></p>
     <ul class="hero__modes" aria-label="Modes d'intervention">
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>À domicile</li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>Sur votre lieu de travail</li>
