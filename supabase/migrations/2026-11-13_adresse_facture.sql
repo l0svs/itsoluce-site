@@ -1,63 +1,12 @@
 -- ═══════════════════════════════════════════════════════════════════
--- Devis et factures : détail des lignes et adresse obligatoire
+-- Factures : adresse du client obligatoire
 --
--- 1. devis_public() renvoie aussi le « détail » de chaque ligne : la page
---    d'acceptation en ligne l'affiche sous la description, comme le PDF.
--- 2. controle_emission() refuse l'émission d'une facture sans adresse du
+-- controle_emission() refuse l'émission d'une facture sans adresse du
 --    client (l'ERP le vérifiait déjà ; la base le garantit désormais).
 --    Les notes de crédit et les documents déjà émis ne sont pas concernés.
 -- ═══════════════════════════════════════════════════════════════════
 
 begin;
-
-create or replace function public.devis_public(p_jeton uuid)
-returns jsonb
-language plpgsql
-stable
-security definer
-set search_path = public
-as $$
-declare
-  d devis%rowtype;
-  aujourdhui date := (now() at time zone 'Europe/Brussels')::date;
-  etat text;
-begin
-  select * into d from devis
-   where jeton_public = p_jeton and emis_le is not null and supprime_le is null;
-  if not found then
-    return null;
-  end if;
-  etat := case
-    when d.statut = 'accepte'  then 'accepte'
-    when d.statut = 'refuse'   then 'refuse'
-    when d.statut = 'remplace' then 'remplace'
-    when d.date_validite is not null and d.date_validite < aujourdhui then 'expire'
-    else 'ouvert' end;
-  return jsonb_build_object(
-    'numero', d.numero,
-    'date_emission', d.date_emission,
-    'date_validite', d.date_validite,
-    'etat', etat,
-    'client_nom', d.client_nom,
-    'client_societe', d.client_societe,
-    'lignes', coalesce((select jsonb_agg(jsonb_build_object(
-                 'description', l->>'description',
-                 'detail', nullif(trim(coalesce(l->>'detail', '')), ''),
-                 'quantite', l->'quantite',
-                 'prix_unitaire', l->'prix_unitaire',
-                 'total', l->'total'))
-               from jsonb_array_elements(coalesce(d.lignes, '[]'::jsonb)) l), '[]'::jsonb),
-    'remise', d.remise,
-    'acompte', d.acompte,
-    'total', d.total,
-    'accepte_en_ligne_le', d.accepte_en_ligne_le,
-    'accepte_par_nom', d.accepte_par_nom,
-    'refuse_en_ligne_le', d.refuse_en_ligne_le,
-    'motif_refus', d.motif_refus,
-    'recontact_souhaite', d.recontact_souhaite);
-end $$;
-revoke execute on function public.devis_public(uuid) from public;
-grant execute on function public.devis_public(uuid) to anon, authenticated;
 
 create or replace function public.controle_emission()
 returns trigger
