@@ -551,9 +551,6 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
-
-/* Ligne de document : détail facultatif sous le titre */
-.ligne .l-detail{font-size:12px;color:var(--t2);padding-top:6px;padding-bottom:6px;}
 </style>
 <script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1217,7 +1214,7 @@ function fillPrestaSelect(){
 }
 window.ajouterPresta=function(sel){
   const s=(window.allServices||[]).find(x=>String(x.id)===String(sel.value))
-  if(s)addLigne(s.nom,1,Number(s.prix||0),'',s.detail||'')
+  if(s)addLigne(s.detail?`${s.nom} (${s.detail})`:s.nom,1,Number(s.prix||0),'')
   sel.value=''
 }
 
@@ -1238,15 +1235,14 @@ window.toggleClientPro=function(){
 }
 
 /* ─── Lignes ─── */
-window.addLigne=function addLigne(desc,qte,prix,stockId,detail){
-  desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''; detail=detail||''
+window.addLigne=function addLigne(desc,qte,prix,stockId){
+  desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''
   const div=document.createElement('div')
   div.className='ligne'
   div.dataset.stockId=stockId
   div.innerHTML=`
     <div class="desc-col">
       <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie" oninput="surModification()"/>
-      <input type="text" class="l-detail" value="${escHtml(detail)}" placeholder="Détail (facultatif) : pièce utilisée, contrôles effectués…" oninput="surModification()" aria-label="Détail de la ligne"/>
       <div style="display:flex;align-items:center;gap:6px;">
         <select class="l-stock" onchange="onStockPick(this)" aria-label="Article du stock"><option value="">Lier un article du stock…</option></select>
         <span class="lie${stockId?' on':''}">lié</span>
@@ -1289,11 +1285,10 @@ function getLignes(){
   const lignes=[]
   document.querySelectorAll('#lignesBody .ligne').forEach(l=>{
     const desc=l.querySelector('.l-desc').value.trim()
-    const det=(l.querySelector('.l-detail')||{value:''}).value.trim()
     const qte=Number(l.querySelector('.l-qte').value)||0
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
-    if(desc||prix>0)lignes.push({description:desc,...(det?{detail:det}:{}),quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
+    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
   })
   return lignes
 }
@@ -1414,7 +1409,7 @@ function chargerDansFormulaire(d){
   verrouillerClient(!!csel.value)
 
   document.getElementById('lignesBody').innerHTML=''
-  if(d&&Array.isArray(d.lignes)&&d.lignes.length)d.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id,l.detail))
+  if(d&&Array.isArray(d.lignes)&&d.lignes.length)d.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id))
   else addLigne()
 
   const e=d?etatAffiche(d):STATUTS.brouillon
@@ -1843,7 +1838,7 @@ window.supprimerCourant=async function(){
 function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;"><div style="font-weight:600;color:#1a1a1a;">${escHtml(l.description)}</div>${l.detail?`<div style="font-size:10.5px;color:#777;line-height:1.45;margin-top:2px;">${escHtml(l.detail)}</div>`:''}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.quantite}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
