@@ -1855,7 +1855,8 @@ async function creerFactureDepuis(r,offert=false){
     client_nom:r.client_nom,
     client_email:r.client_email||null,
     client_telephone:r.client_telephone||null,
-    client_adresse:r.client_adresse||(devisLie&&devisLie.client_adresse)||null,
+    // Adresse : celle du devis, sinon celle de la fiche client (obligatoire pour émettre la facture)
+    client_adresse:(devisLie&&devisLie.client_adresse)||((allClientsRep.find(c=>String(c.id)===String(r.client_id))||{}).adresse)||null,
     client_societe:devisLie?(devisLie.client_societe||null):null,
     client_tva:devisLie?(devisLie.client_tva||null):null,
     date_emission:new Date().toISOString().slice(0,10),
