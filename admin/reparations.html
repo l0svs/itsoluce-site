@@ -1242,16 +1242,35 @@ window.onClientSelect=function(){
 }
 
 
+/* Un dossier dont la facture pointe vers lui sans que le lien inverse soit
+   enregistré passait pour « à facturer » : le bouton « Créer la facture »
+   restait affiché, avec un risque de double facturation. On reconnaît la
+   facture des deux côtés et on répare le lien en base. */
+function relierFacturesOrphelines(facs){
+  const parRep=new Map()
+  ;(facs||[]).forEach(f=>{
+    if((f.type_document||'facture')!=='facture'||f.statut==='annulee')return
+    if(!parRep.has(f.reparation_id))parRep.set(f.reparation_id,f.id)
+  })
+  allReps.forEach(r=>{
+    if(r.converti_facture_id||!parRep.has(r.id))return
+    r.converti_facture_id=parRep.get(r.id)
+    sb.from('reparations').update({converti_facture_id:r.converti_facture_id}).eq('id',r.id).is('converti_facture_id',null).then(()=>{},()=>{})
+  })
+}
 /* ─── Chargement ─── */
 async function loadReps(){
-  const [rRep,rStock,rCli,rSvc]=await Promise.all([
+  const [rRep,rStock,rCli,rSvc,rFac]=await Promise.all([
     sb.from('reparations').select('*',{count:'exact'}).order('created_at',{ascending:false}).limit(2000),
     sb.from('stock').select('id,nom,quantite,prix_achat,prix_vente,fournisseur,notes').order('nom').limit(5000),
     sb.from('clients').select('id,numero,nom,email,telephone,adresse').order('nom').limit(5000),
-    sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true})
+    sb.from('services').select('id,nom,prix').eq('actif',true).order('ordre',{ascending:true}),
+    // Factures rattachées à un dossier : le lien peut n'exister que côté facture
+    sb.from('factures').select('id,reparation_id,type_document,statut').not('reparation_id','is',null).is('supprime_le',null).limit(5000)
   ])
   if(rRep.error)throw new Error(rRep.error.message)
   allReps=rRep.data||[]
+  relierFacturesOrphelines(rFac&&!rFac.error?rFac.data:[])
   allStockPieces=rStock.data||[]
   allClientsRep=rCli.data||[]
   allServices=rSvc.data||[]
@@ -1797,6 +1816,8 @@ window.editRep=function(id){
 /* ─── Facturation ─── */
 async function creerFactureDepuis(r,offert=false){
   if(r.converti_facture_id){showToast('Une facture existe déjà pour ce dossier','err');return}
+  {const ex=await sb.from('factures').select('id,numero').eq('reparation_id',r.id).is('supprime_le',null).neq('statut','annulee').limit(1)
+   if(ex.data&&ex.data.length){r.converti_facture_id=ex.data[0].id;sb.from('reparations').update({converti_facture_id:ex.data[0].id}).eq('id',r.id).is('converti_facture_id',null).then(()=>{},()=>{});renderAll();showToast(`Une facture existe déjà pour ce dossier${ex.data[0].numero?' ('+ex.data[0].numero+')':''}`,'err');return}}
   // Appareil non réparable : seul le diagnostic est facturé, au prix de la
   // prestation « Diagnostic » de Gestion › Prestations.
   const nonRep=r.statut==='non_reparable'
@@ -1834,7 +1855,8 @@ async function creerFactureDepuis(r,offert=false){
     client_nom:r.client_nom,
     client_email:r.client_email||null,
     client_telephone:r.client_telephone||null,
-    client_adresse:r.client_adresse||(devisLie&&devisLie.client_adresse)||null,
+    // Adresse : celle du devis, sinon celle de la fiche client (obligatoire pour émettre la facture)
+    client_adresse:(devisLie&&devisLie.client_adresse)||((allClientsRep.find(c=>String(c.id)===String(r.client_id))||{}).adresse)||null,
     client_societe:devisLie?(devisLie.client_societe||null):null,
     client_tva:devisLie?(devisLie.client_tva||null):null,
     date_emission:new Date().toISOString().slice(0,10),
