@@ -2329,6 +2329,8 @@ window.saveFacture=async function(){
       if(res.error)throw new Error(res.error.message)
       enregistree=res.data
       allFactures.unshift(enregistree)
+      // Lien inverse : le dossier connaît sa facture (sinon il resterait « à facturer »)
+      if(enregistree.reparation_id&&!estNC(enregistree))await sb.from('reparations').update({converti_facture_id:enregistree.id}).eq('id',enregistree.reparation_id).is('converti_facture_id',null)
     }
     await verifierNumerotation(enregistree)
     if(estEmise(enregistree)&&!enregistree.pdf_chemin)enregistree=await archiverSansBloquer(enregistree)
