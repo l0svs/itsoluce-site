@@ -48,10 +48,8 @@ h2{font-size:26px;font-weight:600;letter-spacing:-.4px;margin-bottom:18px}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:48px 0;border-top:1px solid var(--ln2)}
 .step{background:var(--bg2);border-radius:16px;padding:22px}.step i{font-style:normal;font-size:12px;font-weight:600;color:var(--a)}
 .step b{display:block;margin:6px 0 4px;font-size:15px}.step p{font-size:13px;color:var(--t2)}
-.faq{padding:40px 0;border-top:1px solid var(--ln2)}.faq details{border-bottom:1px solid var(--ln2);padding:14px 0;font-size:15px}
-.faq summary{font-weight:500;cursor:pointer;list-style:none}.faq summary::-webkit-details-marker{display:none}
-.faq summary:after{content:"+";float:right;color:var(--t2)}.faq details[open] summary:after{content:"−"}
-.faq p{color:var(--t2);font-size:14px;margin-top:8px}
+.faq{padding:40px 0;border-top:1px solid var(--ln2)}
+
 .cond{padding:40px 0 64px;border-top:1px solid var(--ln2);font-size:13.5px;color:#3a3a3c}
 .cond h2{font-size:20px}.cond ol{padding-left:20px}.cond li{margin-bottom:8px}
 footer{border-top:1px solid var(--ln2);padding:22px;text-align:center;font-size:12px;color:#86868b}
@@ -75,6 +73,36 @@ footer a{color:inherit}
 .sec{font-size:11.5px;color:#86868b;text-align:center;margin-top:10px}
 @media(max-width:820px){h1{font-size:34px}.plans,.steps,.grid2{grid-template-columns:1fr}.grid2{gap:10px}.nav{padding:0 16px}.nav .g a:not(:first-child),.nav .d a:not(.bl){display:none}}
 @media(max-width:480px){.wrap{padding:0 16px}.hero{padding:40px 0 28px}.box{padding:20px 16px 16px;border-radius:18px}}
+
+/* Animations : identiques au site principal */
+@keyframes heroIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero .lbl{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) both}
+.hero h1{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) .06s both}
+.hero .sub{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) .12s both}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal-group>*{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.reveal-group.in>*{opacity:1;transform:none}
+.reveal-group.in>*:nth-child(2){transition-delay:.07s}.reveal-group.in>*:nth-child(3){transition-delay:.14s}
+.reveal-group.in>*:nth-child(4){transition-delay:.19s}.reveal-group.in>*:nth-child(5){transition-delay:.24s}.reveal-group.in>*:nth-child(6){transition-delay:.29s}
+.plan{transition:border-color .2s ease,box-shadow .25s ease,opacity .5s ease,transform .5s ease}
+.plan:hover{box-shadow:0 10px 26px rgba(0,0,0,.06)}
+/* Accordéon (FAQ et conditions), comme la FAQ du site */
+.faq__list{display:flex;flex-direction:column;gap:12px}
+.faq__item{background:#fff;border:1px solid var(--ln);border-radius:14px;overflow:hidden;transition:border-color .2s ease,opacity .5s ease,transform .5s ease}
+.faq__item:hover{border-color:var(--a)}
+.faq__q{width:100%;background:none;border:none;text-align:left;padding:20px 56px 20px 22px;font-size:16px;font-weight:500;color:var(--t1);cursor:pointer;position:relative;font-family:inherit;transition:color .2s ease}
+.faq__q:hover{color:var(--a)}
+.faq__q::after{content:'+';position:absolute;right:22px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:400;color:var(--a);transition:transform .25s ease}
+.faq__item.open .faq__q::after{transform:translateY(-50%) rotate(45deg)}
+.faq__a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 22px}
+.faq__item.open .faq__a{max-height:640px;padding:0 22px 22px}
+.faq__a p{font-size:15px;color:#424245;line-height:1.7}
+.cond__item.open .faq__a{max-height:2400px}
+.cond__item .faq__q{font-weight:600}
+.cond ol{padding-left:20px;font-size:13.5px;color:#3a3a3c}
+@media(max-width:600px){.faq__q{font-size:15px;padding:18px 50px 18px 18px}.faq__a{padding:0 18px}.faq__item.open .faq__a{padding:0 18px 18px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}.reveal,.reveal-group>*{opacity:1!important;transform:none!important}}
 </style>
 </head>
 <body>
@@ -91,7 +119,7 @@ footer a{color:inherit}
     <p class="sub">Un seul paiement, et vos interventions sont déjà incluses : je me déplace chez vous ou sur votre lieu de travail, ou vous déposez votre appareil à l'atelier de Tubize.<br>Pour les particuliers comme pour les petites entreprises.</p>
   </section>
 
-  <section class="plans" id="plans">
+  <section class="plans reveal-group" id="plans">
     <div class="plan" data-code="3m"><div class="pl-n">3 mois</div><div class="pl-p">199 €</div><div class="pl-u">Paiement unique · sans renouvellement automatique</div>
       <ul><li>2 interventions incluses</li><li>1 protection hydrogel offerte</li><li>Rendez-vous prioritaire</li></ul><button class="btn o" onclick="choisir('3m')">Choisir 3 mois</button></div>
     <div class="plan reco" data-code="6m"><span class="tag">Recommandé</span><div class="pl-n">6 mois</div><div class="pl-p">349 €</div><div class="pl-u">Paiement unique · sans renouvellement automatique</div>
@@ -100,7 +128,7 @@ footer a{color:inherit}
       <ul><li>8 interventions incluses</li><li>3 protections hydrogel offertes</li><li>Rendez-vous prioritaire</li></ul><button class="btn o" onclick="choisir('12m')">Choisir 12 mois</button></div>
   </section>
 
-  <section class="grid2">
+  <section class="grid2 reveal">
     <div><h2>Inclus dans tous les packs</h2><ul class="inc">
       <li><b>Interventions</b><span>À domicile, sur votre lieu de travail ou en dépôt à l'atelier de Tubize, jusqu'à 1 h 30 de travail chacune : mails, PC lent, virus, configuration, transfert, sauvegarde, mises à jour, imprimante, wifi, main-d'œuvre d'une réparation.</span></li>
       <li><b>Diagnostic offert</b><span>Sur tous vos appareils.</span></li>
@@ -113,24 +141,28 @@ footer a{color:inherit}
       <li><b>Récupération de données complexe</b><span>Sur devis.</span></li></ul></div>
   </section>
 
-  <section class="steps">
+  <section class="steps reveal-group">
     <div class="step"><i>1</i><b>Vous choisissez votre pack</b><p>Paiement en ligne sécurisé par Bancontact ou carte bancaire.</p></div>
     <div class="step"><i>2</i><b>Votre espace client est créé</b><p>Vous recevez votre facture et un lien de connexion par e-mail.<br>Pas de mot de passe à retenir.</p></div>
     <div class="step"><i>3</i><b>Vous m'appelez quand il faut</b><p>Je viens chez vous ou vous déposez l'appareil.<br>Vous suivez vos interventions restantes depuis votre espace.</p></div>
   </section>
 
   <section class="faq">
-    <h2>Questions fréquentes</h2>
-    <details><summary>Que se passe-t-il à la fin du pack ?</summary><p>Rien automatiquement : il n'y a pas de renouvellement automatique.<br>Je vous préviens avant la fin et vous décidez de renouveler ou non.</p></details>
-    <details><summary>Les interventions non utilisées sont-elles reportées ?</summary><p>Non.<br>Elles sont valables pendant la durée du pack.<br>Choisissez la durée qui correspond à vos besoins réels.</p></details>
-    <details><summary>Puis-je partager mon pack ?</summary><p>Le pack est nominatif : il couvre un foyer (les appareils des personnes qui vivent sous le même toit) ou une entreprise.</p></details>
-    <details><summary>Je suis une entreprise, ai-je une facture ?</summary><p>Oui.<br>Indiquez le nom de la société et son numéro de TVA lors de la commande : la facture est établie à son nom.</p></details>
-    <details><summary>Où intervenez-vous ?</summary><p>À Tubize, dans le Brabant wallon, la région de Charleroi, la province de Namur et Bruxelles.<br>Vous pouvez aussi déposer votre appareil à l'atelier de Tubize.</p></details>
-    <details><summary>Puis-je changer d'avis ?</summary><p>Si vous êtes un particulier, vous disposez de 14 jours après le paiement pour vous rétracter.<br>Les interventions déjà utilisées sont déduites au prorata (voir les conditions ci-dessous).</p></details>
+    <h2 class="reveal">Questions fréquentes</h2>
+    <div class="faq__list reveal-group">
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Que se passe-t-il à la fin du pack ?</button><div class="faq__a"><p>Rien automatiquement : il n'y a pas de renouvellement automatique.<br>Je vous préviens avant la fin et vous décidez de renouveler ou non.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Les interventions non utilisées sont-elles reportées ?</button><div class="faq__a"><p>Non.<br>Elles sont valables pendant la durée du pack.<br>Choisissez la durée qui correspond à vos besoins réels.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Puis-je partager mon pack ?</button><div class="faq__a"><p>Le pack est nominatif : il couvre un foyer (les appareils des personnes qui vivent sous le même toit) ou une entreprise.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Je suis une entreprise, ai-je une facture ?</button><div class="faq__a"><p>Oui.<br>Indiquez le nom de la société et son numéro de TVA lors de la commande : la facture est établie à son nom.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Où intervenez-vous ?</button><div class="faq__a"><p>À Tubize, dans le Brabant wallon, la région de Charleroi, la province de Namur et Bruxelles.<br>Vous pouvez aussi déposer votre appareil à l'atelier de Tubize.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Puis-je changer d'avis ?</button><div class="faq__a"><p>Si vous êtes un particulier, vous disposez de 14 jours après le paiement pour vous rétracter.<br>Les interventions déjà utilisées sont déduites au prorata (voir les conditions ci-dessous).</p></div></div>
+    </div>
   </section>
 
-  <section class="cond" id="conditions">
-    <h2>Conditions du Pack Sérénité</h2>
+  <section class="cond reveal" id="conditions">
+    <div class="faq__item cond__item" id="condItem">
+    <button class="faq__q" type="button" aria-expanded="false" aria-controls="condCorps">Voir les conditions du Pack Sérénité</button>
+    <div class="faq__a" id="condCorps">
     <ol>
       <li><b>Objet.</b><br>Le Pack Sérénité donne droit, pendant sa durée (3, 6 ou 12 mois à compter du paiement), au nombre d'interventions indiqué, à un rendez-vous prioritaire sous 48 h ouvrables, au diagnostic offert, à une remise de 10 % sur les pièces détachées et au nombre de protections hydrogel indiqué.</li>
       <li><b>Intervention.</b><br>Une intervention correspond à un passage à domicile ou sur le lieu de travail, ou à un dépôt à l'atelier de Tubize, pour un travail de 1 h 30 maximum.<br>Le temps supplémentaire, les interventions au-delà du pack et les pièces sont facturés au tarif normal moins 10 %, toujours annoncés avant l'intervention.</li>
@@ -141,6 +173,8 @@ footer a{color:inherit}
       <li><b>Rétractation (particuliers).</b><br>Le consommateur dispose de 14 jours à compter du paiement pour se rétracter, par simple e-mail à <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>.<br>Ayant demandé que le service commence immédiatement, il est remboursé au prorata des interventions non utilisées ; chaque protection hydrogel déjà posée est déduite à 14,99 €.<br>Le remboursement est effectué sur le moyen de paiement utilisé, dans les 14 jours.</li>
       <li><b>Pour le reste,</b> les conditions générales d'IT Soluce s'appliquent, notamment la garantie de 3 mois sur les réparations.</li>
     </ol>
+    </div>
+    </div>
   </section>
 </main>
 
@@ -159,7 +193,7 @@ footer a{color:inherit}
     <div class="f"><label for="adresse">Adresse (rue, numéro, code postal, commune)</label><input id="adresse" autocomplete="street-address" maxlength="200" required></div>
     <div class="row2"><div class="f"><label for="societe">Entreprise (facultatif)</label><input id="societe" autocomplete="organization" maxlength="120"></div>
       <div class="f"><label for="tva">N° TVA (facultatif)</label><input id="tva" maxlength="20" placeholder="BE0…"></div></div>
-    <label class="ck"><input type="checkbox" id="c1"><span>J'accepte les <a href="#conditions" onclick="fermer()">conditions du Pack Sérénité</a> et les <a href="/#conditions">conditions générales</a>.</span></label>
+    <label class="ck"><input type="checkbox" id="c1"><span>J'accepte les <a href="#conditions">conditions du Pack Sérénité</a> et les <a href="/#conditions">conditions générales</a>.</span></label>
     <label class="ck"><input type="checkbox" id="c2"><span>Je demande que le service commence dès le paiement.<br>Si je me rétracte dans les 14 jours, les interventions déjà utilisées seront déduites au prorata.</span></label>
     <button class="btn" id="payer" type="submit">Payer</button>
     <div class="err" id="err" role="alert"></div>
@@ -209,6 +243,33 @@ async function envoyerCommande(e){
     location.href=j.url
   }catch(x){err.textContent=x.message;b.disabled=false;b.textContent='Payer '+EUR.format(FORMULES[choix].prix)}
 }
+
+/* FAQ accordéon (comme le site principal) */
+document.querySelectorAll('.faq__list .faq__item').forEach(item=>{
+  item.querySelector('.faq__q').addEventListener('click',()=>{
+    const ouvert=item.classList.contains('open')
+    document.querySelectorAll('.faq__list .faq__item').forEach(i=>{i.classList.remove('open');i.querySelector('.faq__q').setAttribute('aria-expanded','false')})
+    if(!ouvert){item.classList.add('open');item.querySelector('.faq__q').setAttribute('aria-expanded','true')}
+  })
+})
+/* Conditions : volet qui se déroule */
+const condItem=document.getElementById('condItem'),condBtn=condItem.querySelector('.faq__q')
+function ouvrirConditions(oui){
+  condItem.classList.toggle('open',oui);condBtn.setAttribute('aria-expanded',oui?'true':'false')
+  condBtn.textContent=oui?'Masquer les conditions du Pack Sérénité':'Voir les conditions du Pack Sérénité'
+}
+condBtn.addEventListener('click',()=>ouvrirConditions(!condItem.classList.contains('open')))
+document.querySelectorAll('a[href="#conditions"]').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();fermer();ouvrirConditions(true)
+  document.getElementById('conditions').classList.add('in')
+  setTimeout(()=>document.getElementById('conditions').scrollIntoView({behavior:'smooth',block:'start'}),60)
+}))
+if(location.hash==='#conditions')ouvrirConditions(true)
+/* Apparition au défilement (comme le site principal) */
+{const cibles=document.querySelectorAll('.reveal, .reveal-group')
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))cibles.forEach(el=>el.classList.add('in'))
+ else{const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}}),{threshold:0.15,rootMargin:'0px 0px -60px 0px'})
+   cibles.forEach(el=>obs.observe(el))}}
 </script>
 </body>
 </html>
