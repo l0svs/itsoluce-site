@@ -1001,6 +1001,16 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             </div>
 
             <div class="card">
+              <div class="card-lbl">Mails du Pack Sérénité (envoyés automatiquement)</div>
+              <div id="mail-pack"></div>
+              <input type="hidden" id="s-mail-pack" data-cle="mail_modeles_pack"/>
+              <div class="grille-foot">
+                <span>Remplis automatiquement : <b>{prenom}</b> <b>{pack}</b> <b>{date_fin}</b> <b>{interventions}</b> <b>{facture}</b> <b>{montant}</b> <b>{iban}</b> · <b>{lien_espace}</b> (seul sur sa ligne) devient le bouton « Ouvrir mon espace client ». « Bien à vous » et ta signature sont ajoutés à l'envoi.</span>
+                <button type="button" class="btn btn-secondary" onclick="resetMailPack()">Réinitialiser</button>
+              </div>
+            </div>
+
+            <div class="card">
               <div class="card-lbl">Boîte mail</div>
               <div class="row"><div class="row-l"><b>Adresse</b></div><div class="row-f">contact@itsoluce.be · OVH Zimbra</div></div>
               <div class="row"><div class="row-l"><b>Synchronisation</b><em>Automatique toutes les 5 minutes</em></div><div class="row-f" id="mail-synchro">—</div></div>
@@ -1420,6 +1430,23 @@ window.ajouterModeleMail=function(){
   ecrireModelesMail(l);renderModelesMail()
 }
 renderModelesMail()
+/* Mails du Pack Sérénité : objet et texte modifiables, signature ajoutée par le serveur. */
+function lireMailPack(){let o=null;try{o=JSON.parse(document.getElementById('s-mail-pack').value||'null')}catch(e){}
+  const d=MAIL_MODELES_PACK_DEFAUT,r={};for(const k of Object.keys(d))r[k]={...d[k],...((o&&o[k])||{}),nom:d[k].nom};return r}
+function ecrireMailPack(o){const x={};for(const k of Object.keys(o))x[k]={objet:o[k].objet,corps:o[k].corps};document.getElementById('s-mail-pack').value=JSON.stringify(x);markDirty()}
+window.renderMailPack=function(){
+  const o=lireMailPack()
+  document.getElementById('mail-pack').innerHTML=Object.keys(o).map(k=>`<div class="mm">
+    <div class="mm-l"><b style="font-size:13px">${escHtml(o[k].nom)}</b></div>
+    <input type="text" value="${escHtml(o[k].objet||'')}" placeholder="Objet" oninput="majMailPack('${k}','objet',this.value)"/>
+    <textarea oninput="majMailPack('${k}','corps',this.value)">${escHtml(o[k].corps||'')}</textarea>
+  </div>`).join('')
+}
+window.majMailPack=function(k,champ,v){const o=lireMailPack();o[k][champ]=v;ecrireMailPack(o)}
+window.resetMailPack=function(){if(!confirm('Revenir aux textes par défaut des mails du Pack Sérénité ?'))return;ecrireMailPack(JSON.parse(JSON.stringify(MAIL_MODELES_PACK_DEFAUT)));renderMailPack()}
+{const c=document.getElementById('s-mail-pack');let o=null;try{o=JSON.parse(c.value||'null')}catch(e){}
+ if(!o){const x={};for(const [k,m] of Object.entries(MAIL_MODELES_PACK_DEFAUT))x[k]={objet:m.objet,corps:m.corps};c.value=JSON.stringify(x);_original[c.id]=c.value}}
+renderMailPack()
 sb.from('mail_etat').select('derniere_synchro,ok,message').eq('id',1).maybeSingle().then(({data})=>{
   const el=document.getElementById('mail-synchro')
   if(!data||!data.derniere_synchro){el.textContent='Pas encore synchronisée';return}

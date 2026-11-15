@@ -32,6 +32,7 @@ p b{color:var(--t1)}
 .box{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) .1s both}
 .box>*{animation:heroIn .6s cubic-bezier(.22,.61,.36,1) both}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+.compte{font-size:13px;color:var(--t2);margin:6px 0 2px}.compte b{color:var(--t1)}
 </style>
 </head>
 <body>
@@ -49,18 +50,29 @@ const dateFr=d=>d?new Date(d+'T12:00:00').toLocaleDateString('fr-BE',{day:'numer
 const box=document.getElementById('box')
 const id=new URLSearchParams(location.search).get('c')||''
 let essais=0
+const lienEspace=email=>'/espace.html?bienvenue=1'+(email?'&email='+encodeURIComponent(email):'')
+// Après un paiement réussi : page de validation, puis espace client au bout de 10 secondes.
+function rediriger(email){
+  let n=10
+  const t=setInterval(()=>{n--;const el=document.querySelector('#compte b');if(el)el.textContent=n
+    if(n<=0){clearInterval(t);location.href=lienEspace(email)}},1000)
+}
 function afficher(e){
   if(e&&e.statut==='payee'){
     box.innerHTML=`<div class="ic ok">✓</div><h1>Votre pack est actif</h1>
       <p>Merci ${esc(e.prenom)}.<br>Votre <b>${esc(e.formule)}</b> est actif${e.date_fin?` jusqu'au <b>${esc(dateFr(e.date_fin))}</b>`:''}.</p>
       <p>Un e-mail avec votre facture et votre lien de connexion vient de vous être envoyé à <b>${esc(e.email)}</b>.</p>
-      <a class="btn" href="/espace.html">Ouvrir mon espace client</a><a class="btn o" href="tel:+32474056659">M'appeler pour un premier rendez-vous</a>`
+      <p class="compte" id="compte">Redirection vers votre espace client dans <b>10</b> secondes…</p>
+      <a class="btn" href="${lienEspace(e.email)}">Ouvrir mon espace client</a><a class="btn o" href="tel:+32474056659">M'appeler pour un premier rendez-vous</a>`
+    rediriger(e.email)
     return true}
   if(e&&e.statut==='test_ok'){
     box.innerHTML=`<div class="ic ok">✓</div><h1>Paiement de test réussi</h1>
       <p>Mode test : le parcours complet a été simulé.<br>Aucun pack, aucun client et aucune facture n'ont été enregistrés.</p>
       <p>La facture d'exemple a été envoyée à <b>${esc(e.email)}</b>.</p>
-      <a class="btn o" href="/pack.html">Retour à la page du pack</a>`
+      <p class="compte" id="compte">Redirection vers l'espace client dans <b>10</b> secondes…</p>
+      <a class="btn" href="${lienEspace(e.email)}">Ouvrir l'espace client</a>`
+    rediriger(e.email)
     return true}
   if(e&&e.statut==='echouee'){
     box.innerHTML=`<div class="ic ko">!</div><h1>Le paiement n'a pas abouti</h1>

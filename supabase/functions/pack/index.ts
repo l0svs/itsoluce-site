@@ -115,7 +115,7 @@ function base64(o: Uint8Array): string {
   return btoa(s);
 }
 async function entreprise(): Promise<Record<string, string>> {
-  const l = await rest("settings?select=cle,valeur&cle=in.(entreprise_nom,entreprise_adresse,entreprise_bce,entreprise_email,entreprise_telephone,finance_mention_tva,finance_iban)");
+  const l = await rest("settings?select=cle,valeur&cle=in.(entreprise_nom,entreprise_adresse,entreprise_bce,entreprise_email,entreprise_telephone,entreprise_site,finance_mention_tva,finance_iban,mail_modeles_pack)");
   return Object.fromEntries((l || []).map((r: { cle: string; valeur: string }) => [r.cle, String(r.valeur ?? "").trim()]));
 }
 async function logo(): Promise<Uint8Array | null> {
@@ -144,21 +144,60 @@ async function archiver(f: any, octets: Uint8Array) {
 }
 // deno-lint-ignore no-explicit-any
 async function mailFacture(f: any, octets: Uint8Array, prenom: string, pack: any, lien: string, test = false) {
+  await mailClient(f.statut === "payee" ? "pack_achat" : "pack_facture", f.client_email, {
+    prenom, pack: pack.nom, date_fin: dateFr(pack.date_fin), interventions: String(pack.interventions_total ?? ""),
+    facture: f.numero, montant: eur(f.total),
+  }, lien, [{ nom: `Facture_${f.numero}.pdf`, octets }], test);
+}
+
+// ── Signature et modèles (mêmes que l'ERP : Gestion › Entreprise et › Mails) ──
+// Signature : copie de signatureMailHTML (admin/assets/js/signature-mail.js).
+function signatureHTML(ent: Record<string, string>): string {
+  const nom = ent.entreprise_nom || "IT Soluce", tel = ent.entreprise_telephone || "+32 474 05 66 59";
+  const email = ent.entreprise_email || "contact@itsoluce.be";
+  const site = (ent.entreprise_site || "itsoluce.be").replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const adr = ent.entreprise_adresse || "Chaussée d'Hondzocht 164, 1480 Tubize", bce = ent.entreprise_bce || "BE 1027.026.003";
+  const L = (href: string, t: string, c: string) => `<a href="${href}" style="color:${c};text-decoration:none;">${esc(t)}</a>`;
+  const pied = [esc(adr), bce ? "BCE " + esc(bce) : ""].filter(Boolean).join(" &middot; ");
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>` +
+    `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">` +
+    `<tr><td style="padding:0 0 10px;"><img src="https://itsoluce.be/img/logo-full.png" width="78" height="32" alt="${esc(nom)}" style="display:block;border:0;"></td></tr>` +
+    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>` +
+    `<tr><td style="padding:8px 0 0;font-size:12.5px;line-height:1.9;color:#5a6b7b;">` +
+    `<span style="color:#0052CC;font-weight:bold;">T</span>&nbsp;&nbsp;${L("tel:" + tel.replace(/[^0-9+]/g, ""), tel, "#5a6b7b")}<br>` +
+    `<span style="color:#0052CC;font-weight:bold;">E</span>&nbsp;&nbsp;${L("mailto:" + email, email, "#5a6b7b")}<br>` +
+    `<span style="color:#0052CC;font-weight:bold;">W</span>&nbsp;&nbsp;${L("https://" + site + "/", site, "#0052CC")}</td></tr>` +
+    `<tr><td style="padding:9px 0 0;font-size:11.5px;line-height:1.6;color:#8a97a3;">${pied}</td></tr></table>`;
+}
+// Textes par défaut : identiques à MAIL_MODELES_PACK_DEFAUT (admin/assets/js/mail-modeles.js).
+const MODELES: Record<string, { objet: string; corps: string }> = {
+  pack_achat: { objet: "Votre {pack} est actif — facture {facture}",
+    corps: "Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu'au {date_fin} : {interventions} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail." },
+  pack_facture: { objet: "Votre {pack} — facture {facture}",
+    corps: "Bonjour {prenom},\n\nVous trouverez en pièce jointe la facture {facture} de votre {pack} : {montant} à régler par virement sur le compte {iban} (communication : {facture}).\n\nVotre pack s'active dès réception du paiement." },
+  pack_lien: { objet: "Votre lien de connexion — IT Soluce",
+    corps: "Bonjour,\n\nVoici votre lien pour ouvrir votre espace client IT Soluce :\n\n{lien_espace}\n\nSi vous n'avez rien demandé, ignorez simplement ce message." },
+  pack_acces: { objet: "Votre espace client IT Soluce",
+    corps: "Bonjour {prenom},\n\nVotre espace client est prêt : vous y suivez votre Pack Sérénité (interventions restantes, historique) et vos factures.\n\n{lien_espace}" },
+};
+/** Envoie le mail « cle » au client : texte de Gestion › Mails, signature de l'ERP. */
+async function mailClient(cle: string, a: string, v: Record<string, string>, lien: string, pieces: { nom: string; octets: Uint8Array }[] = [], test = false) {
   const ent = await entreprise();
-  const paye = f.statut === "payee";
-  await envoyerMail(f.client_email, `${test ? "[TEST] " : ""}Votre ${pack.nom} — facture ${f.numero}`, gabarit(
-    `<p>Bonjour ${esc(prenom)},</p>` +
-    (paye
-      ? `<p>Merci pour votre confiance. Votre <b>${esc(pack.nom)}</b> est actif jusqu'au <b>${esc(dateFr(pack.date_fin))}</b> : ` +
-        `${pack.interventions_total} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.</p>` +
-        `<p>Vous trouverez votre facture <b>${esc(f.numero)}</b> (${eur(f.total)}, payée) en pièce jointe.</p>`
-      : `<p>Vous trouverez en pièce jointe la facture <b>${esc(f.numero)}</b> de votre <b>${esc(pack.nom)}</b> : ${eur(f.total)} à régler` +
-        `${ent.finance_iban ? ` par virement sur le compte ${esc(ent.finance_iban)} (communication : ${esc(f.numero)})` : ""}.</p>` +
-        `<p>Votre pack s'active dès réception du paiement.</p>`) +
-    (lien ? bouton(lien, "Ouvrir mon espace client") +
-      `<p style="color:#5a6b7b;font-size:13px">Ce lien est personnel et valable une heure. Ensuite, demandez simplement un nouveau lien sur itsoluce.be/espace.html avec votre adresse e-mail.</p>` : "") +
-    `<p>Pour votre première intervention, appelez-moi ou envoyez-moi un message au +32 474 05 66 59.</p>`,
-  ), [{ nom: `Facture_${f.numero}.pdf`, octets }]);
+  let perso: Record<string, { objet?: string; corps?: string }> = {};
+  try { perso = JSON.parse(ent.mail_modeles_pack || "{}") || {}; } catch { perso = {}; }
+  const m = { ...MODELES[cle], ...Object.fromEntries(Object.entries(perso[cle] || {}).filter(([, x]) => String(x ?? "").trim())) };
+  const val = { ...v, iban: ent.finance_iban || "" };
+  const remplir = (t: string, html: boolean) => t.replace(/\{(\w+)\}/g, (x, k) => k === "lien_espace" ? x : (k in val ? (html ? esc(val[k]) : val[k]) : x));
+  const objet = (test ? "[TEST] " : "") + remplir(m.objet, false).replace(/[\r\n]+/g, " ").trim();
+  const btn = lien ? bouton(lien, "Ouvrir mon espace client") +
+    `<p style="margin:0 0 12px;color:#5a6b7b;font-size:13px">Ce lien est personnel et valable une heure. Ensuite, demandez un nouveau lien sur itsoluce.be/espace.html avec votre adresse e-mail.</p>` : "";
+  const corps = esc(m.corps).split(/\n{2,}/).map((p) => {
+    const t = remplir(p.trim(), true);
+    if (t === "{lien_espace}") return btn;
+    return `<p style="margin:0 0 12px;">${t.replace(/\{lien_espace\}/g, "").replace(/\n/g, "<br>")}</p>`;
+  }).join("");
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;max-width:560px">${corps}${signatureHTML(ent)}</div>`;
+  await envoyerMail(a, objet, html, pieces);
 }
 
 // ── Compte espace client + lien de connexion ─────────────
@@ -297,10 +336,7 @@ async function lien(c: Record<string, unknown>) {
   if (!aPack.length) return { ok: true };
   if (!(await quota(email, "pack-lien", 3))) return { ok: true };
   const url = await lienEspace(email, cl.id);
-  await envoyerMail(email, "Votre lien de connexion — IT Soluce", gabarit(
-    `<p>Bonjour,</p><p>Voici votre lien pour ouvrir votre espace client IT Soluce :</p>` + bouton(url, "Ouvrir mon espace client") +
-    `<p style="color:#5a6b7b;font-size:13px">Ce lien est personnel et valable une heure. Si vous n'avez rien demandé, ignorez ce message.</p>`,
-  ));
+  await mailClient("pack_lien", email, {}, url);
   return { ok: true };
 }
 
@@ -311,11 +347,8 @@ async function acces(req: Request, c: Record<string, unknown>) {
   if (!cl.email) throw new ErreurClient("Ce client n'a pas d'adresse e-mail.");
   const url = await lienEspace(cl.email, cl.id);
   const prenom = String(cl.nom || "").split(" ")[0];
-  await envoyerMail(cl.email, "Votre espace client IT Soluce", gabarit(
-    `<p>Bonjour ${esc(prenom)},</p><p>Votre espace client est prêt : vous y suivez votre Pack Sérénité (interventions restantes, historique) et vos factures.</p>` +
-    bouton(url, "Ouvrir mon espace client") +
-    `<p style="color:#5a6b7b;font-size:13px">Ce lien est valable une heure. Ensuite, demandez un nouveau lien sur itsoluce.be/espace.html avec votre adresse e-mail.</p>`,
-  ));
+  await mailClient("pack_acces", cl.email, { prenom }, url);
+
   return { ok: true };
 }
 

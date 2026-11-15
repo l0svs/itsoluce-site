@@ -104,11 +104,15 @@ const dLong=d=>d?new Date(String(d).slice(0,10)+'T12:00:00').toLocaleDateString(
 const TYPES={domicile:'À domicile',travail:'Sur le lieu de travail',depot:"Dépôt à l'atelier"}
 let donnees=null
 
+const _q=new URLSearchParams(location.search)
+const EMAIL_INVITE=(_q.get('email')||'').slice(0,160),BIENVENUE=_q.get('bienvenue')==='1'
+if(_q.toString())history.replaceState(null,'',location.pathname+location.hash)
 function ecranConnexion(msg){
   document.getElementById('deco').hidden=true
   app.innerHTML=`<h1 style="margin-top:14px">Espace client</h1>
     <p class="msub">Entrez l'adresse e-mail utilisée pour votre Pack Sérénité : vous recevez un lien de connexion.<br>Pas de mot de passe.</p>
-    <form class="card" id="fLien"><div class="f"><label for="em">E-mail</label><input id="em" type="email" autocomplete="email" required></div>
+    ${BIENVENUE&&!msg?`<div class="card ok-msg" style="margin:0 0 14px">Merci pour votre achat.<br>Un lien de connexion vous a été envoyé par e-mail${EMAIL_INVITE?` à <b>${esc(EMAIL_INVITE)}</b>`:''} : ouvrez-le pour accéder à votre espace.<br>Vous ne le trouvez pas ? Demandez-en un nouveau ci-dessous.</div>`:''}
+    <form class="card" id="fLien"><div class="f"><label for="em">E-mail</label><input id="em" type="email" autocomplete="email" required value="${esc(EMAIL_INVITE)}"></div>
       <button class="btn" id="bLien">Recevoir mon lien de connexion</button><div id="rLien">${msg?`<div class="err">${esc(msg)}</div>`:''}</div></form>
     <p class="note">Pas encore de pack ? <a href="/pack.html">Découvrir le Pack Sérénité</a></p>`
   document.getElementById('fLien').onsubmit=async e=>{

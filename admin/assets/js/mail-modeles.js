@@ -40,3 +40,28 @@ window.MAIL_MODELES_DEFAUT = [
     objet: 'Votre devis {devis}',
     corps: 'Bonjour {prenom},\n\nJe me permets de revenir vers vous au sujet du devis {devis} d\'un montant de {montant_devis}, valable jusqu\'au {validite_devis}. Avez-vous pu en prendre connaissance ?\n\nVous pouvez l\'accepter en ligne en un clic.\n{lien_devis}\n\nJe reste disponible pour toute question.' }
 ];
+
+/**
+ * Mails envoyés automatiquement pour le Pack Sérénité (fonction serveur
+ * « pack »). Modifiables dans Gestion › Mails (clé de réglage
+ * mail_modeles_pack). Même principe : la politesse et la signature sont
+ * ajoutées à l'envoi.
+ *   {prenom} {pack} {date_fin} {interventions} {facture} {montant} {iban}
+ *   {lien_espace} : bouton « Ouvrir mon espace client » (seul sur sa ligne)
+ * Garder ces textes identiques aux valeurs par défaut de
+ * supabase/functions/pack/index.ts.
+ */
+window.MAIL_MODELES_PACK_DEFAUT = {
+  pack_achat: { nom: 'Pack payé : facture et accès à l\'espace client',
+    objet: 'Votre {pack} est actif — facture {facture}',
+    corps: 'Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu\'au {date_fin} : {interventions} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail.' },
+  pack_facture: { nom: 'Pack vendu sur place, paiement à venir',
+    objet: 'Votre {pack} — facture {facture}',
+    corps: 'Bonjour {prenom},\n\nVous trouverez en pièce jointe la facture {facture} de votre {pack} : {montant} à régler par virement sur le compte {iban} (communication : {facture}).\n\nVotre pack s\'active dès réception du paiement.' },
+  pack_lien: { nom: 'Lien de connexion à l\'espace client',
+    objet: 'Votre lien de connexion — IT Soluce',
+    corps: 'Bonjour,\n\nVoici votre lien pour ouvrir votre espace client IT Soluce :\n\n{lien_espace}\n\nSi vous n\'avez rien demandé, ignorez simplement ce message.' },
+  pack_acces: { nom: 'Accès à l\'espace client (envoyé depuis l\'ERP)',
+    objet: 'Votre espace client IT Soluce',
+    corps: 'Bonjour {prenom},\n\nVotre espace client est prêt : vous y suivez votre Pack Sérénité (interventions restantes, historique) et vos factures.\n\n{lien_espace}' }
+};
