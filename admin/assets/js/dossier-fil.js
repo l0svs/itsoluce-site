@@ -31,7 +31,7 @@
   var COLS = {
     demandes_formulaire: 'id,prenom,nom,created_at,converti_reparation_id,converti_devis_id',
     devis: 'id,numero,statut,total,date_validite,reparation_id,converti_reparation_id,converti_facture_id',
-    reparations: 'id,numero,statut,type,converti_facture_id,date_fin,garantie_de_id',
+    reparations: 'id,numero,statut,type,converti_facture_id,date_fin,garantie_de_id,pack_id',
     factures: 'id,numero,statut,total,acompte,devis_id,reparation_id,date_paiement'
   };
 
@@ -110,9 +110,10 @@
       e.push({ cle: 'facture', titre: 'Facture ' + (fac.numero || ''), sous: FAC[fac.statut] || fac.statut,
         etat: fac.statut === 'brouillon' ? 'cours' : ['annulee', 'creditee'].indexOf(fac.statut) >= 0 ? 'ko' : 'ok', href: '/admin/factures.html?open=' + fac.id });
     } else if (rep && rep.garantie_de_id) e.push({ cle: 'facture', titre: 'Facture', sous: 'sous garantie', etat: 'ok' });
+    else if (rep && rep.pack_id) e.push({ cle: 'facture', titre: 'Facture', sous: 'incluse dans le pack', etat: 'ok' });
     else e.push({ cle: 'facture', titre: 'Facture', sous: 'pas encore créée', etat: 'vide' });
     var paye = fac && (fac.statut === 'payee' || fac.statut === 'non_reparable');
-    if (!fac && rep && rep.garantie_de_id) {
+    if (!fac && rep && (rep.garantie_de_id || rep.pack_id)) {
       e.push({ cle: 'paye', titre: 'Encaissé', sous: 'rien à encaisser', etat: 'ok' });
       return e;
     }
@@ -141,6 +142,12 @@
       if (rep.statut === 'pret') return "Rendre l'appareil (sous garantie)";
       if (rep.statut === 'attente_reception') return "Réceptionner l'appareil";
       return 'Terminer la réparation (sous garantie)';
+    }
+    if (rep && rep.pack_id && !fac) {
+      if (rep.statut === 'rendu') return null;
+      if (rep.statut === 'pret') return "Rendre l'appareil (inclus dans le pack)";
+      if (rep.statut === 'attente_reception') return "Réceptionner l'appareil";
+      return 'Terminer (inclus dans le pack)';
     }
     if (rep && rep.statut === 'non_reparable') return 'Facturer le diagnostic (ou l’offrir)';
     if (rep && rep.statut === 'pret') return 'Créer la facture';
