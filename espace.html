@@ -132,7 +132,6 @@ function tableau(){
   document.getElementById('deco').hidden=false
   const d=donnees,prenom=String(d.client.nom||'').split(' ')[0]
   const actifs=d.packs.filter(p=>p.statut==='actif'&&!p.etat.expire)
-  const autres=d.packs.filter(p=>!actifs.includes(p))
   const carte=p=>{const e=p.etat,pct=Math.min(100,Math.round(e.utilisees/p.interventions_total*100))
     const st=p.statut==='retracte'?['Rétracté','d']:p.statut==='annule'?['Annulé','d']:e.expire?['Terminé','g']:['Actif','']
     return `<div class="card"><div class="pk-h"><b>${esc(p.nom)}</b><span class="badge ${st[1]}">${st[0]}</span></div>
@@ -145,8 +144,10 @@ function tableau(){
     ${actifs.map(carte).join('')||`<div class="card"><p class="vide">Aucun pack actif pour le moment.</p><a class="btn" style="margin-top:12px" href="/pack.html">Découvrir le Pack Sérénité</a></div>`}
     ${actifs.length?`<div class="acts"><button class="btn" onclick="ouvrirDemande()">Demander une intervention</button><a class="btn wa" href="https://wa.me/32474056659" target="_blank" rel="noopener">WhatsApp</a></div>
     <div id="demande"></div>`:''}
-    <div class="card"><div class="h3">Historique</div>${journal.length?`<ul class="hist">${journal.map(j=>`<li><div class="hd"><span>${dFr(j.date)} · ${TYPES[j.type]||''}</span><span class="chip${j.decompte?'':' g'}">${j.decompte?'1 intervention':'non décomptée'}</span></div>${esc(j.description)}${j.hydrogels?`<div class="meta">${j.hydrogels} protection${j.hydrogels>1?'s':''} hydrogel posée${j.hydrogels>1?'s':''}</div>`:''}</li>`).join('')}</ul>`:'<p class="vide">Aucune intervention pour le moment.</p>'}</div>
-    ${autres.map(carte).join('')}
+    <div class="card"><div class="h3">Historique des interventions</div>${journal.length?`<ul class="hist">${journal.map(j=>`<li><div class="hd"><span>${dFr(j.date)} · ${TYPES[j.type]||''}${d.packs.length>1?' · '+esc(j.pack.replace('Pack Sérénité ','Pack ')):''}</span><span class="chip${j.decompte?'':' g'}">${j.decompte?'1 intervention':'non décomptée'}</span></div>${esc(j.description)}${j.hydrogels?`<div class="meta">${j.hydrogels} protection${j.hydrogels>1?'s':''} hydrogel posée${j.hydrogels>1?'s':''}</div>`:''}</li>`).join('')}</ul>`:'<p class="vide">Aucune intervention pour le moment.</p>'}</div>
+    <div class="card"><div class="h3">Historique de mes packs</div>${d.packs.length?`<ul class="hist">${d.packs.map(p=>{const e=p.etat
+      const st=p.statut==='retracte'?['Rétracté','d']:p.statut==='annule'?['Annulé','d']:e.expire?['Terminé','g']:['En cours','']
+      return `<li><div class="hd"><span>${p.date_debut?`Du ${dFr(p.date_debut)} au ${dFr(p.date_fin)}`:''}</span><span class="badge ${st[1]}">${st[0]}</span></div><b>${esc(p.nom)}</b><div class="meta">${e.utilisees} intervention${e.utilisees>1?'s':''} utilisée${e.utilisees>1?'s':''} sur ${p.interventions_total}${p.hydrogels_total?` · ${e.hydrogels_utilises} protection${e.hydrogels_utilises>1?'s':''} hydrogel sur ${p.hydrogels_total}`:''}</div></li>`}).join('')}</ul>`:'<p class="vide">Aucun pack pour le moment.</p>'}</div>
     <div class="card"><div class="h3">Mes documents</div>${d.factures.length?d.factures.map(f=>`<div class="doc"><span>${f.type==='note_credit'?'Note de crédit':'Facture'} ${esc(f.numero)} · ${eur(f.total)}<br><span class="meta">${dFr(f.date)}</span></span><button onclick="voirFacture(${f.id})">Voir</button></div>`).join(''):'<p class="vide">Aucun document.</p>'}</div>
     <p class="note">Une question ? <a href="tel:+32474056659">+32 474 05 66 59</a> · <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>`
 }
