@@ -618,6 +618,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
     <a href="/admin/factures.html" class="hnl active">Factures</a>
     <a href="/admin/clients.html" class="hnl">Clients</a>
+    <a href="/admin/packs.html" class="hnl">Packs</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
     <a href="/admin/messages.html" class="hnl">Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert" style="display:none"></span></a>
@@ -636,6 +637,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <a href="/admin/factures.html" class="nl active"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <div class="nl-group">Relation client</div>
       <a href="/admin/clients.html" class="nl"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/packs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Packs</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
       <div class="nl-group">Atelier</div>
@@ -1047,7 +1049,7 @@ const estEmise=f=>!!(f&&f.emise_le)
 const estNC=f=>!!(f&&f.type_document==='note_credit')
 const nomDoc=f=>estNC(f)?'note de crédit':'facture'
 const refDoc=f=>f&&f.numero?f.numero:'Brouillon'
-const MODES={especes:'espèces',carte:'carte',virement:'virement',mixte:'carte + espèces'}
+const MODES={especes:'espèces',carte:'carte',virement:'virement',mixte:'carte + espèces',en_ligne:'en ligne (Mollie)'}
 /* En retard : envoyée et échéance dépassée. L'échéance n'était jamais
    enregistrée, ce qui rendait cet état impossible à atteindre. */
 function enRetard(f){
@@ -1150,7 +1152,7 @@ async function load(){
     sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva,type').order('nom').limit(5000),
     sb.from('stock').select('id,nom,modele,quantite,prix_vente').order('nom').limit(5000),
     sb.from('services').select('*').order('ordre',{ascending:true}),
-    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut,motif,date_debut,date_fin').order('created_at',{ascending:false}).limit(2000),
+    sb.from('reparations').select('id,numero,client_id,client_nom,client_email,client_telephone,appareil,modele,panne_description,prix_final,statut,motif,date_fin').order('created_at',{ascending:false}).limit(2000),
     sb.from('devis').select('id,numero').limit(5000)
   ])
   if(rFac.error)throw new Error(rFac.error.message)
@@ -1159,6 +1161,7 @@ async function load(){
   allStock=rStock.data||[]
   window.allServices=rSvc.data||[]
   allReps=rRep.data||[]
+  if(rRep.error)showToast("Dossiers non chargés : "+rRep.error.message,"err")
   numerosDevis=new Map((rDev.data||[]).map(d=>[d.id,d.numero]))
   if(typeof rFac.count==='number'&&rFac.count>allFactures.length){
     showToast(`Seules ${allFactures.length} factures sur ${rFac.count} ont été chargées.`,'err')
@@ -2373,7 +2376,7 @@ window.supprimerCourante=async function(){
 function dateIntervention(f){
   if(!f||estNC(f)||!f.reparation_id)return null
   const r=allReps.find(x=>String(x.id)===String(f.reparation_id))
-  const d=r&&(r.date_fin||r.date_debut)
+  const d=r&&r.date_fin
   if(!d)return null
   const j=String(d).slice(0,10), em=String(f.date_emission||'').slice(0,10)
   return j&&j!==em?dateLongue(j):null

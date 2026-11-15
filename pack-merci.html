@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Votre Pack Sérénité — IT Soluce</title>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--a:#0052CC;--t1:#1d1d1f;--t2:#6e6e73;--ln:#d2d2d7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--t1);background:#f5f5f7;-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+.logo{height:34px;margin:8px 0 22px}
+.box{background:#fff;border:1px solid #e5e5ea;border-radius:22px;max-width:440px;width:100%;padding:28px 22px;text-align:center}
+.ic{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}
+.ic.ok{background:#e8f6ee;color:#1a8a52}.ic.wait{background:#eef3fd;color:var(--a)}.ic.ko{background:#fdecea;color:#c8362c}
+h1{font-size:22px;font-weight:600;letter-spacing:-.3px;margin-bottom:8px}
+p{font-size:14.5px;color:var(--t2);margin-bottom:12px}
+p b{color:var(--t1)}
+.btn{display:block;text-align:center;background:var(--a);color:#fff;border-radius:99px;padding:12px;font-size:14px;font-weight:500;margin-top:12px;text-decoration:none}
+.btn.o{background:#fff;color:var(--a);border:1px solid var(--a)}
+.spin{width:22px;height:22px;border:3px solid #dbe5f6;border-top-color:var(--a);border-radius:50%;animation:s 0.8s linear infinite;display:inline-block}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<a href="/"><img class="logo" src="/img/logo-full.png" alt="IT Soluce"></a>
+<div class="box" id="box">
+  <div class="ic wait"><span class="spin"></span></div>
+  <h1>Confirmation du paiement…</h1>
+  <p>Merci de patienter quelques secondes.</p>
+</div>
+<script>
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+const dateFr=d=>d?new Date(d+'T12:00:00').toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'}):''
+const box=document.getElementById('box')
+const id=new URLSearchParams(location.search).get('c')||''
+let essais=0
+function afficher(e){
+  if(e&&e.statut==='payee'){
+    box.innerHTML=`<div class="ic ok">✓</div><h1>Votre pack est actif</h1>
+      <p>Merci ${esc(e.prenom)}.<br>Votre <b>${esc(e.formule)}</b> est actif${e.date_fin?` jusqu'au <b>${esc(dateFr(e.date_fin))}</b>`:''}.</p>
+      <p>Un e-mail avec votre facture et votre lien de connexion vient de vous être envoyé à <b>${esc(e.email)}</b>.</p>
+      <a class="btn" href="/espace.html">Ouvrir mon espace client</a><a class="btn o" href="tel:+32474056659">M'appeler pour un premier rendez-vous</a>`
+    return true}
+  if(e&&e.statut==='test_ok'){
+    box.innerHTML=`<div class="ic ok">✓</div><h1>Paiement de test réussi</h1>
+      <p>Mode test : le parcours complet a été simulé.<br>Aucun pack, aucun client et aucune facture n'ont été enregistrés.</p>
+      <p>La facture d'exemple a été envoyée à <b>${esc(e.email)}</b>.</p>
+      <a class="btn o" href="/pack.html">Retour à la page du pack</a>`
+    return true}
+  if(e&&e.statut==='echouee'){
+    box.innerHTML=`<div class="ic ko">!</div><h1>Le paiement n'a pas abouti</h1>
+      <p>Aucun montant n'a été débité.<br>Vous pouvez réessayer, ou m'appeler au +32 474 05 66 59.</p>
+      <a class="btn" href="/pack.html#plans">Réessayer</a>`
+    return true}
+  return false
+}
+async function verifier(){
+  essais++
+  try{
+    const r=await fetch(SB+'/rest/v1/rpc/pack_commande_etat',{method:'POST',headers:{'Content-Type':'application/json',apikey:SK,Authorization:'Bearer '+SK},body:JSON.stringify({p_id:id})})
+    const e=r.ok?await r.json():null
+    if(afficher(e))return
+  }catch(x){}
+  if(essais<20)return setTimeout(verifier,2500)
+  box.innerHTML=`<div class="ic wait">…</div><h1>Paiement en cours de confirmation</h1>
+    <p>La confirmation de votre banque prend un peu plus de temps que prévu.<br>Vous recevrez un e-mail dès que votre pack sera actif.</p>
+    <p>Une question ? Appelez-moi au <a href="tel:+32474056659">+32 474 05 66 59</a>.</p>`
+}
+if(/^[0-9a-f-]{36}$/i.test(id))verifier()
+else box.innerHTML='<h1>Lien incomplet</h1><p>Ouvrez votre espace client ou appelez-moi au +32 474 05 66 59.</p><a class="btn" href="/espace.html">Espace client</a>'
+</script>
+</body>
+</html>

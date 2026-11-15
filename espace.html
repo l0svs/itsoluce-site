@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Espace client — IT Soluce</title>
+<link rel="icon" href="/favicon_io/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--a:#0052CC;--t1:#1d1d1f;--t2:#6e6e73;--ln:#d2d2d7;--ln2:#e5e5ea;--bg:#f5f5f7;--ok:#1a8a52;--d:#c8362c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--t1);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:var(--a)}
+.nav{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#fff;border-bottom:1px solid var(--ln2);font-size:13.5px}
+.nav img{height:30px;display:block}.nav .g,.nav .d{flex:1;display:flex}.nav .d{justify-content:flex-end}
+.nav a,.nav button{color:var(--a);text-decoration:none;background:none;border:none;font:inherit;cursor:pointer}
+.wrap{max-width:560px;margin:0 auto;padding:22px 16px 48px}
+h1{font-size:24px;font-weight:600;letter-spacing:-.4px;margin-bottom:6px}
+.msub{font-size:14.5px;color:var(--t2);margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--ln2);border-radius:18px;padding:18px;margin-bottom:14px}
+.f{margin-bottom:12px}.f label{display:block;font-size:12px;color:var(--t2);margin-bottom:4px}
+.f input,.f textarea{width:100%;border:1px solid var(--ln);border-radius:11px;padding:12px;font-size:15px;font-family:inherit;color:var(--t1);background:#fff}
+.f textarea{min-height:110px;resize:vertical}
+.btn{display:block;width:100%;text-align:center;background:var(--a);color:#fff;border:none;border-radius:99px;padding:13px;font-size:14.5px;font-weight:500;text-decoration:none;cursor:pointer;font-family:inherit}
+.btn.o{background:#fff;color:var(--a);border:1px solid var(--a)}.btn.wa{background:#e9f8ef;color:#128c4a}
+.btn:disabled{opacity:.6}
+.note{font-size:13px;color:var(--t2);margin-top:12px;text-align:center}
+.ok-msg{background:#e8f6ee;color:#14532d;border-radius:12px;padding:12px 14px;font-size:14px;margin-top:12px}
+.err{color:var(--d);font-size:13.5px;margin-top:10px}
+.pk-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.pk-h b{font-size:16px}
+.badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:#e8f6ee;color:var(--ok);white-space:nowrap}
+.badge.g{background:var(--bg);color:var(--t2)}.badge.d{background:#fdecea;color:var(--d)}
+.big{font-size:36px;font-weight:600;letter-spacing:-1px;margin:12px 0 2px}.big small{font-size:15px;color:var(--t2);font-weight:500;letter-spacing:0}
+.bar{height:8px;background:#eef0f4;border-radius:8px;overflow:hidden;margin:10px 0 8px}.bar span{display:block;height:100%;background:var(--a);border-radius:8px}
+.meta{font-size:13px;color:var(--t2)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.hist{list-style:none}.hist li{padding:11px 0;border-top:1px solid #f0f0f2;font-size:14px}.hist li:first-child{border-top:none}
+.hd{display:flex;justify-content:space-between;gap:8px;color:var(--t2);font-size:12.5px;margin-bottom:2px}
+.chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#eef3fd;color:var(--a);white-space:nowrap}.chip.g{background:var(--bg);color:var(--t2)}
+.doc{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:10px 0;border-top:1px solid #f0f0f2}.doc:first-of-type{border-top:none}
+.doc button{background:none;border:none;color:var(--a);font:inherit;font-weight:500;cursor:pointer}
+.vide{font-size:14px;color:var(--t2)}
+.loader{text-align:center;padding:60px 0;color:var(--t2)}
+/* facture */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:16px;overflow:auto}
+.ov.open{display:flex}
+.fac{background:#fff;border-radius:16px;width:720px;max-width:100%;padding:28px;font-size:13.5px;color:#12212e}
+.fac-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.fac-top img{height:34px}
+.fac h2{font-size:20px;margin-bottom:2px}
+.fac table{width:100%;border-collapse:collapse;margin:14px 0}
+.fac th{text-align:left;font-size:11.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid #e3e8ee;padding:6px 0}
+.fac td{padding:9px 0;border-bottom:1px solid #e3e8ee;vertical-align:top}.fac .n{text-align:right;white-space:nowrap;padding-left:12px}
+.fac .tot{font-size:16px;font-weight:700}
+.fac .pied{font-size:12px;color:#5a6b7b;margin-top:16px}
+.fac-acts{display:flex;gap:10px;margin-top:18px}.fac-acts .btn{width:auto;flex:1}
+@media print{body>*:not(.ov){display:none!important}.ov{position:static;background:none;padding:0;display:block}.fac{border-radius:0;width:auto;padding:0}.fac-acts{display:none}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="g"><a href="/">← Site</a></div>
+  <a href="/"><img src="/img/logo-full.png" alt="IT Soluce"></a>
+  <div class="d"><button id="deco" onclick="deconnexion()" hidden>Déconnexion</button></div>
+</header>
+<main class="wrap" id="app"><div class="loader">Chargement…</div></main>
+
+<div class="ov" id="ovFac" onclick="if(event.target.id==='ovFac')fermerFac()"><div class="fac" id="fac"></div></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
+// Session séparée de celle de l'ERP (clé de stockage distincte).
+const sb=createClient(SB,SK,{auth:{storageKey:'itsoluce-espace',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})
+const app=document.getElementById('app')
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+const EUR=new Intl.NumberFormat('fr-BE',{style:'currency',currency:'EUR'})
+const eur=v=>EUR.format(Number(v)||0)
+const dFr=d=>d?new Date(String(d).slice(0,10)+'T12:00:00').toLocaleDateString('fr-BE',{day:'2-digit',month:'2-digit',year:'numeric'}):''
+const dLong=d=>d?new Date(String(d).slice(0,10)+'T12:00:00').toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'}):''
+const TYPES={domicile:'À domicile',travail:'Sur le lieu de travail',depot:"Dépôt à l'atelier"}
+let donnees=null
+
+function ecranConnexion(msg){
+  document.getElementById('deco').hidden=true
+  app.innerHTML=`<h1 style="margin-top:14px">Espace client</h1>
+    <p class="msub">Entrez l'adresse e-mail utilisée pour votre Pack Sérénité : vous recevez un lien de connexion.<br>Pas de mot de passe.</p>
+    <form class="card" id="fLien"><div class="f"><label for="em">E-mail</label><input id="em" type="email" autocomplete="email" required></div>
+      <button class="btn" id="bLien">Recevoir mon lien de connexion</button><div id="rLien">${msg?`<div class="err">${esc(msg)}</div>`:''}</div></form>
+    <p class="note">Pas encore de pack ? <a href="/pack.html">Découvrir le Pack Sérénité</a></p>`
+  document.getElementById('fLien').onsubmit=async e=>{
+    e.preventDefault()
+    const email=document.getElementById('em').value.trim(),b=document.getElementById('bLien'),r=document.getElementById('rLien')
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){r.innerHTML='<div class="err">Adresse e-mail invalide.</div>';return}
+    b.disabled=true
+    try{
+      const res=await fetch(SB+'/functions/v1/pack',{method:'POST',headers:{'Content-Type':'application/json',apikey:SK,Authorization:'Bearer '+SK},body:JSON.stringify({action:'lien',email})})
+      if(!res.ok){const j=await res.json().catch(()=>({}));throw new Error(j.error||'Erreur, réessayez.')}
+      r.innerHTML=`<div class="ok-msg">Si cette adresse correspond à un Pack Sérénité, un lien de connexion vient de vous être envoyé.<br>Pensez à vérifier vos courriers indésirables.</div>`
+    }catch(x){r.innerHTML=`<div class="err">${esc(x.message)}</div>`;b.disabled=false}
+  }
+}
+
+function tableau(){
+  document.getElementById('deco').hidden=false
+  const d=donnees,prenom=String(d.client.nom||'').split(' ')[0]
+  const actifs=d.packs.filter(p=>p.statut==='actif'&&!p.etat.expire)
+  const autres=d.packs.filter(p=>!actifs.includes(p))
+  const carte=p=>{const e=p.etat,pct=Math.min(100,Math.round(e.utilisees/p.interventions_total*100))
+    const st=p.statut==='retracte'?['Rétracté','d']:p.statut==='annule'?['Annulé','d']:e.expire?['Terminé','g']:['Actif','']
+    return `<div class="card"><div class="pk-h"><b>${esc(p.nom)}</b><span class="badge ${st[1]}">${st[0]}</span></div>
+      ${st[0]==='Actif'?`<div class="big">${e.restantes} <small>intervention${e.restantes>1?'s':''} restante${e.restantes>1?'s':''} sur ${p.interventions_total}</small></div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+      <div class="meta">Valable jusqu'au ${dLong(p.date_fin)}${p.hydrogels_total?` · Protections hydrogel : ${p.hydrogels_total-e.hydrogels_utilises} restante${p.hydrogels_total-e.hydrogels_utilises>1?'s':''}`:''} · Pièces −10 %</div>`
+      :`<div class="meta" style="margin-top:6px">${p.date_debut?`Du ${dFr(p.date_debut)} au ${dFr(p.date_fin)}`:''}</div>`}</div>`}
+  const journal=d.packs.flatMap(p=>p.journal.map(j=>({...j,pack:p.nom}))).sort((a,b)=>String(b.date).localeCompare(String(a.date)))
+  app.innerHTML=`<h1>Bonjour ${esc(prenom)}</h1><p class="msub">Votre espace IT Soluce</p>
+    ${actifs.map(carte).join('')||`<div class="card"><p class="vide">Aucun pack actif pour le moment.</p><a class="btn" style="margin-top:12px" href="/pack.html">Découvrir le Pack Sérénité</a></div>`}
+    ${actifs.length?`<div class="acts"><button class="btn" onclick="ouvrirDemande()">Demander une intervention</button><a class="btn wa" href="https://wa.me/32474056659" target="_blank" rel="noopener">WhatsApp</a></div>
+    <div id="demande"></div>`:''}
+    <div class="card"><div class="h3">Historique</div>${journal.length?`<ul class="hist">${journal.map(j=>`<li><div class="hd"><span>${dFr(j.date)} · ${TYPES[j.type]||''}</span><span class="chip${j.decompte?'':' g'}">${j.decompte?'1 intervention':'non décomptée'}</span></div>${esc(j.description)}${j.hydrogels?`<div class="meta">${j.hydrogels} protection${j.hydrogels>1?'s':''} hydrogel posée${j.hydrogels>1?'s':''}</div>`:''}</li>`).join('')}</ul>`:'<p class="vide">Aucune intervention pour le moment.</p>'}</div>
+    ${autres.map(carte).join('')}
+    <div class="card"><div class="h3">Mes documents</div>${d.factures.length?d.factures.map(f=>`<div class="doc"><span>${f.type==='note_credit'?'Note de crédit':'Facture'} ${esc(f.numero)} · ${eur(f.total)}<br><span class="meta">${dFr(f.date)}</span></span><button onclick="voirFacture(${f.id})">Voir</button></div>`).join(''):'<p class="vide">Aucun document.</p>'}</div>
+    <p class="note">Une question ? <a href="tel:+32474056659">+32 474 05 66 59</a> · <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>`
+}
+window.ouvrirDemande=function(){
+  const el=document.getElementById('demande')
+  el.innerHTML=`<form class="card" id="fDem"><div class="f"><label for="msg">Votre demande (appareil, problème, disponibilités)</label><textarea id="msg" maxlength="1500" required></textarea></div>
+    <button class="btn" id="bDem">Envoyer la demande</button><div id="rDem"></div></form>`
+  document.getElementById('msg').focus()
+  document.getElementById('fDem').onsubmit=async e=>{
+    e.preventDefault();const b=document.getElementById('bDem'),r=document.getElementById('rDem');b.disabled=true
+    const {error}=await sb.rpc('espace_demande',{p_message:document.getElementById('msg').value})
+    if(error){r.innerHTML=`<div class="err">${esc(error.message)}</div>`;b.disabled=false;return}
+    el.innerHTML='<div class="card"><div class="ok-msg" style="margin:0">Demande envoyée.<br>Je vous recontacte rapidement pour fixer un rendez-vous.</div></div>'
+  }
+}
+window.voirFacture=async function(id){
+  const {data:f,error}=await sb.rpc('espace_facture',{p_id:id})
+  if(error||!f){alert('Document introuvable.');return}
+  const en=f.entreprise||{},nc=f.type==='note_credit'
+  const mention=!en.finance_mention_tva||/^TVA non applicable,? (art\.|article) 56bis/i.test(en.finance_mention_tva)?'Régime particulier de franchise des petites entreprises':en.finance_mention_tva
+  document.getElementById('fac').innerHTML=`<div class="fac-top"><div><img src="/img/logo-full.png" alt="IT Soluce"><div style="margin-top:8px">${esc(en.entreprise_nom||'IT Soluce')}<br>${esc(en.entreprise_adresse||'')}<br>${en.entreprise_bce?'N° d\'entreprise : '+esc(en.entreprise_bce)+'<br>':''}${esc(en.entreprise_telephone||'')} · ${esc(en.entreprise_email||'')}</div></div>
+    <div style="text-align:right"><h2>${nc?'Note de crédit':'Facture'} ${esc(f.numero)}</h2>Date : ${dFr(f.date_emission)}${f.origine?`<br>Sur la facture ${esc(f.origine)}`:''}${!nc&&f.statut==='payee'&&f.date_paiement?`<br>Payée le ${dFr(f.date_paiement)}`:''}</div></div>
+    <div><b>Client</b><br>${f.client_societe?esc(f.client_societe)+'<br>':''}${esc(f.client_nom)}<br>${esc(f.client_adresse||'')}${f.client_tva?'<br>TVA : '+esc(f.client_tva):''}</div>
+    <table><tr><th>Description</th><th class="n">Qté</th><th class="n">Prix</th><th class="n">Total</th></tr>
+    ${(f.lignes||[]).map(l=>`<tr><td>${esc(l.description)}</td><td class="n">${esc(l.quantite)}</td><td class="n">${eur(l.prix_unitaire)}</td><td class="n">${eur(l.total)}</td></tr>`).join('')}
+    ${Number(f.remise)>0?`<tr><td colspan="3">Remise</td><td class="n">− ${eur(f.remise)}</td></tr>`:''}
+    <tr><td colspan="3" class="tot">Total</td><td class="n tot">${eur(f.total)}</td></tr></table>
+    ${f.motif_credit?`<div>Motif : ${esc(f.motif_credit)}</div>`:''}
+    <div class="pied">${esc(mention)}.<br>Copie consultable en ligne de votre ${nc?'note de crédit':'facture'}.</div>
+    <div class="fac-acts"><button class="btn o" onclick="fermerFac()">Fermer</button><button class="btn" onclick="window.print()">Imprimer / PDF</button></div>`
+  document.getElementById('ovFac').classList.add('open')
+}
+window.fermerFac=()=>document.getElementById('ovFac').classList.remove('open')
+window.deconnexion=async()=>{await sb.auth.signOut();donnees=null;ecranConnexion()}
+
+async function charger(){
+  const {data,error}=await sb.rpc('espace_donnees')
+  if(error)throw new Error(error.message)
+  if(!data){await sb.auth.signOut();ecranConnexion("Ce compte n'est relié à aucun Pack Sérénité. Utilisez l'adresse e-mail donnée lors de l'achat.");return}
+  donnees=data;tableau()
+}
+async function demarrer(){
+  const h=new URLSearchParams(location.hash.slice(1))
+  const t=h.get('t')
+  if(t){
+    history.replaceState(null,'',location.pathname)
+    const {error}=await sb.auth.verifyOtp({token_hash:t,type:'magiclink'})
+    if(error)return ecranConnexion('Ce lien a expiré ou a déjà été utilisé. Demandez-en un nouveau ci-dessous.')
+  }
+  const {data:{session}}=await sb.auth.getSession()
+  if(!session)return ecranConnexion()
+  try{await charger()}catch(e){ecranConnexion('Erreur de chargement : '+e.message)}
+}
+demarrer()
+</script>
+</body>
+</html>

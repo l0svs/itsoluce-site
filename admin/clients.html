@@ -544,6 +544,12 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+.fi-pack{border:1.5px solid var(--a);border-radius:14px;padding:13px 14px;background:var(--ad);margin:4px 0}
+.fi-pack.att{border-color:var(--w);background:rgba(178,94,9,.08)}
+.fp-h{display:flex;justify-content:space-between;align-items:center;font-weight:600;color:var(--t1);font-size:13.5px}
+.fp-n{font-size:24px;font-weight:600;margin-top:4px;letter-spacing:-.5px;color:var(--t1)}.fp-n small{font-size:12.5px;font-weight:500;color:var(--t2);letter-spacing:0}
+.fp-bar{height:7px;background:var(--bg3);border-radius:7px;overflow:hidden;margin:8px 0}.fp-bar span{display:block;height:100%;background:var(--a)}
+.fp-m{font-size:12px;color:var(--t2)}.fp-a{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.fp-a .btn{padding:6px 11px;font-size:12px}
 </style>
 <style id="voile-nav">.hnav,.sidebar{visibility:hidden}</style>
 <script>
@@ -575,6 +581,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <a href="/admin/reparations.html" class="hnl">Réparations<span class="nc" id="nb-rep" style="display:none"></span></a>
     <a href="/admin/factures.html" class="hnl">Factures</a>
     <a href="/admin/clients.html" class="hnl active">Clients</a>
+    <a href="/admin/packs.html" class="hnl">Packs</a>
     <a href="/admin/planning.html" class="hnl">Planning</a>
     <a href="/admin/messages.html" class="hnl">Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
     <a href="/admin/stock.html" class="hnl">Stock<span class="nc" id="nb-alert" style="display:none"></span></a>
@@ -593,6 +600,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <a href="/admin/factures.html" class="nl"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Factures</a>
       <div class="nl-group">Relation client</div>
       <a href="/admin/clients.html" class="nl active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+      <a href="/admin/packs.html" class="nl"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Packs</a>
       <a href="/admin/planning.html" class="nl"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planning</a>
       <a href="/admin/messages.html" class="nl"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mails<span class="nc" id="nb-mail" style="display:none"></span></a>
       <div class="nl-group">Atelier</div>
@@ -856,6 +864,7 @@ if(new URLSearchParams(location.search).get('acces')){
 
 /* ═══════════ État ═══════════ */
 let allClients=[]
+let allPacks=[],packInters=[]
 let orphelins=0
 let filtre='tous'
 let triCle='ca'
@@ -933,6 +942,10 @@ async function load(){
     sb.from('settings').select('cle,valeur').eq('cle','garantie_mois')
   ])
   allRelances=rRel.error?[]:(rRel.data||[])
+  // Packs Sérénité (facultatif : la fiche reste utilisable si la lecture échoue)
+  {const [rp,ri]=await Promise.all([sb.from('packs').select('id,client_id,nom,statut,date_debut,date_fin,interventions_total,hydrogels_total,facture_id').limit(5000),
+     sb.from('pack_interventions').select('pack_id,decompte,hydrogels').limit(20000)])
+   allPacks=rp.error?[]:(rp.data||[]);packInters=ri.error?[]:(ri.data||[])}
   {const n=parseInt(rSet.data&&rSet.data[0]&&rSet.data[0].valeur,10);garantieMois=n>0?n:3}
   if(rCli.error)throw new Error('Clients : '+rCli.error.message)
 
@@ -1177,6 +1190,22 @@ window.showDetail=function(id){
         ${e.h?`<a class="bd" href="${e.h}">`:'<span class="bd">'}<b>${escHtml(e.t)}</b><em>${escHtml(e.s)}</em>${e.h?'</a>':'</span>'}
         <span class="pill ${e.p.c}">${escHtml(e.p.l)}</span>
       </div>`
+  // ── Pack Sérénité en cours (ou en attente de paiement)
+  const ajd=new Date().toISOString().slice(0,10)
+  const pk=allPacks.filter(p=>p.client_id===c.id&&(p.statut==='en_attente'||(p.statut==='actif'&&p.date_fin>=ajd))).sort((a,b)=>b.id-a.id)[0]
+  let blocPack=''
+  if(pk&&pk.statut==='actif'){
+    const js=packInters.filter(i=>i.pack_id===pk.id),u=js.reduce((a,i)=>a+(i.decompte||0),0),h=js.reduce((a,i)=>a+(i.hydrogels||0),0),r=pk.interventions_total-u
+    blocPack=`<div class="fi-pack"><div class="fp-h">${escHtml(pk.nom)} <span class="pill p-ok">Actif</span></div>
+      <div class="fp-n">${r} <small>intervention${r>1?'s':''} restante${r>1?'s':''} sur ${pk.interventions_total}</small></div>
+      <div class="fp-bar"><span style="width:${Math.min(100,Math.round(u/pk.interventions_total*100))}%"></span></div>
+      <div class="fp-m">Jusqu'au ${dateCourte(pk.date_fin)}${pk.hydrogels_total?` · Hydrogel : ${pk.hydrogels_total-h} restante${pk.hydrogels_total-h>1?'s':''}`:''} · Pièces −10 %</div>
+      <div class="fp-a"><a class="btn btn-primary" href="/admin/packs.html?pack=${pk.id}">Noter une intervention</a><a class="btn btn-secondary" href="/admin/packs.html?pack=${pk.id}">Voir le suivi</a></div></div>`
+  }else if(pk){
+    blocPack=`<div class="fi-pack att"><div class="fp-h">${escHtml(pk.nom)} <span class="pill p-a">À encaisser</span></div>
+      <div class="fp-m">Le pack s'active dès que sa facture est encaissée.</div>
+      <div class="fp-a"><a class="btn btn-secondary" href="/admin/factures.html?open=${pk.facture_id}">Ouvrir la facture</a></div></div>`
+  }
   document.getElementById('ficheBody').innerHTML=`
     <div class="fi-top">
       <span class="cl-av${pro?' pro':''}">${escHtml(initiales(nomAff))}</span>
@@ -1193,7 +1222,9 @@ window.showDetail=function(id){
       <a class="btn btn-secondary" href="/admin/reparations.html?nouveau=1&client=${c.id}">Nouveau dossier</a>
       ${c.email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:c.email,client:c.id}))}">✉ Mail</a>`:''}
       ${c.email?`<button class="btn btn-secondary" onclick="demanderAvisClient(${c.id})">★ Demander un avis</button>`:''}
+      ${pk?'':`<a class="btn btn-secondary" href="/admin/packs.html?vendre=${c.id}">Vendre un pack</a>`}
     </div>
+    ${blocPack}
     ${suivre.length?`<div><div class="fi-tt">À suivre (${suivre.length})</div>${suivre.map(e=>ligneEv({...e,d:null})).join('')}</div>`:''}
     <div class="fi-bloc">
       ${champ('Email',c.email)}
