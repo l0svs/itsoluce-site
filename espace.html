@@ -91,7 +91,7 @@ let donnees=null
 function ecranConnexion(msg){
   document.getElementById('deco').hidden=true
   app.innerHTML=`<h1 style="margin-top:14px">Espace client</h1>
-    <p class="msub">Entrez l'adresse e-mail utilisée pour votre Pack Sérénité : vous recevez un lien de connexion. Pas de mot de passe.</p>
+    <p class="msub">Entrez l'adresse e-mail utilisée pour votre Pack Sérénité : vous recevez un lien de connexion.<br>Pas de mot de passe.</p>
     <form class="card" id="fLien"><div class="f"><label for="em">E-mail</label><input id="em" type="email" autocomplete="email" required></div>
       <button class="btn" id="bLien">Recevoir mon lien de connexion</button><div id="rLien">${msg?`<div class="err">${esc(msg)}</div>`:''}</div></form>
     <p class="note">Pas encore de pack ? <a href="/pack.html">Découvrir le Pack Sérénité</a></p>`
@@ -103,7 +103,7 @@ function ecranConnexion(msg){
     try{
       const res=await fetch(SB+'/functions/v1/pack',{method:'POST',headers:{'Content-Type':'application/json',apikey:SK,Authorization:'Bearer '+SK},body:JSON.stringify({action:'lien',email})})
       if(!res.ok){const j=await res.json().catch(()=>({}));throw new Error(j.error||'Erreur, réessayez.')}
-      r.innerHTML=`<div class="ok-msg">Si cette adresse correspond à un Pack Sérénité, un lien de connexion vient de vous être envoyé. Pensez à vérifier vos courriers indésirables.</div>`
+      r.innerHTML=`<div class="ok-msg">Si cette adresse correspond à un Pack Sérénité, un lien de connexion vient de vous être envoyé.<br>Pensez à vérifier vos courriers indésirables.</div>`
     }catch(x){r.innerHTML=`<div class="err">${esc(x.message)}</div>`;b.disabled=false}
   }
 }
@@ -139,7 +139,7 @@ window.ouvrirDemande=function(){
     e.preventDefault();const b=document.getElementById('bDem'),r=document.getElementById('rDem');b.disabled=true
     const {error}=await sb.rpc('espace_demande',{p_message:document.getElementById('msg').value})
     if(error){r.innerHTML=`<div class="err">${esc(error.message)}</div>`;b.disabled=false;return}
-    el.innerHTML='<div class="card"><div class="ok-msg" style="margin:0">Demande envoyée. Je vous recontacte rapidement pour fixer un rendez-vous.</div></div>'
+    el.innerHTML='<div class="card"><div class="ok-msg" style="margin:0">Demande envoyée.<br>Je vous recontacte rapidement pour fixer un rendez-vous.</div></div>'
   }
 }
 window.voirFacture=async function(id){
@@ -155,7 +155,7 @@ window.voirFacture=async function(id){
     ${Number(f.remise)>0?`<tr><td colspan="3">Remise</td><td class="n">− ${eur(f.remise)}</td></tr>`:''}
     <tr><td colspan="3" class="tot">Total</td><td class="n tot">${eur(f.total)}</td></tr></table>
     ${f.motif_credit?`<div>Motif : ${esc(f.motif_credit)}</div>`:''}
-    <div class="pied">${esc(mention)}. Copie consultable en ligne de votre ${nc?'note de crédit':'facture'}.</div>
+    <div class="pied">${esc(mention)}.<br>Copie consultable en ligne de votre ${nc?'note de crédit':'facture'}.</div>
     <div class="fac-acts"><button class="btn o" onclick="fermerFac()">Fermer</button><button class="btn" onclick="window.print()">Imprimer / PDF</button></div>`
   document.getElementById('ovFac').classList.add('open')
 }

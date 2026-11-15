@@ -45,13 +45,19 @@ let essais=0
 function afficher(e){
   if(e&&e.statut==='payee'){
     box.innerHTML=`<div class="ic ok">✓</div><h1>Votre pack est actif</h1>
-      <p>Merci ${esc(e.prenom)}. Votre <b>${esc(e.formule)}</b> est actif${e.date_fin?` jusqu'au <b>${esc(dateFr(e.date_fin))}</b>`:''}.</p>
+      <p>Merci ${esc(e.prenom)}.<br>Votre <b>${esc(e.formule)}</b> est actif${e.date_fin?` jusqu'au <b>${esc(dateFr(e.date_fin))}</b>`:''}.</p>
       <p>Un e-mail avec votre facture et votre lien de connexion vient de vous être envoyé à <b>${esc(e.email)}</b>.</p>
       <a class="btn" href="/espace.html">Ouvrir mon espace client</a><a class="btn o" href="tel:+32474056659">M'appeler pour un premier rendez-vous</a>`
     return true}
+  if(e&&e.statut==='test_ok'){
+    box.innerHTML=`<div class="ic ok">✓</div><h1>Paiement de test réussi</h1>
+      <p>Mode test : le parcours complet a été simulé.<br>Aucun pack, aucun client et aucune facture n'ont été enregistrés.</p>
+      <p>La facture d'exemple a été envoyée à <b>${esc(e.email)}</b>.</p>
+      <a class="btn o" href="/pack.html">Retour à la page du pack</a>`
+    return true}
   if(e&&e.statut==='echouee'){
     box.innerHTML=`<div class="ic ko">!</div><h1>Le paiement n'a pas abouti</h1>
-      <p>Aucun montant n'a été débité. Vous pouvez réessayer, ou m'appeler au +32 474 05 66 59.</p>
+      <p>Aucun montant n'a été débité.<br>Vous pouvez réessayer, ou m'appeler au +32 474 05 66 59.</p>
       <a class="btn" href="/pack.html#plans">Réessayer</a>`
     return true}
   return false
@@ -65,7 +71,7 @@ async function verifier(){
   }catch(x){}
   if(essais<20)return setTimeout(verifier,2500)
   box.innerHTML=`<div class="ic wait">…</div><h1>Paiement en cours de confirmation</h1>
-    <p>La confirmation de votre banque prend un peu plus de temps que prévu. Vous recevrez un e-mail dès que votre pack sera actif.</p>
+    <p>La confirmation de votre banque prend un peu plus de temps que prévu.<br>Vous recevrez un e-mail dès que votre pack sera actif.</p>
     <p>Une question ? Appelez-moi au <a href="tel:+32474056659">+32 474 05 66 59</a>.</p>`
 }
 if(/^[0-9a-f-]{36}$/i.test(id))verifier()

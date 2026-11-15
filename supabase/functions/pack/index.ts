@@ -15,6 +15,8 @@
 //  SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / SUPABASE_ANON_KEY.
 // ═══════════════════════════════════════════════════════════
 
+import { facturePdf } from "./pdf.ts";
+
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -86,13 +88,14 @@ async function quota(destinataire: string, fonction: string, parAdresse: number)
 }
 
 // ── E-mail (Resend, domaine itsoluce.be vérifié) ─────────
-async function envoyerMail(a: string, objet: string, html: string) {
+async function envoyerMail(a: string, objet: string, html: string, pieces: { nom: string; octets: Uint8Array }[] = []) {
   const k = Deno.env.get("RESEND_API_KEY");
   if (!k) throw new Error("RESEND_API_KEY absente");
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${k}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: `IT Soluce <${EXPEDITEUR}>`, reply_to: EXPEDITEUR, to: [a], subject: objet, html }),
+    body: JSON.stringify({ from: `IT Soluce <${EXPEDITEUR}>`, reply_to: EXPEDITEUR, to: [a], subject: objet, html,
+      ...(pieces.length ? { attachments: pieces.map((x) => ({ filename: x.nom, content: base64(x.octets) })) } : {}) }),
   });
   if (!r.ok) throw new Error(`Resend ${r.status} : ${(await r.text()).slice(0, 200)}`);
 }
@@ -104,6 +107,59 @@ function gabarit(corps: string): string {
 }
 const bouton = (href: string, txt: string) =>
   `<p style="margin:18px 0"><a href="${href}" style="background:#0052CC;color:#fff;text-decoration:none;padding:12px 22px;border-radius:24px;display:inline-block;font-weight:bold">${esc(txt)}</a></p>`;
+
+// ── Facture PDF : génération, archivage légal, envoi ─────
+function base64(o: Uint8Array): string {
+  let s = "";
+  for (let i = 0; i < o.length; i += 0x8000) s += String.fromCharCode(...o.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+async function entreprise(): Promise<Record<string, string>> {
+  const l = await rest("settings?select=cle,valeur&cle=in.(entreprise_nom,entreprise_adresse,entreprise_bce,entreprise_email,entreprise_telephone,finance_mention_tva,finance_iban)");
+  return Object.fromEntries((l || []).map((r: { cle: string; valeur: string }) => [r.cle, String(r.valeur ?? "").trim()]));
+}
+async function logo(): Promise<Uint8Array | null> {
+  try { const r = await fetch(`${SITE}/img/logo-full.png`); return r.ok ? new Uint8Array(await r.arrayBuffer()) : null; } catch { return null; }
+}
+// deno-lint-ignore no-explicit-any
+async function pdfDe(f: any): Promise<Uint8Array> { return await facturePdf(f, await entreprise(), await logo()); }
+/** Dépose l'original dans les archives (comme l'ERP à l'émission), une seule fois. */
+// deno-lint-ignore no-explicit-any
+async function archiver(f: any, octets: Uint8Array) {
+  if (f.pdf_chemin) return;
+  const chemin = `${String(f.date_emission).slice(0, 4)}/${f.numero}.pdf`;
+  const up = await fetch(`${SUPABASE_URL}/storage/v1/object/factures-archives/${chemin}`, {
+    method: "POST", headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/pdf", "x-upsert": "false" }, body: octets,
+  });
+  if (!up.ok && up.status !== 409 && up.status !== 400) throw new Error(`Archive PDF : ${up.status} ${(await up.text()).slice(0, 200)}`);
+  let fichier = octets;
+  if (!up.ok) {   // déjà déposé lors d'une tentative précédente : c'est ce fichier qui fait foi
+    const dl = await fetch(`${SUPABASE_URL}/storage/v1/object/factures-archives/${chemin}`, { headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` } });
+    if (!dl.ok) throw new Error(`Archive PDF : ${up.status}`);
+    fichier = new Uint8Array(await dl.arrayBuffer());
+  }
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", fichier));
+  const sha = [...h].map((b) => b.toString(16).padStart(2, "0")).join("");
+  await rest(`factures?id=eq.${f.id}`, { method: "PATCH", body: JSON.stringify({ pdf_chemin: chemin, pdf_sha256: sha, pdf_reconstitue: false }) });
+}
+// deno-lint-ignore no-explicit-any
+async function mailFacture(f: any, octets: Uint8Array, prenom: string, pack: any, lien: string, test = false) {
+  const ent = await entreprise();
+  const paye = f.statut === "payee";
+  await envoyerMail(f.client_email, `${test ? "[TEST] " : ""}Votre ${pack.nom} — facture ${f.numero}`, gabarit(
+    `<p>Bonjour ${esc(prenom)},</p>` +
+    (paye
+      ? `<p>Merci pour votre confiance. Votre <b>${esc(pack.nom)}</b> est actif jusqu'au <b>${esc(dateFr(pack.date_fin))}</b> : ` +
+        `${pack.interventions_total} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.</p>` +
+        `<p>Vous trouverez votre facture <b>${esc(f.numero)}</b> (${eur(f.total)}, payée) en pièce jointe.</p>`
+      : `<p>Vous trouverez en pièce jointe la facture <b>${esc(f.numero)}</b> de votre <b>${esc(pack.nom)}</b> : ${eur(f.total)} à régler` +
+        `${ent.finance_iban ? ` par virement sur le compte ${esc(ent.finance_iban)} (communication : ${esc(f.numero)})` : ""}.</p>` +
+        `<p>Votre pack s'active dès réception du paiement.</p>`) +
+    (lien ? bouton(lien, "Ouvrir mon espace client") +
+      `<p style="color:#5a6b7b;font-size:13px">Ce lien est personnel et valable une heure. Ensuite, demandez simplement un nouveau lien sur itsoluce.be/espace.html avec votre adresse e-mail.</p>` : "") +
+    `<p>Pour votre première intervention, appelez-moi ou envoyez-moi un message au +32 474 05 66 59.</p>`,
+  ), [{ nom: `Facture_${f.numero}.pdf`, octets }]);
+}
 
 // ── Compte espace client + lien de connexion ─────────────
 async function lienEspace(email: string, clientId: number): Promise<string> {
@@ -143,6 +199,7 @@ async function lienEspace(email: string, clientId: number): Promise<string> {
 const txt = (v: unknown, max: number) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, max);
 
 async function commander(c: Record<string, unknown>) {
+  cleMollie();   // paiement non configuré : on s'arrête avant d'enregistrer quoi que ce soit
   const formule = txt(c.formule, 20);
   const d = {
     prenom: txt(c.prenom, 60), nom: txt(c.nom, 60), email: txt(c.email, 160).toLowerCase(),
@@ -188,6 +245,22 @@ async function webhook(paymentId: string) {
     return;
   }
   if (p.status !== "paid") return;
+  if (p.mode === "test") {
+    // Paiement de test : parcours complet simulé puis annulé en base,
+    // aucune facture ni aucun numéro consommé.
+    const sim = await rpc("simuler_commande_pack", { p_commande: cmdId, p_payment: p.id, p_montant: Number(p.amount?.value) });
+    try {
+      const f = sim.facture, octets = await pdfDe(f);
+      const cmdT = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom`))[0];
+      await mailFacture(f, octets, cmdT?.prenom || "", sim.pack, "", true);
+    } catch (e) { console.error("facture test", e); }
+    await envoyerMail(EXPEDITEUR, `[TEST] Paiement de test reçu — ${sim?.pack?.nom || "Pack"}`, gabarit(
+      `<p>Paiement Mollie <b>de test</b> reçu (${eur(p.amount?.value)}). Le parcours a été simulé puis annulé : rien n'est enregistré.</p>` +
+      `<p>Résultat de la simulation : pack ${esc(sim?.pack?.statut)} du ${esc(dateFr(sim?.pack?.date_debut))} au ${esc(dateFr(sim?.pack?.date_fin))}, ` +
+      `facture ${esc(sim?.facture_statut)} (le numéro ${esc(sim?.numero)} aurait été attribué).</p>`,
+    )).catch((e) => console.error("mail test", e));
+    return;
+  }
   let r;
   try {
     r = await rpc("finaliser_commande_pack", { p_commande: cmdId, p_payment: p.id, p_montant: Number(p.amount?.value) });
@@ -199,17 +272,14 @@ async function webhook(paymentId: string) {
   if (r.deja) return;   // déjà traité : Mollie rappelle parfois plusieurs fois
   const cmd = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom,email`))[0];
   const pack = (await rest(`packs?id=eq.${r.pack_id}&select=nom,date_fin,interventions_total,hydrogels_total,prix`))[0];
+  const fac = (await rest(`factures?id=eq.${r.facture_id}&select=*`))[0];
   let lien = `${SITE}/espace.html`;
   try { lien = await lienEspace(cmd.email, r.client_id); } catch (e) { console.error("lien espace", e); }
-  await envoyerMail(cmd.email, `Votre ${pack.nom} est actif — facture ${r.numero}`, gabarit(
-    `<p>Bonjour ${esc(cmd.prenom)},</p>` +
-    `<p>Merci pour votre confiance. Votre <b>${esc(pack.nom)}</b> est actif jusqu'au <b>${esc(dateFr(pack.date_fin))}</b> : ` +
-    `${pack.interventions_total} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.</p>` +
-    `<p>Paiement reçu : ${eur(pack.prix)} · facture <b>${esc(r.numero)}</b>, disponible dans votre espace client.</p>` +
-    bouton(lien, "Ouvrir mon espace client") +
-    `<p style="color:#5a6b7b;font-size:13px">Ce lien est personnel et valable une heure. Ensuite, demandez simplement un nouveau lien sur itsoluce.be/espace.html avec votre adresse e-mail.</p>` +
-    `<p>Pour votre première intervention, appelez-moi ou envoyez-moi un message au +32 474 05 66 59.</p>`,
-  )).catch((e) => console.error("mail achat", e));
+  try {
+    const octets = await pdfDe(fac);
+    try { await archiver(fac, octets); } catch (e) { console.error("archive", e); }
+    await mailFacture(fac, octets, cmd.prenom, pack, lien);
+  } catch (e) { console.error("mail facture", e); }
   await envoyerMail(EXPEDITEUR, `Pack vendu en ligne : ${pack.nom} — ${cmd.prenom}`, gabarit(
     `<p>Nouveau pack payé en ligne : <b>${esc(pack.nom)}</b> (${eur(pack.prix)}), facture ${esc(r.numero)}.</p>` +
     `<p>Client : ${esc(cmd.prenom)} — ${esc(cmd.email)}. Le pack est déjà actif dans l'ERP (Clients › Packs).</p>`,
@@ -247,6 +317,22 @@ async function acces(req: Request, c: Record<string, unknown>) {
     `<p style="color:#5a6b7b;font-size:13px">Ce lien est valable une heure. Ensuite, demandez un nouveau lien sur itsoluce.be/espace.html avec votre adresse e-mail.</p>`,
   ));
   return { ok: true };
+}
+
+async function envoyerFacturePack(req: Request, c: Record<string, unknown>) {
+  if (!(await personnel(req, ["factures"]))) throw new ErreurClient("Droits insuffisants.", 403);
+  const pk = (await rest(`packs?id=eq.${Number(c.pack_id)}&select=id,client_id,nom,date_fin,interventions_total,facture_id,statut`))[0];
+  if (!pk || !pk.facture_id) throw new ErreurClient("Pack introuvable.");
+  const fac = (await rest(`factures?id=eq.${pk.facture_id}&select=*`))[0];
+  if (!fac || !fac.numero) throw new ErreurClient("Facture introuvable.");
+  const octets = await pdfDe(fac);
+  await archiver(fac, octets);
+  if (!fac.client_email) return { ok: true, archive: true, envoye: false };
+  let lien = "";
+  if (pk.statut === "actif") { try { lien = await lienEspace(fac.client_email, pk.client_id); } catch (e) { console.error("lien espace", e); } }
+  await mailFacture(fac, octets, String(fac.client_nom || "").split(" ")[0], pk, lien);
+  await rest(`factures?id=eq.${fac.id}`, { method: "PATCH", body: JSON.stringify({ email_envoye: true, date_envoi: new Date().toISOString() }) }).catch(() => {});
+  return { ok: true, archive: true, envoye: true };
 }
 
 async function rembourser(req: Request, c: Record<string, unknown>) {
@@ -297,6 +383,7 @@ Deno.serve(async (req) => {
       case "lien": return json(await lien(c));
       case "acces": return json(await acces(req, c));
       case "rembourser": return json(await rembourser(req, c));
+      case "envoyer_facture": return json(await envoyerFacturePack(req, c));
       default: return json({ error: "Action inconnue" }, 400);
     }
   } catch (e) {
@@ -304,6 +391,6 @@ Deno.serve(async (req) => {
     const m = e instanceof Error ? e.message : String(e);
     console.error("pack", c.action, m);
     const publique = /MOLLIE_API_KEY/.test(m) ? "Le paiement en ligne n'est pas encore activé. Appelez-moi au +32 474 05 66 59." : "Erreur technique, réessayez ou appelez-moi.";
-    return json({ error: (c.action === "acces" || c.action === "rembourser") ? m : publique }, 500);
+    return json({ error: (["acces", "rembourser", "envoyer_facture"].includes(String(c.action))) ? m : publique }, 500);
   }
 });

@@ -1004,7 +1004,10 @@ window.confirmerVente=async function(){
   try{
     const {data,error}=await sb.rpc('vendre_pack',{p_client_id:c.id,p_formule:f.code,p_payee:!!vPaie,p_mode_paiement:vPaie||null})
     if(error)throw new Error(error.message)
-    fermer('moVente');showToast(`Facture ${data.numero} émise${vPaie?' · pack actif':''}`,'ok')
+    fermer('moVente');showToast(`Facture ${data.numero} émise${vPaie?' · pack actif':''} · envoi au client…`,'ok')
+    appelPack({action:'envoyer_facture',pack_id:data.pack_id})
+      .then(r=>showToast(r.envoye?`Facture ${data.numero} envoyée par e-mail à ${c.email} (PDF archivé)`:`Facture ${data.numero} archivée (client sans e-mail : à lui remettre)`,'ok'))
+      .catch(e=>showToast(`Facture ${data.numero} émise, mais l'envoi par e-mail a échoué : ${e.message}. Envoie-la depuis Factures.`,'err'))
     selId=data.pack_id;filtre=vPaie?'actifs':'attente'
     document.querySelectorAll('#segF button').forEach(x=>x.classList.toggle('on',x.dataset.f===filtre))
     await rafraichir()
