@@ -69,11 +69,19 @@ h1{font-size:24px;font-weight:600;letter-spacing:-.4px;margin-bottom:6px}
 .wrap>*:nth-child(5){animation-delay:.22s}.wrap>*:nth-child(6){animation-delay:.27s}.wrap>*:nth-child(n+7){animation-delay:.3s}
 .fac{animation:heroIn .45s cubic-bezier(.22,.61,.36,1) both}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* Bouton « Retour au site » : noir sur blanc, discret */
+.nav{position:relative}.nav>a:has(>img){position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+
+.nav a.retour{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 10px;border:1px solid #d2d2d7;border-radius:99px;background:#fff;color:#1d1d1f;font-size:13px;font-weight:500;text-decoration:none;transition:border-color .15s,background .15s}
+.nav a.retour:hover{border-color:#1d1d1f;background:#f5f5f7}
+.nav a.retour svg{flex-shrink:0}
+@media(max-width:480px){.nav a.retour{padding:0 11px 0 8px;font-size:12.5px}}
 </style>
 </head>
 <body>
 <header class="nav">
-  <div class="g"><a href="/">← Site</a></div>
+  <div class="g"><a href="/" class="retour"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Retour au site</a></div>
   <a href="/"><img src="/img/logo-full.png" alt="IT Soluce"></a>
   <div class="d"><button id="deco" onclick="deconnexion()" hidden>Déconnexion</button></div>
 </header>

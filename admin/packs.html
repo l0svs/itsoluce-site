@@ -596,6 +596,18 @@ body{font-size:14px;}
 .fcard{border:1.5px solid var(--ln2);border-radius:12px;padding:10px 12px;cursor:pointer;background:var(--bg2);text-align:left;font-family:inherit;color:var(--t1)}
 .fcard b{display:block;font-size:13px}.fcard span{font-size:20px;font-weight:600}.fcard em{display:block;font-style:normal;font-size:11px;color:var(--t2)}
 .fcard.on{border-color:var(--a);background:var(--ad)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v-zone{position:relative}
+#moVente [hidden]{display:none!important}
+.v-liste{margin-top:6px;border:1px solid var(--ln2);border-radius:11px;max-height:228px;overflow-y:auto;background:var(--bg2)}
+.v-liste button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:none;border-bottom:1px solid var(--bg3);background:none;padding:9px 12px;font-family:inherit;font-size:13px;color:var(--t1);cursor:pointer}
+.v-liste button:last-child{border-bottom:none}.v-liste button:hover,.v-liste button:focus{background:var(--ad);outline:none}
+.v-liste em{font-style:normal;color:var(--t2);font-size:11.5px;text-align:right}
+.v-liste .vide{padding:12px;font-size:12.5px;color:var(--t2)}.v-liste .vide a{color:var(--a);cursor:pointer;font-weight:500}
+.v-choisi{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:6px;border:1.5px solid var(--a);background:var(--ad);border-radius:11px;padding:9px 12px;font-size:13px;color:var(--t1)}
+.v-choisi em{font-style:normal;color:var(--t2);font-size:11.5px;display:block}
+.v-choisi button{border:none;background:none;color:var(--a);font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer}
+@media(max-width:640px){.r2{grid-template-columns:1fr}}
 .calc{background:var(--bg3);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;color:var(--t1)}
 .calc b.m{font-size:20px}
 @media(max-width:1100px){.pk-kpis{grid-template-columns:repeat(3,1fr)}.pk-cols{grid-template-columns:1fr}}
@@ -693,8 +705,25 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 <div class="mo-ov" id="moVente"><div class="mo">
   <div class="mo-h">Vendre un pack<small>La facture est émise tout de suite, le pack s'active au paiement.</small></div>
   <div class="mo-b">
-    <div class="fl"><label for="v-client">Client</label><input id="v-client" list="v-clients" placeholder="Nom, n° client ou e-mail" autocomplete="off" oninput="majVente()"><datalist id="v-clients"></datalist>
-      <div class="hint" id="v-client-info"></div></div>
+    <div class="fl"><label>Client</label>
+      <div class="seg full" id="v-mode"><button type="button" data-m="existant" class="on" onclick="setModeClient('existant')">Client existant</button><button type="button" data-m="nouveau" onclick="setModeClient('nouveau')">Nouveau client</button></div></div>
+    <div id="v-existant">
+      <div class="fl v-zone">
+        <input id="v-recherche" placeholder="Rechercher : nom, n° client, e-mail, téléphone…" autocomplete="off" oninput="filtrerClients()" onfocus="filtrerClients()">
+        <div class="v-liste" id="v-liste" hidden></div>
+        <div class="v-choisi" id="v-choisi" hidden></div>
+        <div class="hint" id="v-client-info"></div></div>
+    </div>
+    <div id="v-nouveau" hidden>
+      <div class="r2"><div class="fl"><label for="n-prenom">Prénom</label><input id="n-prenom" maxlength="60" autocomplete="off"></div>
+        <div class="fl"><label for="n-nom">Nom</label><input id="n-nom" maxlength="60" autocomplete="off"></div></div>
+      <div class="r2"><div class="fl"><label for="n-email">E-mail</label><input id="n-email" type="email" maxlength="160" autocomplete="off"></div>
+        <div class="fl"><label for="n-tel">Téléphone</label><input id="n-tel" type="tel" maxlength="30" autocomplete="off"></div></div>
+      <div class="fl"><label for="n-adresse">Adresse (obligatoire sur la facture)</label><input id="n-adresse" maxlength="200" autocomplete="off" placeholder="Rue, numéro, code postal, commune"></div>
+      <div class="fl"><div class="seg full" id="n-type"><button type="button" data-t="particulier" class="on" onclick="setTypeNouveau('particulier')">Particulier</button><button type="button" data-t="entreprise" onclick="setTypeNouveau('entreprise')">Entreprise</button></div></div>
+      <div class="r2" id="n-pro" hidden><div class="fl"><label for="n-societe">Société</label><input id="n-societe" maxlength="120"></div>
+        <div class="fl"><label for="n-tva">N° TVA / BCE</label><input id="n-tva" maxlength="20" placeholder="BE0…"></div></div>
+    </div>
     <div class="fl"><label>Formule</label><div class="fcards" id="v-formules"></div></div>
     <div class="fl"><label>Paiement</label>
       <div class="seg full" id="v-paie">
@@ -971,37 +1000,82 @@ window.fermer=id=>document.getElementById(id).classList.remove('open')
 async function rafraichir(){await charger();rendre()}
 
 /* ─── Vendre ─── */
-let vFormule=null,vPaie=''
-function trouverClient(){const v=document.getElementById('v-client').value.trim().toLowerCase();if(!v)return null
-  return clients.find(c=>libClient(c).toLowerCase()===v)||null}
-const libClient=c=>`${c.nom}${c.numero?' — '+c.numero:''}${c.email?' — '+c.email:''}`
+let vFormule=null,vPaie='',vClientId=null,vMode='existant',nType='particulier'
+const sansAccent=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+function trouverClient(){return vMode==='existant'&&vClientId?clients.find(c=>c.id===vClientId)||null:null}
+window.setModeClient=m=>{vMode=m;document.querySelectorAll('#v-mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m))
+  document.getElementById('v-existant').hidden=m!=='existant';document.getElementById('v-nouveau').hidden=m!=='nouveau'
+  document.getElementById('v-ok').textContent=m==='nouveau'?'Créer le client et émettre la facture':'Émettre la facture'
+  if(m==='nouveau')setTimeout(()=>document.getElementById('n-prenom').focus(),50);majVente()}
+window.setTypeNouveau=t=>{nType=t;document.querySelectorAll('#n-type button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.getElementById('n-pro').hidden=t!=='entreprise'}
+window.filtrerClients=function(){
+  const q=sansAccent(document.getElementById('v-recherche').value.trim()),liste=document.getElementById('v-liste')
+  const res=clients.filter(c=>!q||sansAccent([c.nom,c.numero,c.email,c.telephone,c.societe].join(' ')).includes(q)||String(c.telephone||'').replace(/\D/g,'').includes(q.replace(/\D/g,'')||'§'))
+  liste.hidden=false
+  liste.innerHTML=res.length?res.slice(0,100).map(c=>`<button type="button" onclick="choisirClient(${c.id})"><span><b>${esc(c.societe||c.nom)}</b>${c.societe?' · '+esc(c.nom):''}</span><em>${esc(c.numero||'')}${c.email?'<br>'+esc(c.email):''}</em></button>`).join('')
+    :`<div class="vide">Aucun client trouvé. <a onclick="nouveauDepuisRecherche()">Créer « ${esc(document.getElementById('v-recherche').value.trim())} » comme nouveau client</a></div>`
+}
+window.nouveauDepuisRecherche=function(){
+  const t=document.getElementById('v-recherche').value.trim().split(/\s+/)
+  setModeClient('nouveau');document.getElementById('n-prenom').value=t[0]||'';document.getElementById('n-nom').value=t.slice(1).join(' ')
+}
+window.choisirClient=function(id){
+  vClientId=id;const c=clients.find(x=>x.id===id)
+  document.getElementById('v-liste').hidden=true;document.getElementById('v-recherche').hidden=true
+  const ch=document.getElementById('v-choisi');ch.hidden=false
+  ch.innerHTML=`<span><b>${esc(c.societe||c.nom)}</b><em>${esc(c.numero||'')}${c.email?' · '+esc(c.email):''}${c.telephone?' · '+esc(c.telephone):''}</em></span><button type="button" onclick="changerClient()">Changer</button>`
+  majVente()
+}
+window.changerClient=function(){vClientId=null;document.getElementById('v-choisi').hidden=true;const r=document.getElementById('v-recherche');r.hidden=false;r.value='';r.focus();majVente()}
 window.ouvrirVente=function(clientId){
-  document.getElementById('v-clients').innerHTML=clients.map(c=>`<option value="${esc(libClient(c))}">`).join('')
-  const c=clientId?clients.find(x=>x.id===clientId):null
-  document.getElementById('v-client').value=c?libClient(c):''
+  vClientId=null;document.getElementById('v-choisi').hidden=true;document.getElementById('v-liste').hidden=true
+  const r=document.getElementById('v-recherche');r.hidden=false;r.value=''
+  for(const k of ['n-prenom','n-nom','n-email','n-tel','n-adresse','n-societe','n-tva'])document.getElementById(k).value=''
+  setTypeNouveau('particulier');setModeClient('existant')
+  if(clientId&&clients.some(x=>x.id===clientId))choisirClient(clientId)
   vFormule=formules[1]?.code||formules[0]?.code
   setPaie('')
   majVente()
   document.getElementById('moVente').classList.add('open')
+  if(!clientId)setTimeout(()=>r.focus(),80)
 }
 window.setFormule=code=>{vFormule=code;majVente()}
 window.setPaie=p=>{vPaie=p;document.querySelectorAll('#v-paie button').forEach(b=>b.classList.toggle('on',b.dataset.p===p))
-  document.getElementById('v-paie-info').textContent=p?`Facture émise « payée » (${p}) : le pack est actif tout de suite.`:"Facture « à encaisser » : le pack s'active quand tu l'encaisses dans Factures."}
+  document.getElementById('v-paie-info').textContent=p?`Facture émise « payée » (${({carte:'carte',especes:'espèces',virement:'virement'})[p]}) : le pack est actif tout de suite.`:"Facture « à encaisser » : le pack s'active quand tu l'encaisses dans Factures."}
 window.majVente=function(){
   document.getElementById('v-formules').innerHTML=formules.map(f=>`<button type="button" class="fcard${f.code===vFormule?' on':''}" onclick="setFormule('${f.code}')"><b>${esc(f.mois)} mois</b><span>${eur(f.prix)}</span><em>${f.interventions} interventions · ${f.hydrogels} hydrogel${f.hydrogels>1?'s':''}</em></button>`).join('')
   const c=trouverClient(),info=document.getElementById('v-client-info')
-  if(!c){info.textContent=document.getElementById('v-client').value?'Choisis un client dans la liste (crée-le d\'abord dans Clients s\'il n\'existe pas).':'';return}
+  if(!c){info.textContent='';return}
   const manque=[!c.adresse&&'adresse',!c.email&&'e-mail'].filter(Boolean)
   info.innerHTML=manque.length?`<span style="color:var(--d)">Manque : ${manque.join(', ')}${!c.adresse?' — l\'adresse est obligatoire sur la facture':''}</span>`:esc(c.adresse)
 }
+async function creerClientNouveau(){
+  const v=id=>document.getElementById(id).value.trim()
+  const prenom=v('n-prenom'),nom=v('n-nom'),email=v('n-email').toLowerCase(),tel=v('n-tel'),adresse=v('n-adresse')
+  if(!prenom||!nom)throw new Error('Indique le prénom et le nom du client')
+  if(adresse.length<8)throw new Error("Indique l'adresse complète du client : elle est obligatoire sur la facture")
+  if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))throw new Error('Adresse e-mail invalide')
+  if(nType==='entreprise'&&!v('n-societe'))throw new Error('Indique le nom de la société')
+  const doublon=email&&clients.find(c=>String(c.email||'').toLowerCase()===email)
+  if(doublon){setModeClient('existant');choisirClient(doublon.id);throw new Error(`Ce client existe déjà (${doublon.numero||doublon.nom}) : il est sélectionné, vérifie puis valide`)}
+  const {data,error}=await sb.from('clients').insert({nom:prenom+' '+nom,email:email||null,telephone:tel||null,adresse,type:nType,
+    societe:nType==='entreprise'?v('n-societe'):null,tva:nType==='entreprise'?(v('n-tva')||null):null}).select('id,numero,nom,email,telephone,adresse,societe,tva,type').single()
+  if(error)throw new Error('Création du client impossible : '+error.message)
+  clients.push(data);return data
+}
 window.confirmerVente=async function(){
-  const c=trouverClient(),f=formules.find(x=>x.code===vFormule)
-  if(!c)return showToast('Choisis un client','err')
-  if(!c.adresse)return showToast("Ajoute l'adresse du client dans sa fiche : elle est obligatoire sur la facture",'err')
+  const f=formules.find(x=>x.code===vFormule)
   if(!f)return showToast('Choisis une formule','err')
-  if(!confirm(`Émettre la facture « ${f.nom} » (${eur(f.prix)}) pour ${c.nom} ?\n\nElle reçoit un numéro définitif.`))return
+  let c=trouverClient()
+  if(vMode==='existant'){
+    if(!c)return showToast('Choisis un client dans la liste, ou crée-le avec « Nouveau client »','err')
+    if(!c.adresse)return showToast("Ajoute l'adresse du client dans sa fiche : elle est obligatoire sur la facture",'err')
+  }
+  const qui=vMode==='nouveau'?`${document.getElementById('n-prenom').value.trim()} ${document.getElementById('n-nom').value.trim()} (nouveau client)`:c.nom
+  if(!confirm(`Émettre la facture « ${f.nom} » (${eur(f.prix)}) pour ${qui} ?\n\nElle reçoit un numéro définitif.`))return
   const b=document.getElementById('v-ok');b.disabled=true
   try{
+    if(vMode==='nouveau'){c=await creerClientNouveau();setModeClient('existant');choisirClient(c.id);showToast(`Client ${c.numero||c.nom} créé`,'ok')}
     const {data,error}=await sb.rpc('vendre_pack',{p_client_id:c.id,p_formule:f.code,p_payee:!!vPaie,p_mode_paiement:vPaie||null})
     if(error)throw new Error(error.message)
     fermer('moVente');showToast(`Facture ${data.numero} émise${vPaie?' · pack actif':''} · envoi au client…`,'ok')
