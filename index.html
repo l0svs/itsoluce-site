@@ -637,6 +637,20 @@ button { cursor: pointer; font: inherit; }
   opacity: 1;
 }
 
+/* Bouton Espace client (clients ayant un Pack Sérénité) */
+.nav__right a.nav__espace {
+  opacity: 1;
+  height: 30px;
+  margin-left: 8px;
+  padding: 0 14px;
+  border-radius: 99px;
+  background: #0052CC;
+  color: #ffffff;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.nav__right a.nav__espace:hover { background: #0047b3; opacity: 1; }
+
 /* Burger (mobile only) */
 .nav__burger {
   display: none;
@@ -713,6 +727,7 @@ button { cursor: pointer; font: inherit; }
 .drawer.open a:nth-child(2) { opacity: 1; transform: none; transition-delay: .10s; }
 .drawer.open a:nth-child(3) { opacity: 1; transform: none; transition-delay: .15s; }
 .drawer.open a:nth-child(4) { opacity: 1; transform: none; transition-delay: .20s; }
+.drawer.open a:nth-child(5) { opacity: 1; transform: none; transition-delay: .25s; }
 
 /* Responsive */
 @media (max-width: 640px) {
@@ -2697,6 +2712,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
     <nav class="nav__right">
       <a href="#tarifs">Tarifs</a>
       <a href="#contact">Contact</a>
+      <a href="/espace.html" class="nav__espace">Espace client</a>
     </nav>
 
     <!-- Burger mobile -->
@@ -2717,6 +2733,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
     <a href="#about">À propos</a>
     <a href="#tarifs">Tarifs</a>
     <a href="#contact">Contact</a>
+    <a href="/espace.html">Espace client</a>
   </div>
 </div>
 
