@@ -99,12 +99,6 @@ async function envoyerMail(a: string, objet: string, html: string, pieces: { nom
   });
   if (!r.ok) throw new Error(`Resend ${r.status} : ${(await r.text()).slice(0, 200)}`);
 }
-function gabarit(corps: string): string {
-  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;max-width:560px">${corps}` +
-    `<p style="margin:18px 0 4px">Bien à vous,</p><p style="margin:0;color:#5a6b7b;font-size:13px">Linton — IT Soluce<br>` +
-    `<a href="tel:+32474056659" style="color:#0052CC;text-decoration:none">+32 474 05 66 59</a> · ` +
-    `<a href="https://itsoluce.be" style="color:#0052CC;text-decoration:none">itsoluce.be</a></p></div>`;
-}
 const bouton = (href: string, txt: string) =>
   `<p style="margin:18px 0"><a href="${href}" style="background:#0052CC;color:#fff;text-decoration:none;padding:12px 22px;border-radius:24px;display:inline-block;font-weight:bold">${esc(txt)}</a></p>`;
 
@@ -200,6 +194,35 @@ async function mailClient(cle: string, a: string, v: Record<string, string>, lie
   await envoyerMail(a, objet, html, pieces);
 }
 
+/** Notification interne (contact@itsoluce.be) : récapitulatif d'un pack payé en ligne. */
+// deno-lint-ignore no-explicit-any
+async function mailNotification(o: { cmd: any; pack: any; packId: number | null; facture: string; envoiOk: boolean; paiement: string; test?: boolean }) {
+  const ent = await entreprise();
+  const td = "padding:7px 0;border-bottom:1px solid #e3e8ee;font-size:14px;vertical-align:top;";
+  const ligne = (k: string, v: string) => v ? `<tr><td style="${td}color:#5a6b7b;width:150px;">${esc(k)}</td><td style="${td}">${v}</td></tr>` : "";
+  const nom = `${o.cmd.prenom || ""} ${o.cmd.nom || ""}`.trim();
+  const tel = String(o.cmd.telephone || "");
+  const corps =
+    `<p style="margin:0 0 12px;">${o.test ? "<b>Paiement de test</b> (rien n'a été enregistré)." : "Bonne nouvelle : un Pack Sérénité vient d'être payé en ligne."}</p>` +
+    `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;width:100%;max-width:520px;margin:4px 0 14px;">` +
+    ligne("Client", `<b>${esc(nom)}</b>${o.cmd.societe ? " · " + esc(o.cmd.societe) : ""}`) +
+    ligne("E-mail", o.cmd.email ? `<a href="mailto:${esc(o.cmd.email)}" style="color:#0052CC;text-decoration:none;">${esc(o.cmd.email)}</a>` : "") +
+    ligne("Téléphone", tel ? `<a href="tel:${esc(tel.replace(/[^0-9+]/g, ""))}" style="color:#0052CC;text-decoration:none;">${esc(tel)}</a>` : "") +
+    ligne("Adresse", esc(o.cmd.adresse || "")) +
+    ligne("TVA", esc(o.cmd.tva || "")) +
+    ligne("Formule", `<b>${esc(o.pack?.nom || "")}</b>`) +
+    ligne("Montant payé", `<b>${eur(o.pack?.prix)}</b> · paiement en ligne (Mollie ${esc(o.paiement)})`) +
+    ligne("Facture", esc(o.facture || "")) +
+    ligne("Valable jusqu'au", esc(dateFr(o.pack?.date_fin))) +
+    `</table>` +
+    (o.test ? "" : o.envoiOk
+      ? `<p style="margin:0 0 12px;">La facture a été archivée et envoyée au client avec le lien vers son espace client.</p>`
+      : `<p style="margin:0 0 12px;color:#9a5b00;"><b>Attention :</b> l'envoi de la facture au client a échoué. Envoie-la depuis l'ERP (Factures).</p>`) +
+    (o.packId ? bouton(`${SITE}/admin/packs.html?pack=${o.packId}`, "Ouvrir le pack dans l'ERP") : "");
+  const objet = `${o.test ? "[TEST] " : ""}Pack vendu en ligne : ${o.pack?.nom || "Pack Sérénité"} — ${nom}`;
+  await envoyerMail(EXPEDITEUR, objet, `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;max-width:560px">${corps}${signatureHTML(ent)}</div>`);
+}
+
 // ── Compte espace client + lien de connexion ─────────────
 async function lienEspace(email: string, clientId: number): Promise<string> {
   const e = email.trim().toLowerCase();
@@ -293,11 +316,9 @@ async function webhook(paymentId: string) {
       const cmdT = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom`))[0];
       await mailFacture(f, octets, cmdT?.prenom || "", sim.pack, "", true);
     } catch (e) { console.error("facture test", e); }
-    await envoyerMail(EXPEDITEUR, `[TEST] Paiement de test reçu — ${sim?.pack?.nom || "Pack"}`, gabarit(
-      `<p>Paiement Mollie <b>de test</b> reçu (${eur(p.amount?.value)}). Le parcours a été simulé puis annulé : rien n'est enregistré.</p>` +
-      `<p>Résultat de la simulation : pack ${esc(sim?.pack?.statut)} du ${esc(dateFr(sim?.pack?.date_debut))} au ${esc(dateFr(sim?.pack?.date_fin))}, ` +
-      `facture ${esc(sim?.facture_statut)} (le numéro ${esc(sim?.numero)} aurait été attribué).</p>`,
-    )).catch((e) => console.error("mail test", e));
+    const cmdN = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom,nom,email,telephone,adresse,societe,tva`))[0] || {};
+    await mailNotification({ cmd: cmdN, pack: sim?.pack, packId: null, facture: `${sim?.numero || ""} (non attribué : test)`, envoiOk: true, paiement: p.id, test: true })
+      .catch((e) => console.error("mail test", e));
     return;
   }
   let r;
@@ -309,20 +330,20 @@ async function webhook(paymentId: string) {
     throw e;
   }
   if (r.deja) return;   // déjà traité : Mollie rappelle parfois plusieurs fois
-  const cmd = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom,email`))[0];
+  const cmd = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom,nom,email,telephone,adresse,societe,tva`))[0];
   const pack = (await rest(`packs?id=eq.${r.pack_id}&select=nom,date_fin,interventions_total,hydrogels_total,prix`))[0];
   const fac = (await rest(`factures?id=eq.${r.facture_id}&select=*`))[0];
   let lien = `${SITE}/espace.html`;
   try { lien = await lienEspace(cmd.email, r.client_id); } catch (e) { console.error("lien espace", e); }
+  let envoiOk = false;
   try {
     const octets = await pdfDe(fac);
     try { await archiver(fac, octets); } catch (e) { console.error("archive", e); }
     await mailFacture(fac, octets, cmd.prenom, pack, lien);
+    envoiOk = true;
   } catch (e) { console.error("mail facture", e); }
-  await envoyerMail(EXPEDITEUR, `Pack vendu en ligne : ${pack.nom} — ${cmd.prenom}`, gabarit(
-    `<p>Nouveau pack payé en ligne : <b>${esc(pack.nom)}</b> (${eur(pack.prix)}), facture ${esc(r.numero)}.</p>` +
-    `<p>Client : ${esc(cmd.prenom)} — ${esc(cmd.email)}. Le pack est déjà actif dans l'ERP (Clients › Packs).</p>`,
-  )).catch((e) => console.error("mail notification", e));
+  await mailNotification({ cmd, pack, packId: r.pack_id, facture: r.numero, envoiOk, paiement: p.id })
+    .catch((e) => console.error("mail notification", e));
 }
 
 async function lien(c: Record<string, unknown>) {
