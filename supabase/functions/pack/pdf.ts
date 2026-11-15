@@ -110,7 +110,9 @@ export async function facturePdf(f: Doc, ent: Record<string, string>, logo?: Uin
   // Mentions
   y -= 16;
   for (const l of [mentionTva(ent.finance_mention_tva) + ".",
-    "Conditions générales et garantie : itsoluce.be (rubrique Conditions)."]) {
+    "Conditions générales et garantie : itsoluce.be (rubrique Conditions).",
+    "Votre adresse e-mail peut être utilisée pour vous informer de nos services.",
+    "Vous pouvez vous y opposer à tout moment, gratuitement, en écrivant à contact@itsoluce.be."]) {
     for (const t of couper(l, L, 9)) { ecr(t, M, y, { t: 9, c: gris }); y -= 12; }
   }
   // Pied

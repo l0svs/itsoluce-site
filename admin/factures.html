@@ -2527,6 +2527,7 @@ function buildTemplateHTML(f,forPdf){
         : `<div><strong style="color:#555;">Conditions de paiement :</strong> ${escHtml(ENTREPRISE.conditions)}${dateEch?` Échéance au ${dateEch}.`:''}</div><div><strong style="color:#555;">Coordonnées bancaires :</strong> ${escHtml(ENTREPRISE.iban)}</div>`}
       ${acompte>0&&!estPayee?`<div><strong style="color:#1d4ed8;">Acompte :</strong> un acompte de ${euro(acompte)} a déjà été reçu. Solde restant dû : ${euro(solde)}.</div>`:''}
       <div style="margin-top:6px;font-style:italic;">${escHtml(ENTREPRISE.mention_tva)}</div>
+      <div style="margin-top:4px;">Votre adresse e-mail peut être utilisée pour vous informer de nos services.<br>Vous pouvez vous y opposer à tout moment, gratuitement, en écrivant à contact@itsoluce.be.</div>
       <div style="margin-top:12px;padding-top:10px;border-top:1px dotted #ddd;">
         <div style="font-size:8.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Conditions générales de vente</div>
         <div style="font-size:7.2px;color:#999;line-height:1.5;text-align:justify;">
