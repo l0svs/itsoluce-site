@@ -1820,6 +1820,27 @@ window.majEncaissement=function(){
   msg.className='paie-msg '+cls
   msg.textContent=txt
 }
+/* Facture d'un Pack Sérénité encaissée : le pack s'active (base de données),
+   puis la fonction « pack » envoie au client le même mail qu'un achat en ligne
+   (facture payée en PDF + bouton « Ouvrir mon espace client »).
+   Renvoie true si la facture appartient à un pack. */
+async function envoiPackApresPaiement(f){
+  if(!f||!f.id)return false
+  let pk=null
+  try{const r=await sb.from('packs').select('id,statut,nom').eq('facture_id',f.id).maybeSingle();pk=r.data}catch(e){return false}
+  if(!pk)return false
+  if(pk.statut!=='actif'){showToast(`Facture ${f.numero} encaissée, mais le pack n'est pas actif (${pk.statut}) : vérifie-le dans Packs.`,'err');return true}
+  if(!f.client_email){showToast(`${pk.nom} activé. Client sans e-mail : remets-lui la facture ${f.numero}.`,'ok');return true}
+  try{
+    const {data:{session}}=await sb.auth.getSession()
+    const r=await fetch(SB+'/functions/v1/pack',{method:'POST',headers:{'Content-Type':'application/json',apikey:SK,Authorization:'Bearer '+session.access_token},
+      body:JSON.stringify({action:'envoyer_facture',pack_id:pk.id})})
+    const j=await r.json().catch(()=>({}))
+    if(!r.ok||j.error)throw new Error(j.error||('erreur '+r.status))
+    setTimeout(()=>showToast(`${pk.nom} activé · facture ${f.numero} payée et lien vers l'espace client envoyés à ${f.client_email}`,'ok'),1200)
+  }catch(e){setTimeout(()=>showToast(`${pk.nom} activé, mais l'envoi du mail a échoué : ${e.message}. Renvoie l'accès depuis Packs.`,'err'),1200)}
+  return true
+}
 window.confirmerEncaissement=async function(){
   const f=courante
   if(!f)return
@@ -1850,6 +1871,9 @@ window.confirmerEncaissement=async function(){
     // Juste après le paiement : d'abord l'envoi de la facture, puis (à la
     // fermeture de cette fenêtre) la demande d'avis Google, une fois par client.
     const fp=courante
+    // Facture d'un Pack Sérénité : le pack vient de s'activer, le client reçoit
+    // automatiquement le mail du pack (facture payée + lien vers son espace).
+    if(!nc&&await envoiPackApresPaiement(fp))return
     if(!nc&&fp.client_email){
       _avisApresEnvoi={facture_id:fp.id,client_id:fp.client_id,reparation_id:fp.reparation_id,nom:fp.client_nom,email:fp.client_email,siJamaisDemande:true}
       setTimeout(()=>{Promise.resolve(window.preparerEmail()).catch(()=>{}).then(()=>{
@@ -2271,8 +2295,10 @@ window.saveFacture=async function(){
   if(dejaEmise){
     const p={};CHAMPS_APRES_EMISSION.forEach(k=>{p[k]=payload[k]})
     p.updated_at=new Date().toISOString()
+    const avant=courante&&courante.statut
     const res=await sb.from('factures').update(p).eq('id',id).select().single()
     if(res.error){showToast('Erreur : '+res.error.message,'err');return}
+    if(avant!=='payee'&&res.data.statut==='payee'&&!_emissionConfirmee&&!estNC(res.data))envoiPackApresPaiement(res.data)
     const i=allFactures.findIndex(x=>x.id===Number(id))
     if(i>=0)allFactures[i]=res.data
     majResume()
