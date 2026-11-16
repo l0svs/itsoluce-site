@@ -718,7 +718,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <div class="fl"><label for="n-nom">Nom</label><input id="n-nom" maxlength="60" autocomplete="off"></div></div>
       <div class="r2"><div class="fl"><label for="n-email">E-mail</label><input id="n-email" type="email" maxlength="160" autocomplete="off"></div>
         <div class="fl"><label for="n-tel">Téléphone</label><input id="n-tel" type="tel" maxlength="30" autocomplete="off"></div></div>
-      <div class="fl"><label for="n-adresse">Adresse (obligatoire sur la facture)</label><input id="n-adresse" maxlength="200" autocomplete="off" placeholder="Rue, numéro, code postal, commune"></div>
+      <div class="fl"><label for="n-adresse">Adresse (obligatoire pour une entreprise)</label><input id="n-adresse" maxlength="200" autocomplete="off" placeholder="Rue, numéro, code postal, commune"></div>
       <div class="fl"><div class="seg full" id="n-type"><button type="button" data-t="particulier" class="on" onclick="setTypeNouveau('particulier')">Particulier</button><button type="button" data-t="entreprise" onclick="setTypeNouveau('entreprise')">Entreprise</button></div></div>
       <div class="r2" id="n-pro" hidden><div class="fl"><label for="n-societe">Société</label><input id="n-societe" maxlength="120"></div>
         <div class="fl"><label for="n-tva">N° TVA / BCE</label><input id="n-tva" maxlength="20" placeholder="BE0…"></div></div>
@@ -1045,19 +1045,20 @@ window.majVente=function(){
   document.getElementById('v-formules').innerHTML=formules.map(f=>`<button type="button" class="fcard${f.code===vFormule?' on':''}" onclick="setFormule('${f.code}')"><b>${esc(f.mois)} mois</b><span>${eur(f.prix)}</span><em>${f.interventions} interventions · ${f.hydrogels} hydrogel${f.hydrogels>1?'s':''}</em></button>`).join('')
   const c=trouverClient(),info=document.getElementById('v-client-info')
   if(!c){info.textContent='';return}
+  const pro=!!(c.societe||c.tva)
   const manque=[!c.adresse&&'adresse',!c.email&&'e-mail'].filter(Boolean)
-  info.innerHTML=manque.length?`<span style="color:var(--d)">Manque : ${manque.join(', ')}${!c.adresse?' — l\'adresse est obligatoire sur la facture':''}</span>`:esc(c.adresse)
+  info.innerHTML=manque.length?`<span style="color:${pro&&!c.adresse?'var(--d)':'var(--t2)'}">Manque : ${manque.join(', ')}${pro&&!c.adresse?' — l\'adresse est obligatoire pour une entreprise':''}</span>`:esc(c.adresse)
 }
 async function creerClientNouveau(){
   const v=id=>document.getElementById(id).value.trim()
   const prenom=v('n-prenom'),nom=v('n-nom'),email=v('n-email').toLowerCase(),tel=v('n-tel'),adresse=v('n-adresse')
   if(!prenom||!nom)throw new Error('Indique le prénom et le nom du client')
-  if(adresse.length<8)throw new Error("Indique l'adresse complète du client : elle est obligatoire sur la facture")
+  if(nType==='entreprise'&&adresse.length<8)throw new Error("Indique l'adresse complète de l'entreprise : elle est obligatoire sur la facture")
   if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))throw new Error('Adresse e-mail invalide')
   if(nType==='entreprise'&&!v('n-societe'))throw new Error('Indique le nom de la société')
   const doublon=email&&clients.find(c=>String(c.email||'').toLowerCase()===email)
   if(doublon){setModeClient('existant');choisirClient(doublon.id);throw new Error(`Ce client existe déjà (${doublon.numero||doublon.nom}) : il est sélectionné, vérifie puis valide`)}
-  const {data,error}=await sb.from('clients').insert({nom:prenom+' '+nom,email:email||null,telephone:tel||null,adresse,type:nType,
+  const {data,error}=await sb.from('clients').insert({nom:prenom+' '+nom,email:email||null,telephone:tel||null,adresse:adresse||null,type:nType,
     societe:nType==='entreprise'?v('n-societe'):null,tva:nType==='entreprise'?(v('n-tva')||null):null}).select('id,numero,nom,email,telephone,adresse,societe,tva,type').single()
   if(error)throw new Error('Création du client impossible : '+error.message)
   clients.push(data);return data
@@ -1068,7 +1069,7 @@ window.confirmerVente=async function(){
   let c=trouverClient()
   if(vMode==='existant'){
     if(!c)return showToast('Choisis un client dans la liste, ou crée-le avec « Nouveau client »','err')
-    if(!c.adresse)return showToast("Ajoute l'adresse du client dans sa fiche : elle est obligatoire sur la facture",'err')
+    if(!c.adresse&&(c.societe||c.tva))return showToast("Ajoute l'adresse de l'entreprise dans sa fiche : elle est obligatoire sur la facture",'err')
   }
   const qui=vMode==='nouveau'?`${document.getElementById('n-prenom').value.trim()} ${document.getElementById('n-nom').value.trim()} (nouveau client)`:c.nom
   if(!confirm(`Émettre la facture « ${f.nom} » (${eur(f.prix)}) pour ${qui} ?\n\nElle reçoit un numéro définitif.`))return
