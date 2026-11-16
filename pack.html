@@ -105,6 +105,15 @@ footer a{color:inherit}
 /* Animations : identiques au site principal */
 @keyframes heroIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .hero .lbl{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) both}
+/* Fenêtre d'achat : contenu en cascade, comme l'accueil du site */
+.ov.open .box>*:not(.x){animation:heroIn .6s cubic-bezier(.22,.61,.36,1) both}
+.ov.open .box>:nth-child(2){animation-delay:.10s}.ov.open .box>:nth-child(3){animation-delay:.15s}
+.ov.open .box>:nth-child(4){animation-delay:.20s}.ov.open .box>:nth-child(5){animation-delay:.25s}
+.ov.open .box>:nth-child(6){animation-delay:.29s}.ov.open .box>:nth-child(7){animation-delay:.33s}
+.ov.open .box>:nth-child(8){animation-delay:.37s}.ov.open .box>:nth-child(n+9){animation-delay:.41s}
+@keyframes recapIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.ov.open .box>.recap{animation-name:recapIn}
+.x{transition:transform .2s ease,background .2s ease}.x:hover{transform:rotate(90deg);background:#e8e8ed}
 .hero h1{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) .06s both}
 .hero .sub{animation:heroIn .7s cubic-bezier(.22,.61,.36,1) .12s both}
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
