@@ -1075,9 +1075,19 @@ let packsActifs=[],packDecomptes=[],grillePrix=[{min:0,max:30,coef:1.8},{min:30,
 function packDuClient(cid){const a=new Date().toISOString().slice(0,10);return packsActifs.find(p=>p.client_id===cid&&p.date_fin>=a)||null}
 function packRestantes(p){return p.interventions_total-packDecomptes.filter(i=>i.pack_id===p.id).reduce((t,i)=>t+(i.decompte||0),0)}
 /* Pièce d'un dossier « pack » : prix de la pièce seule (achat × coefficient de
-   la grille, sans le forfait main-d'œuvre), puis −10 %. Facture en brouillon :
-   le prix se vérifie dans Factures avant émission. */
-function prixPiecePack(pc){const a=Number(pc.cout)||0;const t=grillePrix.find(g=>a>=g.min&&a<g.max)||grillePrix[grillePrix.length-1];return Math.round(a*(Number(t.coef)||1)*0.9*100)/100}
+   la grille, sans le forfait main-d'œuvre). Formules Mobile / Famille / Pro :
+   pièce au prix normal. Anciennes formules (3, 6, 12 mois) : −10 %.
+   Facture en brouillon : le prix se vérifie dans Factures avant émission. */
+const ANCIENNES_FORMULES=['3m','6m','12m']
+function remisePiecesPack(packId){const p=packsActifs.find(x=>x.id===packId);return p&&ANCIENNES_FORMULES.includes(p.formule)?0.1:0}
+function prixPiecePack(pc,packId){const a=Number(pc.cout)||0;const t=grillePrix.find(g=>a>=g.min&&a<g.max)||grillePrix[grillePrix.length-1];return Math.round(a*(Number(t.coef)||1)*(1-remisePiecesPack(packId))*100)/100}
+// Formules Famille et Pro : l'intervention du mois du pack est-elle déjà utilisée ?
+function moisPackUtilise(p){if(!p.par_mois||!p.date_debut)return false
+  const [y,m,j]=p.date_debut.split('-').map(Number),auj=new Date().toISOString().slice(0,10)
+  const ajm=n=>{const fin=new Date(Date.UTC(y,m-1+n+1,0)).getUTCDate();return new Date(Date.UTC(y,m-1+n,Math.min(j,fin))).toISOString().slice(0,10)}
+  let k=0;while(ajm(k+1)<=auj)k++
+  const deb=ajm(k),fin=ajm(k+1)
+  return packDecomptes.some(i=>i.pack_id===p.id&&(i.decompte||0)>0&&i.date_inter>=deb&&i.date_inter<fin)}
 function prixClient(r){return Number(r.prix_final)||Number(r.prix_devis)||0}
 
 try {
@@ -1283,8 +1293,8 @@ async function loadReps(){
   allClientsRep=rCli.data||[]
   allServices=rSvc.data||[]
   await chargerCommandes()
-  {const [rp,ri,rg]=await Promise.all([sb.from('packs').select('id,client_id,nom,statut,date_fin,interventions_total').eq('statut','actif').limit(5000),
-     sb.from('pack_interventions').select('pack_id,decompte').limit(20000),
+  {const [rp,ri,rg]=await Promise.all([sb.from('packs').select('id,client_id,nom,formule,par_mois,statut,date_debut,date_fin,interventions_total').eq('statut','actif').limit(5000),
+     sb.from('pack_interventions').select('pack_id,decompte,date_inter').limit(20000),
      sb.from('settings').select('valeur').eq('cle','finance_grille').maybeSingle()])
    packsActifs=rp.error?[]:(rp.data||[]);packDecomptes=ri.error?[]:(ri.data||[])
    try{const g=JSON.parse(rg.data&&rg.data.valeur||'null');if(Array.isArray(g)&&g.length)grillePrix=g}catch(e){}}
@@ -1660,9 +1670,14 @@ function renderDetail(){
       </div>
     </div>
     ${r.garantie_de_id?`<div class="gar-note">Retour <b>sous garantie</b> du dossier ${(()=>{const o=allReps.find(x=>x.id===r.garantie_de_id);return o?`<a onclick="selectRep(${o.id})">${escHtml(o.numero||'d\u2019origine')}</a>`:'d\u2019origine'})()} : rien à facturer, sauf si le problème n'est pas couvert (casse, oxydation…).</div>`:''}
-    ${r.pack_id?`<div class="gar-note">Inclus dans le <b>Pack Sérénité</b> : pas de facture de main-d'œuvre. Seules les pièces éventuelles sont facturées, à −10 %. <a href="/admin/packs.html?pack=${r.pack_id}">Voir le pack</a></div>`
-      :(()=>{const p=r.client_id&&!r.converti_facture_id&&!r.garantie_de_id&&r.statut!=='rendu'?packDuClient(r.client_id):null;const n=p?packRestantes(p):0
-        return p&&n>0?`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif (${n} intervention${n>1?'s':''} restante${n>1?'s':''}). <a href="/admin/packs.html?pack=${p.id}&dossier=${r.id}">Inclure ce dossier dans le pack</a></div>`:''})()}
+    ${r.pack_id?`<div class="gar-note">Inclus dans le <b>Pack Sérénité</b> : pas de facture de main-d'œuvre. Seules les pièces éventuelles sont facturées${remisePiecesPack(r.pack_id)?', à −10 %':', au prix normal'}. <a href="/admin/packs.html?pack=${r.pack_id}">Voir le pack</a></div>`
+      :(()=>{const p=r.client_id&&!r.converti_facture_id&&!r.garantie_de_id&&r.statut!=='rendu'?packDuClient(r.client_id):null;if(!p)return ''
+        const n=packRestantes(p),lien=`<a href="/admin/packs.html?pack=${p.id}&dossier=${r.id}">Inclure ce dossier dans le pack</a>`
+        if(p.formule==='mobile')return `<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : <b>−20 % sur la main-d'œuvre</b> de cette réparation (pièces au prix normal).${n>0?` Transfert vers un nouveau smartphone offert : <a href="/admin/packs.html?pack=${p.id}&dossier=${r.id}">l'inclure dans le pack</a> s'il s'agit de ce transfert.`:''}</div>`
+        if(p.par_mois){const u=moisPackUtilise(p)
+          return n>0&&!u?`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : l'intervention du mois est disponible (main-d'œuvre incluse). ${lien}</div>`
+            :`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : l'intervention du mois est déjà utilisée. Ce dossier se facture avec <b>−20 % sur la main-d'œuvre</b>.</div>`}
+        return n>0?`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif (${n} intervention${n>1?'s':''} restante${n>1?'s':''}). ${lien}</div>`:''})()}
     <div id="fil-rep"></div>
     ${etapeSuivante(r)}
     <div id="apres-rep" class="apres"></div>
@@ -1732,7 +1747,7 @@ function etapeSuivante(r){
     let b=''
     if(['attente_reception','recu','attente'].includes(r.statut))b=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'encours')">Démarrer l'intervention</button>`
     else if(r.statut==='encours')b=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Intervention terminée</button>`
-    else if(['pret','rendu'].includes(r.statut)&&!r.converti_facture_id&&r.pack_id)b=(r.pieces||[]).length?`<button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces (−10 %)</button>`:''
+    else if(['pret','rendu'].includes(r.statut)&&!r.converti_facture_id&&r.pack_id)b=(r.pieces||[]).length?`<button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:''
     else if(['pret','rendu'].includes(r.statut)&&!r.converti_facture_id)b=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
     return b?`<div class="etape">${b}</div>`:''
   }
@@ -1744,8 +1759,8 @@ function etapeSuivante(r){
   }
   let bouton=''
   if(S[r.statut])bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'${S[r.statut].vers}')">${S[r.statut].label}</button>`
-  else if(r.statut==='pret'&&r.pack_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (inclus dans le pack)</button>`+((r.pieces||[]).length?` <button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces (−10 %)</button>`:'')
-  else if(r.statut==='rendu'&&r.pack_id&&!r.converti_facture_id)bouton=(r.pieces||[]).length?`<button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces (−10 %)</button>`:''
+  else if(r.statut==='pret'&&r.pack_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (inclus dans le pack)</button>`+((r.pieces||[]).length?` <button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:'')
+  else if(r.statut==='rendu'&&r.pack_id&&!r.converti_facture_id)bouton=(r.pieces||[]).length?`<button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:''
   else if(r.statut==='pret'&&r.garantie_de_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (sous garantie)</button>`
   else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id)bouton=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
   else if(r.statut==='pret')bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
@@ -1840,7 +1855,8 @@ async function creerFactureDepuis(r,offert=false){
   if(r.pack_id){
     const pcs=(r.pieces||[]).filter(pc=>pc&&pc.nom)
     if(!pcs.length){showToast('Dossier inclus dans le pack : aucune pièce à facturer','err');return}
-    const lignes=pcs.map(pc=>{const q=Number(pc.qte)||1,pu=prixPiecePack(pc);return {description:`${pc.nom} (pièce, −10 % Pack Sérénité)`,quantite:q,prix_unitaire:pu,total:Math.round(pu*q*100)/100,stock_id:''}})
+    const rem=remisePiecesPack(r.pack_id)
+    const lignes=pcs.map(pc=>{const q=Number(pc.qte)||1,pu=prixPiecePack(pc,r.pack_id);return {description:`${pc.nom} (pièce${rem?', −10 % Pack Sérénité':''})`,quantite:q,prix_unitaire:pu,total:Math.round(pu*q*100)/100,stock_id:''}})
     lignes.push({description:"Main-d'œuvre incluse dans le Pack Sérénité",quantite:1,prix_unitaire:0,total:0,stock_id:''})
     const tot=Math.round(lignes.reduce((t,l)=>t+l.total,0)*100)/100
     if(!confirm(`Facturer uniquement les pièces du dossier ${r.numero} ?\n\n${lignes.slice(0,-1).map(l=>'• '+l.description+' : '+eur(l.total)).join('\n')}\n\nTotal : ${eur(tot)}\n\nCréée en brouillon : vérifie les prix dans Factures avant d'émettre.`))return

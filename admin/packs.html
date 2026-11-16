@@ -745,7 +745,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <button data-t="travail" onclick="setType('travail')">Lieu de travail</button>
       <button data-t="depot" onclick="setType('depot')">Dépôt atelier</button></div></div>
     <div class="r3">
-      <div class="fl"><label for="i-date">Date</label><input type="date" id="i-date"></div>
+      <div class="fl"><label for="i-date">Date</label><input type="date" id="i-date" onchange="document.getElementById('i-dec').checked=true;majInter()"></div>
       <div class="fl"><label for="i-duree">Durée (minutes)</label><input type="number" id="i-duree" min="0" max="1440" step="5" placeholder="70"></div>
       <div class="fl"><label for="i-km">Km aller-retour</label><input type="number" id="i-km" min="0" max="2000" step="0.1"><div class="hint" id="i-km-hint"></div></div>
     </div>
@@ -881,8 +881,20 @@ function etat(p){
   const utilisees=js.reduce((a,i)=>a+(i.decompte||0),0)
   const hydro=js.reduce((a,i)=>a+(i.hydrogels||0),0)
   const expire=p.statut==='actif'&&p.date_fin&&p.date_fin<auj()
-  return {js,utilisees,restantes:p.interventions_total-utilisees,hydro,hydroRest:p.hydrogels_total-hydro,expire,
+  return {js,utilisees,restantes:p.interventions_total-utilisees,hydro,hydroRest:p.hydrogels_total-hydro,expire,mois:moisPack(p,js),
     minutes:js.reduce((a,i)=>a+(i.duree_min||0),0),km:js.reduce((a,i)=>a+(Number(i.km)||0),0)}
+}
+// Formules Famille et Pro : 1 intervention par mois du pack (non reportée).
+// Période = [début + k mois ; début + k+1 mois[, même calcul qu'en base (pack_periode).
+const ajMois=(d,k)=>{const [y,m,j]=d.split('-').map(Number);const fin=new Date(Date.UTC(y,m-1+k+1,0)).getUTCDate()
+  const x=new Date(Date.UTC(y,m-1+k,Math.min(j,fin)));return x.toISOString().slice(0,10)}
+function periodePack(debut,d){let k=0;while(ajMois(debut,k+1)<=d)k++
+  const fin=new Date(ajMois(debut,k+1)+'T12:00:00Z');fin.setUTCDate(fin.getUTCDate()-1)
+  return {debut:ajMois(debut,k),fin:fin.toISOString().slice(0,10)}}
+function moisPack(p,js,d){
+  if(!p.par_mois||!p.date_debut)return null
+  const per=periodePack(p.date_debut,d||auj())
+  return {...per,utilisee:js.some(i=>(i.decompte||0)>0&&i.date_inter>=per.debut&&i.date_inter<=per.fin)}
 }
 function statutPack(p,e){
   if(p.statut==='en_attente')return ['À encaisser','w']
@@ -951,7 +963,7 @@ function rendre(){
     liste.map(p=>{const e=etat(p),c=client(p.client_id),[lib,cls]=statutPack(p,e)
       const pct=p.interventions_total?Math.min(100,Math.round(e.utilisees/p.interventions_total*100)):0
       return `<tr class="cl${p.id===selId?' sel':''}" onclick="choisir(${p.id})"><td><b>${esc(c.nom)}</b><div class="pk-sub">${esc(c.numero||'')}${c.societe?' · '+esc(c.societe):''}</div></td>`+
-        `<td>${p.mois} mois<div class="pk-sub">${p.origine==='en_ligne'?'en ligne':'sur place'}</div></td>`+
+        `<td>${esc(String(p.nom||'').replace(/^(Pack )?Sérénité /,''))||p.mois+' mois'}<div class="pk-sub">${p.origine==='en_ligne'?'en ligne':'sur place'}</div></td>`+
         `<td>${p.statut==='en_attente'?'—':`${e.restantes} / ${p.interventions_total}<div class="mini"><span style="width:${pct}%"></span></div>`}</td>`+
         `<td>${p.date_fin?dCourte(p.date_fin):'—'} <span class="pill ${cls}">${lib}</span></td></tr>`}).join('')+`</table>`
     :`<div class="pk-vide">${filtre==='actifs'?'Aucun pack actif pour le moment.':'Rien ici.'}</div>`
@@ -1042,7 +1054,7 @@ window.setFormule=code=>{vFormule=code;majVente()}
 window.setPaie=p=>{vPaie=p;document.querySelectorAll('#v-paie button').forEach(b=>b.classList.toggle('on',b.dataset.p===p))
   document.getElementById('v-paie-info').textContent=p?`Facture émise « payée » (${({carte:'carte',especes:'espèces',virement:'virement'})[p]}) : le pack est actif tout de suite.`:"Facture « à encaisser » : le pack s'active quand tu l'encaisses dans Factures."}
 window.majVente=function(){
-  document.getElementById('v-formules').innerHTML=formules.map(f=>`<button type="button" class="fcard${f.code===vFormule?' on':''}" onclick="setFormule('${f.code}')"><b>${esc(f.mois)} mois</b><span>${eur(f.prix)}</span><em>${f.interventions} interventions · ${f.hydrogels} hydrogel${f.hydrogels>1?'s':''}</em></button>`).join('')
+  document.getElementById('v-formules').innerHTML=formules.map(f=>`<button type="button" class="fcard${f.code===vFormule?' on':''}" onclick="setFormule('${f.code}')"><b>${esc(f.nom.replace(/^Sérénité /,''))}</b><span>${eur(f.prix)}</span><em>${f.par_mois?'1 intervention / mois':'Transfert offert'} · ${f.hydrogels} hydrogel${f.hydrogels>1?'s':''}</em></button>`).join('')
   const c=trouverClient(),info=document.getElementById('v-client-info')
   if(!c){info.textContent='';return}
   const pro=!!(c.societe||c.tva)
@@ -1109,7 +1121,7 @@ window.ouvrirInter=function(id,rep){
   document.getElementById('i-hydro').max=Math.max(0,e.hydroRest)
   document.getElementById('i-hydro-hint').textContent=`${Math.max(0,e.hydroRest)} restante${e.hydroRest>1?'s':''} sur ${iPack.hydrogels_total}`
   document.getElementById('i-hydro-wrap').style.display=iPack.hydrogels_total?'':'none'
-  document.getElementById('i-dec').checked=e.restantes>0
+  document.getElementById('i-dec').checked=e.restantes>0&&!(e.mois&&e.mois.utilisee)
   document.getElementById('i-dos').checked=true
   setType(iRep&&iRep.type!=='intervention'?'depot':'domicile');majInter()
   document.getElementById('i-dos-wrap').style.display=iRep?'none':''
@@ -1121,8 +1133,14 @@ window.ouvrirInter=function(id,rep){
 window.majInter=function(){
   if(!iPack)return
   const e=etat(iPack),dec=document.getElementById('i-dec').checked
-  document.getElementById('i-dec-txt').innerHTML=e.restantes>0?`<b>Décompter 1 intervention du pack</b> (il en restera ${dec?e.restantes-1:e.restantes})`:'<b>Plus aucune intervention disponible</b> — à facturer normalement (−10 %)'
-  document.getElementById('i-dec').disabled=e.restantes<=0
+  const d=document.getElementById('i-date').value||auj(),m=moisPack(iPack,e.js,d)
+  const dejaMois=!!(m&&m.utilisee)
+  document.getElementById('i-dec-txt').innerHTML=e.restantes<=0?'<b>Plus aucune intervention disponible</b> — à facturer avec −20 % sur la main-d\'œuvre'
+    :dejaMois?`<b>Intervention du mois déjà utilisée</b> (période du ${dCourte(m.debut)} au ${dCourte(m.fin)}) — à facturer avec −20 % sur la main-d'œuvre`
+    :m?`<b>Décompter l'intervention du mois</b> (période du ${dCourte(m.debut)} au ${dCourte(m.fin)})`
+    :`<b>Décompter 1 intervention du pack</b> (il en restera ${dec?e.restantes-1:e.restantes})`
+  document.getElementById('i-dec').disabled=e.restantes<=0||dejaMois
+  if(document.getElementById('i-dec').disabled)document.getElementById('i-dec').checked=false
 }
 window.confirmerInter=async function(){
   const desc=document.getElementById('i-desc').value.trim()
@@ -1169,10 +1187,10 @@ window.ouvrirRetr=async function(id){
   const {data,error}=await sb.rpc('pack_retractation_calcul',{p_pack:id})
   if(error)return showToast(error.message,'err')
   rCalc=data
-  const brut=Math.round(rPack.prix*data.restantes/data.total*100)/100
   document.getElementById('r-calc').innerHTML=data.possible?
     `${esc(rPack.nom)} payé ${eur(rPack.prix)} le ${dCourte(data.paye_le)} · délai jusqu'au ${dCourte(data.fin_delai)}<br>`+
-    `Interventions non utilisées : ${data.restantes} sur ${data.total} → ${eur(rPack.prix)} × ${data.restantes} ÷ ${data.total} = ${eur(brut)}<br>`+
+    `Prix payé : ${eur(rPack.prix)}<br>`+
+    (data.utilisees?`Interventions déjà fournies : ${data.utilisees} × ${eur(data.prix_intervention)} déduites<br>`:'')+
     (data.hydrogels_utilises?`Protections hydrogel posées : ${data.hydrogels_utilises} × ${eur(data.prix_hydrogel)} déduites<br>`:'')+
     `<div style="margin-top:8px">À rembourser : <b class="m">${eur(data.montant)}</b></div>`+
     `<div class="hint" style="margin-top:6px">${data.en_ligne?'Payé en ligne : le remboursement part automatiquement sur la carte ou le compte du client via Mollie.':'Payé sur place : tu rembourses par virement, puis tu marques la note de crédit « remboursée » dans Factures.'} Le pack est clôturé.</div>`
