@@ -35,7 +35,21 @@ h2{font-size:26px;font-weight:600;letter-spacing:-.4px;margin-bottom:18px}
 .plan.reco{border:2px solid var(--a)}
 .tag{position:absolute;top:-11px;left:24px;background:var(--a);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px}
 .pl-n{font-size:15px;font-weight:600}.pl-p{font-size:38px;font-weight:600;letter-spacing:-1px;margin:10px 0 2px}
-.pl-u{font-size:13px;color:var(--t2);margin-bottom:18px}
+.pl-u{font-size:13px;color:var(--t2);margin-bottom:6px}
+.pl-pour{font-size:13.5px;color:var(--t2);margin-top:2px}
+.pl-m{font-size:13.5px;font-weight:600;color:var(--a);margin-bottom:4px}
+.pl-v{font-size:12.5px;color:var(--t2);background:var(--bg2);border-radius:10px;padding:7px 10px;margin:8px 0 14px}
+.pl-v b{color:var(--t1)}
+.plan li.fort{font-weight:600}
+.plan li.non{color:var(--t2)}.plan li.non:before{content:"–";color:var(--t2)}
+.cmp{margin:-24px 0 56px;overflow-x:auto}
+.cmp h2{font-size:20px;margin-bottom:12px}
+.cmp table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.cmp th,.cmp td{padding:11px 12px;border-bottom:1px solid #f0f0f2;text-align:center}
+.cmp th:first-child,.cmp td:first-child{text-align:left;color:var(--t2);width:34%}
+.cmp thead th{font-size:13px;font-weight:600;color:var(--t1)}
+.cmp thead th.f{color:var(--a)}
+.cmp td.oui{color:var(--a);font-weight:600}.cmp td.no{color:#c7c7cc}
 .plan ul{list-style:none;font-size:14px;flex:1}.plan li{padding:7px 0;border-top:1px solid #f0f0f2;display:flex;gap:8px}
 .plan li:before{content:"✓";color:var(--a);font-weight:600}
 .btn{display:block;width:100%;text-align:center;background:var(--a);color:#fff;border:none;border-radius:99px;padding:12px;font-size:14px;font-weight:500;margin-top:20px;text-decoration:none;cursor:pointer;font-family:inherit}
@@ -121,47 +135,66 @@ footer a{color:inherit}
 <main class="wrap">
   <section class="hero">
     <p class="lbl">Pack Sérénité</p>
-    <h1>Un technicien de proximité,<br>disponible quand vous en avez besoin.</h1>
-    <p class="sub">Le Pack Sérénité est un forfait d'interventions prépayé, valable 3, 6 ou 12 mois.<br>Je me déplace chez vous ou sur votre lieu de travail, ou vous déposez votre appareil à l'atelier de Tubize.<br>PC, smartphone, tablette, console de jeu et autres : vos interventions sont déjà réglées et vos rendez-vous sont prioritaires.<br>Pour les particuliers comme pour les petites entreprises.</p>
+    <h1>Votre technicien attitré,<br>toute l'année.</h1>
+    <p class="sub">Un pack annuel, payé une seule fois, sans renouvellement automatique.<br>Je me déplace chez vous ou sur votre lieu de travail, sans frais de déplacement, ou vous déposez votre appareil à l'atelier de Tubize.<br>PC, smartphone, tablette, console de jeu et autres.<br>Choisissez la formule qui vous ressemble.</p>
   </section>
 
   <section class="plans reveal-group" id="plans">
-    <div class="plan" data-code="3m"><div class="pl-n">3 mois</div><div class="pl-p">199 €</div><div class="pl-u">Paiement unique · sans renouvellement automatique</div>
-      <ul><li>2 interventions incluses</li><li>1 protection hydrogel offerte</li><li>Rendez-vous prioritaire</li></ul><button class="btn o" onclick="choisir('3m')">Choisir 3 mois</button></div>
-    <div class="plan reco" data-code="6m"><span class="tag">Recommandé</span><div class="pl-n">6 mois</div><div class="pl-p">349 €</div><div class="pl-u">Paiement unique · sans renouvellement automatique</div>
-      <ul><li>4 interventions incluses</li><li>2 protections hydrogel offertes</li><li>Rendez-vous prioritaire</li></ul><button class="btn" onclick="choisir('6m')">Choisir 6 mois</button></div>
-    <div class="plan" data-code="12m"><div class="pl-n">12 mois</div><div class="pl-p">599 €</div><div class="pl-u">Paiement unique · sans renouvellement automatique</div>
-      <ul><li>8 interventions incluses</li><li>3 protections hydrogel offertes</li><li>Rendez-vous prioritaire</li></ul><button class="btn o" onclick="choisir('12m')">Choisir 12 mois</button></div>
+    <div class="plan" data-code="mobile"><div class="pl-n">Sérénité Mobile</div><div class="pl-pour">Pour vous et votre smartphone</div><div class="pl-p">69 €</div><div class="pl-m">soit 5,75 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
+      <div class="pl-v">Valeur à la carte : <b>plus de 140 €</b></div>
+      <ul><li class="fort">2 protections hydrogel : pose immédiate, puis renouvellement à 6 mois</li><li class="fort">Transfert vers votre nouveau smartphone offert</li><li>Diagnostic offert</li><li>Bilan santé annuel de votre smartphone</li><li>Rendez-vous prioritaire</li><li>Déplacement inclus</li><li class="non">Interventions et réparations payantes, avec −20 % sur la main-d'œuvre</li></ul><button class="btn o" onclick="choisir('mobile')">Choisir Mobile</button></div>
+    <div class="plan reco" data-code="famille"><span class="tag">Le plus choisi</span><div class="pl-n">Sérénité Famille</div><div class="pl-pour">Pour tout le foyer, tous les appareils</div><div class="pl-p">349 €</div><div class="pl-m">soit 29,08 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
+      <div class="pl-v">Valeur à la carte : <b>jusqu'à 1 080 €</b></div>
+      <ul><li class="fort">1 intervention par mois, main-d'œuvre incluse : vous ne payez plus que les pièces</li><li>Tous les appareils du foyer</li><li>Diagnostic offert, sans limite</li><li>Bilan santé annuel de tous vos appareils, à domicile</li><li>4 protections hydrogel</li><li>−20 % sur la main-d'œuvre au-delà</li><li>Rendez-vous prioritaire</li><li>Déplacement inclus</li></ul><button class="btn" onclick="choisir('famille')">Choisir Famille</button></div>
+    <div class="plan" data-code="pro"><div class="pl-n">Sérénité Pro</div><div class="pl-pour">Pour les indépendants et petites entreprises</div><div class="pl-p">590 €</div><div class="pl-m">soit 49,17 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
+      <div class="pl-v">Valeur à la carte : <b>jusqu'à 1 080 €</b></div>
+      <ul><li class="fort">1 intervention par mois, main-d'œuvre incluse</li><li>Tous les postes et appareils de l'entreprise</li><li>Diagnostic offert, sans limite</li><li>Bilan santé annuel, sur place</li><li>4 protections hydrogel</li><li>−20 % sur la main-d'œuvre au-delà</li><li>Rendez-vous prioritaire</li><li>Facture au nom de l'entreprise</li><li>Déplacement inclus</li></ul><button class="btn o" onclick="choisir('pro')">Choisir Pro</button></div>
   </section>
 
+  <section class="cmp reveal">
+    <h2>Comparer les formules</h2>
+    <table>
+      <thead><tr><th></th><th>Mobile</th><th class="f">Famille</th><th>Pro</th></tr></thead>
+      <tbody>
+        <tr><td>1 intervention par mois, main-d'œuvre incluse</td><td class="no">—</td><td class="oui">Oui</td><td class="oui">Oui</td></tr>
+        <tr><td>Appareils couverts</td><td>1 smartphone</td><td>Tout le foyer</td><td>Toute l'entreprise</td></tr>
+        <tr><td>Réparation d'écran : vous payez</td><td>Pièce + main-d'œuvre −20 %</td><td>La pièce</td><td>La pièce</td></tr>
+        <tr><td>Protections hydrogel</td><td>2</td><td>4</td><td>4</td></tr>
+        <tr><td>Transfert vers un nouveau smartphone</td><td>Offert</td><td>Inclus (1 intervention)</td><td>Inclus (1 intervention)</td></tr>
+        <tr><td>Diagnostic offert</td><td class="oui">Oui</td><td class="oui">Oui</td><td class="oui">Oui</td></tr>
+        <tr><td>Rendez-vous prioritaire</td><td class="oui">Oui</td><td class="oui">Oui</td><td class="oui">Oui</td></tr>
+        <tr><td>Déplacement inclus</td><td class="oui">Oui</td><td class="oui">Oui</td><td class="oui">Oui</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
   <section class="grid2 reveal">
-    <div><h2>Inclus dans tous les packs</h2><ul class="inc">
-      <li><b>Interventions</b><span>À domicile, sur votre lieu de travail ou en dépôt à l'atelier de Tubize, jusqu'à 1 h 30 de travail chacune : mails, PC lent, virus, configuration, transfert, sauvegarde, mises à jour, main-d'œuvre d'une réparation.</span></li>
-      <li><b>Diagnostic offert</b><span>Sur tous vos appareils.</span></li>
-      <li><b>Rendez-vous prioritaire</b><span>Sous 48 h ouvrables.</span></li>
-      <li><b>Pièces détachées −10 %</b><span>Toujours annoncées avant l'intervention.</span></li>
-      <li><b>Protection hydrogel</b><span>Film de protection pour smartphone, posé par mes soins.</span></li></ul></div>
+    <div><h2>Une intervention, c'est quoi ?</h2><ul class="inc">
+      <li><b>Jusqu'à 1 h de travail</b><span>Mails, PC lent, virus, configuration, transfert, sauvegarde, mises à jour, ou la main-d'œuvre d'une réparation.</span></li>
+      <li><b>Chez vous, au travail ou à l'atelier</b><span>Sans frais de déplacement.</span></li>
+      <li><b>1 par mois</b><span>Un mois sans besoin n'est pas reporté au suivant.</span></li></ul></div>
     <div><h2>Non inclus</h2><ul class="inc">
-      <li><b>Pièces et matériel</b><span>Facturés à part, avec la remise de 10 %.</span></li>
-      <li><b>Interventions supplémentaires</b><span>Au tarif normal moins 10 %.</span></li>
+      <li><b>Pièces et matériel</b><span>Au prix normal, toujours annoncés avant l'intervention.</span></li>
+      <li><b>Temps et interventions en plus</b><span>Au tarif normal moins 20 %.</span></li>
       <li><b>Récupération de données complexe</b><span>Sur devis.</span></li></ul></div>
   </section>
 
   <section class="steps reveal-group">
     <div class="step"><i>1</i><b>Vous choisissez votre pack</b><p>Paiement en ligne sécurisé par Bancontact ou carte bancaire.</p></div>
     <div class="step"><i>2</i><b>Votre espace client est créé</b><p>Vous recevez votre facture et un lien de connexion par e-mail.<br>Pas de mot de passe à retenir.</p></div>
-    <div class="step"><i>3</i><b>Vous m'appelez quand il faut</b><p>Je viens chez vous ou vous déposez l'appareil.<br>Vous suivez vos interventions restantes depuis votre espace.</p></div>
+    <div class="step"><i>3</i><b>Vous m'appelez quand il faut</b><p>Je viens chez vous ou vous déposez l'appareil.<br>Vous suivez vos interventions depuis votre espace client.</p></div>
   </section>
 
   <section class="faq">
     <h2 class="reveal">Questions fréquentes</h2>
     <div class="faq__list reveal-group">
     <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Que se passe-t-il à la fin du pack ?</button><div class="faq__a"><p>Rien automatiquement : il n'y a pas de renouvellement automatique.<br>Je vous préviens avant la fin et vous décidez de renouveler ou non.</p></div></div>
-    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Les interventions non utilisées sont-elles reportées ?</button><div class="faq__a"><p>Non.<br>Elles sont valables pendant la durée du pack.<br>Choisissez la durée qui correspond à vos besoins réels.</p></div></div>
-    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Puis-je partager mon pack ?</button><div class="faq__a"><p>Le pack est nominatif : il couvre un foyer (les appareils des personnes qui vivent sous le même toit) ou une entreprise.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Les interventions non utilisées sont-elles reportées ?</button><div class="faq__a"><p>Non.<br>Vous avez droit à 1 intervention par mois.<br>Un mois sans besoin n'est pas reporté au suivant.</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Puis-je partager mon pack ?</button><div class="faq__a"><p>Le pack est nominatif.<br>Sérénité Mobile couvre une personne et son smartphone.<br>Sérénité Famille couvre un foyer : les appareils des personnes qui vivent sous le même toit.<br>Sérénité Pro couvre une entreprise.</p></div></div>
     <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Je suis une entreprise, ai-je une facture ?</button><div class="faq__a"><p>Oui.<br>Indiquez le nom de la société et son numéro de TVA lors de la commande : la facture est établie à son nom.</p></div></div>
     <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Où intervenez-vous ?</button><div class="faq__a"><p>À Tubize, dans le Brabant wallon, la région de Charleroi, la province de Namur et Bruxelles.<br>Vous pouvez aussi déposer votre appareil à l'atelier de Tubize.</p></div></div>
-    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Puis-je changer d'avis ?</button><div class="faq__a"><p>Si vous êtes un particulier, vous disposez de 14 jours après le paiement pour vous rétracter.<br>Les interventions déjà utilisées sont déduites au prorata (voir les conditions ci-dessous).</p></div></div>
+    <div class="faq__item"><button class="faq__q" type="button" aria-expanded="false">Puis-je changer d'avis ?</button><div class="faq__a"><p>Si vous êtes un particulier, vous disposez de 14 jours après le paiement pour vous rétracter.<br>Ce que vous avez déjà utilisé est déduit (voir les conditions ci-dessous).</p></div></div>
     </div>
   </section>
 
@@ -170,13 +203,13 @@ footer a{color:inherit}
     <button class="faq__q" type="button" aria-expanded="false" aria-controls="condCorps">Voir les conditions du Pack Sérénité</button>
     <div class="faq__a" id="condCorps">
     <ol>
-      <li><b>Objet.</b><br>Le Pack Sérénité donne droit, pendant sa durée (3, 6 ou 12 mois à compter du paiement), au nombre d'interventions indiqué, à un rendez-vous prioritaire sous 48 h ouvrables, au diagnostic offert, à une remise de 10 % sur les pièces détachées et au nombre de protections hydrogel indiqué.</li>
-      <li><b>Intervention.</b><br>Une intervention correspond à un passage à domicile ou sur le lieu de travail, ou à un dépôt à l'atelier de Tubize, pour un travail de 1 h 30 maximum.<br>Le temps supplémentaire, les interventions au-delà du pack et les pièces sont facturés au tarif normal moins 10 %, toujours annoncés avant l'intervention.</li>
+      <li><b>Objet.</b><br>Le Pack Sérénité est valable 12 mois à compter du paiement.<br>Il donne droit aux avantages de la formule choisie (Mobile, Famille ou Pro), tels que décrits sur cette page.</li>
+      <li><b>Intervention (Famille et Pro).</b><br>Une intervention correspond à un passage à domicile ou sur le lieu de travail, ou à un dépôt à l'atelier de Tubize, pour un travail d'1 h maximum, déplacement inclus.<br>Le pack donne droit à 1 intervention par mois ; un mois non utilisé n'est pas reporté.<br>Le temps supplémentaire et les interventions en plus sont facturés au tarif normal moins 20 %.<br>Les pièces sont facturées au prix normal.<br>Tout est toujours annoncé avant l'intervention.</li>
       <li><b>Zone.</b><br>Tubize, Brabant wallon, région de Charleroi, province de Namur et Bruxelles.</li>
       <li><b>Bénéficiaire.</b><br>Le pack est nominatif : il couvre un foyer ou une entreprise et ne peut pas être cédé.</li>
       <li><b>Paiement.</b><br>Le pack est payé d'avance, en une fois.<br>Il n'est pas renouvelé automatiquement.</li>
-      <li><b>Durée.</b><br>Les interventions et protections non utilisées à la fin du pack ne sont ni reportées ni remboursées.</li>
-      <li><b>Rétractation (particuliers).</b><br>Le consommateur dispose de 14 jours à compter du paiement pour se rétracter, par simple e-mail à <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>.<br>Ayant demandé que le service commence immédiatement, il est remboursé au prorata des interventions non utilisées ; chaque protection hydrogel déjà posée est déduite à 14,99 €.<br>Le remboursement est effectué sur le moyen de paiement utilisé, dans les 14 jours.</li>
+      <li><b>Durée.</b><br>Les avantages non utilisés à la fin du pack ne sont ni reportés ni remboursés.</li>
+      <li><b>Rétractation (particuliers).</b><br>Le consommateur dispose de 14 jours à compter du paiement pour se rétracter, par simple e-mail à <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a>.<br>Ayant demandé que le service commence immédiatement, il est remboursé du prix payé, déduction faite des prestations déjà fournies à leur tarif normal : 85 € par intervention ou transfert, 14,99 € par protection hydrogel posée.<br>Le remboursement est effectué sur le moyen de paiement utilisé, dans les 14 jours.</li>
       <li><b>Pour le reste,</b> les conditions générales d'IT Soluce s'appliquent, notamment la garantie de 3 mois sur les réparations.</li>
     </ol>
     </div>
@@ -212,12 +245,13 @@ footer a{color:inherit}
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const EUR=new Intl.NumberFormat('fr-BE',{style:'currency',currency:'EUR',maximumFractionDigits:2,minimumFractionDigits:0})
-let FORMULES={'3m':{nom:'Pack Sérénité 3 mois',prix:199},'6m':{nom:'Pack Sérénité 6 mois',prix:349},'12m':{nom:'Pack Sérénité 12 mois',prix:599}}
+let FORMULES={mobile:{nom:'Sérénité Mobile',prix:69},famille:{nom:'Sérénité Famille',prix:349},pro:{nom:'Sérénité Pro',prix:590}}
 let choix=null
 // Prix tenus à jour depuis l'ERP (Supabase) ; les valeurs ci-dessus servent de repli.
 fetch(SB+'/rest/v1/pack_formules?select=code,nom,mois,interventions,hydrogels,prix&actif=eq.true&order=ordre',{headers:{apikey:SK,Authorization:'Bearer '+SK}})
   .then(r=>r.ok?r.json():null).then(l=>{if(!Array.isArray(l))return
-    for(const f of l){FORMULES[f.code]=f;const el=document.querySelector(`.plan[data-code="${f.code}"] .pl-p`);if(el)el.textContent=EUR.format(f.prix)}}).catch(()=>{})
+    for(const f of l){FORMULES[f.code]=f;const el=document.querySelector(`.plan[data-code="${f.code}"] .pl-p`);if(el)el.textContent=EUR.format(f.prix)
+      const m=document.querySelector(`.plan[data-code="${f.code}"] .pl-m`);if(m&&f.mois)m.textContent='soit '+new Intl.NumberFormat('fr-BE',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(Math.round(f.prix/f.mois*100)/100)+' par mois'}}).catch(()=>{})
 function choisir(code){
   choix=code;const f=FORMULES[code]
   document.getElementById('r-nom').textContent=f.nom

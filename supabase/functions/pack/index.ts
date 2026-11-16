@@ -136,10 +136,22 @@ async function archiver(f: any, octets: Uint8Array) {
   const sha = [...h].map((b) => b.toString(16).padStart(2, "0")).join("");
   await rest(`factures?id=eq.${f.id}`, { method: "PATCH", body: JSON.stringify({ pdf_chemin: chemin, pdf_sha256: sha, pdf_reconstitue: false }) });
 }
+// Ce que contient le pack, en une phrase (formule Mobile, Famille ou Pro).
+// deno-lint-ignore no-explicit-any
+async function resumePack(pack: any): Promise<string> {
+  if (pack?.formule) {
+    try {
+      const f = (await rest(`pack_formules?code=eq.${encodeURIComponent(pack.formule)}&select=resume`))[0];
+      if (f?.resume) return String(f.resume);
+    } catch (e) { console.error("résumé formule", e); }
+  }
+  const n = Number(pack?.interventions_total) || 0;
+  return `${n} intervention${n > 1 ? "s" : ""} incluse${n > 1 ? "s" : ""}, à domicile, sur votre lieu de travail ou en dépôt à Tubize`;
+}
 // deno-lint-ignore no-explicit-any
 async function mailFacture(f: any, octets: Uint8Array, prenom: string, pack: any, lien: string, test = false) {
   await mailClient(f.statut === "payee" ? "pack_achat" : "pack_facture", f.client_email, {
-    prenom, pack: pack.nom, date_fin: dateFr(pack.date_fin), interventions: String(pack.interventions_total ?? ""),
+    prenom, pack: pack.nom, date_fin: dateFr(pack.date_fin), interventions: await resumePack(pack),
     facture: f.numero, montant: eur(f.total),
   }, lien, [{ nom: `Facture_${f.numero}.pdf`, octets }], test);
 }
@@ -166,7 +178,7 @@ function signatureHTML(ent: Record<string, string>): string {
 // Textes par défaut : identiques à MAIL_MODELES_PACK_DEFAUT (admin/assets/js/mail-modeles.js).
 const MODELES: Record<string, { objet: string; corps: string }> = {
   pack_achat: { objet: "Votre {pack} est actif — facture {facture}",
-    corps: "Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu'au {date_fin} : {interventions} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail." },
+    corps: "Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu'au {date_fin} : {interventions}.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail." },
   pack_facture: { objet: "Votre {pack} — facture {facture}",
     corps: "Bonjour {prenom},\n\nVous trouverez en pièce jointe la facture {facture} de votre {pack} : {montant} à régler par virement sur le compte {iban} (communication : {facture}).\n\nVotre pack s'active dès réception du paiement." },
   pack_lien: { objet: "Votre lien de connexion — IT Soluce",
@@ -331,7 +343,7 @@ async function webhook(paymentId: string) {
   }
   if (r.deja) return;   // déjà traité : Mollie rappelle parfois plusieurs fois
   const cmd = (await rest(`pack_commandes?id=eq.${cmdId}&select=prenom,nom,email,telephone,adresse,societe,tva`))[0];
-  const pack = (await rest(`packs?id=eq.${r.pack_id}&select=nom,date_fin,interventions_total,hydrogels_total,prix`))[0];
+  const pack = (await rest(`packs?id=eq.${r.pack_id}&select=nom,formule,date_fin,interventions_total,hydrogels_total,prix`))[0];
   const fac = (await rest(`factures?id=eq.${r.facture_id}&select=*`))[0];
   let lien = `${SITE}/espace.html`;
   try { lien = await lienEspace(cmd.email, r.client_id); } catch (e) { console.error("lien espace", e); }
@@ -375,7 +387,7 @@ async function acces(req: Request, c: Record<string, unknown>) {
 
 async function envoyerFacturePack(req: Request, c: Record<string, unknown>) {
   if (!(await personnel(req, ["factures"]))) throw new ErreurClient("Droits insuffisants.", 403);
-  const pk = (await rest(`packs?id=eq.${Number(c.pack_id)}&select=id,client_id,nom,date_fin,interventions_total,facture_id,statut`))[0];
+  const pk = (await rest(`packs?id=eq.${Number(c.pack_id)}&select=id,client_id,nom,formule,date_fin,interventions_total,facture_id,statut`))[0];
   if (!pk || !pk.facture_id) throw new ErreurClient("Pack introuvable.");
   const fac = (await rest(`factures?id=eq.${pk.facture_id}&select=*`))[0];
   if (!fac || !fac.numero) throw new ErreurClient("Facture introuvable.");

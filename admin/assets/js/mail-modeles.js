@@ -46,7 +46,7 @@ window.MAIL_MODELES_DEFAUT = [
  * « pack »). Modifiables dans Gestion › Mails (clé de réglage
  * mail_modeles_pack). Même principe : la politesse et la signature sont
  * ajoutées à l'envoi.
- *   {prenom} {pack} {date_fin} {interventions} {facture} {montant} {iban}
+ *   {prenom} {pack} {date_fin} {interventions} (contenu du pack, en une phrase) {facture} {montant} {iban}
  *   {lien_espace} : bouton « Ouvrir mon espace client » (seul sur sa ligne)
  * Garder ces textes identiques aux valeurs par défaut de
  * supabase/functions/pack/index.ts.
@@ -54,7 +54,7 @@ window.MAIL_MODELES_DEFAUT = [
 window.MAIL_MODELES_PACK_DEFAUT = {
   pack_achat: { nom: 'Pack payé : facture et accès à l\'espace client',
     objet: 'Votre {pack} est actif — facture {facture}',
-    corps: 'Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu\'au {date_fin} : {interventions} interventions incluses, à domicile, sur votre lieu de travail ou en dépôt à Tubize.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail.' },
+    corps: 'Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu\'au {date_fin} : {interventions}.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail.' },
   pack_facture: { nom: 'Pack vendu sur place, paiement à venir',
     objet: 'Votre {pack} — facture {facture}',
     corps: 'Bonjour {prenom},\n\nVous trouverez en pièce jointe la facture {facture} de votre {pack} : {montant} à régler par virement sur le compte {iban} (communication : {facture}).\n\nVotre pack s\'active dès réception du paiement.' },

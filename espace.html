@@ -126,6 +126,21 @@ function ecranConnexion(msg){
   }
 }
 
+// Anciennes formules (3, 6, 12 mois) : pièces −10 %. Nouvelles : −20 % sur la main-d'œuvre.
+const ANCIENNES=['3m','6m','12m']
+const remiseTxt=p=>ANCIENNES.includes(p.formule)?'Pièces −10 %':"−20 % sur la main-d'œuvre"
+const lendemain=d=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+1);return x.toISOString().slice(0,10)}
+const hydroTxt=(p,e)=>p.hydrogels_total?` · Protections hydrogel : ${p.hydrogels_total-e.hydrogels_utilises} restante${p.hydrogels_total-e.hydrogels_utilises>1?'s':''}`:''
+function resumeActif(p,e,pct){
+  if(e.par_mois)return `<div class="big">${e.mois_utilisee?'Utilisée':'Disponible'} <small>intervention de ce mois</small></div>
+      <div class="meta">${e.mois_utilisee?`Prochaine intervention à partir du ${dLong(lendemain(e.mois_fin))}.`:`À utiliser jusqu'au ${dLong(e.mois_fin)}.`}</div>
+      <div class="meta">Valable jusqu'au ${dLong(p.date_fin)}${hydroTxt(p,e)} · ${remiseTxt(p)}</div>`
+  if(p.formule==='mobile')return `<div class="big">${e.restantes>0?'Disponible':'Utilisé'} <small>transfert offert</small></div>
+      <div class="meta">Valable jusqu'au ${dLong(p.date_fin)}${hydroTxt(p,e)} · ${remiseTxt(p)}</div>`
+  return `<div class="big">${e.restantes} <small>intervention${e.restantes>1?'s':''} restante${e.restantes>1?'s':''} sur ${p.interventions_total}</small></div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+      <div class="meta">Valable jusqu'au ${dLong(p.date_fin)}${hydroTxt(p,e)} · ${remiseTxt(p)}</div>`
+}
 function tableau(){
   document.getElementById('deco').hidden=false
   const d=donnees,prenom=String(d.client.nom||'').split(' ')[0]
@@ -133,9 +148,7 @@ function tableau(){
   const carte=p=>{const e=p.etat,pct=Math.min(100,Math.round(e.utilisees/p.interventions_total*100))
     const st=p.statut==='retracte'?['Rétracté','d']:p.statut==='annule'?['Annulé','d']:e.expire?['Terminé','g']:['Actif','']
     return `<div class="card"><div class="pk-h"><b>${esc(p.nom)}</b><span class="badge ${st[1]}">${st[0]}</span></div>
-      ${st[0]==='Actif'?`<div class="big">${e.restantes} <small>intervention${e.restantes>1?'s':''} restante${e.restantes>1?'s':''} sur ${p.interventions_total}</small></div>
-      <div class="bar"><span style="width:${pct}%"></span></div>
-      <div class="meta">Valable jusqu'au ${dLong(p.date_fin)}${p.hydrogels_total?` · Protections hydrogel : ${p.hydrogels_total-e.hydrogels_utilises} restante${p.hydrogels_total-e.hydrogels_utilises>1?'s':''}`:''} · Pièces −10 %</div>`
+      ${st[0]==='Actif'?resumeActif(p,e,pct)
       :`<div class="meta" style="margin-top:6px">${p.date_debut?`Du ${dFr(p.date_debut)} au ${dFr(p.date_fin)}`:''}</div>`}</div>`}
   const journal=d.packs.flatMap(p=>p.journal.map(j=>({...j,pack:p.nom}))).sort((a,b)=>String(b.date).localeCompare(String(a.date)))
   app.innerHTML=`<h1>Bonjour ${esc(prenom)}</h1><p class="msub">Votre espace IT Soluce</p>
@@ -145,7 +158,7 @@ function tableau(){
     <div class="card"><div class="h3">Historique des interventions</div>${journal.length?`<ul class="hist">${journal.map(j=>`<li><div class="hd"><span>${dFr(j.date)} · ${TYPES[j.type]||''}${d.packs.length>1?' · '+esc(j.pack.replace('Pack Sérénité ','Pack ')):''}</span><span class="chip${j.decompte?'':' g'}">${j.decompte?'1 intervention':'non décomptée'}</span></div>${esc(j.description)}${j.hydrogels?`<div class="meta">${j.hydrogels} protection${j.hydrogels>1?'s':''} hydrogel posée${j.hydrogels>1?'s':''}</div>`:''}</li>`).join('')}</ul>`:'<p class="vide">Aucune intervention pour le moment.</p>'}</div>
     <div class="card"><div class="h3">Historique de mes packs</div>${d.packs.length?`<ul class="hist">${d.packs.map(p=>{const e=p.etat
       const st=p.statut==='retracte'?['Rétracté','d']:p.statut==='annule'?['Annulé','d']:e.expire?['Terminé','g']:['En cours','']
-      return `<li><div class="hd"><span>${p.date_debut?`Du ${dFr(p.date_debut)} au ${dFr(p.date_fin)}`:''}</span><span class="badge ${st[1]}">${st[0]}</span></div><b>${esc(p.nom)}</b><div class="meta">${e.utilisees} intervention${e.utilisees>1?'s':''} utilisée${e.utilisees>1?'s':''} sur ${p.interventions_total}${p.hydrogels_total?` · ${e.hydrogels_utilises} protection${e.hydrogels_utilises>1?'s':''} hydrogel sur ${p.hydrogels_total}`:''}</div></li>`}).join('')}</ul>`:'<p class="vide">Aucun pack pour le moment.</p>'}</div>
+      return `<li><div class="hd"><span>${p.date_debut?`Du ${dFr(p.date_debut)} au ${dFr(p.date_fin)}`:''}</span><span class="badge ${st[1]}">${st[0]}</span></div><b>${esc(p.nom)}</b><div class="meta">${p.formule==='mobile'?`Transfert ${e.utilisees?'utilisé':'non utilisé'}`:`${e.utilisees} intervention${e.utilisees>1?'s':''} utilisée${e.utilisees>1?'s':''} sur ${p.interventions_total}`}${p.hydrogels_total?` · ${e.hydrogels_utilises} protection${e.hydrogels_utilises>1?'s':''} hydrogel sur ${p.hydrogels_total}`:''}</div></li>`}).join('')}</ul>`:'<p class="vide">Aucun pack pour le moment.</p>'}</div>
     <div class="card"><div class="h3">Mes documents</div>${d.factures.length?d.factures.map(f=>`<div class="doc"><span>${f.type==='note_credit'?'Note de crédit':'Facture'} ${esc(f.numero)} · ${eur(f.total)}<br><span class="meta">${dFr(f.date)}</span></span><button onclick="voirFacture(${f.id})">Voir</button></div>`).join(''):'<p class="vide">Aucun document.</p>'}</div>
     <p class="note">Une question ? <a href="tel:+32474056659">+32 474 05 66 59</a> · <a href="mailto:contact@itsoluce.be">contact@itsoluce.be</a></p>`
 }

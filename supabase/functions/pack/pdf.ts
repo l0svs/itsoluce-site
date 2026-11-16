@@ -11,7 +11,7 @@ type Doc = any;
 // Les polices standard du PDF ne couvrent que le jeu WinAnsi : on remplace
 // les quelques caractères typographiques qui n'y figurent pas.
 const propre = (s: unknown) => String(s ?? "")
-  .replace(/[   ]/g, " ")
+  .replace(/[\u202F\u00A0\u2009]/g, " ")
   .replace(/−/g, "-")
   .replace(/[→]/g, "->")
   .replace(/[^\u0000-ÿ€—–’‘“”…Œœ›‹•]/g, "");

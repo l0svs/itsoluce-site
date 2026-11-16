@@ -942,8 +942,8 @@ async function load(){
   ])
   allRelances=rRel.error?[]:(rRel.data||[])
   // Packs Sérénité (facultatif : la fiche reste utilisable si la lecture échoue)
-  {const [rp,ri]=await Promise.all([sb.from('packs').select('id,client_id,nom,statut,date_debut,date_fin,interventions_total,hydrogels_total,facture_id').limit(5000),
-     sb.from('pack_interventions').select('pack_id,decompte,hydrogels').limit(20000)])
+  {const [rp,ri]=await Promise.all([sb.from('packs').select('id,client_id,nom,formule,par_mois,statut,date_debut,date_fin,interventions_total,hydrogels_total,facture_id').limit(5000),
+     sb.from('pack_interventions').select('pack_id,decompte,hydrogels,date_inter').limit(20000)])
    allPacks=rp.error?[]:(rp.data||[]);packInters=ri.error?[]:(ri.data||[])}
   {const n=parseInt(rSet.data&&rSet.data[0]&&rSet.data[0].valeur,10);garantieMois=n>0?n:3}
   if(rCli.error)throw new Error('Clients : '+rCli.error.message)
@@ -1195,10 +1195,20 @@ window.showDetail=function(id){
   let blocPack=''
   if(pk&&pk.statut==='actif'){
     const js=packInters.filter(i=>i.pack_id===pk.id),u=js.reduce((a,i)=>a+(i.decompte||0),0),h=js.reduce((a,i)=>a+(i.hydrogels||0),0),r=pk.interventions_total-u
+    const remise=['3m','6m','12m'].includes(pk.formule)?'Pièces −10 %':"−20 % main-d'œuvre"
+    const finMois=()=>{if(!pk.par_mois||!pk.date_debut)return null
+      const [y,m,j]=pk.date_debut.split('-').map(Number);let k=0
+      const ajm=n=>{const fin=new Date(Date.UTC(y,m-1+n+1,0)).getUTCDate();return new Date(Date.UTC(y,m-1+n,Math.min(j,fin))).toISOString().slice(0,10)}
+      while(ajm(k+1)<=ajd)k++
+      const deb=ajm(k),fin=new Date(ajm(k+1)+'T12:00:00Z');fin.setUTCDate(fin.getUTCDate()-1)
+      return {deb,fin:fin.toISOString().slice(0,10)}}
+    const pm=finMois(),moisUtil=pm&&js.some(i=>(i.decompte||0)>0&&i.date_inter>=pm.deb&&i.date_inter<=pm.fin)
     blocPack=`<div class="fi-pack"><div class="fp-h">${escHtml(pk.nom)} <span class="pill p-ok">Actif</span></div>
-      <div class="fp-n">${r} <small>intervention${r>1?'s':''} restante${r>1?'s':''} sur ${pk.interventions_total}</small></div>
+      <div class="fp-n">${pm?`${moisUtil?'Utilisée':'Disponible'} <small>intervention du mois (jusqu'au ${dateCourte(pm.fin)}) · ${r} sur ${pk.interventions_total} restantes</small>`
+        :pk.formule==='mobile'?`${r>0?'Disponible':'Utilisé'} <small>transfert offert</small>`
+        :`${r} <small>intervention${r>1?'s':''} restante${r>1?'s':''} sur ${pk.interventions_total}</small>`}</div>
       <div class="fp-bar"><span style="width:${Math.min(100,Math.round(u/pk.interventions_total*100))}%"></span></div>
-      <div class="fp-m">Jusqu'au ${dateCourte(pk.date_fin)}${pk.hydrogels_total?` · Hydrogel : ${pk.hydrogels_total-h} restante${pk.hydrogels_total-h>1?'s':''}`:''} · Pièces −10 %</div>
+      <div class="fp-m">Jusqu'au ${dateCourte(pk.date_fin)}${pk.hydrogels_total?` · Hydrogel : ${pk.hydrogels_total-h} restante${pk.hydrogels_total-h>1?'s':''}`:''} · ${remise}</div>
       <div class="fp-a"><a class="btn btn-primary" href="/admin/packs.html?pack=${pk.id}">Noter une intervention</a><a class="btn btn-secondary" href="/admin/packs.html?pack=${pk.id}">Voir le suivi</a></div></div>`
   }else if(pk){
     blocPack=`<div class="fi-pack att"><div class="fp-h">${escHtml(pk.nom)} <span class="pill p-a">À encaisser</span></div>
