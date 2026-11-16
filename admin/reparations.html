@@ -1080,7 +1080,22 @@ function packRestantes(p){return p.interventions_total-packDecomptes.filter(i=>i
    Facture en brouillon : le prix se vérifie dans Factures avant émission. */
 const ANCIENNES_FORMULES=['3m','6m','12m']
 function remisePiecesPack(packId){const p=packsActifs.find(x=>x.id===packId);return p&&ANCIENNES_FORMULES.includes(p.formule)?0.1:0}
-function prixPiecePack(pc,packId){const a=Number(pc.cout)||0;const t=grillePrix.find(g=>a>=g.min&&a<g.max)||grillePrix[grillePrix.length-1];return Math.round(a*(Number(t.coef)||1)*(1-remisePiecesPack(packId))*100)/100}
+// Prix de référence d'une pièce : achat × coefficient de la grille, jamais
+// moins que l'achat + 20 % (sinon, sur les tranches chères où la marge est
+// dans le forfait, la pièce serait revendue à perte).
+const MARGE_MIN_PIECE=0.20
+function prixPieceRef(pc){const a=Number(pc.cout)||0;const t=grillePrix.find(g=>a>=g.min&&a<g.max)||grillePrix[grillePrix.length-1]
+  return Math.round(Math.max(a*(Number(t.coef)||1),a*(1+MARGE_MIN_PIECE))*100)/100}
+function prixPiecePack(pc,packId){const a=Number(pc.cout)||0;const t=grillePrix.find(g=>a>=g.min&&a<g.max)||grillePrix[grillePrix.length-1]
+  return Math.round(Math.max(a*(Number(t.coef)||1)*(1-remisePiecesPack(packId)),a*(1+MARGE_MIN_PIECE))*100)/100}
+// Client Mobile, ou Famille / Pro dont l'intervention du mois est utilisée :
+// −20 % sur la main-d'œuvre (prix du dossier − prix de référence des pièces).
+function packRemiseMO(r){
+  if(!r||r.pack_id||r.converti_facture_id||r.garantie_de_id||r.statut==='non_reparable'||!r.client_id)return null
+  const p=packDuClient(r.client_id);if(!p||ANCIENNES_FORMULES.includes(p.formule))return null
+  if(p.formule==='mobile'||(p.par_mois&&(moisPackUtilise(p)||packRestantes(p)<=0)))return p
+  return null
+}
 // Formules Famille et Pro : l'intervention du mois du pack est-elle déjà utilisée ?
 function moisPackUtilise(p){if(!p.par_mois||!p.date_debut)return false
   const [y,m,j]=p.date_debut.split('-').map(Number),auj=new Date().toISOString().slice(0,10)
@@ -1673,10 +1688,11 @@ function renderDetail(){
     ${r.pack_id?`<div class="gar-note">Inclus dans le <b>Pack Sérénité</b> : pas de facture de main-d'œuvre. Seules les pièces éventuelles sont facturées${remisePiecesPack(r.pack_id)?', à −10 %':', au prix normal'}. <a href="/admin/packs.html?pack=${r.pack_id}">Voir le pack</a></div>`
       :(()=>{const p=r.client_id&&!r.converti_facture_id&&!r.garantie_de_id&&r.statut!=='rendu'?packDuClient(r.client_id):null;if(!p)return ''
         const n=packRestantes(p),lien=`<a href="/admin/packs.html?pack=${p.id}&dossier=${r.id}">Inclure ce dossier dans le pack</a>`
-        if(p.formule==='mobile')return `<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : <b>−20 % sur la main-d'œuvre</b> de cette réparation (pièces au prix normal).${n>0?` Transfert vers un nouveau smartphone offert : <a href="/admin/packs.html?pack=${p.id}&dossier=${r.id}">l'inclure dans le pack</a> s'il s'agit de ce transfert.`:''}</div>`
+        const btnRem=prixClient(r)>0?` <a onclick="factureRemisePack(${r.id})">Facturer avec −20 % main-d'œuvre</a>`:" Indique le prix du dossier pour pouvoir le facturer avec la remise."
+        if(p.formule==='mobile')return `<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : <b>−20 % sur la main-d'œuvre</b> de cette réparation (pièces au prix normal).${btnRem}${n>0?`<br>Transfert vers un nouveau smartphone offert : <a href="/admin/packs.html?pack=${p.id}&dossier=${r.id}">l'inclure dans le pack</a> s'il s'agit de ce transfert.`:''}</div>`
         if(p.par_mois){const u=moisPackUtilise(p)
           return n>0&&!u?`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : l'intervention du mois est disponible (main-d'œuvre incluse). ${lien}</div>`
-            :`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : l'intervention du mois est déjà utilisée. Ce dossier se facture avec <b>−20 % sur la main-d'œuvre</b>.</div>`}
+            :`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif : l'intervention du mois est déjà utilisée. Ce dossier se facture avec <b>−20 % sur la main-d'œuvre</b>.${btnRem}</div>`}
         return n>0?`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif (${n} intervention${n>1?'s':''} restante${n>1?'s':''}). ${lien}</div>`:''})()}
     <div id="fil-rep"></div>
     ${etapeSuivante(r)}
@@ -1942,6 +1958,41 @@ async function devisDuDossier(r){
     if(!error&&data&&data[0])return data[0]
   }
   return null
+}
+window.factureRemisePack=async function(id){
+  const r=allReps.find(x=>x.id===id)
+  if(!r){showToast('Dossier introuvable','err');return}
+  const p=packRemiseMO(r);if(!p){showToast("Ce dossier n'a pas droit à la remise du pack",'err');return}
+  try{
+    const ex=await sb.from('factures').select('id,numero').eq('reparation_id',r.id).is('supprime_le',null).neq('statut','annulee').limit(1)
+    if(ex.data&&ex.data.length){showToast(`Une facture existe déjà pour ce dossier (${ex.data[0].numero||'brouillon'})`,'err');return}
+    const devisLie=await devisDuDossier(r)
+    if(devisLie){showToast(`Ce dossier vient du devis ${devisLie.numero||''} : applique la remise de 20 % dans le devis, puis facture depuis le devis.`,'err');return}
+    const prix=prixClient(r)
+    if(!(prix>0)){showToast('Indique le prix du dossier avant de facturer','err');return}
+    const pcs=(r.pieces||[]).filter(pc=>pc&&pc.nom)
+    const lignesP=pcs.map(pc=>{const q=Number(pc.qte)||1,pu=prixPieceRef(pc);return {description:`${pc.nom} (pièce)`,quantite:q,prix_unitaire:pu,total:Math.round(pu*q*100)/100,stock_id:''}})
+    const totP=Math.round(lignesP.reduce((t,l)=>t+l.total,0)*100)/100
+    const mo=Math.max(0,Math.round((prix-totP)*100)/100)
+    const remise=Math.round(mo*0.20*100)/100
+    const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
+    const lignes=[...lignesP,
+      {description:`Main-d'œuvre${app?' — '+app:''}${r.panne_description?' : '+String(r.panne_description).slice(0,120):''}`,quantite:1,prix_unitaire:mo,total:mo,stock_id:''},
+      ...(remise>0?[{description:`Remise ${p.nom} : −20 % sur la main-d'œuvre`,quantite:1,prix_unitaire:-remise,total:-remise,stock_id:''}]:[])]
+    const tot=Math.round(lignes.reduce((t,l)=>t+l.total,0)*100)/100
+    const detail=lignes.map(l=>'• '+l.description.split(' : ')[0]+' : '+eur(l.total)).join('\n')
+    if(!confirm(`Facturer le dossier ${r.numero} avec la remise du ${p.nom} ?\n\n${detail}\n\nTotal : ${eur(tot)} (au lieu de ${eur(prix)})${pcs.length?'':'\n\nAucune pièce dans le dossier : tout le prix est compté comme main-d\'œuvre.'}\n\nCréée en brouillon : vérifie-la dans Factures avant de l'émettre.`))return
+    const res=await sb.from('factures').insert({reparation_id:r.id,reparation_numero:r.numero,client_id:r.client_id||null,client_nom:r.client_nom,
+      client_email:r.client_email||null,client_telephone:r.client_telephone||null,
+      client_adresse:((allClientsRep.find(c=>String(c.id)===String(r.client_id))||{}).adresse)||null,
+      date_emission:new Date().toISOString().slice(0,10),statut:'brouillon',acompte:0,acompte_type:'euro',lignes,total:tot,remise:0,
+      notes:null,stock_decremente:true,updated_at:new Date().toISOString()}).select().single()
+    if(res.error)throw new Error(res.error.message)
+    await sb.from('reparations').update({converti_facture_id:res.data.id,updated_at:new Date().toISOString()}).eq('id',r.id)
+    r.converti_facture_id=res.data.id
+    renderDetail()
+    showToast(`Facture créée en brouillon avec −20 % sur la main-d'œuvre (${eur(tot)}) — à vérifier et émettre dans Factures`,'ok')
+  }catch(e){showToast('Erreur : '+(e.message||e),'err')}
 }
 window.factureDepuisDossier=async function(id,offert=false){
   const r=allReps.find(x=>x.id===id)
