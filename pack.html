@@ -29,6 +29,7 @@ a{color:var(--a)}
 h1{font-size:44px;font-weight:600;letter-spacing:-.8px;line-height:1.08}
 h2{font-size:26px;font-weight:600;letter-spacing:-.4px;margin-bottom:18px}
 .sub{font-size:17px;color:var(--t2);margin-top:14px;max-width:720px;line-height:1.6}
+.sub .accroche{color:var(--t1);font-weight:600}
 .hero{padding:64px 0 40px}
 .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 56px}
 .plan{border:1px solid var(--ln);border-radius:18px;padding:26px;position:relative;display:flex;flex-direction:column}
@@ -136,13 +137,13 @@ footer a{color:inherit}
   <section class="hero">
     <p class="lbl">Pack Sérénité</p>
     <h1>Votre technicien attitré,<br>toute l'année.</h1>
-    <p class="sub">Un pack annuel, payé une seule fois, sans renouvellement automatique.<br>Je me déplace chez vous ou sur votre lieu de travail, sans frais de déplacement, ou vous déposez votre appareil à l'atelier de Tubize.<br>PC, smartphone, tablette, console de jeu et autres.<br>Choisissez la formule qui vous ressemble.</p>
+    <p class="sub">Un pack annuel, payé une seule fois, sans renouvellement automatique.<br>Je me déplace chez vous ou sur votre lieu de travail, sans frais de déplacement, ou vous déposez votre appareil à l'atelier de Tubize.<br>PC, smartphone, tablette, console de jeu et autres.<br><b class="accroche">Fini de chercher un réparateur à chaque panne : vous avez le vôtre.</b></p>
   </section>
 
   <section class="plans reveal-group" id="plans">
     <div class="plan" data-code="mobile"><div class="pl-n">Sérénité Mobile</div><div class="pl-pour">Pour vous et votre smartphone</div><div class="pl-p">69 €</div><div class="pl-m">soit 5,75 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
       <div class="pl-v">Valeur à la carte : <b>plus de 140 €</b></div>
-      <ul><li class="fort">2 protections hydrogel : pose immédiate, puis renouvellement à 6 mois</li><li class="fort">Transfert vers votre nouveau smartphone offert</li><li>Diagnostic offert</li><li>Bilan santé annuel de votre smartphone</li><li>Rendez-vous prioritaire</li><li>Déplacement inclus</li><li class="non">Interventions et réparations payantes, avec −20 % sur la main-d'œuvre</li></ul><button class="btn o" onclick="choisir('mobile')">Choisir Mobile</button></div>
+      <ul><li class="fort">2 protections hydrogel</li><li class="fort">Transfert vers votre nouveau smartphone offert</li><li>Diagnostic offert</li><li>Bilan santé annuel de votre smartphone</li><li>Rendez-vous prioritaire</li><li>Déplacement inclus</li><li class="non">Interventions et réparations payantes, avec −20 % sur la main-d'œuvre</li></ul><button class="btn o" onclick="choisir('mobile')">Choisir Mobile</button></div>
     <div class="plan reco" data-code="famille"><span class="tag">Le plus choisi</span><div class="pl-n">Sérénité Famille</div><div class="pl-pour">Pour tout le foyer, tous les appareils</div><div class="pl-p">349 €</div><div class="pl-m">soit 29,08 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
       <div class="pl-v">Valeur à la carte : <b>jusqu'à 1 080 €</b></div>
       <ul><li class="fort">1 intervention par mois, main-d'œuvre incluse : vous ne payez plus que les pièces</li><li>Tous les appareils du foyer</li><li>Diagnostic offert, sans limite</li><li>Bilan santé annuel de tous vos appareils, à domicile</li><li>4 protections hydrogel</li><li>−20 % sur la main-d'œuvre au-delà</li><li>Rendez-vous prioritaire</li><li>Déplacement inclus</li></ul><button class="btn" onclick="choisir('famille')">Choisir Famille</button></div>
