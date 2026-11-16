@@ -583,6 +583,7 @@ body{font-size:14px;}
   .hnav::-webkit-scrollbar{display:none;}
   .hnav .hnl{flex-shrink:0;}
 }
+.champ-requis{border-color:#ef4444!important;box-shadow:0 0 0 3px rgba(239,68,68,.18)!important}
 </style>
 <script src="/admin/assets/js/vendor/qrcode-generator-1.4.4.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -769,7 +770,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
                 <option value="">Non précisé</option>
                 <option value="especes">Espèces</option>
                 <option value="carte">Carte</option>
-                <option value="virement">Virement</option>
+                <option value="virement">Virement / QR</option>
                 <option value="mixte">Mixte (carte + espèces)</option>
               </select>
             </div>
@@ -1471,6 +1472,7 @@ window.onStatutChange=function(){
 }
 window.onPaiementChange=function(){
   const mode=document.getElementById('f-paiement').value
+  if(mode)document.getElementById('f-paiement').classList.remove('champ-requis')
   document.getElementById('especes-box').classList.toggle('on',mode==='especes')
   document.getElementById('mixte-box').classList.toggle('on',mode==='mixte')
   calcRendu()
@@ -2254,6 +2256,13 @@ window.saveFacture=async function(){
   let payload=lireFormulaire()
   if(!payload.client_nom){showToast('Le nom du client est requis','err');return}
   if(!payload.lignes.length){showToast('Ajoute au moins une ligne','err');return}
+  // Une facture payée (ou une note de crédit remboursée) doit toujours dire comment :
+  // sans mode de paiement, la comptabilité ne peut pas rapprocher l'encaissement.
+  if(['payee','remboursee'].includes(payload.statut)&&!payload.mode_paiement){
+    showToast('Choisis le mode de paiement (espèces, carte, virement / QR ou mixte)','err')
+    const el=document.getElementById('f-paiement');if(el){el.focus();el.classList.add('champ-requis')}
+    return
+  }
   const id=document.getElementById('f-id').value
   const dejaEmise=!!(id&&estEmise(courante))
   if(!dejaEmise&&payload.statut&&payload.statut!=='brouillon'&&window.messageEmission){
