@@ -1,0 +1,124 @@
+/* ═══════════════════════════════════════════════════════════════════
+   IT Soluce ERP — adaptation téléphone, commune à toutes les pages.
+   S'applique uniquement sous 640 px de large : rien ne change sur PC.
+   Chargé après les styles de chaque page (« html body » + !important
+   pour primer sur les anciennes règles copiées dans chaque fichier).
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width:640px){
+
+  /* ── Saisie : 16 px minimum, sinon l'iPhone zoome à chaque champ ── */
+  html body input:not([type=checkbox]):not([type=radio]):not([type=range]),
+  html body select, html body textarea{font-size:16px !important;}
+  html body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+
+  /* ── Barre du haut : identique sur toutes les pages ── */
+  html body .topbar{
+    position:sticky !important;top:0;z-index:250 !important;
+    height:52px !important;padding:0 10px !important;gap:6px !important;
+    background:color-mix(in srgb,var(--bg2) 82%,transparent) !important;
+    -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:0.5px solid var(--ln) !important;
+  }
+  html body .mobile-menu-btn{
+    display:flex !important;width:44px !important;height:44px !important;
+    border:none !important;background:transparent !important;border-radius:12px !important;
+  }
+  html body .mobile-menu-btn svg{width:24px !important;height:24px !important;stroke-width:1.8 !important;}
+  html body .mobile-menu-btn:active{background:var(--bg3) !important;}
+  html body .cp-top{min-width:44px !important;min-height:40px !important;}
+
+  /* ── Menu (trois barres) : même présentation sur toutes les pages ── */
+  html body .mobile-overlay{z-index:700 !important;}
+  html body .mobile-nav{
+    z-index:701 !important;width:84% !important;max-width:320px !important;
+    padding:calc(8px + env(safe-area-inset-top)) 0 calc(16px + env(safe-area-inset-bottom)) !important;
+    border-radius:0 20px 20px 0 !important;overflow-x:hidden !important;overscroll-behavior:contain;
+    box-shadow:4px 0 30px rgba(0,0,0,.25) !important;
+  }
+  html body .mobile-nav-head{padding:4px 12px 10px 20px !important;margin-bottom:4px !important;border-bottom:0.5px solid var(--ln) !important;}
+  html body .mobile-nav-head img{height:34px !important;width:auto !important;}
+  html body .mobile-nav-close{width:44px !important;height:44px !important;border-radius:12px !important;font-size:26px !important;}
+  html body .mobile-nav .sidebar{
+    display:block !important;position:static !important;width:100% !important;height:auto !important;
+    border:0 !important;padding:0 !important;margin:0 !important;background:none !important;overflow:visible !important;
+  }
+  html body .mobile-nav .ng{padding:8px 0 2px !important;margin:0 !important;}
+  html body .mobile-nav .ngl,html body .mobile-nav .nl-group{
+    display:block !important;padding:10px 22px 4px !important;margin:0 !important;
+    font-size:11px !important;letter-spacing:.7px !important;
+  }
+  html body .mobile-nav .nl{
+    box-sizing:border-box !important;display:flex !important;align-items:center !important;
+    width:auto !important;max-width:none !important;min-height:46px !important;
+    margin:1px 10px !important;padding:10px 12px !important;gap:12px !important;
+    border-radius:12px !important;font-size:16px !important;
+  }
+  html body .mobile-nav .nl svg{width:20px !important;height:20px !important;}
+  html body .mobile-nav .nl:active{background:var(--bg3) !important;}
+  html body .mobile-nav .nc{min-width:22px !important;height:20px !important;padding:0 6px !important;border-radius:10px !important;font-size:11px !important;}
+
+  /* ── Barre d'onglets du bas : identique partout ── */
+  html body .mobile-bottombar{
+    display:block !important;z-index:300 !important;
+    height:calc(56px + env(safe-area-inset-bottom)) !important;
+    padding-bottom:env(safe-area-inset-bottom) !important;
+    background:color-mix(in srgb,var(--bg2) 85%,transparent) !important;
+    -webkit-backdrop-filter:saturate(180%) blur(20px) !important;backdrop-filter:saturate(180%) blur(20px) !important;
+    border-top:0.5px solid var(--ln) !important;
+  }
+  html body .mobile-bottombar-inner{height:56px !important;}
+  html body .mbb-item{font-size:10px !important;gap:2px !important;}
+  html body .mbb-item svg{width:25px !important;height:25px !important;}
+  /* Contenu jamais caché sous la barre */
+  html body .content{padding-bottom:calc(72px + env(safe-area-inset-bottom)) !important;}
+
+  /* Une fenêtre est ouverte (classe posée par mobile.js) : on retire la
+     barre du bas, qui recouvrait les boutons « Annuler » / « Valider ». */
+  html.m-modal body .mobile-bottombar{display:none !important;}
+
+  /* ── Fenêtres : elles montent du bas, pleine largeur, tout est atteignable ── */
+  html body :is(.mo-ov,.tr-ov,.email-overlay,.modal-fond,.cmd-ov,.calc-modal,#rl-ov){
+    align-items:flex-end !important;justify-content:center !important;padding:0 !important;
+  }
+  html body :is(.mo,.tr-box,.email-box,.modal,.cmd-box,.calc-box,#rl-box){
+    box-sizing:border-box !important;width:100% !important;max-width:100% !important;margin:0 !important;
+    max-height:calc(100dvh - 10px - env(safe-area-inset-top)) !important;
+    border-radius:20px 20px 0 0 !important;border-left:0 !important;border-right:0 !important;border-bottom:0 !important;
+    overflow-y:auto !important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    animation:m-sheet .3s cubic-bezier(.32,.72,0,1);
+  }
+  /* espace pour la barre d'accueil de l'iPhone */
+  html body :is(#rl-box,.modal){padding-bottom:env(safe-area-inset-bottom) !important;}
+  html body :is(.tr-box,.cmd-box,.calc-box){padding-bottom:calc(16px + env(safe-area-inset-bottom)) !important;}
+  /* Boutons d'action toujours visibles en bas de la fenêtre */
+  html body :is(.mo-f,.email-foot){
+    position:sticky !important;bottom:0 !important;z-index:3 !important;
+    background:var(--bg2) !important;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom)) !important;
+    box-shadow:0 -1px 0 var(--ln) !important;
+  }
+  html body :is(.mo-f,.email-foot) .btn{flex:1 1 0 !important;min-height:48px !important;justify-content:center !important;}
+  @keyframes m-sheet{from{transform:translateY(100%);}to{transform:translateY(0);}}
+
+  /* Aperçu PDF : boutons au-dessus de la barre d'accueil */
+  html body .pdf-actions{bottom:calc(14px + env(safe-area-inset-bottom)) !important;}
+
+  /* ── Cibles tactiles : 40 px minimum pour les petits boutons ── */
+  html body :is(.act-btn,.panel-close,.ligne-del,.navbtn,.qte button,.rl-h button){
+    min-width:40px !important;min-height:40px !important;
+  }
+  html body button.act{min-width:40px !important;min-height:40px !important;}
+  /* Champs de recherche : toute la largeur disponible */
+  html body :is(.toolbar,.tools) > :is(.search-wrap,.srch-wrap){flex:1 1 200px !important;width:auto !important;max-width:none !important;min-width:0 !important;}
+  html body :is(.search-wrap,.srch-wrap) > input{width:100% !important;max-width:none !important;box-sizing:border-box !important;}
+  /* Filtres en pastilles (groupe contenant un bouton actif « .on ») */
+  html body :has(> button.on) > button{min-height:38px !important;}
+  html body .panel-back{min-height:40px !important;}
+
+  /* ── Messages de confirmation : au-dessus de la barre du bas, centrés ── */
+  html body .toast{
+    left:12px !important;right:12px !important;max-width:none !important;
+    bottom:calc(68px + env(safe-area-inset-bottom)) !important;
+  }
+  html.m-modal body .toast{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}
+}
