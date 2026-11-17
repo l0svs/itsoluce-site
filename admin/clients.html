@@ -117,6 +117,12 @@ body{font-size:14px;}
 .search-input:focus{border-color:var(--a);}
 .search-input::placeholder{color:var(--t3);}
 .seg{display:flex; background:var(--bg3); border:1px solid var(--ln); border-radius:11px; padding:3px; gap:2px;}
+.type-cli{display:grid; grid-template-columns:1fr 1fr; background:var(--bg3); border:1px solid var(--ln); border-radius:11px; padding:3px; gap:3px; margin-bottom:14px;}
+.type-cli button{border:none; background:none; font-family:inherit; font-size:13px; color:var(--t2); padding:8px 10px; border-radius:8px; cursor:pointer; transition:background .15s,color .15s;}
+.type-cli button:hover{color:var(--t1);}
+.type-cli button.on{background:var(--bg2); color:var(--t1); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.type-cli button:focus-visible{outline:2px solid var(--a); outline-offset:1px;}
+.fg-sous{font-size:11.5px; font-weight:600; color:var(--t3); text-transform:uppercase; letter-spacing:.4px; margin:4px 0 8px;}
 .seg button{border:none; background:none; font-family:inherit; font-size:12.5px; color:var(--t2); padding:6px 13px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:.12s;}
 .seg button:hover{color:var(--t1);}
 .seg button.on{background:var(--bg2); color:var(--t1); font-weight:500; box-shadow:0 1px 2px rgba(0,0,0,.05);}
@@ -682,32 +688,32 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-ico" style="background:var(--ad);color:var(--a);"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg></div><span>Identité</span></div>
-        <div class="fg-row">
-          <div class="fg"><label>Prénom</label><input type="text" id="f-prenom" placeholder="Marie"/></div>
-          <div class="fg"><label>Nom</label><input type="text" id="f-nom" placeholder="Dupont"/></div>
+        <input type="hidden" id="f-type" value="particulier"/>
+        <div class="type-cli" role="group" aria-label="Type de client">
+          <button type="button" id="tc-part" class="on" aria-pressed="true" onclick="choisirTypeClient('particulier')">Particulier</button>
+          <button type="button" id="tc-pro" aria-pressed="false" onclick="choisirTypeClient('entreprise')">Entreprise</button>
         </div>
-        <div class="fg-aide">Au moins l'un des deux est requis.</div>
+        <div id="pro-fields-client" style="display:none;flex-direction:column;">
+          <div class="fg"><label for="f-societe">Nom de l'entreprise *</label><input type="text" id="f-societe" placeholder="ex : Domaine W"/></div>
+          <div class="fg"><label for="f-tva">N° de TVA / BCE *</label><input type="text" id="f-tva" placeholder="BE 0123.456.789"/></div>
+          <div class="fg-sous">Personne de contact (facultatif)</div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label for="f-prenom">Prénom</label><input type="text" id="f-prenom" placeholder="Marie"/></div>
+          <div class="fg"><label for="f-nom">Nom</label><input type="text" id="f-nom" placeholder="Dupont"/></div>
+        </div>
+        <div class="fg-aide" id="aide-nom">Au moins l'un des deux est requis.</div>
       </div>
 
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(124,58,237,.14);color:var(--vio);"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><span>Contact</span></div>
         <div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="marie@email.com"/></div>
         <div class="fg"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
-        <div class="fg"><label>Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
+        <div class="fg"><label for="f-adresse" id="lab-adresse">Adresse (facultative)</label><input type="text" id="f-adresse" placeholder="Rue, numéro, code postal, ville"/></div>
       </div>
 
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(26,138,82,.14);color:var(--ok);"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Informations complémentaires</span></div>
-        <div class="fg"><label>Type</label>
-          <select id="f-type" onchange="onTypeClientChange()">
-            <option value="particulier">Particulier</option>
-            <option value="entreprise">Entreprise / TPE</option>
-          </select>
-        </div>
-        <div id="pro-fields-client" style="display:none;flex-direction:column;">
-          <div class="fg"><label>Société</label><input type="text" id="f-societe" placeholder="Nom de la société"/></div>
-          <div class="fg"><label>Numéro TVA / BCE</label><input type="text" id="f-tva" placeholder="BE 0123.456.789"/></div>
-        </div>
         <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Observations sur ce client…"></textarea></div>
       </div>
 
@@ -769,7 +775,8 @@ function openPanel(c=null){
   document.getElementById('panelTitle').textContent=c?'Modifier le client':'Nouveau client'
   document.getElementById('saveBtn').textContent=c?'Mettre à jour':'Enregistrer'
   document.getElementById('f-id').value=c?.id||''
-  const parts=(c?.nom||'').trim().split(/\s+/).filter(Boolean)
+  const sansContact=c?.type==='entreprise'&&c?.societe&&String(c.nom||'').trim()===String(c.societe).trim()
+  const parts=(sansContact?'':(c?.nom||'')).trim().split(/\s+/).filter(Boolean)
   document.getElementById('f-prenom').value=parts[0]||''
   document.getElementById('f-nom').value=parts.slice(1).join(' ')
   document.getElementById('f-email').value=c?.email||''
@@ -784,10 +791,18 @@ function openPanel(c=null){
   document.getElementById('panel').classList.add('open')
   setTimeout(()=>document.getElementById('f-prenom').focus(),120)
 }
+/* Particulier : prénom, nom, contact, adresse facultative.
+   Entreprise : nom de l'entreprise, n° de TVA, adresse de l'entreprise,
+   personne de contact facultative. Un seul formulaire, l'affichage bascule. */
 function onTypeClientChange(){
   const pro=document.getElementById('f-type').value==='entreprise'
+  for(const [id,on] of [['tc-part',!pro],['tc-pro',pro]]){const b=document.getElementById(id);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))}
   document.getElementById('pro-fields-client').style.display=pro?'flex':'none'
+  document.getElementById('aide-nom').textContent=pro?'Facultatif : sans personne de contact, le nom de l\'entreprise est utilisé.':'Au moins l\'un des deux est requis.'
+  document.getElementById('lab-adresse').textContent=pro?'Adresse de l\'entreprise *':'Adresse (facultative)'
 }
+window.choisirTypeClient=function(t){document.getElementById('f-type').value=t;onTypeClientChange()
+  document.getElementById(t==='entreprise'?'f-societe':'f-prenom').focus()}
 function closePanel(){
   document.getElementById('overlay').classList.remove('open')
   document.getElementById('panel').classList.remove('open')
@@ -1268,9 +1283,12 @@ window.saveClient=async function(){
   const id=document.getElementById('f-id').value
   const prenom=document.getElementById('f-prenom').value.trim()
   const nom=document.getElementById('f-nom').value.trim()
-  if(!prenom&&!nom){showToast('Le nom est requis','err');return}
-  const fullName=[prenom,nom].filter(Boolean).join(' ')
   const pro=document.getElementById('f-type').value==='entreprise'
+  const societe=document.getElementById('f-societe').value.trim()
+  if(pro&&!societe){showToast("Indique le nom de l'entreprise",'err');document.getElementById('f-societe').focus();return}
+  if(pro&&!document.getElementById('f-adresse').value.trim()){showToast("Indique l'adresse de l'entreprise : elle figure sur ses factures",'err');document.getElementById('f-adresse').focus();return}
+  if(!pro&&!prenom&&!nom){showToast('Le nom est requis','err');return}
+  const fullName=[prenom,nom].filter(Boolean).join(' ')||societe
   const payload={
     nom:fullName,
     email:document.getElementById('f-email').value.trim()||null,

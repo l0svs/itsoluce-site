@@ -170,13 +170,16 @@ body{font-size:14px;}
 .at-form input[readonly]{opacity:.6;}
 
 /* Bascule client professionnel */
-.pro-row{display:flex; align-items:center; gap:10px;}
-.pro-row label{margin:0;}
 .tog{width:38px; height:22px; border-radius:980px; background:var(--bg4); border:1px solid var(--ln2); position:relative; cursor:pointer; transition:.2s; flex-shrink:0; padding:0;}
 .tog.on{background:var(--a); border-color:var(--a);}
 .tog span{width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:2px; left:2px; transition:transform .2s;}
 .tog.on span{transform:translateX(16px);}
-#pro-fields{display:none; flex-direction:column; gap:10px; margin-top:4px;}
+#pro-fields{display:none; flex-direction:column; gap:13px;}
+.type-cli{display:grid; grid-template-columns:1fr 1fr; background:var(--bg3); border:1px solid var(--ln); border-radius:11px; padding:3px; gap:3px; margin:2px 0 14px;}
+.type-cli button{border:none; background:none; font-family:inherit; font-size:13px; color:var(--t2); padding:8px 10px; border-radius:8px; cursor:pointer; transition:background .15s,color .15s;}
+.type-cli button:hover{color:var(--t1);}
+.type-cli button.on{background:var(--bg2); color:var(--t1); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.type-cli button:focus-visible{outline:2px solid var(--a); outline-offset:1px;}
 
 /* Lignes du devis */
 .lignes{display:flex; flex-direction:column; gap:8px;}
@@ -662,20 +665,20 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <label for="f-client-select">Client existant ou nouveau</label>
               <select id="f-client-select" onchange="onClientSelect()"><option value="">Nouveau client</option></select>
             </div>
-            <div class="fg"><label for="f-client">Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+            <div class="type-cli" role="group" aria-label="Type de client">
+              <button type="button" id="tc-part" class="on" aria-pressed="true" onclick="choisirTypeClient(false)">Particulier</button>
+              <button type="button" id="tc-pro" aria-pressed="false" onclick="choisirTypeClient(true)">Entreprise</button>
+            </div>
+            <div id="pro-fields">
+              <div class="fg"><label for="f-societe">Nom de l'entreprise *</label><input type="text" id="f-societe" placeholder="ex : Domaine W"/></div>
+              <div class="fg"><label for="f-tva-client">N° de TVA / BCE *</label><input type="text" id="f-tva-client" placeholder="BE 0123.456.789"/></div>
+            </div>
+            <div class="fg"><label for="f-client" id="lab-client">Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
             <div class="duo">
               <div class="fg"><label for="f-email">Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
               <div class="fg"><label for="f-tel">Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>
             </div>
-            <div class="fg"><label for="f-adresse">Adresse</label><input type="text" id="f-adresse" placeholder="Rue, code postal, ville"/></div>
-            <div class="pro-row">
-              <label for="togPro">Client professionnel</label>
-              <button type="button" class="tog" id="togPro" onclick="toggleClientPro()" aria-pressed="false" aria-label="Client professionnel"><span></span></button>
-            </div>
-            <div id="pro-fields">
-              <input type="text" id="f-societe" placeholder="Nom de la société"/>
-              <input type="text" id="f-tva-client" placeholder="Numéro TVA client (ex : BE 0123.456.789)"/>
-            </div>
+            <div class="fg"><label for="f-adresse" id="lab-adresse">Adresse (facultative)</label><input type="text" id="f-adresse" placeholder="Rue, numéro, code postal, ville"/></div>
 
             <div class="sep"></div>
             <div class="grp-lab">Lignes du devis</div>
@@ -1220,20 +1223,32 @@ window.ajouterPresta=function(sel){
 }
 
 /* ─── Client professionnel ─── */
+/* Particulier : nom, e-mail, téléphone, adresse facultative.
+   Entreprise : nom de l'entreprise, n° de TVA, adresse de l'entreprise,
+   et une personne de contact facultative (sinon le nom de l'entreprise). */
 function setClientPro(val,societe,tva){
-  document.getElementById('f-is-pro').value=String(!!val)
-  const tog=document.getElementById('togPro')
-  tog.classList.toggle('on',!!val)
-  tog.setAttribute('aria-pressed',String(!!val))
+  val=!!val
+  document.getElementById('f-is-pro').value=String(val)
+  for(const [id,on] of [['tc-part',!val],['tc-pro',val]]){const b=document.getElementById(id);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))}
   document.getElementById('pro-fields').style.display=val?'flex':'none'
   document.getElementById('f-societe').value=societe||''
   document.getElementById('f-tva-client').value=tva||''
+  document.getElementById('lab-client').textContent=val?'Personne de contact (facultatif)':'Nom complet *'
+  document.getElementById('f-client').placeholder=val?'ex : Sophie Wauthier':'ex : Marie Dupont'
+  document.getElementById('lab-adresse').textContent=val?"Adresse de l'entreprise *":'Adresse (facultative)'
+  // Document enregistré sans personne de contact : le nom = celui de l'entreprise.
+  if(val&&societe&&document.getElementById('f-client').value.trim()===String(societe).trim())document.getElementById('f-client').value=''
 }
-window.toggleClientPro=function(){
-  const actuel=document.getElementById('f-is-pro').value==='true'
-  setClientPro(!actuel,document.getElementById('f-societe').value,document.getElementById('f-tva-client').value)
+window.choisirTypeClient=function(pro){
+  if((document.getElementById('f-is-pro').value==='true')===!!pro)return
+  // Client de la liste dont la fiche a une société : on reprend ses données.
+  const opt=(()=>{const sel=document.getElementById('f-client-select');return sel&&sel.value?sel.options[sel.selectedIndex]:null})()
+  const soc=document.getElementById('f-societe').value||(pro&&opt?opt.dataset.soc||'':'')
+  const tva=document.getElementById('f-tva-client').value||(pro&&opt?opt.dataset.tva||'':'')
+  setClientPro(pro,soc,tva)
   surModification()
 }
+window.toggleClientPro=function(){choisirTypeClient(document.getElementById('f-is-pro').value!=='true')}
 
 /* ─── Lignes ─── */
 window.addLigne=function addLigne(desc,qte,prix,stockId){
@@ -1354,7 +1369,7 @@ function lireFormulaire(){
   const total=Math.max(0,sousTotal-remiseEuros)
   const isPro=g('f-is-pro')==='true'
   return {
-    client_nom:g('f-client').trim(),
+    client_nom:(isPro?(g('f-client').trim()||g('f-societe').trim()):g('f-client').trim()),
     client_email:g('f-email').trim()||null,
     client_telephone:g('f-tel').trim()||null,
     client_adresse:g('f-adresse').trim()||null,
@@ -1741,6 +1756,7 @@ window.annulerSaisie=function(){
 /* ─── Enregistrement ─── */
 window.saveDevis=async function(){
   const payload=lireFormulaire()
+  if(document.getElementById('f-is-pro').value==='true'&&!payload.client_societe){showToast("Indique le nom de l'entreprise",'err');document.getElementById('f-societe').focus();return}
   if(!payload.client_nom){showToast('Le nom du client est requis','err');return}
   if(!payload.lignes.length){showToast('Ajoute au moins une ligne','err');return}
   const id=document.getElementById('f-id').value
@@ -1857,7 +1873,7 @@ function buildTemplateHTML(f,forPdf){
       <div style="display:flex;align-items:center;gap:14px;">
         <div>
           <img src="${ENTREPRISE.logo}" crossorigin="anonymous" style="height:44px;width:auto;display:block;" alt="IT Soluce"/>
-          <div style="font-size:11px;color:#666;margin-top:6px;">Réparations informatiques &amp; électroniques</div>
+          <div style="font-size:11px;color:#666;margin-top:6px;">Réparation informatique</div>
         </div>
       </div>
       <div style="text-align:right;font-size:11px;color:#555;line-height:1.7;">
@@ -2417,7 +2433,7 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/envoi-mail.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-palette.js?v=20261116"></script>
-<script src="/admin/assets/js/controle-emission.js?v=20261116"></script>
+<script src="/admin/assets/js/controle-emission.js?v=20261117"></script>
 <script src="/admin/assets/js/libelle-piece.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
 <script src="/admin/assets/js/dossier-fil.js?v=20261116"></script>
