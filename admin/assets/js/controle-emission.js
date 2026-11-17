@@ -24,6 +24,7 @@
     if (vide(doc.client_nom)) p.push('Nom du client manquant.');
     var pro = !vide(doc.client_societe) || !vide(doc.client_tva);
     if (pro && vide(doc.client_adresse)) p.push('Adresse du client professionnel manquante.');
+    if (!vide(doc.client_societe) && vide(doc.client_tva)) p.push('Numéro de TVA de l\u2019entreprise manquant.');
     // Particulier : adresse facultative (16/11/2026, demande d'IT Soluce).
     if (!vide(doc.client_tva) && !tvaValide(doc.client_tva)) p.push('Numéro de TVA du client invalide (' + String(doc.client_tva).trim() + ').');
     if (doc.type_document === 'note_credit') return p;
