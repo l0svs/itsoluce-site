@@ -115,6 +115,13 @@
   html body :has(> button.on) > button{min-height:38px !important;}
   html body .panel-back{min-height:40px !important;}
 
+  /* ── Lignes de devis / facture : description en haut, puis
+        quantité · prix · total · supprimer sur une même rangée ── */
+  html body .ligne{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 40px !important;}
+  html body .ligne .desc-col{grid-column:1 / -1 !important;}
+  html body .ligne :is(.l-qte,.l-prix,.l-total){display:block !important;grid-column:auto !important;width:100% !important;min-width:0 !important;}
+  html body .ligne .ligne-del{align-self:center;}
+
   /* ── Messages de confirmation : au-dessus de la barre du bas, centrés ── */
   html body .toast{
     left:12px !important;right:12px !important;max-width:none !important;
