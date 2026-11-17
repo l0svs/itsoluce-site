@@ -134,6 +134,13 @@ body{font-size:14px;}
 .t-accepte{background:rgba(26,138,82,.11); color:var(--ok);}
 .t-refuse{background:rgba(200,54,44,.1); color:var(--d);}
 .t-expire{background:rgba(200,54,44,.1); color:var(--d);}
+.t-annule{background:var(--bg3); color:var(--t3); text-decoration:line-through;}
+.an-liste{margin:10px 0 4px; padding:0; list-style:none; font-size:13px; color:var(--t2);}
+.an-liste li{padding:7px 0; border-top:1px solid var(--ln);}
+.an-liste li:first-child{border-top:none;}
+.an-bloque{background:rgba(200,54,44,.08); color:var(--d); border-radius:10px; padding:10px 12px; font-size:13px; margin:8px 0;}
+.an-ck{display:flex; gap:9px; align-items:flex-start; font-size:13px; color:var(--t1); margin:10px 0 4px; cursor:pointer;}
+.an-ck input{margin-top:2px; width:16px; height:16px; flex-shrink:0;}
 [data-mode="dark"] .t-envoye{background:rgba(251,191,36,.16);}
 [data-mode="dark"] .t-accepte{background:rgba(52,211,153,.16);}
 [data-mode="dark"] .t-refuse,[data-mode="dark"] .t-expire{background:rgba(248,113,113,.14);}
@@ -736,6 +743,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <button class="btn btn-primary" onclick="saveDevis()" id="saveBtn">Enregistrer</button>
             </div>
             <button class="btn btn-danger" onclick="supprimerCourant()" id="delBtn" style="display:none;">Supprimer ce devis</button>
+            <button class="btn btn-danger" onclick="ouvrirAnnulation()" id="annulBtn" style="display:none;">Annuler le devis</button>
           </div>
         </div>
 
@@ -782,6 +790,23 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <button class="btn btn-primary" onclick="preparerEmail()" id="pdfSendBtn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Envoyer par email</button>
   </div>
   <div class="pdf-modal" id="pdfModal"></div>
+</div>
+
+<!-- ANNULATION D'UN DEVIS ÉMIS -->
+<div class="email-overlay" id="annulOverlay">
+  <div class="email-box">
+    <div class="email-head"><span id="an-titre">Annuler le devis</span><button class="email-close" onclick="fermerAnnulation()" aria-label="Fermer">×</button></div>
+    <div class="email-body">
+      <div id="an-texte" style="font-size:13px;color:var(--t2);line-height:1.55"></div>
+      <ul class="an-liste" id="an-liste"></ul>
+      <div id="an-bloc"></div>
+      <div class="fg" style="margin-top:12px"><label for="an-motif">Motif (facultatif, gardé dans l'historique)</label><textarea id="an-motif" rows="2" maxlength="500" placeholder="Ex : le client s'est rétracté"></textarea></div>
+    </div>
+    <div class="email-foot">
+      <button class="btn btn-secondary" onclick="fermerAnnulation()" style="flex:1;">Retour</button>
+      <button class="btn btn-danger" onclick="confirmerAnnulation()" id="an-ok" style="flex:2;">Annuler le devis</button>
+    </div>
+  </div>
 </div>
 
 <!-- ENVOI PAR EMAIL -->
@@ -899,7 +924,8 @@ const STATUTS={
   envoye:   {label:'Envoyé',    cls:'t-envoye'},
   accepte:  {label:'Accepté',   cls:'t-accepte'},
   refuse:   {label:'Refusé',    cls:'t-refuse'},
-  remplace: {label:'Remplacé',  cls:'t-refuse'}
+  remplace: {label:'Remplacé',  cls:'t-refuse'},
+  annule:   {label:'Annulé',    cls:'t-annule'}
 }
 /* Numérotation : un brouillon n'a pas de numéro ; la base l'attribue à
    l'émission (envoi, PDF, acceptation). Un devis émis ne se modifie plus :
@@ -1048,7 +1074,7 @@ async function assurerEmissionDevis(d,statut){
 /* Passe le devis en « Accepté » avant une conversion (réparation, facture). */
 async function assurerAcceptation(d){
   if(d.statut==='accepte')return d
-  if(['refuse','remplace'].includes(d.statut)){showToast(`Ce devis est ${STATUTS[d.statut].label.toLowerCase()} : il ne peut pas être converti`,'err');return null}
+  if(['refuse','remplace','annule'].includes(d.statut)){showToast(`Ce devis est ${STATUTS[d.statut].label.toLowerCase()} : il ne peut pas être converti`,'err');return null}
   if(sale){showToast("Enregistre d'abord tes modifications",'err');return null}
   if(!confirm(`Le devis ${refDevis(d)} va passer en « Accepté »${estEmis(d)?'':' et recevoir son numéro définitif'}. Continuer ?`))return null
   try{const x=await majDevis(d,{statut:'accepte'});majResume();chargerDansFormulaire(x);return x}
@@ -1145,7 +1171,7 @@ const GROUPES=[
   {cle:'reparation', titre:'Accepté, en réparation',   test:d=>suivi(d)?.cle==='reparation'},
   {cle:'facture',    titre:'Facturé, à encaisser',     test:d=>suivi(d)?.cle==='facture', chaud:true},
   {cle:'en_cours',   titre:'En attente de réponse',    test:d=>['brouillon','envoye'].includes(d.statut)},
-  {cle:'clos',       titre:'Classés', test:d=>['refuse','remplace'].includes(d.statut)||['paye','sans_suite'].includes(suivi(d)?.cle)}
+  {cle:'clos',       titre:'Classés', test:d=>['refuse','remplace','annule'].includes(d.statut)||['paye','sans_suite'].includes(suivi(d)?.cle)}
 ]
 
 // Exposée globalement : la recherche l'appelle depuis un attribut oninput,
@@ -1439,6 +1465,7 @@ function chargerDansFormulaire(d){
   document.getElementById('saveBtn').textContent=estEmis(d)?'Enregistrer':d?'Mettre à jour':'Enregistrer'
   document.getElementById('delBtn').style.display=d&&(!estEmis(d)||estDevisTest(d))?'inline-flex':'none'
   document.getElementById('delBtn').textContent=d&&estEmis(d)?'Supprimer ce devis de test':'Supprimer ce brouillon'
+  document.getElementById('annulBtn').style.display=d&&estEmis(d)&&!['annule','remplace'].includes(d.statut)?'inline-flex':'none'
 
   calcTotaux()
   instantane=signature()
@@ -1460,7 +1487,7 @@ function verrouillerDevis(d){
       if(el.dataset.figeAvant!=null){el.disabled=el.dataset.figeAvant==='1';delete el.dataset.figeAvant}
       return
     }
-    if(LIBRES_DEVIS.includes(el.id)&&d.statut!=='remplace')return
+    if(LIBRES_DEVIS.includes(el.id)&&!['remplace','annule'].includes(d.statut))return
     if(el.dataset.figeAvant==null)el.dataset.figeAvant=el.disabled?'1':'0'
     el.disabled=true
   })
@@ -1474,6 +1501,9 @@ function verrouillerDevis(d){
     html=ancienne
       ?`<b>Révision du devis ${escHtml(refDevis(ancienne))}</b> : modifie ce brouillon puis envoie-le. À son émission, ${escHtml(refDevis(ancienne))} passera en « Remplacé ».`
       :"<b>Brouillon</b> : pas encore de numéro. Il sera attribué à l'envoi, au téléchargement du PDF ou à l'acceptation. Tant que c'est un brouillon, tu peux le modifier ou le supprimer."
+  }else if(d.statut==='annule'){
+    const rep=repsLiees.get(d.converti_reparation_id||d.reparation_id)
+    html=`<b>Devis ${escHtml(d.numero)} annulé</b>${d.annule_le?` le ${new Date(d.annule_le).toLocaleDateString('fr-BE',{day:'numeric',month:'long',year:'numeric'})}`:''}${d.motif_annulation?` · motif : ${escHtml(d.motif_annulation)}`:''}.<br>Il garde son numéro et reste dans l'historique ; il ne peut plus être accepté en ligne.${rep?`<br>Dossier ${escHtml(rep.numero||'')} : ${rep.statut==='annule'?'annulé aussi':'toujours ouvert'}.`:''}`
   }else if(d.statut==='remplace'){
     const nouvelle=allDevis.find(x=>x.remplace_devis_id===d.id)
     html=`<b>Devis ${escHtml(d.numero)} remplacé</b>${nouvelle?` par <a onclick="ouvrirDevis(${nouvelle.id})">${escHtml(refDevis(nouvelle))}</a>`:''}. Il est conservé pour l'historique.`
@@ -1496,6 +1526,7 @@ function majOptionsStatutDevis(d){
   let o
   if(!estEmis(d))o=[['brouillon','Brouillon (pas encore de numéro)'],['envoye','Émis / envoyé'],['accepte','Accepté'],['refuse','Refusé']]
   else if(d.statut==='remplace')o=[['remplace','Remplacé']]
+  else if(d.statut==='annule')o=[['annule','Annulé']]
   else o=[['envoye','Envoyé'],['accepte','Accepté'],['refuse','Refusé']]
   sel.innerHTML=o.map(([v,l])=>`<option value="${v}">${escHtml(l)}</option>`).join('')
 }
@@ -1596,6 +1627,14 @@ function majEtatApercu(){
     if(bRep){bRep.disabled=false;bRep.textContent=`Ouvrir le dossier ${dos.numero}`.trim()}
   }else if(bRep)bRep.textContent='Créer la réparation'
   if(!d.client_id)bouts.push('Aucune fiche client rattachée')
+  // Devis annulé : plus d'envoi ni de conversion (le PDF reste consultable).
+  const annule=d.statut==='annule'
+  if(annule){
+    bouts.unshift('Devis annulé')
+    if(bSend)bSend.disabled=true
+    if(bFac){bFac.disabled=true;bFac.textContent='Devis annulé'}
+    if(bRep&&!dos)bRep.disabled=true
+  }
   note.textContent=bouts.join(' · ')
   majRelance(d)
   // Un seul bouton bleu : la prochaine étape du devis.
@@ -1740,6 +1779,55 @@ window.repondreParMail=function(){
   if(!confirmerAbandon())return
   location.href=lienMessages({a:courant.client_email,devis_id:courant.id,objet:`Votre devis ${courant.numero}`})
 }
+/* ─── Annulation d'un devis émis ───
+   Le devis garde son numéro et passe « Annulé » (définitif). Ce qui en
+   découle est fait par la base (annuler_devis), en une seule opération :
+   dossier pas encore commencé annulé aussi, brouillon de facture supprimé
+   (pièces remises en stock). Une facture émise bloque : note de crédit d'abord. */
+function liesAuDevis(d){
+  const idsRep=[d.converti_reparation_id,d.reparation_id].filter(Boolean)
+  const facs=facturesLiees.filter(f=>f.id===d.converti_facture_id||f.devis_id===d.id||(f.reparation_id&&idsRep.includes(f.reparation_id)))
+  return {rep:repsLiees.get(idsRep[0])||null,emises:facs.filter(f=>f.numero&&!['annulee','creditee'].includes(f.statut)),brouillons:facs.filter(f=>!f.numero)}
+}
+window.ouvrirAnnulation=function(){
+  const d=courant
+  if(!d||!estEmis(d)||['annule','remplace'].includes(d.statut))return
+  if(!confirmerAbandon())return
+  const l=liesAuDevis(d)
+  document.getElementById('an-titre').textContent=`Annuler le devis ${d.numero}`
+  document.getElementById('an-texte').innerHTML=`Le devis <b>${escHtml(d.numero)}</b> (${escHtml(d.client_nom||'')}, ${eur(d.total)}) garde son numéro et passe <b>«&nbsp;Annulé&nbsp;»</b>.<br>Il reste dans l'historique et ne pourra plus être accepté en ligne.<br>L'annulation est définitive.`
+  const items=[]
+  if(l.rep){
+    if(['attente_reception','recu'].includes(l.rep.statut))items.push(`<label class="an-ck"><input type="checkbox" id="an-dossier" checked><span>Annuler aussi le dossier <b>${escHtml(l.rep.numero||'')}</b> (pas encore commencé).</span></label>`)
+    else if(!['annule','rendu','non_reparable'].includes(l.rep.statut))items.push(`<li>Le dossier <b>${escHtml(l.rep.numero||'')}</b> est déjà en cours : il reste ouvert, à toi de le clôturer.</li>`)
+  }
+  if(l.brouillons.length)items.push(`<li>Le brouillon de facture lié est supprimé (les pièces sorties reviennent en stock).</li>`)
+  document.getElementById('an-liste').innerHTML=items.filter(x=>x.startsWith('<li')).join('')
+  document.getElementById('an-bloc').innerHTML=(items.find(x=>x.startsWith('<label'))||'')+(l.emises.length
+    ?`<div class="an-bloque">La facture <b>${escHtml(l.emises[0].numero)}</b> liée à ce devis est émise.<br>Annule-la d'abord par une note de crédit, puis reviens annuler le devis.<br><a href="/admin/factures.html?id=${l.emises[0].id}">Ouvrir la facture</a></div>`:'')
+  document.getElementById('an-motif').value=''
+  const ok=document.getElementById('an-ok');ok.disabled=!!l.emises.length;ok.textContent='Annuler le devis'
+  document.getElementById('annulOverlay').style.display='flex'
+}
+window.fermerAnnulation=function(){document.getElementById('annulOverlay').style.display='none'}
+window.confirmerAnnulation=async function(){
+  const d=courant;if(!d)return
+  const ok=document.getElementById('an-ok');ok.disabled=true;ok.textContent='Annulation…'
+  const ck=document.getElementById('an-dossier')
+  const {data,error}=await sb.rpc('annuler_devis',{p_devis:d.id,p_motif:document.getElementById('an-motif').value.trim()||null,p_dossier:ck?ck.checked:true})
+  if(error){ok.disabled=false;ok.textContent='Annuler le devis';showToast('Erreur : '+error.message,'err');return}
+  fermerAnnulation()
+  // Relecture : devis, factures et dossiers liés ont pu changer.
+  const r=await sb.from('devis').select('*').eq('id',d.id).maybeSingle()
+  if(r.data){const i=allDevis.findIndex(x=>x.id===d.id);if(i>=0)allDevis[i]=r.data}
+  const idsRep=[d.converti_reparation_id,d.reparation_id].filter(Boolean)
+  if(idsRep.length){const rr=await sb.from('reparations').select('id,numero,statut').in('id',idsRep);for(const x of rr.data||[])repsLiees.set(x.id,x)}
+  const rf=await sb.from('factures').select('id,numero,statut,devis_id,reparation_id').limit(5000);if(!rf.error)facturesLiees=rf.data||[]
+  majResume()
+  chargerDansFormulaire(allDevis.find(x=>x.id===d.id)||null)
+  showToast(`Devis ${data&&data.numero||d.numero} annulé${data&&data.dossier_annule?` · dossier ${data.dossier_annule} annulé`:''}${data&&data.brouillons_supprimes?' · brouillon de facture supprimé':''}`,'ok')
+}
+
 window.ouvrirDevis=function(id){
   if(!confirmerAbandon())return
   const d=allDevis.find(x=>x.id===id)
@@ -2438,7 +2526,7 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/controle-emission.js?v=20261117"></script>
 <script src="/admin/assets/js/libelle-piece.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
-<script src="/admin/assets/js/dossier-fil.js?v=20261116"></script>
+<script src="/admin/assets/js/dossier-fil.js?v=20261117"></script>
 <script src="/admin/assets/js/relances.js?v=20261116"></script>
 </body>
 </html>

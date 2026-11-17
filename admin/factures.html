@@ -814,6 +814,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <button class="btn btn-secondary" onclick="relancerClient()" id="sideRelBtn">Relancer le client</button>
             </div>
             <div class="prev-acts" id="rowNC" style="display:none;">
+              <button class="btn btn-danger" onclick="annulerFacture()" id="sideAnnulBtn">Annuler la facture</button>
               <button class="btn btn-secondary" onclick="ouvrirNoteCredit()" id="sideNCBtn">Note de crédit (corriger / rembourser)</button>
             </div>
             <div class="prev-acts">
@@ -1954,6 +1955,8 @@ function majEtatApercu(){
   const enregistree=!!f
   ;[bPdf,bSend,bAgr].forEach(b=>{if(b)b.disabled=!enregistree})
   document.getElementById('rowNC').style.display=(enregistree&&!estNC(f)&&estEmise(f)&&!['creditee','annulee'].includes(f.statut))?'':'none'
+  // Annuler : facture émise pas encore payée (une facture payée se rembourse).
+  document.getElementById('sideAnnulBtn').style.display=(enregistree&&!estNC(f)&&estEmise(f)&&!['creditee','annulee','payee'].includes(f.statut))?'':'none'
   majRelance(f)
   const aAcompte=enregistree&&Number(f.acompte||0)>0
   ;[bRecu,bRecuMail].forEach(b=>{if(b)b.disabled=!aAcompte})
@@ -2045,6 +2048,20 @@ window.relancerClient=async function(){
 let _nc=null
 function ncDejaCredite(f){
   return allFactures.filter(x=>estNC(x)&&x.facture_origine_id===f.id).reduce((a,x)=>a+Math.abs(Number(x.total)||0),0)
+}
+/* Annuler une facture émise : la loi ne permet pas de la supprimer ni de la
+   modifier ; on l'annule par une note de crédit du montant total, sans
+   facture corrigée. La facture passe « Créditée », son numéro reste. */
+window.annulerFacture=function(){
+  ouvrirNoteCredit()
+  if(!_nc||_nc.paye||document.getElementById('ncOverlay').style.display!=='flex')return
+  choisirNC('annuler')
+  document.getElementById('nc-corrigee').checked=false
+  document.getElementById('nc-motif').value='Annulation de la prestation'
+  majNoteCredit()
+  const f=_nc.f
+  document.getElementById('nc-titre').textContent=`Annuler la facture ${f.numero}`
+  document.getElementById('nc-explic').innerHTML=`La facture ${escHtml(f.numero)} (${eur(f.total)}) n'est <b>pas payée</b>.<br>Une facture émise ne peut pas être supprimée : on l'annule par une note de crédit du même montant.<br>Elle garde son numéro et passe « Créditée ».${Number(f.acompte)>0?`<br>Attention : un acompte de ${eur(f.acompte)} a été reçu, pense à le rembourser.`:''}`
 }
 window.ouvrirNoteCredit=function(){
   const f=courante
@@ -3059,7 +3076,7 @@ document.addEventListener('click',function(e){
 <script src="/admin/assets/js/controle-emission.js?v=20261117"></script>
 <script src="/admin/assets/js/libelle-piece.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
-<script src="/admin/assets/js/dossier-fil.js?v=20261116"></script>
+<script src="/admin/assets/js/dossier-fil.js?v=20261117"></script>
 <script src="/admin/assets/js/relances.js?v=20261116"></script>
 </body>
 </html>

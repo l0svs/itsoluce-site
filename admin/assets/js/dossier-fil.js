@@ -86,7 +86,7 @@
     return d;
   }
 
-  var DEV = { brouillon: 'brouillon', envoye: 'envoyé', accepte: 'accepté', refuse: 'refusé' };
+  var DEV = { brouillon: 'brouillon', envoye: 'envoyé', accepte: 'accepté', refuse: 'refusé', annule: 'annulé', remplace: 'remplacé' };
   var INTER = { attente_reception: 'planifiée', recu: 'planifiée', attente: 'en attente', encours: 'en cours', pret: 'réalisée', rendu: 'terminée' };
   var REP = { attente_reception: 'à réceptionner', recu: 'appareil reçu', attente: 'attente de pièce', encours: 'en réparation', pret: 'prêt', rendu: 'rendu', non_reparable: 'non réparable', annule: 'annulé' };
   var FAC = { brouillon: 'brouillon, sans numéro', envoyee: 'émise', payee: 'payée', annulee: 'annulée', non_reparable: 'diagnostic offert', creditee: 'annulée par note de crédit' };
@@ -98,7 +98,7 @@
     if (dev) {
       var expire = dev.statut === 'envoye' && dev.date_validite && new Date(dev.date_validite) < new Date();
       e.push({ cle: 'devis', titre: 'Devis ' + (dev.numero || ''), sous: expire ? 'validité dépassée' : (DEV[dev.statut] || dev.statut),
-        etat: dev.statut === 'accepte' ? 'ok' : dev.statut === 'refuse' ? 'ko' : 'cours', href: '/admin/devis.html?q=' + encodeURIComponent(dev.numero || '') });
+        etat: dev.statut === 'accepte' ? 'ok' : ['refuse', 'annule'].indexOf(dev.statut) >= 0 ? 'ko' : 'cours', href: '/admin/devis.html?q=' + encodeURIComponent(dev.numero || '') });
     } else e.push({ cle: 'devis', titre: 'Devis', sous: 'aucun', etat: 'vide' });
     if (rep) {
       var inter = rep.type === 'intervention';
@@ -156,7 +156,7 @@
     if (rep && rep.statut === 'attente_reception') return "Réceptionner l'appareil";
     if (rep) return 'Terminer la réparation';
     if (dev && dev.statut === 'accepte') return 'Créer la réparation';
-    if (dev && dev.statut === 'refuse') return null;
+    if (dev && ['refuse', 'annule', 'remplace'].indexOf(dev.statut) >= 0) return null;
     if (dev && dev.statut === 'envoye') return "Attendre l'accord du client (relancer si besoin)";
     if (dev) return 'Envoyer le devis au client';
     if (d.demande) return 'Faire le devis';
