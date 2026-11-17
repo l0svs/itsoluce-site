@@ -93,7 +93,7 @@ function lignesHTML(d){
 function rendu(){
   const d=D
   document.title=`Devis ${d.numero} — IT Soluce`
-  const ETATS={ouvert:['À accepter',''],accepte:['Accepté','ok'],expire:['Expiré','warn'],refuse:['Refusé','warn'],remplace:['Remplacé par un nouveau devis','warn']}
+  const ETATS={ouvert:['À accepter',''],accepte:['Accepté','ok'],expire:['Expiré','warn'],refuse:['Refusé','warn'],remplace:['Remplacé par un nouveau devis','warn'],annule:['Annulé','warn']}
   const [lib,cls]=ETATS[d.etat]||[d.etat,'']
   const entete=`<div class="card">
       <h1>Devis ${esc(d.numero)}</h1>
@@ -129,6 +129,8 @@ function rendu(){
     bas=`<div class="card confirm">
       <b>Votre réponse est bien enregistrée.</b>
       <p class="sub" style="margin-top:6px;">Merci d'avoir pris le temps de répondre.${d.recontact_souhaite?'<br>Je vous recontacte rapidement avec une solution moins chère.':'<br>Si vous changez d\'avis, n\'hésitez pas à me contacter.'}</p></div>`
+  }else if(d.etat==='annule'){
+    bas=`<div class="card vide" style="padding:20px;">Ce devis a été annulé.<br>Contactez-moi si vous avez une question.</div>`
   }else if(d.etat==='expire'){
     bas=`<div class="card vide" style="padding:20px;">Ce devis a expiré le ${date(d.date_validite)}.<br>Contactez-moi pour un devis à jour : le prix des pièces a pu changer.</div>`
   }else{

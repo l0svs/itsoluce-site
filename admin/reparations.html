@@ -1956,7 +1956,7 @@ async function creerFactureDepuis(r,offert=false){
 async function devisDuDossier(r){
   for(const col of ['converti_reparation_id','reparation_id']){
     const {data,error}=await sb.from('devis').select('id,numero,statut,lignes,total,remise,acompte,notes,client_id,client_adresse,client_societe,client_tva,converti_facture_id')
-      .eq(col,r.id).neq('statut','refuse').order('id',{ascending:false}).limit(1)
+      .eq(col,r.id).not('statut','in','(refuse,annule)').order('id',{ascending:false}).limit(1)
     if(!error&&data&&data[0])return data[0]
   }
   return null
@@ -2320,7 +2320,7 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/admin-palette.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
-<script src="/admin/assets/js/dossier-fil.js?v=20261116"></script>
+<script src="/admin/assets/js/dossier-fil.js?v=20261117"></script>
 <script src="/admin/assets/js/relances.js?v=20261116"></script>
 </body>
 </html>

@@ -545,7 +545,7 @@ function docsPour(d){
   const prisR=new Set(allDemandes.filter(x=>x.id!==d.id&&x.converti_reparation_id).map(x=>x.converti_reparation_id))
   const meme=x=>String(x.client_email||'').trim().toLowerCase()===mail&&new Date(x.created_at).getTime()>=depuis
   const dv=docsClients.devis.filter(x=>meme(x)&&!prisD.has(x.id)).map(x=>({type:'devis',id:x.id,numero:x.numero,
-    detail:`${dateFr(x.date_emission||x.created_at)} · ${eurFr(x.total)}${x.statut==='accepte'?' · accepté':x.statut==='refuse'?' · refusé':''}`,
+    detail:`${dateFr(x.date_emission||x.created_at)} · ${eurFr(x.total)}${x.statut==='accepte'?' · accepté':x.statut==='refuse'?' · refusé':x.statut==='annule'?' · annulé':''}`,
     rep:x.converti_reparation_id||x.reparation_id||null,t:new Date(x.created_at).getTime()}))
   const rp=docsClients.reps.filter(x=>meme(x)&&!prisR.has(x.id)&&!dv.some(v=>v.rep===x.id)).map(x=>({type:'reparation',id:x.id,numero:x.numero,
     detail:`${dateFr(x.created_at)} · ${[x.appareil,x.modele].filter(Boolean).join(' ')||'dossier'}`,t:new Date(x.created_at).getTime()}))
@@ -937,6 +937,6 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/admin-palette.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
-<script src="/admin/assets/js/dossier-fil.js?v=20261116"></script>
+<script src="/admin/assets/js/dossier-fil.js?v=20261117"></script>
 </body>
 </html>
