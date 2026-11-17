@@ -2716,7 +2716,7 @@ function signatureHTML(variante){
   const logo=ENTREPRISE.logo||'https://itsoluce.be/img/logo-full.png'
   const L=(href,txt,coul)=>`<a href="${href}" style="color:${coul};text-decoration:none;">${escHtml(txt)}</a>`
   const entete=`<tr><td style="padding:0 0 10px;"><img src="${logo}" width="78" height="32" alt="${escHtml(nom)}" style="display:block;border:0;"></td></tr>`+
-    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>`
+    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;paration informatique</td></tr>`
   let corps
   if(variante==='complete'){
     const adresse=[ENTREPRISE.adresse,ENTREPRISE.cp_ville].filter(Boolean).join(', ')

@@ -47,7 +47,7 @@
     var site = String(E.site || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
     var L = function (href, txt, coul) { return '<a href="' + href + '" style="color:' + coul + ';text-decoration:none;">' + esc(txt) + '</a>'; };
     var entete = '<tr><td style="padding:0 0 10px;"><img src="' + esc(E.logo) + '" width="78" height="32" alt="' + esc(E.nom) + '" style="display:block;border:0;"></td></tr>' +
-      '<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>';
+      '<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;paration informatique</td></tr>';
     var adresse = [E.adresse, E.cp_ville].filter(Boolean).join(', ');
     var pied = [esc(adresse), E.bce ? 'BCE ' + esc(E.bce) : ''].filter(Boolean).join(' &middot; ');
     var corps = '<tr><td style="padding:8px 0 0;font-size:12.5px;line-height:1.9;color:#5a6b7b;">' +
@@ -64,7 +64,7 @@
   window.signatureMailTexte = function (E) {
     E = Object.assign({}, DEFAUT, E || {});
     var site = String(E.site || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
-    return ['Bien à vous,', '', E.nom + ' — Réparations informatiques & électroniques',
+    return ['Bien à vous,', '', E.nom + ' — Réparation informatique',
       E.tel ? 'T  ' + E.tel : '', E.email ? 'E  ' + E.email : '', site ? 'W  ' + site : '',
       [[E.adresse, E.cp_ville].filter(Boolean).join(', '), E.bce ? 'BCE ' + E.bce : ''].filter(Boolean).join(' · ')
     ].filter(function (l, i) { return l !== '' || i === 1; }).join('\n');

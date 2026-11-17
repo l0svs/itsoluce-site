@@ -128,7 +128,7 @@ function signatureHtml(ent: Entreprise): string {
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>` +
     `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">` +
     `<tr><td style="padding:0 0 10px;"><img src="${ent.logo}" width="78" height="32" alt="${escHtml(ent.nom)}" style="display:block;border:0;"></td></tr>` +
-    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;parations informatiques &amp; &eacute;lectroniques</td></tr>` +
+    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;paration informatique</td></tr>` +
     `<tr><td style="padding:4px 0 0;font-size:13px;line-height:1.7;color:#5a6b7b;">${coords}</td></tr>` +
     `</table>`;
 }
