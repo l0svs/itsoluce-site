@@ -36,7 +36,7 @@ const HOTE = "ssl0.ovh.net";
 const DOSSIERS = ["INBOX", "Sent", "Junk", "Trash"];
 
 const SIGNATURE_DEFAUT =
-  "Linton Bokolomba\nIT Soluce — Réparation informatique & électronique\n+32 474 05 66 59 · itsoluce.be";
+  "Linton Bokolomba\nIT Soluce — Réparation informatique\n+32 474 05 66 59 · itsoluce.be";
 
 const ORIGINES = new Set(["https://itsoluce.be", "https://www.itsoluce.be"]);
 function cors(origine: string | null): Record<string, string> {
