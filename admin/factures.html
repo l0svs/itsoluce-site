@@ -602,7 +602,7 @@ body{font-size:14px;}
    jamais, la navigation réapparaît quand même plutôt que de rester vide. */
 setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()},4000);
 </script>
-<link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261117m">
+<link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261118">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
 </head>
 <body>
@@ -1282,7 +1282,8 @@ function fillPrestaSelect(){
 }
 window.ajouterPresta=function(sel){
   const s=(window.allServices||[]).find(x=>String(x.id)===String(sel.value))
-  if(s)addLigne(s.detail?`${s.nom} (${s.detail})`:s.nom,1,Number(s.prix||0),'')
+  // Prestation dont l'unité est « /h » (ex. Assistance / conseil) : à l'heure.
+  if(s)addLigne(s.detail?`${s.nom} (${s.detail})`:s.nom,1,Number(s.prix||0),'',/(^|\/)\s*h(eures?)?\s*$/i.test(String(s.unite||'').trim())?'h':undefined)
   sel.value=''
 }
 
@@ -1374,11 +1375,15 @@ window.choisirTypeClient=function(pro){
 window.toggleClientPro=function(){choisirTypeClient(document.getElementById('f-is-pro').value!=='true')}
 
 /* ─── Lignes ─── */
-window.addLigne=function addLigne(desc,qte,prix,stockId){
+// Heures en clair sur la facture : 1.5 → « 1 h 30 », 0.75 → « 45 min ».
+function dureeH(v){const m=Math.round((Number(v)||0)*60),h=Math.floor(m/60),r=m%60;return h?`${h} h${r?' '+String(r).padStart(2,'0'):''}`:`${r} min`}
+window.addLigne=function addLigne(desc,qte,prix,stockId,unite){
   desc=desc||''; qte=qte==null?1:qte; prix=prix||0; stockId=stockId||''
+  const heure=unite==='h'   // prestation à l'heure : quantité = nombre d'heures
   const div=document.createElement('div')
   div.className='ligne'
   div.dataset.stockId=stockId
+  if(heure)div.dataset.unite='h'
   div.innerHTML=`
     <div class="desc-col">
       <input type="text" class="l-desc" value="${escHtml(desc)}" placeholder="Ex : Remplacement batterie" oninput="surModification()"/>
@@ -1387,7 +1392,7 @@ window.addLigne=function addLigne(desc,qte,prix,stockId){
         <span class="lie${stockId?' on':''}">lié</span>
       </div>
     </div>
-    <input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()" aria-label="Quantité"/>
+    <input type="number" class="l-qte" value="${qte}" min="0" step="${heure?'0.25':'1'}" oninput="calcTotaux()" aria-label="${heure?'Nombre d\'heures':'Quantité'}" title="${heure?'Nombre d\'heures (1,5 = 1 h 30)':'Quantité'}"/>
     <input type="number" class="l-prix" value="${prix}" step="0.01" oninput="calcTotaux()" aria-label="Prix unitaire"/>
     <input type="text" class="l-total" value="0,00" readonly aria-label="Total de la ligne"/>
     <button type="button" class="ligne-del" onclick="this.closest('.ligne').remove();calcTotaux()" title="Retirer la ligne"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`
@@ -1427,7 +1432,7 @@ function getLignes(){
     const qte=Number(l.querySelector('.l-qte').value)||0
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
-    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:qte*prix,stock_id:sid?Number(sid):null})
+    if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:Math.round(qte*prix*100)/100,stock_id:sid?Number(sid):null,...(l.dataset.unite==='h'?{unite:'h'}:{})})
   })
   return lignes
 }
@@ -1623,7 +1628,7 @@ function chargerDansFormulaire(f){
   verrouillerClient(!!csel.value)
 
   document.getElementById('lignesBody').innerHTML=''
-  if(f&&Array.isArray(f.lignes)&&f.lignes.length)f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id))
+  if(f&&Array.isArray(f.lignes)&&f.lignes.length)f.lignes.forEach(l=>addLigne(l.description,l.quantite,l.prix_unitaire,l.stock_id,l.unite))
   else addLigne()
 
   const e=f?etatAffiche(f):STATUTS.brouillon
@@ -2474,8 +2479,8 @@ function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.quantite}</td>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.unite==='h'?dureeH(l.quantite):l.quantite}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €${l.unite==='h'?'/h':''}</td>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
     </tr>`).join('')
   const sousTotal=(f.lignes||[]).reduce((a,l)=>a+Number(l.total),0)

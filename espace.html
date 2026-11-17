@@ -170,6 +170,7 @@ let donnees=null
 const _q=new URLSearchParams(location.search)
 const EMAIL_INVITE=(_q.get('email')||'').slice(0,160),BIENVENUE=_q.get('bienvenue')==='1'
 if(_q.toString())history.replaceState(null,'',location.pathname+location.hash)
+const dureeH=v=>{const m=Math.round((Number(v)||0)*60),h=Math.floor(m/60),r=m%60;return h?`${h} h${r?' '+String(r).padStart(2,'0'):''}`:`${r} min`}
 function ecranConnexion(msg){
   document.getElementById('deco').hidden=true
   app.innerHTML=`<h1 style="margin-top:14px">Espace client</h1>
@@ -303,7 +304,7 @@ window.voirFacture=async function(id){
     <div style="text-align:right"><h2>${nc?'Note de crédit':'Facture'} ${esc(f.numero)}</h2>Date : ${dFr(f.date_emission)}${f.origine?`<br>Sur la facture ${esc(f.origine)}`:''}${!nc&&f.statut==='payee'&&f.date_paiement?`<br>Payée le ${dFr(f.date_paiement)}`:''}</div></div>
     <div><b>Client</b><br>${f.client_societe?esc(f.client_societe)+'<br>':''}${esc(f.client_nom)}<br>${esc(f.client_adresse||'')}${f.client_tva?'<br>TVA : '+esc(f.client_tva):''}</div>
     <table><tr><th>Description</th><th class="n">Qté</th><th class="n">Prix</th><th class="n">Total</th></tr>
-    ${(f.lignes||[]).map(l=>`<tr><td>${esc(l.description)}</td><td class="n">${esc(l.quantite)}</td><td class="n">${eur(l.prix_unitaire)}</td><td class="n">${eur(l.total)}</td></tr>`).join('')}
+    ${(f.lignes||[]).map(l=>`<tr><td>${esc(l.description)}</td><td class="n">${l.unite==='h'?dureeH(l.quantite):esc(l.quantite)}</td><td class="n">${eur(l.prix_unitaire)}${l.unite==='h'?'/h':''}</td><td class="n">${eur(l.total)}</td></tr>`).join('')}
     ${Number(f.remise)>0?`<tr><td colspan="3">Remise</td><td class="n">− ${eur(f.remise)}</td></tr>`:''}
     <tr><td colspan="3" class="tot">Total</td><td class="n tot">${eur(f.total)}</td></tr></table>
     ${f.motif_credit?`<div>Motif : ${esc(f.motif_credit)}</div>`:''}
