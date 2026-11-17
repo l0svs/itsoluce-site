@@ -193,6 +193,8 @@ async function mailClient(cle: string, a: string, v: Record<string, string>, lie
   try { perso = JSON.parse(ent.mail_modeles_pack || "{}") || {}; } catch { perso = {}; }
   const m = { ...MODELES[cle], ...Object.fromEntries(Object.entries(perso[cle] || {}).filter(([, x]) => String(x ?? "").trim())) };
   const val = { ...v, iban: ent.finance_iban || "" };
+  // Commande au nom d'une entreprise sans personne de contact : « Bonjour, ».
+  if ("prenom" in val && !String(val.prenom || "").trim()) m.corps = m.corps.replace(/Bonjour \{prenom\},/g, "Bonjour,");
   const remplir = (t: string, html: boolean) => t.replace(/\{(\w+)\}/g, (x, k) => k === "lien_espace" ? x : (k in val ? (html ? esc(val[k]) : val[k]) : x));
   const objet = (test ? "[TEST] " : "") + remplir(m.objet, false).replace(/[\r\n]+/g, " ").trim();
   const btn = lien ? bouton(lien, "Ouvrir mon espace client") +
@@ -212,12 +214,12 @@ async function mailNotification(o: { cmd: any; pack: any; packId: number | null;
   const ent = await entreprise();
   const td = "padding:7px 0;border-bottom:1px solid #e3e8ee;font-size:14px;vertical-align:top;";
   const ligne = (k: string, v: string) => v ? `<tr><td style="${td}color:#5a6b7b;width:150px;">${esc(k)}</td><td style="${td}">${v}</td></tr>` : "";
-  const nom = `${o.cmd.prenom || ""} ${o.cmd.nom || ""}`.trim();
+  const nom = `${o.cmd.prenom || ""} ${o.cmd.nom || ""}`.trim() || String(o.cmd.societe || "");
   const tel = String(o.cmd.telephone || "");
   const corps =
     `<p style="margin:0 0 12px;">${o.test ? "<b>Paiement de test</b> (rien n'a été enregistré)." : "Bonne nouvelle : un Pack Sérénité vient d'être payé en ligne."}</p>` +
     `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;width:100%;max-width:520px;margin:4px 0 14px;">` +
-    ligne("Client", `<b>${esc(nom)}</b>${o.cmd.societe ? " · " + esc(o.cmd.societe) : ""}`) +
+    ligne("Client", `<b>${esc(nom)}</b>${o.cmd.societe && o.cmd.societe !== nom ? " · " + esc(o.cmd.societe) : ""}`) +
     ligne("E-mail", o.cmd.email ? `<a href="mailto:${esc(o.cmd.email)}" style="color:#0052CC;text-decoration:none;">${esc(o.cmd.email)}</a>` : "") +
     ligne("Téléphone", tel ? `<a href="tel:${esc(tel.replace(/[^0-9+]/g, ""))}" style="color:#0052CC;text-decoration:none;">${esc(tel)}</a>` : "") +
     ligne("Adresse", esc(o.cmd.adresse || "")) +
@@ -270,20 +272,36 @@ async function lienEspace(email: string, clientId: number): Promise<string> {
 }
 
 // ═══ Actions ═══════════════════════════════════════════════
+// Prénom pour « Bonjour … » : vide quand le client ne porte que le nom de son entreprise.
+const prenomDe = (nom: unknown, societe: unknown) => {
+  const n = String(nom ?? "").trim();
+  return !n || (societe && n === String(societe).trim()) ? "" : n.split(/\s+/)[0];
+};
 const txt = (v: unknown, max: number) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, max);
 
 async function commander(c: Record<string, unknown>) {
   cleMollie();   // paiement non configuré : on s'arrête avant d'enregistrer quoi que ce soit
   const formule = txt(c.formule, 20);
+  // Particulier : prénom et nom obligatoires, adresse facultative.
+  // Entreprise : nom de l'entreprise, n° de TVA et adresse obligatoires ;
+  // la personne de contact est facultative. La facture suit ce choix.
+  const pro = c.type === "entreprise" || (c.type !== "particulier" && !!txt(c.societe, 120));
+  const tva = txt(c.tva, 20).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
   const d = {
     prenom: txt(c.prenom, 60), nom: txt(c.nom, 60), email: txt(c.email, 160).toLowerCase(),
     telephone: txt(c.telephone, 30), adresse: txt(c.adresse, 200),
-    societe: txt(c.societe, 120) || null, tva: txt(c.tva, 20) || null,
+    societe: pro ? (txt(c.societe, 120) || null) : null,
+    tva: pro ? ((/^[01]\d{9}$/.test(tva) ? "BE" + tva : tva) || null) : null,
   };
-  if (!d.prenom || !d.nom) throw new ErreurClient("Indiquez votre prénom et votre nom.");
+  if (pro) {
+    if (!d.societe) throw new ErreurClient("Indiquez le nom de l'entreprise.");
+    if (!d.tva || !/^[A-Z]{2}[0-9A-Z]{8,12}$/.test(d.tva) || (d.tva.startsWith("BE") && !/^BE[01]\d{9}$/.test(d.tva))) {
+      throw new ErreurClient("Indiquez un numéro de TVA valide (ex. : BE0123.456.789).");
+    }
+    if (d.adresse.length < 8) throw new ErreurClient("Indiquez l'adresse complète de l'entreprise (rue, numéro, code postal, commune).");
+  } else if (!d.prenom || !d.nom) throw new ErreurClient("Indiquez votre prénom et votre nom.");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) throw new ErreurClient("Adresse e-mail invalide.");
   if (d.telephone.replace(/\D/g, "").length < 8) throw new ErreurClient("Numéro de téléphone invalide.");
-  if (d.adresse.length < 8) throw new ErreurClient("Indiquez votre adresse complète (rue, numéro, code postal, commune).");
   if (c.conditions !== true) throw new ErreurClient("Veuillez accepter les conditions du Pack Sérénité.");
   if (c.consentement !== true) throw new ErreurClient("Veuillez confirmer que le service peut commencer tout de suite.");
   const f = (await rest(`pack_formules?code=eq.${encodeURIComponent(formule)}&actif=eq.true&select=code,nom,prix`))[0];
@@ -375,11 +393,11 @@ async function lien(c: Record<string, unknown>) {
 
 async function acces(req: Request, c: Record<string, unknown>) {
   if (!(await personnel(req, ["clients"]))) throw new ErreurClient("Droits insuffisants.", 403);
-  const cl = (await rest(`clients?select=id,nom,email&id=eq.${Number(c.client_id)}&supprime_le=is.null`))[0];
+  const cl = (await rest(`clients?select=id,nom,email,societe&id=eq.${Number(c.client_id)}&supprime_le=is.null`))[0];
   if (!cl) throw new ErreurClient("Client introuvable.");
   if (!cl.email) throw new ErreurClient("Ce client n'a pas d'adresse e-mail.");
   const url = await lienEspace(cl.email, cl.id);
-  const prenom = String(cl.nom || "").split(" ")[0];
+  const prenom = prenomDe(cl.nom, cl.societe);
   await mailClient("pack_acces", cl.email, { prenom }, url);
 
   return { ok: true };
@@ -396,7 +414,7 @@ async function envoyerFacturePack(req: Request, c: Record<string, unknown>) {
   if (!fac.client_email) return { ok: true, archive: true, envoye: false };
   let lien = "";
   if (pk.statut === "actif") { try { lien = await lienEspace(fac.client_email, pk.client_id); } catch (e) { console.error("lien espace", e); } }
-  await mailFacture(fac, octets, String(fac.client_nom || "").split(" ")[0], pk, lien);
+  await mailFacture(fac, octets, prenomDe(fac.client_nom, fac.client_societe), pk, lien);
   await rest(`factures?id=eq.${fac.id}`, { method: "PATCH", body: JSON.stringify({ email_envoye: true, date_envoi: new Date().toISOString() }) }).catch(() => {});
   return { ok: true, archive: true, envoye: true };
 }

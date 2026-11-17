@@ -86,6 +86,10 @@ footer a{color:inherit}
 .f input{width:100%;border:1px solid var(--ln);border-radius:10px;padding:11px 12px;font-size:16px;font-family:inherit;color:var(--t1)}
 .f input:focus{outline:2px solid rgba(0,82,204,.25);border-color:var(--a)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tc{display:grid;grid-template-columns:1fr 1fr;background:var(--bg2);border-radius:99px;padding:4px;gap:4px;margin-bottom:14px}
+.tc button{border:none;background:none;font:inherit;font-size:14px;color:var(--t2);padding:9px 10px;border-radius:99px;cursor:pointer;transition:background .2s,color .2s,box-shadow .2s}
+.tc button.on{background:#fff;color:var(--t1);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.tc button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
 .ck{display:flex;gap:10px;font-size:12.5px;line-height:1.45;color:#3a3a3c;margin:10px 0;cursor:pointer}
 .ck input{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--a)}
 .err{color:var(--d);font-size:13px;margin-top:10px;min-height:1px}
@@ -171,7 +175,7 @@ footer a{color:inherit}
     <div class="plan reco" data-code="famille"><span class="tag">Le plus choisi</span><div class="pl-n">Sérénité Famille</div><div class="pl-pour">Pour tout le foyer, tous les appareils</div><div class="pl-p">349 €</div><div class="pl-m">soit 29,08 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
       <div class="pl-v">Valeur à la carte : <b>jusqu'à 1 080 €</b></div>
       <ul><li class="fort">1 intervention par mois, main-d'œuvre incluse : vous ne payez plus que les pièces</li><li>Tous les appareils du foyer</li><li>Diagnostic offert, sans limite</li><li>Bilan santé annuel de tous vos appareils, à domicile</li><li>4 protections hydrogel</li><li>−20 % sur la main-d'œuvre au-delà</li><li>Rendez-vous prioritaire</li><li>Déplacement inclus</li></ul><button class="btn" onclick="choisir('famille')">Choisir Famille</button></div>
-    <div class="plan" data-code="pro"><div class="pl-n">Sérénité Pro</div><div class="pl-pour">Pour les indépendants et petites entreprises</div><div class="pl-p">590 €</div><div class="pl-m">soit 49,17 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
+    <div class="plan" data-code="pro"><div class="pl-n">Sérénité Pro</div><div class="pl-pour">Réservée aux professionnels</div><div class="pl-p">590 €</div><div class="pl-m">soit 49,17 € par mois</div><div class="pl-u">Par an · paiement unique · sans renouvellement automatique</div>
       <div class="pl-v">Valeur à la carte : <b>jusqu'à 1 080 €</b></div>
       <ul><li class="fort">1 intervention par mois, main-d'œuvre incluse</li><li>Tous les postes et appareils de l'entreprise</li><li>Diagnostic offert, sans limite</li><li>Bilan santé annuel, sur place</li><li>4 protections hydrogel</li><li>−20 % sur la main-d'œuvre au-delà</li><li>Rendez-vous prioritaire</li><li>Facture au nom de l'entreprise</li><li>Déplacement inclus</li></ul><button class="btn o" onclick="choisir('pro')">Choisir Pro</button></div>
   </section>
@@ -248,17 +252,23 @@ footer a{color:inherit}
   <form class="box" id="form" onsubmit="envoyerCommande(event)" novalidate>
     <button type="button" class="x" onclick="fermer()" aria-label="Fermer">×</button>
     <div class="mtitle" id="t-achat">Vos coordonnées</div>
-    <div class="msub">Elles servent à votre facture et à votre espace client.</div>
+    <div class="msub" id="msub-achat">Elles servent à votre facture et à votre espace client.</div>
     <div class="recap"><span id="r-nom">Pack Sérénité</span><b id="r-prix"></b></div>
-    <div class="row2"><div class="f"><label for="prenom">Prénom</label><input id="prenom" autocomplete="given-name" maxlength="60" required></div>
-      <div class="f"><label for="nom">Nom</label><input id="nom" autocomplete="family-name" maxlength="60" required></div></div>
-    <div class="f"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" maxlength="160" required></div>
-    <div class="f"><label for="tel">Téléphone</label><input id="tel" type="tel" autocomplete="tel" maxlength="30" required></div>
-    <div class="f"><label for="adresse">Adresse (rue, numéro, code postal, commune)</label><input id="adresse" autocomplete="street-address" maxlength="200" required></div>
-    <div class="row2"><div class="f"><label for="societe">Entreprise (facultatif)</label><input id="societe" autocomplete="organization" maxlength="120"></div>
-      <div class="f"><label for="tva">N° TVA (facultatif)</label><input id="tva" maxlength="20" placeholder="BE0…"></div></div>
+    <div class="tc" role="group" aria-label="Je commande en tant que">
+      <button type="button" id="t-part" class="on" aria-pressed="true" onclick="typeAchat(false)">Particulier</button>
+      <button type="button" id="t-pro" aria-pressed="false" onclick="typeAchat(true)">Entreprise</button>
+    </div>
+    <div id="bloc-pro" hidden>
+      <div class="f"><label for="societe">Nom de l'entreprise</label><input id="societe" autocomplete="organization" maxlength="120"></div>
+      <div class="f"><label for="tva">N° de TVA</label><input id="tva" maxlength="20" placeholder="BE0123.456.789" autocapitalize="characters"></div>
+    </div>
+    <div class="row2"><div class="f"><label for="prenom" id="lab-prenom">Prénom</label><input id="prenom" autocomplete="given-name" maxlength="60"></div>
+      <div class="f"><label for="nom" id="lab-nom">Nom</label><input id="nom" autocomplete="family-name" maxlength="60"></div></div>
+    <div class="f"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" maxlength="160"></div>
+    <div class="f"><label for="tel">Téléphone</label><input id="tel" type="tel" autocomplete="tel" maxlength="30"></div>
+    <div class="f"><label for="adresse" id="lab-adresse">Adresse (facultative)</label><input id="adresse" autocomplete="street-address" maxlength="200" placeholder="Rue, numéro, code postal, commune"></div>
     <label class="ck"><input type="checkbox" id="c1"><span>J'accepte les <a href="#conditions">conditions du Pack Sérénité</a> et les <a href="/#conditions">conditions générales</a>.</span></label>
-    <label class="ck"><input type="checkbox" id="c2"><span>Je demande que le service commence dès le paiement.<br>Si je me rétracte dans les 14 jours, ce qui m'a déjà été fourni est déduit au tarif normal.</span></label>
+    <label class="ck"><input type="checkbox" id="c2"><span>Je demande que le service commence dès le paiement.<span id="c2-retr"><br>Si je me rétracte dans les 14 jours, ce qui m'a déjà été fourni est déduit au tarif normal.</span></span></label>
     <button class="btn" id="payer" type="submit">Payer</button>
     <div class="err" id="err" role="alert"></div>
     <div class="sec">Paiement sécurisé par Mollie · Bancontact ou carte bancaire</div>
@@ -292,16 +302,37 @@ function choisir(code){
 function fermer(){document.getElementById('ov').classList.remove('open');document.documentElement.style.overflow=''}
 document.getElementById('ov').addEventListener('click',e=>{if(e.target.id==='ov')fermer()})
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()})
+/* Particulier : prénom, nom, e-mail, téléphone (adresse facultative).
+   Entreprise : nom de l'entreprise, n° de TVA, adresse, e-mail, téléphone ;
+   le nom de la personne de contact est facultatif. La facture suit ce choix. */
+let achatPro=false
+function typeAchat(pro){achatPro=!!pro
+  for(const [id,on] of [['t-part',!pro],['t-pro',pro]]){const b=document.getElementById(id);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))}
+  document.getElementById('bloc-pro').hidden=!pro
+  document.getElementById('lab-prenom').textContent=pro?'Votre prénom (facultatif)':'Prénom'
+  document.getElementById('lab-nom').textContent=pro?'Votre nom (facultatif)':'Nom'
+  document.getElementById('lab-adresse').textContent=pro?"Adresse de l'entreprise":'Adresse (facultative)'
+  document.getElementById('msub-achat').textContent=pro?"La facture est établie au nom de l'entreprise.":'Elles servent à votre facture et à votre espace client.'
+  // Entre professionnels, pas de droit de rétractation.
+  document.getElementById('c2-retr').hidden=pro
+  document.getElementById('err').textContent=''
+}
+// N° de TVA : « 0652.897.793 » ou « BE 0652 897 793 » → BE0652897793
+const tvaNette=t=>{t=String(t||'').replace(/[^A-Za-z0-9]/g,'').toUpperCase();return /^[01]\d{9}$/.test(t)?'BE'+t:t}
+const tvaOk=t=>/^[A-Z]{2}[0-9A-Z]{8,12}$/.test(t)&&(!t.startsWith('BE')||/^BE[01]\d{9}$/.test(t))
 async function envoyerCommande(e){
   e.preventDefault()
   const v=id=>document.getElementById(id).value.trim()
   const err=document.getElementById('err')
-  const d={action:'commander',formule:choix,prenom:v('prenom'),nom:v('nom'),email:v('email'),telephone:v('tel'),adresse:v('adresse'),
-    societe:v('societe'),tva:v('tva'),conditions:document.getElementById('c1').checked,consentement:document.getElementById('c2').checked}
-  if(!d.prenom||!d.nom)return err.textContent='Indiquez votre prénom et votre nom.'
+  const d={action:'commander',formule:choix,type:achatPro?'entreprise':'particulier',prenom:v('prenom'),nom:v('nom'),email:v('email'),telephone:v('tel'),adresse:v('adresse'),
+    societe:achatPro?v('societe'):'',tva:achatPro?tvaNette(v('tva')):'',conditions:document.getElementById('c1').checked,consentement:document.getElementById('c2').checked}
+  if(achatPro){
+    if(!d.societe)return err.textContent="Indiquez le nom de l'entreprise."
+    if(!tvaOk(d.tva))return err.textContent='Indiquez un numéro de TVA valide (ex. : BE0123.456.789).'
+  }else if(!d.prenom||!d.nom)return err.textContent='Indiquez votre prénom et votre nom.'
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email))return err.textContent='Adresse e-mail invalide.'
   if(d.telephone.replace(/\D/g,'').length<8)return err.textContent='Numéro de téléphone invalide.'
-  if(d.adresse.length<8)return err.textContent='Indiquez votre adresse complète.'
+  if(achatPro&&d.adresse.length<8)return err.textContent="Indiquez l'adresse complète de l'entreprise."
   if(!d.conditions)return err.textContent='Veuillez accepter les conditions.'
   if(!d.consentement)return err.textContent='Veuillez confirmer que le service peut commencer dès le paiement.'
   const b=document.getElementById('payer');b.disabled=true;b.textContent='Redirection vers le paiement…';err.textContent=''
