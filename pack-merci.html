@@ -58,7 +58,7 @@ function rediriger(email){
 function afficher(e){
   if(e&&e.statut==='payee'){
     box.innerHTML=`<div class="ic ok">✓</div><h1>Votre pack est actif</h1>
-      <p>Merci ${esc(e.prenom)}.<br>Votre <b>${esc(e.formule)}</b> est actif${e.date_fin?` jusqu'au <b>${esc(dateFr(e.date_fin))}</b>`:''}.</p>
+      <p>Merci${e.prenom?' '+esc(e.prenom):''}.<br>Votre <b>${esc(e.formule)}</b> est actif${e.date_fin?` jusqu'au <b>${esc(dateFr(e.date_fin))}</b>`:''}.</p>
       <p>Un e-mail avec votre facture et votre lien de connexion vient de vous être envoyé à <b>${esc(e.email)}</b>.</p>
       <p class="compte" id="compte">Redirection vers votre espace client dans <b>10</b> secondes…</p>
       <a class="btn" href="${lienEspace(e.email)}">Ouvrir mon espace client</a><a class="btn o" href="tel:+32474056659">M'appeler pour un premier rendez-vous</a>`

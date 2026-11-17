@@ -80,7 +80,9 @@ export async function facturePdf(f: Doc, ent: Record<string, string>, logo?: Uin
   // Client
   y = Math.min(yg, yd) - 22;
   ecr("Facturé à", M, y, { t: 9, f: gras, c: gris }); y -= 14;
-  for (const l of [f.client_societe, f.client_nom, ...String(f.client_adresse || "").split(/\n/), f.client_tva ? "TVA : " + f.client_tva : ""].filter(Boolean)) {
+  // Sans personne de contact, le nom du client est celui de l'entreprise : pas de doublon.
+  const nomClient = f.client_societe && String(f.client_nom || "").trim() === String(f.client_societe).trim() ? "" : f.client_nom;
+  for (const l of [f.client_societe, nomClient, ...String(f.client_adresse || "").split(/\n/), f.client_tva ? "TVA : " + f.client_tva : ""].filter(Boolean)) {
     ecr(l, M, y, { t: 10.5 }); y -= 14;
   }
 
