@@ -1375,6 +1375,21 @@ window.choisirTypeClient=function(pro){
 window.toggleClientPro=function(){choisirTypeClient(document.getElementById('f-is-pro').value!=='true')}
 
 /* ─── Lignes ─── */
+/* Quantité d'une ligne. À l'heure : « 1,5 », « 1.5 », « 1h30 », « 1:30 » ou
+   « 45min » (champ texte : sur iPhone, un champ nombre refuse la virgule). */
+function heuresDe(v){
+  const t=String(v||'').trim().toLowerCase().replace(/\s+/g,'')
+  let m=t.match(/^(\d+)(?:h|:)(\d{1,2})?(?:min)?$/)
+  if(m)return Number(m[1])+(Number(m[2]||0)/60)
+  m=t.match(/^(\d+)min$/)
+  if(m)return Number(m[1])/60
+  const n=Number(t.replace(',','.'))
+  return isFinite(n)&&n>0?n:0
+}
+function qteDe(l){
+  const v=l.querySelector('.l-qte').value
+  return Math.round((l.dataset.unite==='h'?heuresDe(v):(Number(v)||0))*10000)/10000
+}
 // Heures en clair sur la facture : 1.5 → « 1 h 30 », 0.75 → « 45 min ».
 function dureeH(v){const m=Math.round((Number(v)||0)*60),h=Math.floor(m/60),r=m%60;return h?`${h} h${r?' '+String(r).padStart(2,'0'):''}`:`${r} min`}
 window.addLigne=function addLigne(desc,qte,prix,stockId,unite){
@@ -1392,7 +1407,9 @@ window.addLigne=function addLigne(desc,qte,prix,stockId,unite){
         <span class="lie${stockId?' on':''}">lié</span>
       </div>
     </div>
-    <input type="number" class="l-qte" value="${qte}" min="0" step="${heure?'0.25':'1'}" oninput="calcTotaux()" aria-label="${heure?'Nombre d\'heures':'Quantité'}" title="${heure?'Nombre d\'heures (1,5 = 1 h 30)':'Quantité'}"/>
+    ${heure
+      ? `<input type="text" class="l-qte" value="${String(qte).replace('.',',')}" inputmode="decimal" autocomplete="off" oninput="calcTotaux()" aria-label="Nombre d'heures" title="Nombre d'heures : 1,5 ou 1h30"/>`
+      : `<input type="number" class="l-qte" value="${qte}" min="0" step="1" oninput="calcTotaux()" aria-label="Quantité"/>`}
     <input type="number" class="l-prix" value="${prix}" step="0.01" oninput="calcTotaux()" aria-label="Prix unitaire"/>
     <input type="text" class="l-total" value="0,00" readonly aria-label="Total de la ligne"/>
     <button type="button" class="ligne-del" onclick="this.closest('.ligne').remove();calcTotaux()" title="Retirer la ligne"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`
@@ -1429,7 +1446,7 @@ function getLignes(){
   const lignes=[]
   document.querySelectorAll('#lignesBody .ligne').forEach(l=>{
     const desc=l.querySelector('.l-desc').value.trim()
-    const qte=Number(l.querySelector('.l-qte').value)||0
+    const qte=qteDe(l)
     const prix=Number(l.querySelector('.l-prix').value)||0
     const sid=l.dataset.stockId||''
     if(desc||prix>0)lignes.push({description:desc,quantite:qte,prix_unitaire:prix,total:Math.round(qte*prix*100)/100,stock_id:sid?Number(sid):null,...(l.dataset.unite==='h'?{unite:'h'}:{})})
@@ -1441,7 +1458,7 @@ function getLignes(){
 window.calcTotaux=function calcTotaux(){
   let sousTotal=0
   document.querySelectorAll('#lignesBody .ligne').forEach(l=>{
-    const t=(Number(l.querySelector('.l-qte').value)||0)*(Number(l.querySelector('.l-prix').value)||0)
+    const t=qteDe(l)*(Number(l.querySelector('.l-prix').value)||0)
     l.querySelector('.l-total').value=t.toFixed(2).replace('.',',')
     sousTotal+=t
   })
