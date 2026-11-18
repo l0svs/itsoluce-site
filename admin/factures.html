@@ -2496,9 +2496,9 @@ function buildTemplateHTML(f,forPdf){
   const lignesHTML=(f.lignes||[]).map(l=>`
     <tr>
       <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;">${escHtml(l.description)}</td>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;">${l.unite==='h'?dureeH(l.quantite):l.quantite}</td>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €${l.unite==='h'?'/h':''}</td>
-      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:center;white-space:nowrap !important;word-break:normal !important;">${l.unite==='h'?dureeH(l.quantite):l.quantite}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;white-space:nowrap !important;word-break:normal !important;">${Number(l.prix_unitaire).toFixed(2).replace('.',',')} €${l.unite==='h'?'/h':''}</td>
+      <td style="padding:9px 8px;border-bottom:1px solid #eee;font-size:12px;text-align:right;font-weight:600;white-space:nowrap !important;word-break:normal !important;">${Number(l.total).toFixed(2).replace('.',',')} €</td>
     </tr>`).join('')
   const sousTotal=(f.lignes||[]).reduce((a,l)=>a+Number(l.total),0)
   const dateEm=dateLongue(f.date_emission||f.created_at)
@@ -2571,9 +2571,9 @@ function buildTemplateHTML(f,forPdf){
     <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
       <thead><tr style="background:#1d4ed8;">
         <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#fff;text-align:left;border-radius:6px 0 0 0;">Description</th>
-        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:center;">Qté</th>
-        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:right;">Prix unit.</th>
-        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:right;border-radius:0 6px 0 0;">Total</th>
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:center;white-space:nowrap !important;word-break:normal !important;">Qté</th>
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:right;white-space:nowrap !important;word-break:normal !important;">Prix unit.</th>
+        <th style="padding:10px 8px;font-size:11px;text-transform:uppercase;color:#fff;text-align:right;border-radius:0 6px 0 0;white-space:nowrap !important;word-break:normal !important;">Total</th>
       </tr></thead>
       <tbody>${lignesHTML}</tbody>
     </table>
