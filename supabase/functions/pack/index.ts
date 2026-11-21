@@ -98,7 +98,25 @@ async function envoyerMail(a: string, objet: string, html: string, pieces: { nom
       ...(pieces.length ? { attachments: pieces.map((x) => ({ filename: x.nom, content: base64(x.octets) })) } : {}) }),
   });
   if (!r.ok) throw new Error(`Resend ${r.status} : ${(await r.text()).slice(0, 200)}`);
+  // Mails au client (pas les notifications internes) : copie dans « Envoyés ».
+  if (a.trim().toLowerCase() !== EXPEDITEUR) {
+    await copieEnvoye(a, objet, html, pieces.map((x) => ({ nom: x.nom, type: "application/pdf", base64: base64(x.octets) })));
+  }
 }
+/* Copie du mail dans « Envoyés » de la boîte contact@itsoluce.be (fonction
+   mail-copie) : sans elle, les mails automatiques partis par Resend n'y
+   apparaissaient pas. Un échec n'empêche jamais l'envoi au client. */
+async function copieEnvoye(a: string, objet: string, html: string, pieces: { nom: string; type?: string; base64: string }[] = []) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/mail-copie`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ a, objet, html, pieces }),
+    });
+    if (!r.ok) console.error("copie Envoyés", r.status, (await r.text()).slice(0, 200));
+  } catch (e) { console.error("copie Envoyés", e instanceof Error ? e.message : e); }
+}
+
 const bouton = (href: string, txt: string) =>
   `<p style="margin:18px 0"><a href="${href}" style="background:#0052CC;color:#fff;text-decoration:none;padding:12px 22px;border-radius:24px;display:inline-block;font-weight:bold">${esc(txt)}</a></p>`;
 

@@ -2972,7 +2972,7 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
           <div class="trow"><span>Transfert de données</span><span class="tprice">85€</span></div>
           <div class="trow"><span>Sauvegarde de données</span><span class="tprice">85€</span></div>
           <div class="trow"><span>Configuration d'un nouvel appareil</span><span class="tprice">85€</span></div>
-          <div class="trow"><span>Assistance / conseil</span><span class="tprice">85€</span></div>
+          <div class="trow"><span>Assistance / conseil</span><span class="tprice">85€ / h</span></div>
           <div class="trow"><span>Autres interventions</span><span class="tprice">Sur devis</span></div>
         </div>
       </div>
@@ -4075,7 +4075,9 @@ if (prefersReducedMotion) {
     if (!Number.isFinite(p)) return 'Sur devis';
     if (p === 0) return 'Gratuit';
     const base = (Number.isFinite(pmax) && pmax > p) ? 'Dès ' + euro(p) : euro(p);
-    return s.unite ? base + ' / ' + s.unite : base;
+    // Unité saisie dans Gestion (« /h » ou « h ») : un seul « / ».
+    const unite = String(s.unite || '').trim().replace(/^\/+\s*/, '');
+    return unite ? base + ' / ' + unite : base;
   };
 
   try {
