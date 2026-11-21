@@ -161,6 +161,20 @@ function buildEmailHtml(prenom: string, appareil: string, ent: Entreprise): stri
 </div>`;
 }
 
+/* Copie du mail dans « Envoyés » de la boîte contact@itsoluce.be (fonction
+   mail-copie) : sans elle, les mails automatiques partis par Resend n'y
+   apparaissaient pas. Un échec n'empêche jamais l'envoi au client. */
+async function copieEnvoye(a: string, objet: string, html: string, pieces: { nom: string; type?: string; base64: string }[] = []) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/mail-copie`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ a, objet, html, pieces }),
+    });
+    if (!r.ok) console.error("copie Envoyés", r.status, (await r.text()).slice(0, 200));
+  } catch (e) { console.error("copie Envoyés", e instanceof Error ? e.message : e); }
+}
+
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("Origin"));
   const json = (body: unknown, status: number) =>
@@ -253,6 +267,7 @@ Deno.serve(async (req) => {
       console.error("Resend a refusé l'envoi", resendRes.status, await resendRes.text());
       return json({ ok: true }, 200);
     }
+    await copieEnvoye(email, `Demande bien reçue — ${ent.nom}`, buildEmailHtml(prenom, appareil, ent));
 
     return json({ success: true }, 200);
   } catch (err) {
