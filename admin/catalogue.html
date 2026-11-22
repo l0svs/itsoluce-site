@@ -1190,7 +1190,7 @@ function renderResults(){
           <button class="cat-btn primary" onclick="ajouterAuStock('${escapeJs(p.sku)}')" style="flex:1;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Stock</button>
           <button class="cat-btn" onclick="ajouterAuPanierFoneday('${escapeJs(p.sku)}','${escapeJs(p.title||'')}',this)" style="flex:1;background:var(--bg2);border:1px solid var(--ln2);color:var(--t2);" title="Ajouter au panier Foneday (paiement sur leur site)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Panier</button>
         </div>
-        ${CLIENT_CAT&&vente>0?`<div class="cat-opt-foot" style="padding-top:0;"><button class="cat-btn primary" style="width:100%;" onclick="facturerClientCat('${escapeJs(p.sku)}',this)">Facturer à ${escapeHtml(CLIENT_CAT.nom||'ce client')} · ${prixAff.toFixed(2)} €</button></div>`:''}
+        ${CLIENT_CAT&&vente>0?`<div class="cat-opt-foot" style="padding-top:0;"><button class="cat-btn primary" style="width:100%;" onclick="creerDossierClientCat('${escapeJs(p.sku)}',this)">Créer le dossier de ${escapeHtml(CLIENT_CAT.nom||'ce client')} · ${prixAff.toFixed(2)} €</button></div>`:''}
       </div>`
     })
     html+=`</div></div>`
@@ -1224,42 +1224,40 @@ function welcomeHtml(){
   return `<div class="cat-welcome"><div class="cat-welcome-ico">🔧</div><h2>Catalogue Foneday</h2><p>Recherchez un modèle d'appareil pour voir toutes les variantes de pièces disponibles, classées par niveau (économique, recommandé, premium) avec leur prix de vente conseillé et votre marge.</p></div>`
 }
 
-// Facture en brouillon pour le client choisi, avec le prix de son pack.
-window.facturerClientCat=async function(sku,btn){
+// Dossier de réparation pour le client choisi : pièce, prix et pack.
+// La facture se crée ensuite depuis le dossier, avec le pack appliqué, et la
+// garantie de 3 mois démarre quand l'appareil est rendu.
+function appareilDe(m){m=String(m||'')
+  if(/ipad|tab|pad\b/i.test(m))return 'Tablette'
+  if(/watch/i.test(m))return 'Montre connectée'
+  if(/macbook|laptop|notebook/i.test(m))return 'PC portable'
+  if(/switch|playstation|ps[345]|xbox|joy-?con/i.test(m))return 'Console'
+  return 'Smartphone'}
+window.creerDossierClientCat=async function(sku,btn){
   const p=(window._catProduits||{})[sku],c=CLIENT_CAT
   if(!p||!c){showToast('Choisis un client et une pièce','err');return}
-  const pc=prixPourClient(Number(p.prix_achat)||0)
+  const achat=Number(p.prix_achat)||0,pc=prixPourClient(achat)
   if(!(pc.vente>0)){showToast('Prix de la pièce inconnu','err');return}
   const lib=libellePiece({nom:p.title||'',modele:p.suitable_for||''})
-  let lignes
-  if(pc.cas==='inclus')lignes=[{description:`${lib} (pièce — main-d'œuvre incluse dans le Pack ${pc.pack.nom})`,quantite:1,prix_unitaire:pc.piece,total:pc.piece,stock_id:''}]
-  else if(pc.cas==='remise')lignes=[
-    {description:`${lib} (pièce)`,quantite:1,prix_unitaire:pc.piece,total:pc.piece,stock_id:''},
-    {description:`Main-d'œuvre${p.suitable_for?' — '+p.suitable_for:''}`,quantite:1,prix_unitaire:pc.mo,total:pc.mo,stock_id:''},
-    ...(pc.remise>0?[{description:`Remise Pack ${pc.pack.nom} : −20 % sur la main-d'œuvre`,quantite:1,prix_unitaire:-pc.remise,total:-pc.remise,stock_id:''}]:[])]
-  else lignes=[{description:lib,quantite:1,prix_unitaire:pc.vente,total:pc.vente,stock_id:''}]
-  const tot=r2(lignes.reduce((t,l)=>t+l.total,0))
-  const detail=lignes.map(l=>'• '+l.description+' : '+l.total.toFixed(2)+' €').join('\n')
-  if(!confirm(`Créer la facture de ${c.nom} ?\n\n${detail}\n\nTotal : ${tot.toFixed(2)} €${pc.cas?' (au lieu de '+pc.vente.toFixed(2)+' €)':''}${pc.cas==='inclus'?'\n\nL\'intervention du mois sera décomptée du pack.':''}\n\nCréée en brouillon : tu la vérifies dans Factures avant de l'émettre.`))return
+  const quoi=pc.cas==='inclus'?`Main-d'œuvre incluse dans le Pack ${pc.pack.nom} : le client paiera la pièce, ${pc.prix.toFixed(2)} €.\nL'intervention du mois est décomptée du pack maintenant.`
+    :pc.cas==='remise'?`Pack ${pc.pack.nom} : −20 % sur la main-d'œuvre, le client paiera ${pc.prix.toFixed(2)} € au lieu de ${pc.vente.toFixed(2)} €.`
+    :`Prix : ${pc.vente.toFixed(2)} €.`
+  if(!confirm(`Créer le dossier de réparation de ${c.nom} ?\n\n${lib}\n${quoi}\n\nLa facture se crée depuis le dossier, une fois la réparation faite.`))return
   btn.disabled=true
-  let interId=null
   try{
+    const res=await sb.from('reparations').insert({client_id:c.id,client_nom:c.nom,client_email:c.email||null,client_telephone:c.telephone||null,
+      appareil:appareilDe(p.suitable_for||p.title),modele:p.suitable_for||null,panne_description:lib,statut:'attente_reception',type:'reparation',
+      pieces:[{stock_id:null,service_id:null,nom:lib,qte:1,cout:Math.round((achat+fraisLivraison())*100)/100}],
+      prix_devis:pc.vente,prix_final:0,notes:`Réf. Foneday : ${p.sku}${p.quality?' — '+p.quality:''}`,updated_at:new Date().toISOString()}).select('id').single()
+    if(res.error)throw new Error(res.error.message)
+    let avert=''
     if(pc.cas==='inclus'){
-      const {data,error}=await sb.rpc('noter_intervention_pack',{p_pack:pc.pack.id,p_type:'depot',p_date:null,p_description:lib,p_note:null,
-        p_duree_min:null,p_km:null,p_hydrogels:0,p_decompter:true,p_creer_dossier:false,p_appareil:null,p_reparation_id:null})
-      if(error)throw new Error(error.message)
-      interId=data&&data.intervention_id
+      const {error}=await sb.rpc('noter_intervention_pack',{p_pack:pc.pack.id,p_type:'depot',p_date:null,p_description:lib,p_note:null,
+        p_duree_min:null,p_km:null,p_hydrogels:0,p_decompter:true,p_creer_dossier:false,p_appareil:null,p_reparation_id:res.data.id})
+      if(error)avert=" — l'intervention du mois n'a pas pu être incluse : "+error.message
     }
-    const res=await sb.from('factures').insert({client_id:c.id,client_nom:c.nom,client_email:c.email||null,client_telephone:c.telephone||null,
-      client_adresse:c.adresse||null,client_societe:c.societe||null,client_tva:c.tva||null,
-      date_emission:new Date().toISOString().slice(0,10),statut:'brouillon',acompte:0,acompte_type:'euro',lignes,total:tot,remise:0,
-      notes:null,stock_decremente:true,updated_at:new Date().toISOString()}).select('id').single()
-    if(res.error){
-      if(interId)await sb.rpc('supprimer_intervention_pack',{p_id:interId})
-      throw new Error(res.error.message)
-    }
-    showToast('Facture créée en brouillon','ok')
-    setTimeout(()=>{window.location.href='/admin/factures.html?open='+res.data.id},500)
+    showToast('Dossier créé'+avert,avert?'err':'ok')
+    setTimeout(()=>{window.location.href='/admin/reparations.html?dossier='+res.data.id},avert?2500:500)
   }catch(e){showToast('Erreur : '+(e.message||e),'err');btn.disabled=false}
 }
 
