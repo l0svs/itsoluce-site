@@ -262,8 +262,8 @@ footer a{color:inherit}
       <div class="f"><label for="societe">Nom de l'entreprise</label><input id="societe" autocomplete="organization" maxlength="120"></div>
       <div class="f"><label for="tva">N° de TVA</label><input id="tva" maxlength="20" placeholder="BE0123.456.789" autocapitalize="characters"></div>
     </div>
-    <div class="row2"><div class="f"><label for="prenom" id="lab-prenom">Prénom</label><input id="prenom" autocomplete="given-name" maxlength="60"></div>
-      <div class="f"><label for="nom" id="lab-nom">Nom</label><input id="nom" autocomplete="family-name" maxlength="60"></div></div>
+    <div class="row2"><div class="f"><label for="prenom" id="lab-prenom">Prénom</label><input id="prenom" data-nom autocomplete="given-name" maxlength="60"></div>
+      <div class="f"><label for="nom" id="lab-nom">Nom</label><input id="nom" data-nom autocomplete="family-name" maxlength="60"></div></div>
     <div class="f"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" maxlength="160"></div>
     <div class="f"><label for="tel">Téléphone</label><input id="tel" type="tel" autocomplete="tel" maxlength="30"></div>
     <div class="f"><label for="adresse" id="lab-adresse">Adresse (facultative)</label><input id="adresse" autocomplete="street-address" maxlength="200" placeholder="Rue, numéro, code postal, commune"></div>
@@ -371,5 +371,6 @@ if(location.hash==='#conditions')ouvrirConditions(true)
  else{const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}}),{threshold:0.15,rootMargin:'0px 0px -60px 0px'})
    cibles.forEach(el=>obs.observe(el))}}
 </script>
+<script src="/assets/js/nom-propre.js?v=20261122"></script>
 </body>
 </html>

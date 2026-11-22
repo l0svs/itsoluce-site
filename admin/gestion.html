@@ -2139,7 +2139,7 @@ function _absTexte(phase,debut,fin,msg){
   const retour=_absPlus(fin,1),b=t=>'<b>'+escHtml(t)+'</b>'
   const t=phase==='avant'
     ? `Je serai en congé du ${b(_absNom(debut))} au ${b(_absNom(fin))}. Les demandes reçues pendant cette période seront traitées dès mon retour, le ${b(_absNom(retour))}.`
-    : `Je suis en congé jusqu'au ${b(_absNom(fin))}. Les demandes envoyées par le formulaire sont traitées dès mon retour, le ${b(_absNom(retour))}.`
+    : `Je suis en congé jusqu'au ${b(_absNom(fin))}. Les demandes envoyées par le formulaire seront traitées dès mon retour, le ${b(_absNom(retour))}.`
   return t+(msg?' '+escHtml(msg):'')
 }
 function majAbsence(){

@@ -105,7 +105,7 @@ function rendu(){
   if(d.etat==='ouvert'){
     bas=`<div class="card">
       <label for="nom">Votre nom</label>
-      <input type="text" id="nom" autocomplete="name" maxlength="120" value="${esc(d.client_nom||'')}">
+      <input type="text" id="nom" data-nom autocomplete="name" maxlength="120" value="${esc(d.client_nom||'')}">
       <label class="chk"><input type="checkbox" id="ok"> <span>J'ai lu ce devis et je l'accepte. Je demande à IT Soluce de réaliser la réparation aux conditions indiquées et aux <a href="https://itsoluce.be/#conditions" target="_blank" rel="noopener">conditions générales de service</a>.</span></label>
       <button class="btn" id="go" disabled>Accepter le devis</button>
       <div class="err" id="err"></div>
@@ -187,5 +187,6 @@ async function refuser(){
   D=data;rendu()
 })()
 </script>
+<script src="/assets/js/nom-propre.js?v=20261122"></script>
 </body>
 </html>
