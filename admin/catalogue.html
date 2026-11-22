@@ -226,6 +226,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-search-big svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;}
 .cat-search-big input{width:100%;padding:13px 16px 13px 46px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:12px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
 .cat-search-big input:focus{border-color:var(--a);}
+.cat-client{display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:600px;margin-top:8px;}
+.cat-client input{flex:1;min-width:200px;padding:9px 12px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:10px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
+.cat-client input:focus{border-color:var(--a);}
+.cat-client-etat{font-size:12px;color:var(--t2);}
+.cat-client-etat b{color:var(--a);font-weight:600;}
+.cat-opt-price-big .barre{font-size:13px;color:var(--t3);text-decoration:line-through;margin-left:6px;font-weight:500;}
 .cat-hint{font-size:12px;color:var(--t3);margin-top:10px;}
 .cat-filters{margin-top:12px;position:relative;display:inline-block;}
 .cat-filter-btn{display:inline-flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--ln2);border-radius:99px;padding:9px 14px;cursor:pointer;font-family:inherit;transition:border-color .15s;}
@@ -647,6 +653,11 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="catSearch" placeholder="Rechercher un modèle… ex : iPhone 13, Galaxy S23, iPad Air" oninput="catSearchDebounce()"/>
         </div>
+        <div class="cat-client">
+          <input type="text" id="catClient" list="catClientsListe" placeholder="Prix pour un client (facultatif)" autocomplete="off" oninput="choisirClientCat()"/>
+          <datalist id="catClientsListe"></datalist>
+          <span class="cat-client-etat" id="catClientEtat"></span>
+        </div>
         <div class="cat-hint"><span class="cat-sync-info" id="sync-info"></span> · <span id="cat-total">—</span> pièces dans le catalogue</div>
         <div class="cat-filters" id="cat-filters" style="display:none;"></div>
       </div>
@@ -722,6 +733,7 @@ function calcPrixVente(achat){
   return arrondiPrix(cout*p.coef+p.fixe)
 }
 </script>
+<script src="/admin/assets/js/libelle-piece.js?v=20261116"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
@@ -794,6 +806,18 @@ try{
   const v=Number(fon?.frais_livraison)
   LIV_FONEDAY=fon&&fon.frais_livraison!=null&&Number.isFinite(v)&&v>=0?v:null
 }catch(e){console.warn('Frais de livraison Foneday :',e)}
+// ── Clients et packs : prix d'une réparation pour un client donné ──
+let CLIENTS_CAT=[],PACKS_CAT=[],PACK_INTERS=[],CLIENT_CAT=null
+try{
+  const [rc,rp,ri]=await Promise.all([
+    sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva').is('supprime_le',null).order('nom').limit(5000),
+    sb.from('packs').select('id,client_id,nom,formule,par_mois,statut,date_debut,date_fin,interventions_total').eq('statut','actif').limit(5000),
+    sb.from('pack_interventions').select('pack_id,decompte,date_inter').limit(20000)])
+  CLIENTS_CAT=rc.error?[]:(rc.data||[])
+  PACKS_CAT=rp.error?[]:(rp.data||[])
+  PACK_INTERS=ri.error?[]:(ri.data||[])
+  document.getElementById('catClientsListe').innerHTML=CLIENTS_CAT.map(c=>`<option value="${escapeHtml(libClient(c))}"></option>`).join('')
+}catch(e){console.warn('Clients / packs :',e)}
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 document.getElementById('ldr').style.display='none'
 document.getElementById('pageBody').style.display='flex'
@@ -1042,6 +1066,60 @@ function cleGroupe(p){
 }
 window._prixReparation={}
 
+/* ─── Prix pour un client qui a un pack ───────────────────────────
+   Mêmes règles que Réparations › « Facturer avec −20 % main-d'œuvre » :
+   pièce = coût × coefficient de la grille (jamais moins que coût + 20 %),
+   main-d'œuvre = prix de la réparation − pièce.
+   · Famille / Pro, intervention du mois disponible : le client ne paie que la pièce.
+   · Mobile, ou intervention du mois déjà utilisée : −20 % sur la main-d'œuvre.
+   · Pas de pack : prix normal. */
+const ANCIENNES_FORMULES=['3m','6m','12m']
+const r2=v=>Math.round(v*100)/100
+function libClient(c){return `${c.nom||'Sans nom'} · ${c.numero||('#'+c.id)}`}
+function packDuClient(cid){const a=new Date().toISOString().slice(0,10)
+  return PACKS_CAT.find(p=>p.client_id===cid&&p.date_fin>=a&&!ANCIENNES_FORMULES.includes(p.formule))||null}
+function packRestantes(p){return p.interventions_total-PACK_INTERS.filter(i=>i.pack_id===p.id).reduce((t,i)=>t+(i.decompte||0),0)}
+function moisPackUtilise(p){if(!p.par_mois||!p.date_debut)return false
+  const [y,m,j]=p.date_debut.split('-').map(Number),auj=new Date().toISOString().slice(0,10)
+  const ajm=n=>{const fin=new Date(Date.UTC(y,m-1+n+1,0)).getUTCDate();return new Date(Date.UTC(y,m-1+n,Math.min(j,fin))).toISOString().slice(0,10)}
+  let k=0;while(ajm(k+1)<=auj)k++
+  const deb=ajm(k),fin=ajm(k+1)
+  return PACK_INTERS.some(i=>i.pack_id===p.id&&(i.decompte||0)>0&&i.date_inter>=deb&&i.date_inter<fin)}
+// 'inclus' | 'remise' | null
+function droitPack(p){
+  if(!p)return null
+  if(p.par_mois)return !moisPackUtilise(p)&&packRestantes(p)>0?'inclus':'remise'
+  return p.formule==='mobile'?'remise':null
+}
+function prixPourClient(achat){
+  const vente=calcPrixVente(achat)
+  const pack=CLIENT_CAT?packDuClient(CLIENT_CAT.id):null
+  const cas=droitPack(pack)
+  if(!cas||!(vente>0))return {vente,prix:vente,cas:null,pack}
+  const cout=achat+fraisLivraison(),t=getPalier(cout)
+  const piece=Math.min(vente,r2(Math.max(cout*(Number(t.coef)||1),cout*1.2)))
+  const mo=Math.max(0,r2(vente-piece))
+  if(cas==='inclus')return {vente,prix:piece,cas,pack,piece,mo,remise:mo}
+  const remise=r2(mo*0.20)
+  return {vente,prix:r2(vente-remise),cas,pack,piece,mo,remise}
+}
+window.choisirClientCat=function(){
+  const v=document.getElementById('catClient').value.trim()
+  const c=CLIENTS_CAT.find(x=>libClient(x)===v)||null
+  if(c===CLIENT_CAT)return
+  CLIENT_CAT=c
+  const etat=document.getElementById('catClientEtat')
+  if(!c)etat.innerHTML=''
+  else{
+    const p=packDuClient(c.id),cas=droitPack(p)
+    etat.innerHTML=!p?'Pas de pack : prix normal'
+      :cas==='inclus'?`<b>Pack ${escapeHtml(p.nom)}</b> · intervention du mois disponible : il ne paie que la pièce`
+      :cas==='remise'?`<b>Pack ${escapeHtml(p.nom)}</b> · −20 % sur la main-d'œuvre${p.par_mois?' (intervention du mois déjà utilisée)':''}`
+      :`Pack ${escapeHtml(p.nom)} : prix normal`
+  }
+  if(_resultatsActuels&&_resultatsActuels.length)renderResults()
+}
+
 function renderResults(){
   const results=document.getElementById('cat-results')
   const q=_qActuel
@@ -1055,6 +1133,7 @@ function renderResults(){
     groupes[cle].push(p)
   })
   window._prixReparation={}
+  window._catProduits={}
   const nomMarque=p=>(p.model_brand||'').replace(/^for\s+/i,'').trim()
   const plusieursMarques=new Set(data.map(nomMarque)).size>1
   let html=`<div class="cat-count">${data.length} variante${data.length>1?'s':''} ${_filtreActif==='all'?'trouvée'+(data.length>1?'s':''):'dans « '+escapeHtml(_filtreActif)+' »'} pour "${escapeHtml(q)}"</div>`
@@ -1078,8 +1157,11 @@ function renderResults(){
       const achat=Number(p.prix_achat)||0
       const vente=calcPrixVente(achat)
       window._prixReparation[p.sku]=vente
+      window._catProduits[p.sku]=p
       const cout=achat+fraisLivraison()
-      const marge=vente-cout
+      const pc=CLIENT_CAT?prixPourClient(achat):null
+      const prixAff=pc?pc.prix:vente
+      const marge=prixAff-cout
       const niv=p.niveau||'a_valider'
       const stockIco=p.instock?'<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
       const etoile=niv==='recommande'?'★ ':''
@@ -1093,17 +1175,20 @@ function renderResults(){
         <div class="cat-opt-body">
           <div class="cat-opt-title">${escapeHtml(p.title||'')}</div>
           <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')} · Réf. ${escapeHtml(p.sku||'')}</div>
-          <div class="cat-opt-price-big"><span class="prix">${vente.toFixed(2)} €</span><span class="marge">+${marge.toFixed(2)} €</span></div>
-          <div class="cat-opt-price-sub">prix de la réparation avec cette pièce · ta marge</div>
+          <div class="cat-opt-price-big"><span><span class="prix">${prixAff.toFixed(2)} €</span>${pc&&pc.cas?`<span class="barre">${vente.toFixed(2)} €</span>`:''}</span><span class="marge">${marge>=0?'+':''}${marge.toFixed(2)} €</span></div>
+          <div class="cat-opt-price-sub">${pc?`prix pour ${escapeHtml(CLIENT_CAT.nom||'ce client')}`:'prix de la réparation avec cette pièce'} · ta marge</div>
           <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
             <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${LIV_FONEDAY==null?'0.00 € · à renseigner dans Gestion › Fournisseurs':fraisLivraison().toFixed(2)+' €'}</span></div>
+            ${pc&&pc.cas?`<div class="cat-price-row"><span class="lbl">Pièce</span><span class="val">${pc.piece.toFixed(2)} €</span></div>
+            <div class="cat-price-row"><span class="lbl">Main-d'œuvre</span><span class="val">${pc.cas==='inclus'?'incluse dans le pack':pc.mo.toFixed(2)+' € − '+pc.remise.toFixed(2)+' €'}</span></div>`:''}
           </div>
         </div>
         <div class="cat-opt-foot" style="display:flex;gap:6px;">
           <button class="cat-btn primary" onclick="ajouterAuStock('${escapeJs(p.sku)}')" style="flex:1;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Stock</button>
           <button class="cat-btn" onclick="ajouterAuPanierFoneday('${escapeJs(p.sku)}','${escapeJs(p.title||'')}',this)" style="flex:1;background:var(--bg2);border:1px solid var(--ln2);color:var(--t2);" title="Ajouter au panier Foneday (paiement sur leur site)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Panier</button>
         </div>
+        ${CLIENT_CAT&&vente>0?`<div class="cat-opt-foot" style="padding-top:0;"><button class="cat-btn primary" style="width:100%;" onclick="facturerClientCat('${escapeJs(p.sku)}',this)">Facturer à ${escapeHtml(CLIENT_CAT.nom||'ce client')} · ${prixAff.toFixed(2)} €</button></div>`:''}
       </div>`
     })
     html+=`</div></div>`
@@ -1135,6 +1220,45 @@ function escapeJs(s){return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
 
 function welcomeHtml(){
   return `<div class="cat-welcome"><div class="cat-welcome-ico">🔧</div><h2>Catalogue Foneday</h2><p>Recherchez un modèle d'appareil pour voir toutes les variantes de pièces disponibles, classées par niveau (économique, recommandé, premium) avec leur prix de vente conseillé et votre marge.</p></div>`
+}
+
+// Facture en brouillon pour le client choisi, avec le prix de son pack.
+window.facturerClientCat=async function(sku,btn){
+  const p=(window._catProduits||{})[sku],c=CLIENT_CAT
+  if(!p||!c){showToast('Choisis un client et une pièce','err');return}
+  const pc=prixPourClient(Number(p.prix_achat)||0)
+  if(!(pc.vente>0)){showToast('Prix de la pièce inconnu','err');return}
+  const lib=libellePiece({nom:p.title||'',modele:p.suitable_for||''})
+  let lignes
+  if(pc.cas==='inclus')lignes=[{description:`${lib} (pièce — main-d'œuvre incluse dans le Pack ${pc.pack.nom})`,quantite:1,prix_unitaire:pc.piece,total:pc.piece,stock_id:''}]
+  else if(pc.cas==='remise')lignes=[
+    {description:`${lib} (pièce)`,quantite:1,prix_unitaire:pc.piece,total:pc.piece,stock_id:''},
+    {description:`Main-d'œuvre${p.suitable_for?' — '+p.suitable_for:''}`,quantite:1,prix_unitaire:pc.mo,total:pc.mo,stock_id:''},
+    ...(pc.remise>0?[{description:`Remise Pack ${pc.pack.nom} : −20 % sur la main-d'œuvre`,quantite:1,prix_unitaire:-pc.remise,total:-pc.remise,stock_id:''}]:[])]
+  else lignes=[{description:lib,quantite:1,prix_unitaire:pc.vente,total:pc.vente,stock_id:''}]
+  const tot=r2(lignes.reduce((t,l)=>t+l.total,0))
+  const detail=lignes.map(l=>'• '+l.description+' : '+l.total.toFixed(2)+' €').join('\n')
+  if(!confirm(`Créer la facture de ${c.nom} ?\n\n${detail}\n\nTotal : ${tot.toFixed(2)} €${pc.cas?' (au lieu de '+pc.vente.toFixed(2)+' €)':''}${pc.cas==='inclus'?'\n\nL\'intervention du mois sera décomptée du pack.':''}\n\nCréée en brouillon : tu la vérifies dans Factures avant de l'émettre.`))return
+  btn.disabled=true
+  let interId=null
+  try{
+    if(pc.cas==='inclus'){
+      const {data,error}=await sb.rpc('noter_intervention_pack',{p_pack:pc.pack.id,p_type:'depot',p_date:null,p_description:lib,p_note:null,
+        p_duree_min:null,p_km:null,p_hydrogels:0,p_decompter:true,p_creer_dossier:false,p_appareil:null,p_reparation_id:null})
+      if(error)throw new Error(error.message)
+      interId=data&&data.intervention_id
+    }
+    const res=await sb.from('factures').insert({client_id:c.id,client_nom:c.nom,client_email:c.email||null,client_telephone:c.telephone||null,
+      client_adresse:c.adresse||null,client_societe:c.societe||null,client_tva:c.tva||null,
+      date_emission:new Date().toISOString().slice(0,10),statut:'brouillon',acompte:0,acompte_type:'euro',lignes,total:tot,remise:0,
+      notes:null,stock_decremente:true,updated_at:new Date().toISOString()}).select('id').single()
+    if(res.error){
+      if(interId)await sb.rpc('supprimer_intervention_pack',{p_id:interId})
+      throw new Error(res.error.message)
+    }
+    showToast('Facture créée en brouillon','ok')
+    setTimeout(()=>{window.location.href='/admin/factures.html?open='+res.data.id},500)
+  }catch(e){showToast('Erreur : '+(e.message||e),'err');btn.disabled=false}
 }
 
 window.ajouterAuStock=async function(sku){
