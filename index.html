@@ -3116,11 +3116,11 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
             <div class="frow">
               <div class="fg">
                 <label class="fl" for="f-prenom">Prénom</label>
-                <input class="fi" id="f-prenom" type="text" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>
+                <input class="fi" id="f-prenom" data-nom type="text" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>
               </div>
               <div class="fg">
                 <label class="fl" for="f-nom">Nom</label>
-                <input class="fi" id="f-nom" type="text" name="nom" placeholder="Votre nom" autocomplete="family-name" required>
+                <input class="fi" id="f-nom" data-nom type="text" name="nom" placeholder="Votre nom" autocomplete="family-name" required>
               </div>
             </div>
             <div class="fg">
@@ -4151,7 +4151,7 @@ if (prefersReducedMotion) {
       ? ['Je serai en congé du ', gras(nomJour(debut)), ' au ', gras(nomJour(fin)),
          '. Les demandes reçues pendant cette période seront traitées dès mon retour, le ', gras(nomJour(retour)), '.']
       : ['Je suis en congé jusqu\'au ', gras(nomJour(fin)),
-         '. Les demandes envoyées par le formulaire sont traitées dès mon retour, le ', gras(nomJour(retour)), '.'];
+         '. Les demandes envoyées par le formulaire seront traitées dès mon retour, le ', gras(nomJour(retour)), '.'];
     if (a.message) morceaux.push(' ' + String(a.message));
     texte.replaceChildren(...morceaux);
     if (a.phase === 'avant') bandeau.classList.add('abs-bandeau--avant');
@@ -4215,3 +4215,4 @@ if (prefersReducedMotion) {
   piste.addEventListener('touchstart', () => piste.classList.toggle('rv-pause'), { passive: true });
 })();
 </script>
+<script src="/assets/js/nom-propre.js?v=20261122"></script>

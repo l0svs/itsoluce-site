@@ -626,6 +626,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 </script>
 <link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261118">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
+<script src="/assets/js/nom-propre.js?v=20261122"></script>
 </head>
 <body>
 <header class="topbar">
@@ -716,8 +717,8 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <div class="hint" id="v-client-info"></div></div>
     </div>
     <div id="v-nouveau" hidden>
-      <div class="r2"><div class="fl"><label for="n-prenom">Prénom</label><input id="n-prenom" maxlength="60" autocomplete="off"></div>
-        <div class="fl"><label for="n-nom">Nom</label><input id="n-nom" maxlength="60" autocomplete="off"></div></div>
+      <div class="r2"><div class="fl"><label for="n-prenom">Prénom</label><input id="n-prenom" data-nom maxlength="60" autocomplete="off"></div>
+        <div class="fl"><label for="n-nom">Nom</label><input id="n-nom" data-nom maxlength="60" autocomplete="off"></div></div>
       <div class="r2"><div class="fl"><label for="n-email">E-mail</label><input id="n-email" type="email" maxlength="160" autocomplete="off"></div>
         <div class="fl"><label for="n-tel">Téléphone</label><input id="n-tel" type="tel" maxlength="30" autocomplete="off"></div></div>
       <div class="fl"><label for="n-adresse">Adresse (obligatoire pour une entreprise)</label><input id="n-adresse" maxlength="200" autocomplete="off" placeholder="Rue, numéro, code postal, commune"></div>

@@ -604,6 +604,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 </script>
 <link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261118">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
+<script src="/assets/js/nom-propre.js?v=20261122"></script>
 </head>
 <body>
 <header class="topbar">
@@ -712,7 +713,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="fg"><label for="f-societe">Nom de l'entreprise *</label><input type="text" id="f-societe" placeholder="ex : Domaine W"/></div>
               <div class="fg"><label for="f-tva-client">N° de TVA / BCE *</label><input type="text" id="f-tva-client" placeholder="BE 0123.456.789"/></div>
             </div>
-            <div class="fg"><label for="f-client" id="lab-client">Nom complet *</label><input type="text" id="f-client" placeholder="ex : Marie Dupont"/></div>
+            <div class="fg"><label for="f-client" id="lab-client">Nom complet *</label><input type="text" id="f-client" data-nom placeholder="ex : Marie Dupont"/></div>
             <div class="duo">
               <div class="fg"><label for="f-email">Email</label><input type="email" id="f-email" placeholder="client@email.com"/></div>
               <div class="fg"><label for="f-tel">Téléphone</label><input type="tel" id="f-tel" placeholder="+32 4XX XX XX XX"/></div>

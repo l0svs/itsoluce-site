@@ -569,6 +569,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 </script>
 <link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261118">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
+<script src="/assets/js/nom-propre.js?v=20261122"></script>
 </head>
 <body>
 <header class="topbar">
@@ -701,8 +702,8 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <div class="fg-sous">Personne de contact (facultatif)</div>
         </div>
         <div class="fg-row">
-          <div class="fg"><label for="f-prenom">Prénom</label><input type="text" id="f-prenom" placeholder="Marie"/></div>
-          <div class="fg"><label for="f-nom">Nom</label><input type="text" id="f-nom" placeholder="Dupont"/></div>
+          <div class="fg"><label for="f-prenom">Prénom</label><input type="text" id="f-prenom" data-nom placeholder="Marie"/></div>
+          <div class="fg"><label for="f-nom">Nom</label><input type="text" id="f-nom" data-nom placeholder="Dupont"/></div>
         </div>
         <div class="fg-aide" id="aide-nom">Au moins l'un des deux est requis.</div>
       </div>
