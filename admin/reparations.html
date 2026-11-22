@@ -1781,6 +1781,7 @@ function etapeSuivante(r){
   else if(r.statut==='pret'&&r.pack_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (inclus dans le pack)</button>`+((r.pieces||[]).length?` <button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:'')
   else if(r.statut==='rendu'&&r.pack_id&&!r.converti_facture_id)bouton=(r.pieces||[]).length?`<button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:''
   else if(r.statut==='pret'&&r.garantie_de_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (sous garantie)</button>`
+  else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id&&packRemiseMO(r)&&prixClient(r)>0)bouton=`<button class="btn btn-primary etape-btn" onclick="factureRemisePack(${r.id})">Créer la facture · ${escHtml(packRemiseMO(r).nom)} −20 % main-d'œuvre</button>`
   else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id)bouton=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
   else if(r.statut==='pret')bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
   return bouton?`<div class="etape">${bouton}</div>`:''
@@ -1876,9 +1877,16 @@ async function creerFactureDepuis(r,offert=false){
     if(!pcs.length){showToast('Dossier inclus dans le pack : aucune pièce à facturer','err');return}
     const rem=remisePiecesPack(r.pack_id)
     const lignes=pcs.map(pc=>{const q=Number(pc.qte)||1,pu=prixPiecePack(pc,r.pack_id);return {description:`${pc.nom} (pièce${rem?', −10 % Pack Sérénité':''})`,quantite:q,prix_unitaire:pu,total:Math.round(pu*q*100)/100,stock_id:''}})
-    lignes.push({description:"Main-d'œuvre incluse dans le Pack Sérénité",quantite:1,prix_unitaire:0,total:0,stock_id:''})
+    // Le client voit le prix plein de la main-d'œuvre, puis ce que le pack déduit.
+    {const pk=packsActifs.find(x=>x.id===r.pack_id),nomPk=pk?'Pack '+pk.nom:'Pack Sérénité'
+     const totP=Math.round(lignes.reduce((t,l)=>t+l.total,0)*100)/100
+     const mo=Math.max(0,Math.round((prixClient(r)-totP)*100)/100)
+     const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
+     if(mo>0)lignes.push({description:`Main-d'œuvre${app?' — '+app:''}`,quantite:1,prix_unitaire:mo,total:mo,stock_id:''},
+                         {description:`Main-d'œuvre incluse dans le ${nomPk}`,quantite:1,prix_unitaire:-mo,total:-mo,stock_id:''})
+     else lignes.push({description:`Main-d'œuvre incluse dans le ${nomPk}`,quantite:1,prix_unitaire:0,total:0,stock_id:''})}
     const tot=Math.round(lignes.reduce((t,l)=>t+l.total,0)*100)/100
-    if(!confirm(`Facturer uniquement les pièces du dossier ${r.numero} ?\n\n${lignes.slice(0,-1).map(l=>'• '+l.description+' : '+eur(l.total)).join('\n')}\n\nTotal : ${eur(tot)}\n\nCréée en brouillon : vérifie les prix dans Factures avant d'émettre.`))return
+    if(!confirm(`Facturer uniquement les pièces du dossier ${r.numero} ?\n\n${lignes.filter(l=>l.total>0&&/\(pièce/.test(l.description)).map(l=>'• '+l.description+' : '+eur(l.total)).join('\n')}\n\nTotal : ${eur(tot)}\n\nCréée en brouillon : vérifie les prix dans Factures avant d'émettre.`))return
     const res=await sb.from('factures').insert({reparation_id:r.id,reparation_numero:r.numero,client_id:r.client_id||null,client_nom:r.client_nom,
       client_email:r.client_email||null,client_telephone:r.client_telephone||null,
       client_adresse:((allClientsRep.find(c=>String(c.id)===String(r.client_id))||{}).adresse)||null,
@@ -1981,7 +1989,7 @@ window.factureRemisePack=async function(id){
     const app=[r.appareil,r.modele].filter(Boolean).join(' ').trim()
     const lignes=[...lignesP,
       {description:`Main-d'œuvre${app?' — '+app:''}${r.panne_description?' : '+String(r.panne_description).slice(0,120):''}`,quantite:1,prix_unitaire:mo,total:mo,stock_id:''},
-      ...(remise>0?[{description:`Remise ${p.nom} : −20 % sur la main-d'œuvre`,quantite:1,prix_unitaire:-remise,total:-remise,stock_id:''}]:[])]
+      ...(remise>0?[{description:`Remise Pack ${p.nom} : −20 % sur la main-d'œuvre`,quantite:1,prix_unitaire:-remise,total:-remise,stock_id:''}]:[])]
     const tot=Math.round(lignes.reduce((t,l)=>t+l.total,0)*100)/100
     const detail=lignes.map(l=>'• '+l.description.split(' : ')[0]+' : '+eur(l.total)).join('\n')
     if(!confirm(`Facturer le dossier ${r.numero} avec la remise du ${p.nom} ?\n\n${detail}\n\nTotal : ${eur(tot)} (au lieu de ${eur(prix)})${pcs.length?'':'\n\nAucune pièce dans le dossier : tout le prix est compté comme main-d\'œuvre.'}\n\nCréée en brouillon : vérifie-la dans Factures avant de l'émettre.`))return
@@ -2191,6 +2199,11 @@ await loadReps()
     const cid=p.get('client')
     if(cid&&sel&&[...sel.options].some(o=>o.value===cid)){sel.value=cid;window.onClientSelect()}
   }
+}
+// Lien direct ?dossier=ID (Catalogue) : ouvre ce dossier.
+{
+  const d=Number(new URLSearchParams(location.search).get('dossier'))
+  if(d&&allReps.some(x=>x.id===d)){history.replaceState(null,'',location.pathname);selectRep(d)}
 }
 // Lien direct ?q=… (page Mails, palette de recherche) : pré-remplit la recherche.
 {

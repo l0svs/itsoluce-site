@@ -206,6 +206,9 @@ body{font-size:14px;}
 .tog span{width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:2px; left:2px; transition:transform .2s;}
 .tog.on span{transform:translateX(16px);}
 #pro-fields{display:none; flex-direction:column; gap:13px;}
+.pack-note{font-size:12.5px;line-height:1.5;color:var(--t2);background:var(--ad);border-radius:10px;padding:9px 12px;margin:0 0 14px;}
+.pack-note b{color:var(--t1);}
+.pack-note button{margin-left:6px;background:none;border:none;color:var(--a);font:inherit;font-weight:600;cursor:pointer;padding:0;}
 .type-cli{display:grid; grid-template-columns:1fr 1fr; background:var(--bg3); border:1px solid var(--ln); border-radius:11px; padding:3px; gap:3px; margin:2px 0 14px;}
 .type-cli button{border:none; background:none; font-family:inherit; font-size:13px; color:var(--t2); padding:8px 10px; border-radius:8px; cursor:pointer; transition:background .15s,color .15s;}
 .type-cli button:hover{color:var(--t1);}
@@ -705,6 +708,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <label for="f-client-select">Client existant ou nouveau</label>
               <select id="f-client-select" onchange="onClientSelect()"><option value="">Nouveau client</option></select>
             </div>
+            <div class="pack-note" id="packNote" style="display:none"></div>
             <div class="type-cli" role="group" aria-label="Type de client">
               <button type="button" id="tc-part" class="on" aria-pressed="true" onclick="choisirTypeClient(false)">Particulier</button>
               <button type="button" id="tc-pro" aria-pressed="false" onclick="choisirTypeClient(true)">Entreprise</button>
@@ -1118,6 +1122,7 @@ let allFactures=[]
 let allClients=[]
 let allStock=[]
 let allReps=[]
+let _packs=[],_packInters=[]
 let numerosDevis=new Map()
 let courante=null
 let sale=false
@@ -1168,6 +1173,11 @@ async function load(){
   allStock=rStock.data||[]
   window.allServices=rSvc.data||[]
   allReps=rRep.data||[]
+  // Packs actifs : rappel sur la facture d'un client qui en a un.
+  try{const [rp,ri]=await Promise.all([
+      sb.from('packs').select('id,client_id,nom,formule,par_mois,date_debut,date_fin,interventions_total').eq('statut','actif').limit(5000),
+      sb.from('pack_interventions').select('pack_id,decompte,date_inter').limit(20000)])
+    _packs=rp.error?[]:(rp.data||[]);_packInters=ri.error?[]:(ri.data||[])}catch(e){}
   if(rRep.error)showToast("Dossiers non chargés : "+rRep.error.message,"err")
   numerosDevis=new Map((rDev.data||[]).map(d=>[d.id,d.numero]))
   if(typeof rFac.count==='number'&&rFac.count>allFactures.length){
@@ -1926,7 +1936,46 @@ window.confirmerEncaissement=async function(){
 }
 
 function marquerPropre(){sale=false;document.getElementById('dirty').style.display='none'}
+/* ─── Client avec un Pack Sérénité ───
+   Famille / Pro, intervention du mois disponible : main-d'œuvre incluse
+   (à faire depuis le dossier de réparation ou le Catalogue, qui décomptent
+   l'intervention). Mobile, ou mois déjà utilisé : −20 % sur la main-d'œuvre,
+   applicable ici en un clic. */
+function packClient(cid){const a=new Date().toISOString().slice(0,10)
+  return _packs.find(p=>String(p.client_id)===String(cid)&&p.date_fin>=a&&!['3m','6m','12m'].includes(p.formule))||null}
+function packMoisUtilise(p){if(!p.par_mois||!p.date_debut)return false
+  const [y,m,j]=p.date_debut.split('-').map(Number),auj=new Date().toISOString().slice(0,10)
+  const ajm=n=>{const fin=new Date(Date.UTC(y,m-1+n+1,0)).getUTCDate();return new Date(Date.UTC(y,m-1+n,Math.min(j,fin))).toISOString().slice(0,10)}
+  let k=0;while(ajm(k+1)<=auj)k++
+  const deb=ajm(k),fin=ajm(k+1)
+  return _packInters.some(i=>i.pack_id===p.id&&(i.decompte||0)>0&&i.date_inter>=deb&&i.date_inter<fin)}
+function packInclus(p){const u=_packInters.filter(i=>i.pack_id===p.id).reduce((t,i)=>t+(i.decompte||0),0)
+  return p.par_mois&&!packMoisUtilise(p)&&p.interventions_total-u>0}
+function majPackNote(){
+  const el=document.getElementById('packNote');if(!el)return
+  const cid=document.getElementById('f-client-select').value
+  const p=cid&&!(courante&&courante.numero)?packClient(cid):null
+  if(!p||!(p.par_mois||p.formule==='mobile')){el.style.display='none';return}
+  const dejaRemise=[...document.querySelectorAll('#lignesBody .l-desc')].some(i=>/Remise Pack|incluse dans le Pack/i.test(i.value))
+  el.innerHTML=packInclus(p)
+    ?`Ce client a le <b>Pack ${escHtml(p.nom)}</b> : l'intervention du mois est disponible, la main-d'œuvre est incluse. Pour une réparation, passe par le dossier de réparation (ou le Catalogue) : le pack y est appliqué et l'intervention décomptée.`
+    :`Ce client a le <b>Pack ${escHtml(p.nom)}</b> : −20 % sur la main-d'œuvre.${dejaRemise?' Remise ajoutée.':` <button type="button" onclick="appliquerRemisePack()">Appliquer la remise</button>`}`
+  el.style.display=''
+}
+window.appliquerRemisePack=function(){
+  const p=packClient(document.getElementById('f-client-select').value);if(!p)return
+  // Main-d'œuvre = lignes positives qui ne sont ni un article du stock ni une pièce.
+  let mo=0
+  document.querySelectorAll('#lignesBody .ligne').forEach(l=>{
+    const d=l.querySelector('.l-desc').value,t=qteDe(l)*(Number(l.querySelector('.l-prix').value)||0)
+    if(t>0&&!l.dataset.stockId&&!/\(pièce/i.test(d))mo+=t})
+  const rem=Math.round(mo*0.20*100)/100
+  if(!(rem>0)){showToast("Aucune ligne de main-d'œuvre sur cette facture",'err');return}
+  addLigne(`Remise Pack ${p.nom} : −20 % sur la main-d'œuvre`,1,-rem)
+  calcTotaux();surModification()
+}
 window.surModification=function surModification(){
+  majPackNote()
   sale=signature()!==instantane
   document.getElementById('dirty').style.display=sale?'':'none'
   rafraichirApercu()
