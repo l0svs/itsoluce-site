@@ -654,7 +654,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <input type="text" id="catSearch" placeholder="Rechercher un modèle… ex : iPhone 13, Galaxy S23, iPad Air" oninput="catSearchDebounce()"/>
         </div>
         <div class="cat-client">
-          <input type="text" id="catClient" list="catClientsListe" placeholder="Prix pour un client (facultatif)" autocomplete="off" oninput="choisirClientCat()"/>
+          <input type="text" id="catClient" list="catClientsListe" placeholder="Client avec un pack (facultatif)" autocomplete="off" oninput="choisirClientCat()"/>
           <datalist id="catClientsListe"></datalist>
           <span class="cat-client-etat" id="catClientEtat"></span>
         </div>
@@ -808,6 +808,8 @@ try{
 }catch(e){console.warn('Frais de livraison Foneday :',e)}
 // ── Clients et packs : prix d'une réparation pour un client donné ──
 let CLIENTS_CAT=[],PACKS_CAT=[],PACK_INTERS=[],CLIENT_CAT=null
+const ANCIENNES_FORMULES=['3m','6m','12m']
+const r2=v=>Math.round(v*100)/100
 try{
   const [rc,rp,ri]=await Promise.all([
     sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva').is('supprime_le',null).order('nom').limit(5000),
@@ -816,6 +818,8 @@ try{
   CLIENTS_CAT=rc.error?[]:(rc.data||[])
   PACKS_CAT=rp.error?[]:(rp.data||[])
   PACK_INTERS=ri.error?[]:(ri.data||[])
+  // Seuls les clients avec un pack actif sont proposés.
+  CLIENTS_CAT=CLIENTS_CAT.filter(c=>packDuClient(c.id))
   document.getElementById('catClientsListe').innerHTML=CLIENTS_CAT.map(c=>`<option value="${escapeHtml(libClient(c))}"></option>`).join('')
 }catch(e){console.warn('Clients / packs :',e)}
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
@@ -1073,8 +1077,6 @@ window._prixReparation={}
    · Famille / Pro, intervention du mois disponible : le client ne paie que la pièce.
    · Mobile, ou intervention du mois déjà utilisée : −20 % sur la main-d'œuvre.
    · Pas de pack : prix normal. */
-const ANCIENNES_FORMULES=['3m','6m','12m']
-const r2=v=>Math.round(v*100)/100
 function libClient(c){return `${c.nom||'Sans nom'} · ${c.numero||('#'+c.id)}`}
 function packDuClient(cid){const a=new Date().toISOString().slice(0,10)
   return PACKS_CAT.find(p=>p.client_id===cid&&p.date_fin>=a&&!ANCIENNES_FORMULES.includes(p.formule))||null}
