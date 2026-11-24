@@ -915,15 +915,16 @@ function initiales(nom){
 
 /* ═══════════ Libellés d'état ═══════════ */
 const ET_REP={
-  attente_reception:{l:'Nouveau dossier',c:'p-vio'},
-  recu:{l:'Reçu',c:'p-a'},
-  attente:{l:'Attente de pièce',c:'p-w'},
+  attente_reception:{l:'À réceptionner',c:'p-vio'},
+  recu:{l:'Diagnostic',c:'p-a'},
+  attente:{l:'En attente',c:'p-w'},
   encours:{l:'En réparation',c:'p-a'},
   pret:{l:'Prêt',c:'p-ok'},
-  rendu:{l:'Rendu',c:'p-ok'},
-  non_reparable:{l:'Non réparable',c:'p-d'},
-  annule:{l:'Annulé',c:'p-off'}
+  rendu:{l:'Clôturé · rendu',c:'p-ok'},
+  non_reparable:{l:'Clôturé · non réparé',c:'p-d'},
+  annule:{l:'Clôturé · annulé',c:'p-off'}
 }
+const etRep=r=>r.statut==='attente'&&r.attente_motif?{l:r.attente_motif==='client'?'Attente client':'Attente pièce',c:'p-w'}:ET_REP[r.statut]
 const ET_DEV={
   brouillon:{l:'Brouillon',c:'p-off'},
   envoye:{l:'Envoyé',c:'p-a'},
@@ -958,7 +959,7 @@ let allRelances=[], garantieMois=3
 async function load(){
   const [rCli,rRep,rDev,rFac,rRel,rSet]=await Promise.all([
     sb.from('clients').select('*',{count:'exact'}).order('nom',{ascending:true}).limit(5000),
-    sb.from('reparations').select('id,numero,client_id,appareil,modele,panne_description,statut,prix_final,date_fin,garantie_de_id,created_at',{count:'exact'}).limit(5000),
+    sb.from('reparations').select('id,numero,client_id,appareil,modele,panne_description,statut,attente_motif,prix_final,date_fin,garantie_de_id,created_at',{count:'exact'}).limit(5000),
     sb.from('devis').select('id,numero,client_id,statut,total,date_emission,date_validite,created_at',{count:'exact'}).limit(5000),
     sb.from('factures').select('id,numero,client_id,statut,total,acompte,type_document,facture_origine_id,reparation_id,date_emission,date_echeance,date_paiement,created_at',{count:'exact'}).limit(5000),
     sb.from('relances').select('*').limit(5000),
@@ -1158,7 +1159,7 @@ window.showDetail=function(id){
   const CLOS=['rendu','annule','non_reparable']
   const suivre=[]
   c._reps.filter(r=>!CLOS.includes(r.statut)).forEach(r=>{
-    const e=ET_REP[r.statut]||{l:r.statut,c:'p-off'}
+    const e=etRep(r)||{l:r.statut,c:'p-off'}
     suivre.push({h:lienRep(r),t:`${r.numero||'Réparation'} · ${[r.appareil,r.modele].filter(Boolean).join(' ')||'appareil'}`,s:r.garantie_de_id?'Retour sous garantie':'Réparation en cours',p:e})
   })
   c._devis.filter(d=>d.statut==='envoye').forEach(d=>suivre.push({h:lienDev(d),t:`${d.numero||'Devis'} · ${eur(d.total)}`,s:'Devis en attente de réponse',p:etatDevis(d)}))
@@ -1189,7 +1190,7 @@ window.showDetail=function(id){
   // ── Historique complet, cliquable, relances comprises
   const evts=[]
   c._reps.forEach(r=>{
-    const e=ET_REP[r.statut]||{l:r.statut||'—',c:'p-off'}
+    const e=etRep(r)||{l:r.statut||'—',c:'p-off'}
     const appareil=[r.appareil,r.modele].filter(Boolean).join(' ')
     evts.push({d:r.created_at,h:lienRep(r),t:`${r.numero||'Réparation'}${appareil?' · '+appareil:''}`,s:r.garantie_de_id?'Retour sous garantie':(r.panne_description||'Réparation'),p:e})
   })

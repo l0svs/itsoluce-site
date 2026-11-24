@@ -703,7 +703,7 @@ const aujourdhui=debutJour(maintenant)
    les six requêtes partaient en select('*') sans limite, et une réponse
    tronquée ou en erreur passait inaperçue derrière un « data || [] ». */
 const tables=[
-  ['reparations','id,numero,client_nom,appareil,modele,statut,prix_final,prix_devis,cout_pieces,date_fin,converti_facture_id,garantie_de_id,pack_id,created_at',3000],
+  ['reparations','id,numero,client_nom,appareil,modele,statut,attente_motif,prix_final,prix_devis,cout_pieces,date_fin,converti_facture_id,garantie_de_id,pack_id,created_at',3000],
   ['factures','id,numero,client_nom,statut,total,acompte,type_document,date_emission,date_echeance,date_paiement,reparation_id,devis_id,created_at',3000],
   ['devis','id,numero,client_nom,statut,total,date_emission,date_validite,converti_facture_id,converti_reparation_id,reparation_id,created_at',3000],
   ['rendezvous','id,titre,type,date_debut,client_nom,lieu,termine',3000],
@@ -768,9 +768,10 @@ document.getElementById('hello').textContent=`${h<12?'Bonjour':h<18?'Bon après-
 
 /* ─── Listes ─── */
 const CLOS=['rendu','annule','non_reparable']
-const STATUT_REP={attente_reception:{l:"Nouveau dossier",c:'p-vio'},recu:{l:'Reçu',c:'p-a'},attente:{l:'Attente de pièce',c:'p-w'},
-  encours:{l:'En réparation',c:'p-a'},pret:{l:'Prêt à récupérer',c:'p-ok'},rendu:{l:'Rendu',c:'p-off'},
-  non_reparable:{l:'Non réparable',c:'p-d'},annule:{l:'Annulé',c:'p-off'}}
+const STATUT_REP={attente_reception:{l:'À réceptionner',c:'p-vio'},recu:{l:'Diagnostic',c:'p-a'},attente:{l:'En attente',c:'p-w'},
+  encours:{l:'En réparation',c:'p-a'},pret:{l:'Prêt à récupérer',c:'p-ok'},rendu:{l:'Clôturé · rendu',c:'p-off'},
+  non_reparable:{l:'Clôturé · non réparé',c:'p-d'},annule:{l:'Clôturé · annulé',c:'p-off'}}
+const MOTIF_REP={client:'Attente client',piece:'Attente pièce'}
 const TYPE_RDV={domicile:{l:'Domicile',c:'p-a'},depot:{l:'Dépôt',c:'p-vio'},retrait:{l:'Retrait',c:'p-ok'},autre:{l:'Autre',c:'p-off'}}
 
 const repsActives=reps.filter(r=>!CLOS.includes(r.statut))
@@ -933,7 +934,7 @@ function rendreGrille(){
   grid.appendChild(carte('c-rdv','Rendez-vous à venir','/admin/planning.html',rdvFuturs.length,'',corpsRdv,'Aucun rendez-vous programmé.'))
 
   const corpsRep=repsActives.slice(0,6).map(r=>{
-    const s=STATUT_REP[r.statut]||{l:r.statut||'—',c:'p-off'}
+    const s=r.statut==='attente'&&MOTIF_REP[r.attente_motif]?{l:MOTIF_REP[r.attente_motif],c:'p-w'}:(STATUT_REP[r.statut]||{l:r.statut||'—',c:'p-off'})
     return ligne({href:`/admin/reparations.html?q=${encodeURIComponent(r.numero||'')}`,ico:'rep',cls:'i-rep',
       titre:`${escHtml(r.client_nom||'—')} <span class="dnum">${escHtml(r.numero||'')}</span>`,
       sous:escHtml([r.appareil,r.modele].filter(Boolean).join(' ')||'—'),
