@@ -227,8 +227,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-search-big input{width:100%;padding:13px 16px 13px 46px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:12px;color:var(--t1);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
 .cat-search-big input:focus{border-color:var(--a);}
 .cat-client{display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:600px;margin-top:8px;}
-.cat-client input{flex:1;min-width:200px;padding:9px 12px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:10px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
-.cat-client input:focus{border-color:var(--a);}
+.cat-client select{flex:1;min-width:200px;padding:9px 12px;background:var(--bg2);border:1.5px solid var(--ln2);border-radius:10px;color:var(--t1);font-size:13px;font-family:inherit;outline:none;}
+.cat-client select:focus{border-color:var(--a);}
 .cat-client-etat{font-size:12px;color:var(--t2);}
 .cat-client-etat b{color:var(--a);font-weight:600;}
 .cat-opt-price-big .barre{font-size:13px;color:var(--t3);text-decoration:line-through;margin-left:6px;font-weight:500;}
@@ -654,8 +654,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <input type="text" id="catSearch" placeholder="Rechercher un modèle… ex : iPhone 13, Galaxy S23, iPad Air" oninput="catSearchDebounce()"/>
         </div>
         <div class="cat-client">
-          <input type="text" id="catClient" list="catClientsListe" placeholder="Client avec un pack (facultatif)" autocomplete="off" oninput="choisirClientCat()"/>
-          <datalist id="catClientsListe"></datalist>
+          <select id="catClient" onchange="choisirClientCat()" aria-label="Client avec un pack"><option value="">Client avec un pack (facultatif)</option></select>
           <span class="cat-client-etat" id="catClientEtat"></span>
         </div>
         <div class="cat-hint"><span class="cat-sync-info" id="sync-info"></span> · <span id="cat-total">—</span> pièces dans le catalogue</div>
@@ -820,7 +819,8 @@ try{
   PACK_INTERS=ri.error?[]:(ri.data||[])
   // Seuls les clients avec un pack actif sont proposés.
   CLIENTS_CAT=CLIENTS_CAT.filter(c=>packDuClient(c.id))
-  document.getElementById('catClientsListe').innerHTML=CLIENTS_CAT.map(c=>`<option value="${escapeHtml(libClient(c))}"></option>`).join('')
+  CLIENTS_CAT.sort((a,b)=>String(a.nom||'').localeCompare(String(b.nom||''),'fr'))
+  document.getElementById('catClient').innerHTML='<option value="">Client avec un pack (facultatif)</option>'+CLIENTS_CAT.map(c=>`<option value="${c.id}">${escapeHtml(c.nom||'Sans nom')} · ${escapeHtml((packDuClient(c.id)||{}).nom||'')}</option>`).join('')
 }catch(e){console.warn('Clients / packs :',e)}
 window.doLogout=async()=>{await sb.auth.signOut();window.location.href='/admin/login.html'}
 document.getElementById('ldr').style.display='none'
@@ -1106,8 +1106,8 @@ function prixPourClient(achat){
   return {vente,prix:r2(vente-remise),cas,pack,piece,mo,remise}
 }
 window.choisirClientCat=function(){
-  const v=document.getElementById('catClient').value.trim()
-  const c=CLIENTS_CAT.find(x=>libClient(x)===v)||null
+  const v=document.getElementById('catClient').value
+  const c=CLIENTS_CAT.find(x=>String(x.id)===v)||null
   if(c===CLIENT_CAT)return
   CLIENT_CAT=c
   const etat=document.getElementById('catClientEtat')

@@ -1182,7 +1182,7 @@ async function load(){
   allReps=rRep.data||[]
   // Packs actifs : rappel sur la facture d'un client qui en a un.
   try{const [rp,ri]=await Promise.all([
-      sb.from('packs').select('id,client_id,nom,formule,par_mois,date_debut,date_fin,interventions_total').eq('statut','actif').limit(5000),
+      sb.from('packs').select('id,client_id,nom,formule,par_mois,date_debut,date_fin,interventions_total,facture_id').eq('statut','actif').limit(5000),
       sb.from('pack_interventions').select('pack_id,decompte,date_inter').limit(20000)])
     _packs=rp.error?[]:(rp.data||[]);_packInters=ri.error?[]:(ri.data||[])}catch(e){}
   if(rRep.error)showToast("Dossiers non chargés : "+rRep.error.message,"err")
@@ -2865,6 +2865,10 @@ window.preparerEmail=async function(){
   const solde=Math.max(0,Number(f.total||0)-acompte)
   let message
   const nonRep=dossierNonReparable(f)
+  // Client sans pack, facture de réparation ou de service : une phrase sur le Pack Sérénité.
+  const estFacPack=(f.lignes||[]).some(l=>/^Pack (Sérénité|Pack)/i.test(String(l.description||'')))
+  const offrePack=!nonRep&&!estFacPack&&!(f.client_id&&packClient(f.client_id))
+    ?`\n\nBon à savoir : avec le Pack Sérénité, vous avez votre technicien attitré toute l'année, déplacement inclus et rendez-vous prioritaire.\nDès 69 € par an, sans renouvellement automatique : https://itsoluce.be/pack.html`:''
   if(nonRep){
     // Appareil non réparable : le mail explique d'abord pourquoi, puis
     // présente la facture comme celle du diagnostic.
@@ -2876,11 +2880,11 @@ window.preparerEmail=async function(){
     else reglement=`Vous trouverez ci-joint la facture ${f.numero} du diagnostic. ${acompte>0?`Après l'acompte de ${eur(acompte)} déjà reçu, le solde à régler est de ${eur(solde)}.`:`Le montant à régler est de ${eur(f.total)}.`}${f.date_echeance?` Échéance au ${dateLongue(f.date_echeance)}.`:''}\n\nLe règlement se fait par virement sur le compte ${ENTREPRISE.iban}.`
     message=`Bonjour ${prenom},\n\n${constat}\n\n${reglement}\n\nJe reste à votre disposition pour toute question.`
   }else if(f.statut==='payee'){
-    message=`Bonjour ${prenom},\n\nMerci d'avoir fait confiance à IT Soluce.\n\nVous trouverez ci-joint votre facture ${f.numero} d'un montant de ${eur(f.total)}, réglée${mode?` par ${mode}`:''}. Ce document fait office de justificatif acquitté.\n\nJe reste à votre disposition pour toute question.`
+    message=`Bonjour ${prenom},\n\nMerci d'avoir fait confiance à IT Soluce.\n\nVous trouverez ci-joint votre facture ${f.numero} d'un montant de ${eur(f.total)}, réglée${mode?` par ${mode}`:''}. Ce document fait office de justificatif acquitté.${offrePack}\n\nJe reste à votre disposition pour toute question.`
   }else{
     const du=acompte>0?`Après l'acompte de ${eur(acompte)} déjà reçu, le solde à régler est de ${eur(solde)}.`:`Le montant à régler est de ${eur(f.total)}.`
     const ech=f.date_echeance?` Échéance au ${dateLongue(f.date_echeance)}.`:''
-    message=`Bonjour ${prenom},\n\nMerci d'avoir fait confiance à IT Soluce.\n\nVous trouverez ci-joint votre facture ${f.numero}. ${du}${ech}\n\nLe règlement se fait par virement sur le compte ${ENTREPRISE.iban}.\n\nJe reste à votre disposition pour toute question.`
+    message=`Bonjour ${prenom},\n\nMerci d'avoir fait confiance à IT Soluce.\n\nVous trouverez ci-joint votre facture ${f.numero}. ${du}${ech}\n\nLe règlement se fait par virement sur le compte ${ENTREPRISE.iban}.${offrePack}\n\nJe reste à votre disposition pour toute question.`
   }
   await ouvrirModaleEmail({
     html:buildTemplateHTML(f,true),
