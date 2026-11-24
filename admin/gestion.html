@@ -375,6 +375,9 @@ body{font-size:14px;}
   .row{flex-direction:column; align-items:stretch; gap:8px;}
   .row-l{width:auto;}
   .row-f.auto{align-self:flex-start;}
+  .grille-row{flex-wrap:wrap; row-gap:8px;}
+  .grille-palier{width:100%;}
+  .card .grille-row input{flex:1; width:auto; min-width:0;}
 }
 
 
@@ -1253,6 +1256,18 @@ function cancelChanges(){
 }
 
 /* ── Navigation interne ──────────────────────────────────────── */
+/* Téléphone : la fiche (prestation, fournisseur, commande…) s'affiche sous la liste ;
+   quand on l'ouvre, elle vient se placer à l'écran au lieu de rester hors de vue. */
+{
+  let _dernierClic=0
+  document.addEventListener('click',()=>{_dernierClic=Date.now()},true)
+  const mo=new MutationObserver(m=>{
+    if(innerWidth>900||Date.now()-_dernierClic>1500)return
+    const d=m[0].target.closest&&m[0].target.closest('.detail');if(!d)return
+    if(d.getBoundingClientRect().top>innerHeight*0.6)d.scrollIntoView({behavior:'smooth',block:'start'})
+  })
+  document.querySelectorAll('.settings-content .detail').forEach(d=>mo.observe(d,{childList:true}))
+}
 /* Téléphone : le menu des rubriques devient une liste déroulante (plus rien à faire glisser). */
 function majSelectRubriques(){
   const sel=document.getElementById('sn-select');if(!sel)return
