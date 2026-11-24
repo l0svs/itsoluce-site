@@ -242,7 +242,7 @@ function cartePack(p){
   return `<section class="hero"><div class="hero-t"><b>${esc(p.nom)}</b><span>Actif</span></div>
     <div class="etat">${etat}</div>
     <div class="stats">${stat1}
-      <div class="stat"><small>Hydrogel</small><b>${p.hydrogels_total?`${Math.max(0,hRest)} <em>/ ${p.hydrogels_total}</em>`:'—'}</b></div>
+      <div class="stat"><small>Protections d'écran</small><b>${p.hydrogels_total?`${Math.max(0,hRest)} <em>/ ${p.hydrogels_total}</em>`:'—'}</b></div>
       <div class="stat"><small>Fin du pack</small><b>${dCourt(p.date_fin)} <em>${String(p.date_fin).slice(0,4)}</em></b></div></div>
     ${e.par_mois?frise(p,p.journal||[]):''}
     <span class="remise">${remiseTxt(p)}</span></section>`
@@ -258,7 +258,7 @@ function tableau(){
   const histo=journal.length?`<ul class="tl">${journal.map(j=>`<li><i>${I[j.type]||I.depot}</i><div class="c">
       <div class="h"><b>${TYPES[j.type]||'Intervention'}</b><em>${dFr(j.date)}</em></div>
       <p>${esc(j.description)}</p>
-      <div class="tags"><span class="chip${j.decompte?'':' g'}">${j.decompte?'Incluse dans le pack':'Hors pack'}</span>${j.hydrogels?`<span class="chip g">${j.hydrogels} hydrogel${j.hydrogels>1?'s':''} posé${j.hydrogels>1?'s':''}</span>`:''}${plusieurs?`<span class="chip g">${esc(j.pack)}</span>`:''}</div></div></li>`).join('')}</ul>`
+      <div class="tags"><span class="chip${j.decompte?'':' g'}">${j.decompte?'Incluse dans le pack':'Hors pack'}</span>${j.hydrogels?`<span class="chip g">${j.hydrogels} protection${j.hydrogels>1?'s':''} d'écran posée${j.hydrogels>1?'s':''}</span>`:''}${plusieurs?`<span class="chip g">${esc(j.pack)}</span>`:''}</div></div></li>`).join('')}</ul>`
     :'<p class="vide2">Aucune intervention pour le moment.<br>Quand vous avez besoin de moi, utilisez « Demander une intervention ».</p>'
   const docs=d.factures.length?`<ul class="docs">${d.factures.map(f=>`<li><button onclick="voirFacture(${f.id})"><i>${I.doc}</i><span class="c"><b>${f.type==='note_credit'?'Note de crédit':'Facture'} ${esc(f.numero)}</b><span>${dLong(f.date)}</span></span><span class="m">${eur(f.total)}</span>${I.ch}</button></li>`).join('')}</ul>`
     :'<p class="vide2">Aucun document.</p>'

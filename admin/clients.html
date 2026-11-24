@@ -1233,7 +1233,7 @@ window.showDetail=function(id){
         :pk.formule==='mobile'?`${r>0?'Disponible':'Utilisé'} <small>transfert offert</small>`
         :`${r} <small>intervention${r>1?'s':''} restante${r>1?'s':''} sur ${pk.interventions_total}</small>`}</div>
       <div class="fp-bar"><span style="width:${Math.min(100,Math.round(u/pk.interventions_total*100))}%"></span></div>
-      <div class="fp-m">Jusqu'au ${dateCourte(pk.date_fin)}${pk.hydrogels_total?` · Hydrogel : ${pk.hydrogels_total-h} restante${pk.hydrogels_total-h>1?'s':''}`:''} · ${remise}</div>
+      <div class="fp-m">Jusqu'au ${dateCourte(pk.date_fin)}${pk.hydrogels_total?` · Protections d'écran : ${pk.hydrogels_total-h} restante${pk.hydrogels_total-h>1?'s':''}`:''} · ${remise}</div>
       <div class="fp-a"><a class="btn btn-primary" href="/admin/packs.html?pack=${pk.id}">Noter une intervention</a><a class="btn btn-secondary" href="/admin/packs.html?pack=${pk.id}">Voir le suivi</a></div></div>`
   }else if(pk){
     blocPack=`<div class="fi-pack att"><div class="fp-h">${escHtml(pk.nom)} <span class="pill p-a">À encaisser</span></div>

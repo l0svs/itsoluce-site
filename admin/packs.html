@@ -755,7 +755,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <div class="fl"><label for="i-app">Appareil(s)</label><input id="i-app" maxlength="120" placeholder="PC portable HP, iPhone 13…"></div>
     <div class="fl"><label for="i-desc">Ce qui a été fait (visible par le client)</label><textarea id="i-desc" maxlength="1000"></textarea></div>
     <div class="fl"><label for="i-note">Note interne (non visible)</label><textarea id="i-note" maxlength="2000" style="min-height:44px"></textarea></div>
-    <div class="fl" id="i-hydro-wrap"><label for="i-hydro">Protections hydrogel posées</label><input type="number" id="i-hydro" min="0" step="1" value="0"><div class="hint" id="i-hydro-hint"></div></div>
+    <div class="fl" id="i-hydro-wrap"><label for="i-hydro">Protections d'écran posées</label><input type="number" id="i-hydro" min="0" step="1" value="0"><div class="hint" id="i-hydro-hint"></div></div>
     <label class="chk"><input type="checkbox" id="i-dec" checked onchange="majInter()"><span id="i-dec-txt"></span></label>
     <label class="chk" id="i-dos-wrap"><input type="checkbox" id="i-dos" checked><span>Créer le dossier de réparation, marqué « Inclus dans le pack », sans facture de main-d'œuvre</span></label>
   </div>
@@ -1002,7 +1002,7 @@ function rendreDetail(){
   ${alerte}
   ${e.js.length?`<table class="pk-t pk-j"><tr><th>Date</th><th>Type</th><th>Ce qui a été fait</th><th>Durée</th><th>Km</th><th>Décompte</th><th></th></tr>`+
     e.js.map(i=>`<tr><td>${dCourte(i.date_inter)}</td><td><span class="pill b">${TYPES[i.type]||i.type}</span></td>
-      <td class="what">${esc(i.description)}${i.hydrogels?`<div class="pk-sub">${i.hydrogels} hydrogel posé${i.hydrogels>1?'s':''}</div>`:''}${i.note_interne?`<div class="pk-sub">Note : ${esc(i.note_interne)}</div>`:''}${i.reparation_id?`<div><a onclick="location.href='/admin/reparations.html?q=${encodeURIComponent(numRep.get(i.reparation_id)||'')}'">${esc(numRep.get(i.reparation_id)||'Dossier lié')}</a></div>`:''}</td>
+      <td class="what">${esc(i.description)}${i.hydrogels?`<div class="pk-sub">${i.hydrogels} protection${i.hydrogels>1?'s':''} d'écran posée${i.hydrogels>1?'s':''}</div>`:''}${i.note_interne?`<div class="pk-sub">Note : ${esc(i.note_interne)}</div>`:''}${i.reparation_id?`<div><a onclick="location.href='/admin/reparations.html?q=${encodeURIComponent(numRep.get(i.reparation_id)||'')}'">${esc(numRep.get(i.reparation_id)||'Dossier lié')}</a></div>`:''}</td>
       <td>${duree(i.duree_min)}</td><td>${i.km!=null?Math.round(i.km*10)/10:'—'}</td><td>${i.decompte?'−1':'<span class="pk-sub">non</span>'}</td>
       <td>${actif?`<button class="pk-x" title="Retirer du journal" onclick="supprimerInter(${i.id})">×</button>`:''}</td></tr>`).join('')+`</table>`
     :`<div class="pk-vide">Aucune intervention notée.</div>`}
@@ -1057,7 +1057,7 @@ window.setFormule=code=>{vFormule=code;majVente()}
 window.setPaie=p=>{vPaie=p;document.querySelectorAll('#v-paie button').forEach(b=>b.classList.toggle('on',b.dataset.p===p))
   document.getElementById('v-paie-info').textContent=p?`Facture émise « payée » (${({carte:'carte',especes:'espèces',virement:'virement'})[p]}) : le pack est actif tout de suite.`:"Facture « à encaisser » : le pack s'active quand tu l'encaisses dans Factures."}
 window.majVente=function(){
-  document.getElementById('v-formules').innerHTML=formules.map(f=>`<button type="button" class="fcard${f.code===vFormule?' on':''}" onclick="setFormule('${f.code}')"><b>${esc(f.nom.replace(/^Sérénité /,''))}</b><span>${eur(f.prix)}</span><em>${f.par_mois?'1 intervention / mois':'Transfert offert'} · ${f.hydrogels} hydrogel${f.hydrogels>1?'s':''}</em></button>`).join('')
+  document.getElementById('v-formules').innerHTML=formules.map(f=>`<button type="button" class="fcard${f.code===vFormule?' on':''}" onclick="setFormule('${f.code}')"><b>${esc(f.nom.replace(/^Sérénité /,''))}</b><span>${eur(f.prix)}</span><em>${f.par_mois?'1 intervention / mois':'Transfert offert'} · ${f.hydrogels} protection${f.hydrogels>1?'s':''} d'écran</em></button>`).join('')
   const c=trouverClient(),info=document.getElementById('v-client-info')
   if(!c){info.textContent='';return}
   const pro=!!(c.societe||c.tva)
@@ -1194,7 +1194,7 @@ window.ouvrirRetr=async function(id){
     `${esc(rPack.nom)} payé ${eur(rPack.prix)} le ${dCourte(data.paye_le)} · délai jusqu'au ${dCourte(data.fin_delai)}<br>`+
     `Prix payé : ${eur(rPack.prix)}<br>`+
     (data.utilisees?`Interventions déjà fournies : ${data.utilisees} × ${eur(data.prix_intervention)} déduites<br>`:'')+
-    (data.hydrogels_utilises?`Protections hydrogel posées : ${data.hydrogels_utilises} × ${eur(data.prix_hydrogel)} déduites<br>`:'')+
+    (data.hydrogels_utilises?`Protections d'écran posées : ${data.hydrogels_utilises} × ${eur(data.prix_hydrogel)} déduites<br>`:'')+
     `<div style="margin-top:8px">À rembourser : <b class="m">${eur(data.montant)}</b></div>`+
     `<div class="hint" style="margin-top:6px">${data.en_ligne?'Payé en ligne : le remboursement part automatiquement sur la carte ou le compte du client via Mollie.':'Payé sur place : tu rembourses par virement, puis tu marques la note de crédit « remboursée » dans Factures.'} Le pack est clôturé.</div>`
     :`<b>Rétractation impossible :</b> ${esc(data.raison)}`
