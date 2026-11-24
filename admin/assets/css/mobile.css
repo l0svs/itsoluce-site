@@ -129,3 +129,10 @@
   }
   html.m-modal body .toast{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}
 }
+
+/* ── Filtres (Réparations, Demandes…) : ils passent à la ligne au lieu
+      de déborder ; plus rien à faire glisser pour voir une option. ── */
+@media (max-width:900px){
+  html body .segf{flex-wrap:wrap !important;overflow-x:visible !important;}
+  html body .segf button{flex:1 1 auto !important;}
+}
