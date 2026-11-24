@@ -125,6 +125,8 @@ body{font-size:14px;}
 .rail-item:focus-visible{outline:2px solid var(--a); outline-offset:2px;}
 .rail-new{border:1px dashed var(--ln2); border-radius:12px; padding:10px; text-align:center; font-size:12.5px; color:var(--a); background:none; font-family:inherit; cursor:pointer; margin-top:4px;}
 .rail-new:hover{background:var(--ad); border-color:var(--a);}
+.retour-liste{display:none; align-items:center; justify-content:center; width:36px; height:36px; flex-shrink:0; border:none; border-radius:10px; background:var(--bg3); color:var(--t1); cursor:pointer; margin-right:2px;}
+.retour-liste svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
 .rail-vide{font-size:12.5px; color:var(--t3); padding:10px 3px; line-height:1.5;}
 
 .ref{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; font-weight:600; color:var(--a); background:var(--ad); padding:2px 7px; border-radius:6px; white-space:nowrap; align-self:flex-start;}
@@ -278,11 +280,14 @@ body{font-size:14px;}
 @media(max-width:900px){
   .at{grid-template-columns:minmax(0,1fr); overflow-y:auto; gap:14px;}
   .at-rail-col{overflow:visible;}
-  .at-rail{flex:none; flex-direction:row; overflow-x:auto; overflow-y:visible; gap:8px; padding-bottom:4px; scrollbar-width:none;}
+  .at-rail{flex:none; flex-direction:column; overflow:visible; gap:7px; padding-bottom:4px;}
   .at-rail::-webkit-scrollbar{display:none;}
   .at-rail .rail-lab{display:none;}
-  .rail-item{flex:0 0 190px; min-width:190px;}
-  .rail-new{flex:0 0 150px; margin-top:0;}
+  .rail-item{flex:none; min-width:0;}
+  .rail-new{flex:none; margin-top:4px;}
+  .at.liste .at-form-col,.at.liste .at-prev{display:none !important;}
+  .at:not(.liste) .at-rail-col{display:none;}
+  .retour-liste{display:inline-flex;}
   .at-form-col{overflow:visible;}
   .ligne{grid-template-columns:minmax(0,1fr) 60px 86px 30px;}
   .ligne .l-total{display:none;}
@@ -575,8 +580,9 @@ body{font-size:14px;}
    jamais, la navigation réapparaît quand même plutôt que de rester vide. */
 setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()},4000);
 </script>
-<link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261118">
+<link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261124">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
+<script src="/admin/assets/js/liste-doc.js?v=20261124"></script>
 <script src="/assets/js/nom-propre.js?v=20261122"></script>
 </head>
 <body>
@@ -659,6 +665,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             <input type="hidden" id="f-is-pro" value="false"/>
 
             <div class="at-form-top">
+              <button type="button" class="retour-liste" onclick="retourListe()" aria-label="Tous les devis" title="Tous les devis"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
               <span class="ref" id="ref-courant">Nouveau</span>
               <h2 id="titre-courant">Nouveau devis</h2>
               <span class="tag t-brouillon" id="tag-courant">Brouillon</span>
@@ -1762,6 +1769,7 @@ window.ouvrirApercuLateral=function(){
 window.fermerApercuLateral=function(){document.getElementById('prev').classList.remove('ouvert')}
 
 /* ─── Navigation ─── */
+window.confirmerAbandon=function(){return confirmerAbandon()}
 function confirmerAbandon(){
   if(!sale)return true
   return confirm('Des modifications ne sont pas enregistrées. Les abandonner ?')

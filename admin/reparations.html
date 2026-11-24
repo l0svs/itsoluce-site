@@ -199,6 +199,7 @@ body{font-size:14px;}
 .dl dt{color:var(--t3); flex-shrink:0;}
 .dl dd{margin:0; color:var(--t1); text-align:right; word-break:break-word;}
 .dl dd.num{font-variant-numeric:tabular-nums; white-space:nowrap;}
+.dl dt.dt-piece{flex:1 1 auto; min-width:0; overflow-wrap:anywhere;}
 .det-lab{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3);}
 .det-note{font-size:12.5px; color:var(--t2); line-height:1.55; white-space:pre-wrap; word-break:break-word;}
 .det-motif{font-size:12.5px; color:var(--w); line-height:1.5;}
@@ -237,6 +238,8 @@ body{font-size:14px;}
 .type-seg button em{display:block; font-style:normal; font-size:11.5px; color:var(--t3); margin-top:1px;}
 .type-seg button.on{border-color:var(--a); background:var(--ad); color:var(--t1); font-weight:600;}
 .det-acts .btn{flex:1; min-width:120px;}
+.det-acts.haut{gap:6px;}
+.det-acts.haut .btn{flex:1 1 auto; min-width:0; padding:8px 12px; font-size:12.5px; justify-content:center; text-decoration:none; white-space:nowrap;}
 
 /* ── État vide ── */
 .vide{background:var(--bg2); border-radius:var(--radius); padding:50px 24px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.05);}
@@ -625,7 +628,7 @@ body{font-size:14px;}
    jamais, la navigation réapparaît quand même plutôt que de rester vide. */
 setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()},4000);
 </script>
-<link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261118">
+<link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261124">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
 <script src="/assets/js/nom-propre.js?v=20261122"></script>
 </head>
@@ -1699,6 +1702,15 @@ function renderDetail(){
         return n>0?`<div class="gar-note">Ce client a un <b>${escHtml(p.nom)}</b> actif (${n} intervention${n>1?'s':''} restante${n>1?'s':''}). ${lien}</div>`:''})()}
     <div id="fil-rep"></div>
     ${etapeSuivante(r)}
+    <div class="det-acts haut">
+      <button class="btn btn-secondary" onclick="editRep(${r.id})">Modifier</button>
+      ${r.converti_facture_id
+        ? '<button class="btn btn-ghost" disabled>Facture déjà créée</button>'
+        : `<button class="btn ${r.statut==='non_reparable'?'btn-primary':'btn-secondary'}" onclick="factureDepuisDossier(${r.id})">${r.statut==='non_reparable'?'Facturer le diagnostic':'Créer une facture'}</button>`}
+      ${r.statut==='non_reparable'&&!r.converti_facture_id?`<button class="btn btn-secondary" onclick="factureDepuisDossier(${r.id},true)">Diagnostic offert · 0 €</button>`:''}
+      ${!CLOS.includes(r.statut)&&!r.converti_facture_id?`<a class="btn btn-secondary" id="btn-devis-rep" style="display:none" href="/admin/devis.html?reparation=${r.id}">Faire un devis</a>`:''}
+      ${r.client_email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:r.client_email,reparation:r.id,objet:r.numero?`Votre réparation ${r.numero}`:''}))}">✉ Mail</a>`:''}
+    </div>
     <div id="apres-rep" class="apres"></div>
     <div class="sep"></div>
     <dl class="dl">
@@ -1717,7 +1729,7 @@ function renderDetail(){
     <div>
       <div class="det-lab" style="margin-bottom:7px;">Pièces et prestations</div>
       ${pieces.length?`<dl class="dl">${pieces.map(p=>
-        `<div><dt>${escHtml(p.nom||'—')}${ligneTrace(p)}</dt><dd class="num">×${Number(p.qte)||1}</dd></div>`
+        `<div><dt class="dt-piece">${escHtml(p.nom||'—')}${ligneTrace(p)}</dt><dd class="num">×${Number(p.qte)||1}</dd></div>`
       ).join('')}</dl>`:'<div class="det-note">Aucune pièce enregistrée</div>'}
     </div>`}
     ${inter?'':`<div>
@@ -1729,15 +1741,6 @@ function renderDetail(){
     <div class="sep"></div>
     ${etapes(r)}
     <div class="sep"></div>
-    <div class="det-acts">
-      <button class="btn btn-secondary" onclick="editRep(${r.id})">Modifier</button>
-      ${r.converti_facture_id
-        ? '<button class="btn btn-ghost" disabled style="flex:1;">Facture déjà créée</button>'
-        : `<button class="btn ${r.statut==='non_reparable'?'btn-primary':'btn-secondary'}" onclick="factureDepuisDossier(${r.id})">${r.statut==='non_reparable'?'Facturer le diagnostic':'Créer une facture'}</button>`}
-    </div>
-    ${r.statut==='non_reparable'&&!r.converti_facture_id?`<button class="btn btn-secondary" onclick="factureDepuisDossier(${r.id},true)">Diagnostic offert · facture à 0 €</button>`:''}
-    ${!CLOS.includes(r.statut)&&!r.converti_facture_id?`<a class="btn btn-secondary" id="btn-devis-rep" style="display:none" href="/admin/devis.html?reparation=${r.id}">Faire un devis pour ce dossier</a>`:''}
-    ${r.client_email?`<a class="btn btn-secondary" href="${escHtml(lienMessages({a:r.client_email,reparation:r.id,objet:r.numero?`Votre réparation ${r.numero}`:''}))}">✉ Répondre par mail</a>`:''}
     <button class="btn btn-danger" onclick="deleteRep(${r.id},'${escJsAttr(r.client_nom||'')}')">Supprimer le dossier</button>
   </div>`
   if(window.DossierFil){
