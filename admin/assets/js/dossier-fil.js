@@ -31,7 +31,7 @@
   var COLS = {
     demandes_formulaire: 'id,prenom,nom,created_at,converti_reparation_id,converti_devis_id',
     devis: 'id,numero,statut,total,date_validite,reparation_id,converti_reparation_id,converti_facture_id',
-    reparations: 'id,numero,statut,type,converti_facture_id,date_fin,garantie_de_id,pack_id',
+    reparations: 'id,numero,statut,attente_motif,type,converti_facture_id,date_fin,garantie_de_id,pack_id',
     factures: 'id,numero,statut,total,acompte,devis_id,reparation_id,date_paiement'
   };
 
@@ -88,7 +88,8 @@
 
   var DEV = { brouillon: 'brouillon', envoye: 'envoyé', accepte: 'accepté', refuse: 'refusé', annule: 'annulé', remplace: 'remplacé' };
   var INTER = { attente_reception: 'planifiée', recu: 'planifiée', attente: 'en attente', encours: 'en cours', pret: 'réalisée', rendu: 'terminée' };
-  var REP = { attente_reception: 'à réceptionner', recu: 'appareil reçu', attente: 'attente de pièce', encours: 'en réparation', pret: 'prêt', rendu: 'rendu', non_reparable: 'non réparable', annule: 'annulé' };
+  var REP = { attente_reception: 'à réceptionner', recu: 'diagnostic', attente: 'en attente', encours: 'en réparation', pret: 'prêt à récupérer', rendu: 'clôturé · rendu', non_reparable: 'clôturé · non réparé', annule: 'clôturé · annulé' };
+  var MOTIF = { client: 'en attente · accord client', piece: 'en attente · pièce' };
   var FAC = { brouillon: 'brouillon, sans numéro', envoyee: 'émise', payee: 'payée', annulee: 'annulée', non_reparable: 'diagnostic offert', creditee: 'annulée par note de crédit' };
 
   function etapes(d) {
@@ -102,7 +103,7 @@
     } else e.push({ cle: 'devis', titre: 'Devis', sous: 'aucun', etat: 'vide' });
     if (rep) {
       var inter = rep.type === 'intervention';
-      e.push({ cle: 'reparation', titre: (inter ? 'Intervention ' : 'Réparation ') + (rep.numero || ''), sous: (inter && INTER[rep.statut]) || REP[rep.statut] || rep.statut,
+      e.push({ cle: 'reparation', titre: (inter ? 'Intervention ' : 'Réparation ') + (rep.numero || ''), sous: (inter && INTER[rep.statut]) || (rep.statut === 'attente' && MOTIF[rep.attente_motif]) || REP[rep.statut] || rep.statut,
         etat: ['pret', 'rendu'].indexOf(rep.statut) >= 0 ? 'ok' : ['non_reparable', 'annule'].indexOf(rep.statut) >= 0 ? 'ko' : 'cours',
         href: '/admin/reparations.html?q=' + encodeURIComponent(rep.numero || '') });
     } else e.push({ cle: 'reparation', titre: 'Réparation', sous: 'pas encore créée', etat: 'vide' });
@@ -154,6 +155,9 @@
     if (rep && rep.statut === 'rendu') return 'Créer la facture';
     if (rep && rep.type === 'intervention') return ['attente_reception', 'recu', 'attente'].indexOf(rep.statut) >= 0 ? "Démarrer l'intervention" : "Terminer l'intervention";
     if (rep && rep.statut === 'attente_reception') return "Réceptionner l'appareil";
+    if (rep && rep.statut === 'recu') return 'Faire le diagnostic';
+    if (rep && rep.statut === 'attente' && rep.attente_motif === 'client') return "Attendre l'accord du client (relancer si besoin)";
+    if (rep && rep.statut === 'attente') return 'Attendre la pièce';
     if (rep) return 'Terminer la réparation';
     if (dev && dev.statut === 'accepte') return 'Créer la réparation';
     if (dev && ['refuse', 'annule', 'remplace'].indexOf(dev.statut) >= 0) return null;

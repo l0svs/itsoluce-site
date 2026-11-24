@@ -162,6 +162,13 @@ body{font-size:14px;}
 .row-who em{display:block; font-style:normal; font-size:12px; color:var(--t3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .row-age{font-size:12px; color:var(--t3); white-space:nowrap; flex-shrink:0; font-variant-numeric:tabular-nums;}
 .row-age.old{color:var(--w); font-weight:500;}
+@media(max-width:640px){
+  .row{display:grid; grid-template-columns:auto minmax(0,1fr) auto; grid-template-areas:"ref who age" ". st st"; column-gap:10px; row-gap:6px; align-items:start;}
+  .row .ref{grid-area:ref;} .row .row-who{grid-area:who;} .row .row-age{grid-area:age;}
+  .row .statut{grid-area:st; justify-self:start;}
+  .row-who b{white-space:normal;}
+  .row-who em{white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+}
 
 /* ── Pastilles de statut ── */
 .statut{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap; border:none; font-family:inherit; cursor:pointer; flex-shrink:0; max-width:170px; overflow:hidden; text-overflow:ellipsis;}
@@ -198,6 +205,8 @@ body{font-size:14px;}
 .dl div{display:flex; justify-content:space-between; gap:12px; font-size:12.5px; align-items:baseline;}
 .dl dt{color:var(--t3); flex-shrink:0;}
 .dl dd{margin:0; color:var(--t1); text-align:right; word-break:break-word;}
+.sm-sep{font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); padding:9px 12px 3px; border-top:1px solid var(--ln); margin-top:4px;}
+.sm-item.on{background:var(--bg3);}
 .dl dd.num{font-variant-numeric:tabular-nums; white-space:nowrap;}
 .dl dt.dt-piece{flex:1 1 auto; min-width:0; overflow-wrap:anywhere;}
 .det-lab{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--t3);}
@@ -735,16 +744,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <div class="cmd-foot"><button class="btn btn-secondary" type="button" onclick="fermerCommande()">Annuler</button><button class="btn btn-primary" type="button" id="cmd-ok" onclick="enregistrerCommande()">Enregistrer</button></div>
   </div>
 </div>
-<div class="status-menu" id="statusMenu">
-  <button class="sm-item" onclick="changeStatut('attente_reception')"><span class="statut s-attente_reception" style="pointer-events:none;">En attente de réception de l'appareil</span></button>
-  <button class="sm-item" onclick="changeStatut('recu')"><span class="statut s-recu" style="pointer-events:none;">Reçu</span></button>
-  <button class="sm-item" onclick="changeStatut('attente')"><span class="statut s-attente" style="pointer-events:none;">Attente de pièce</span></button>
-  <button class="sm-item" onclick="changeStatut('encours')"><span class="statut s-encours" style="pointer-events:none;">En réparation</span></button>
-  <button class="sm-item" onclick="changeStatut('pret')"><span class="statut s-pret" style="pointer-events:none;">Prêt à récupérer</span></button>
-  <button class="sm-item" onclick="changeStatut('rendu')"><span class="statut s-rendu" style="pointer-events:none;">Rendu</span></button>
-  <button class="sm-item" onclick="changeStatut('non_reparable')"><span class="statut s-non_reparable" style="pointer-events:none;">Non réparable</span></button>
-  <button class="sm-item" onclick="changeStatut('annule')"><span class="statut s-annule" style="pointer-events:none;">Annulé</span></button>
-</div>
+<div class="status-menu" id="statusMenu"></div>
 
 <!-- PANNEAU -->
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
@@ -821,14 +821,17 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         <div class="fg">
           <label>Statut</label>
           <select id="f-statut" onchange="toggleMotif()">
-            <option value="attente_reception">Nouveau dossier</option>
-            <option value="recu">Appareil reçu</option>
-            <option value="attente">Attente de pièce</option>
-            <option value="encours">Diagnostic / Réparation en cours</option>
+            <option value="attente_reception">À réceptionner</option>
+            <option value="recu">Diagnostic</option>
+            <option value="attente:client">En attente · accord client</option>
+            <option value="attente:piece">En attente · pièce</option>
+            <option value="encours">En réparation</option>
             <option value="pret">Prêt à récupérer</option>
-            <option value="rendu">Rendu au client</option>
-            <option value="non_reparable">Non réparable</option>
-            <option value="annule">Annulé</option>
+            <optgroup label="Clôturé">
+              <option value="rendu">Rendu au client</option>
+              <option value="non_reparable">Non réparé</option>
+              <option value="annule">Annulé</option>
+            </optgroup>
           </select>
         </div>
         <div class="fg" id="motif-wrap" style="display:none;">
@@ -891,14 +894,14 @@ function showToast(msg,type='ok'){
 
 /* ─── Statuts ─── */
 const STATUTS={
-  attente_reception:{label:'Nouveau dossier',court:'Nouveau',cls:'s-attente_reception'},
-  recu:            {label:'Appareil reçu',court:'Reçu',cls:'s-recu'},
-  attente:         {label:'Attente de pièce',court:'Attente de pièce',cls:'s-attente'},
-  encours:         {label:'Diagnostic / Réparation en cours',court:'En réparation',cls:'s-encours'},
+  attente_reception:{label:'À réceptionner',court:'À réceptionner',cls:'s-attente_reception'},
+  recu:            {label:'Diagnostic',court:'Diagnostic',cls:'s-recu'},
+  attente:         {label:'En attente',court:'En attente',cls:'s-attente'},
+  encours:         {label:'En réparation',court:'En réparation',cls:'s-encours'},
   pret:            {label:'Prêt à récupérer',court:'Prêt',cls:'s-pret'},
-  rendu:           {label:'Rendu au client',court:'Rendu',cls:'s-rendu'},
-  non_reparable:   {label:'Non réparable',court:'Non réparable',cls:'s-non_reparable'},
-  annule:          {label:'Annulé',court:'Annulé',cls:'s-annule'}
+  rendu:           {label:'Clôturé · rendu',court:'Clôturé',cls:'s-rendu'},
+  non_reparable:   {label:'Clôturé · non réparé',court:'Non réparé',cls:'s-non_reparable'},
+  annule:          {label:'Clôturé · annulé',court:'Annulé',cls:'s-annule'}
 }
 window.STATUTS=STATUTS
 /* Intervention (assistance, conseil, logiciel, données…) : mêmes statuts en
@@ -912,10 +915,14 @@ const LIB_INTER={
   attente:         {label:'En attente',court:'En attente'},
   encours:         {label:'Intervention en cours',court:'En cours'},
   pret:            {label:'Réalisée',court:'Réalisée'},
-  rendu:           {label:'Terminée',court:'Terminée'}
+  rendu:           {label:'Terminée',court:'Terminée'},
+  annule:          {label:'Annulée',court:'Annulée'}
 }
+// « En attente » : la raison (accord du client ou pièce) est remplie par l'ERP.
+const MOTIF_ATTENTE={client:{label:'En attente · accord client',court:'Attente client'},piece:{label:'En attente · pièce',court:'Attente pièce'}}
 function stDe(r){
-  const base=STATUTS[r.statut]||{label:r.statut,court:r.statut,cls:'s-recu'}
+  let base=STATUTS[r.statut]||{label:r.statut,court:r.statut,cls:'s-recu'}
+  if(r.statut==='attente'&&MOTIF_ATTENTE[r.attente_motif])base={...base,...MOTIF_ATTENTE[r.attente_motif]}
   return estInter(r)&&LIB_INTER[r.statut]?{...base,...LIB_INTER[r.statut]}:base
 }
 window.stDe=stDe
@@ -941,9 +948,20 @@ window.toggleMotif=function(){
 
 /* ─── Menu de changement de statut ─── */
 window.currentStatusId=null
+const MENU_REP=[['attente_reception','','À réceptionner'],['recu','','Diagnostic'],['attente','client','En attente · accord client'],
+  ['attente','piece','En attente · pièce'],['encours','','En réparation'],['pret','','Prêt à récupérer'],
+  null,['rendu','','Rendu au client'],['non_reparable','','Non réparé'],['annule','','Annulé']]
+const MENU_INTER=[['attente_reception','','Planifiée'],['encours','','En cours'],null,['rendu','','Terminée'],['annule','','Annulée']]
 function openStatusMenu(id,el){
   window.currentStatusId=id
   const menu=document.getElementById('statusMenu')
+  const d=window.repDe?window.repDe(id):null
+  menu.innerHTML=(estInter(d)?MENU_INTER:MENU_REP).map(it=>{
+    if(!it)return '<div class="sm-sep">Clôturer</div>'
+    const [st,mo,lib]=it, cls=(STATUTS[st]||{}).cls||''
+    const actuel=d&&d.statut===st&&(st!=='attente'||(d.attente_motif||'piece')===mo)
+    return `<button class="sm-item${actuel?' on':''}" onclick="changeStatut('${st}','${mo}')"><span class="statut ${cls}" style="pointer-events:none;">${lib}</span></button>`
+  }).join('')
   menu.classList.add('open')
   const r=el.getBoundingClientRect(), m=menu.getBoundingClientRect()
   let top=r.bottom+5, left=r.left
@@ -996,7 +1014,7 @@ function openPanel(r=null){
   document.getElementById('f-modele').value=r?.modele||''
   document.getElementById('f-panne').value=r?.panne_description||''
   document.getElementById('f-prix').value=r?.prix_final?Number(r.prix_final).toFixed(2):''
-  document.getElementById('f-statut').value=r?.statut||'attente_reception'
+  document.getElementById('f-statut').value=r?.statut==='attente'?'attente:'+(r.attente_motif||'piece'):(r?.statut||'attente_reception')
   document.getElementById('f-motif').value=r?.motif||''
   toggleMotif()
   document.getElementById('f-notes').value=r?.notes||''
@@ -1158,6 +1176,7 @@ if(new URLSearchParams(location.search).get('acces')){
 
 
 let allReps=[]
+window.repDe=id=>allReps.find(x=>x.id===id)||null
 let allStockPieces=[]
 let allServices=[]
 let allClientsRep=[]
@@ -1486,7 +1505,7 @@ const GROUPES=[
   {cle:'atelier',  titre:'En atelier',    statuts:['recu','attente','encours']},
   {cle:'interventions',titre:'Interventions',statuts:[]},
   {cle:'pret',     titre:'Prêt à récupérer',statuts:['pret']},
-  {cle:'clos',     titre:'Clos',          statuts:CLOS}
+  {cle:'clos',     titre:'Clôturés',      statuts:CLOS}
 ]
 function groupeDe(r){
   if(estInter(r)&&!CLOS.includes(r.statut))return 'interventions'
@@ -1505,7 +1524,7 @@ function majResume(){
     bouts.push(`<b>${ouverts.length} dossier${ouverts.length>1?'s':''} ouvert${ouverts.length>1?'s':''}</b>`)
     if(enAttente.length){
       const plusVieux=Math.max(...enAttente.map(r=>jours(r.updated_at||r.created_at)??0))
-      bouts.push(`<span class="alerte">${enAttente.length} attente de pièce${plusVieux>=3?` (la plus ancienne : ${plusVieux} jours)`:''}</span>`)
+      bouts.push(`<span class="alerte">${enAttente.length} en attente${plusVieux>=3?` (le plus ancien : ${plusVieux} jours)`:''}</span>`)
     }
     if(prets.length)bouts.push(`${prets.length} prêt${prets.length>1?'s':''} à récupérer`)
     if(bouts.length===1)bouts.push(`${allReps.length} dossier${allReps.length>1?'s':''} au total`)
@@ -1524,7 +1543,7 @@ const FILTRES=[
   {cle:'atelier',   label:'En atelier'},
   {cle:'interventions',label:'Interventions'},
   {cle:'pret',      label:'Prêts'},
-  {cle:'clos',      label:'Clos'},
+  {cle:'clos',      label:'Clôturés'},
   {cle:'tous',      label:'Tous'}
 ]
 function renderFilters(){
@@ -1620,11 +1639,11 @@ window.fermerDetail=function(){
 }
 
 const PARCOURS=[
-  {cle:'attente_reception',label:'Dossier créé'},
-  {cle:'recu',label:'Appareil reçu'},
-  {cle:'encours',label:'Diagnostic / réparation'},
+  {cle:'attente_reception',label:'À réceptionner'},
+  {cle:'recu',label:'Diagnostic'},
+  {cle:'encours',label:'En réparation'},
   {cle:'pret',label:'Prêt à récupérer'},
-  {cle:'rendu',label:'Rendu au client'}
+  {cle:'rendu',label:'Clôturé · rendu'}
 ]
 const PARCOURS_INTER=[
   {cle:'attente_reception',label:'Planifiée'},
@@ -1649,14 +1668,14 @@ function etapes(r){
       <div class="step ko"><i></i>${escHtml(st.label)}${r.motif?` <em>· ${escHtml(r.motif)}</em>`:''}</div>
     </div>`
   }
-  const courant=r.statut==='attente'?'encours':r.statut
+  const courant=r.statut==='attente'?(r.attente_motif==='client'?'recu':'encours'):r.statut
   const idx=PARCOURS.findIndex(e=>e.cle===courant)
   return `<div class="steps">${PARCOURS.map((e,i)=>{
     const cls=i<idx?'done':i===idx?'now':''
     let detail=''
     if(e.cle==='attente_reception')detail=` <em>· ${dateCourte(r.created_at)}</em>`
     if(e.cle==='rendu'&&r.date_fin&&idx>=3)detail=` <em>· ${dateCourte(r.date_fin)}</em>`
-    if(i===idx&&r.statut==='attente')detail=` <em>· en attente d'une pièce</em>`
+    if(i===idx&&r.statut==='attente')detail=` <em>· ${r.attente_motif==='client'?"en attente de l'accord du client":"en attente d'une pièce"}</em>`
     return `<div class="step ${cls}"><i></i>${e.label}${detail}</div>`
   }).join('')}</div>`
 }
@@ -1754,8 +1773,8 @@ function renderDetail(){
       const f=d.facture, et=document.querySelector('#detail .etape')
       if(et&&r.statut==='pret'&&f&&['brouillon','envoyee'].includes(f.statut)){
         const reste=Math.max(0,(Number(f.total)||0)-(Number(f.acompte)||0))
-        et.innerHTML=`<a class="btn btn-primary etape-btn" href="/admin/factures.html?open=${f.id}&encaisser=1">Encaisser ${eur(reste)}</a>
-          <button class="btn btn-secondary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
+        et.innerHTML=`<a class="btn btn-primary etape-btn" href="/admin/factures.html?open=${f.id}&encaisser=1">Encaisser ${eur(reste)} · clôture le dossier</a>
+          <button class="btn btn-secondary etape-btn" onclick="passerStatut(${r.id},'rendu')">Clôturer sans encaisser</button>`
       }
     })
   }
@@ -1774,19 +1793,19 @@ function etapeSuivante(r){
     return b?`<div class="etape">${b}</div>`:''
   }
   const S={
-    attente_reception:{vers:'recu',  label:'Appareil reçu'},
-    recu:             {vers:'encours',label:'Démarrer la réparation'},
-    attente:          {vers:'encours',label:'Pièce reçue · reprendre la réparation'},
+    attente_reception:{vers:'recu',  label:'Appareil reçu · démarrer le diagnostic'},
+    recu:             {vers:'encours',label:'Diagnostic fait · démarrer la réparation'},
+    attente:          {vers:'encours',label:r.attente_motif==='client'?'Accord du client reçu · réparer':'Pièce reçue · reprendre la réparation'},
     encours:          {vers:'pret',  label:'Réparation terminée · prêt à récupérer'}
   }
   let bouton=''
   if(S[r.statut])bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'${S[r.statut].vers}')">${S[r.statut].label}</button>`
-  else if(r.statut==='pret'&&r.pack_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (inclus dans le pack)</button>`+((r.pieces||[]).length?` <button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:'')
+  else if(r.statut==='pret'&&r.pack_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Clôturer · rendu au client (pack)</button>`+((r.pieces||[]).length?` <button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:'')
   else if(r.statut==='rendu'&&r.pack_id&&!r.converti_facture_id)bouton=(r.pieces||[]).length?`<button class="btn btn-secondary etape-btn" onclick="factureDepuisDossier(${r.id})">Facturer les pièces</button>`:''
-  else if(r.statut==='pret'&&r.garantie_de_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client (sous garantie)</button>`
+  else if(r.statut==='pret'&&r.garantie_de_id&&!r.converti_facture_id)bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Clôturer · rendu (sous garantie)</button>`
   else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id&&packRemiseMO(r)&&prixClient(r)>0)bouton=`<button class="btn btn-primary etape-btn" onclick="factureRemisePack(${r.id})">Créer la facture · ${escHtml(packRemiseMO(r).nom)} −20 % main-d'œuvre</button>`
   else if((r.statut==='pret'||r.statut==='rendu')&&!r.converti_facture_id&&!r.garantie_de_id)bouton=`<button class="btn btn-primary etape-btn" onclick="factureDepuisDossier(${r.id})">Créer la facture</button>`
-  else if(r.statut==='pret')bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Rendu au client</button>`
+  else if(r.statut==='pret')bouton=`<button class="btn btn-primary etape-btn" onclick="passerStatut(${r.id},'rendu')">Clôturer · rendu au client</button>`
   return bouton?`<div class="etape">${bouton}</div>`:''
 }
 /* ─── Après-vente ───
@@ -2025,7 +2044,7 @@ window.creerFacture=async function(){
 }
 
 /* ─── Changement de statut ─── */
-window.changeStatut=async function(statut){
+window.changeStatut=async function(statut,motif){
   if(!window.currentStatusId)return
   const id=window.currentStatusId
   document.getElementById('statusMenu').classList.remove('open')
@@ -2037,7 +2056,7 @@ window.changeStatut=async function(statut){
   const pieces=(Array.isArray(r.pieces)&&r.pieces.length)?r.pieces:(r.piece_id?[{stock_id:r.piece_id,qte:1}]:[])
   const doitDecrementer=statutAvance&&pieces.length>0&&r.stock_decremente!==true
 
-  const maj={statut,updated_at:new Date().toISOString()}
+  const maj={statut,attente_motif:statut==='attente'?(motif||'piece'):null,updated_at:new Date().toISOString()}
   if(doitDecrementer)maj.stock_decremente=true
   if(statutAvance&&!r.date_fin)maj.date_fin=new Date().toISOString()
 
@@ -2087,7 +2106,7 @@ window.saveDossier=async function(){
   if(!panne){showToast(typeDos==='intervention'?'Décris la demande du client':'La description de la panne est requise','err');return}
 
   const piecesData=getPiecesData()
-  const nouveauStatut=document.getElementById('f-statut').value
+  const [nouveauStatut,motifAttente]=document.getElementById('f-statut').value.split(':')
   const clientSelId=document.getElementById('f-client-select').value
   const ancien=id?allReps.find(r=>r.id===Number(id)):null
 
@@ -2130,6 +2149,7 @@ window.saveDossier=async function(){
       modele:document.getElementById('f-modele').value.trim()||null,
       panne_description:panne,
       statut:nouveauStatut,
+      attente_motif:nouveauStatut==='attente'?(motifAttente||'piece'):null,
       prix_final:Number(document.getElementById('f-prix').value)||0,
       piece_id:piecesData.length>0?piecesData[0].stock_id:null,
       cout_pieces:piecesData.reduce((a,p)=>a+p.qte*p.cout,0),
@@ -2337,7 +2357,7 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/admin-palette.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
-<script src="/admin/assets/js/dossier-fil.js?v=20261117"></script>
+<script src="/admin/assets/js/dossier-fil.js?v=20261124"></script>
 <script src="/admin/assets/js/relances.js?v=20261116"></script>
 </body>
 </html>
