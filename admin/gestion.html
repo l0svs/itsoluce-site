@@ -269,14 +269,7 @@ body{font-size:14px;}
 .bp-leg b{color:var(--t1);font-weight:600;}
 .bp-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:0;}
 .bp-funnel{display:flex;flex-direction:column;gap:7px;}
-.bp-alerte{font-size:12.5px;line-height:1.5;border-radius:10px;padding:9px 12px;margin-top:10px;background:var(--ad);color:var(--t2);}
-.bp-alerte.w{background:rgba(251,191,36,.14);} .bp-alerte.d{background:rgba(248,113,113,.14);}
-.bp-alerte b{color:var(--t1);}
 .bp-ech{font-size:13px;color:var(--t2);margin-top:8px;line-height:1.6;}
-.bp-ch{display:grid;grid-template-columns:1fr 110px 32px;gap:8px;margin-bottom:6px;}
-.bp-ch input{width:100%;}
-.bp-ch button{background:none;border:none;color:var(--t3);cursor:pointer;font-size:18px;line-height:1;}
-.bp-ch button:hover{color:var(--d);}
 @media(max-width:900px){.bp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.bp-2{grid-template-columns:1fr;}}
 @media(max-width:640px){.bp-tile .v{font-size:20px;}.bp-r{grid-template-columns:120px 1fr 78px;font-size:12.5px;}.bp-r .n{white-space:normal;line-height:1.3;}.bp-card{padding:14px 14px 16px;}}
 .sec-bar{display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
@@ -758,7 +751,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
           <section class="sec large" id="sec-businessplan">
             <h1 class="sec-title">Business plan</h1>
             <p class="sec-desc">Ton activité en chiffres, calculée à partir de tes factures, devis, réparations et packs.<br>
-              Ce n'est pas de la comptabilité : Accountable reste ton outil comptable.</p>
+              Pour les impôts, les cotisations et la TVA : Accountable et ton comptable.</p>
             <div id="bp-root"><div class="bp-vide">Chargement…</div></div>
 
             <div class="card-lbl" style="padding:22px 2px 8px;">Mes réglages</div>
@@ -769,19 +762,6 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <div class="row"><div class="row-l"><b>Packs actifs</b></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-packs" data-cle="bp_obj_packs" placeholder="ex : 5"/></div></div>
               <div class="row"><div class="row-l"><b>Avis Google visés</b></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-avis-obj" data-cle="bp_obj_avis" placeholder="ex : 10"/></div></div>
               <div class="row"><div class="row-l"><b>Avis Google actuels</b><em>À recopier depuis ta fiche Google</em></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-avis" data-cle="bp_avis_google" placeholder="ex : 4"/></div></div>
-            </div>
-            <div class="card">
-              <div class="card-lbl">Mon seuil pour passer à titre principal</div>
-              <div class="row"><div class="row-l"><b>Revenu net visé</b><em>Ce que tu veux gagner par mois, pour vivre</em></div><div class="row-f"><input type="number" min="0" step="50" id="s-bp-revenu" data-cle="bp_revenu_net" placeholder="ex : 2200"/></div></div>
-              <div class="row"><div class="row-l"><b>Cotisations sociales</b><em>Par mois, estimation de ton comptable ou de ta caisse</em></div><div class="row-f"><input type="number" min="0" step="10" id="s-bp-cotis" data-cle="bp_cotisations_mois" placeholder="à demander"/></div></div>
-              <div class="row"><div class="row-l"><b>Impôts</b><em>Par mois, estimation de ton comptable</em></div><div class="row-f"><input type="number" min="0" step="10" id="s-bp-impots" data-cle="bp_impots_mois" placeholder="à demander"/></div></div>
-              <div class="row" style="align-items:flex-start;"><div class="row-l"><b>Charges fixes</b><em>Ce que tu paies chaque mois, même sans client</em></div>
-                <div class="row-f"><div id="bp-charges"></div><button type="button" class="btn btn-secondary" style="margin-top:8px;" onclick="bpAjouterCharge()">Ajouter une charge</button>
-                  <input type="hidden" id="s-bp-charges" data-cle="bp_charges"/></div></div>
-            </div>
-            <div class="card">
-              <div class="card-lbl">TVA</div>
-              <div class="row"><div class="row-l"><b>Plafond de la franchise</b><em>Chiffre d'affaires annuel, à faire confirmer par ton comptable</em></div><div class="row-f"><input type="number" min="0" step="500" id="s-bp-tva" data-cle="bp_tva_plafond" placeholder="25000"/></div></div>
             </div>
           </section>
 
@@ -1678,8 +1658,8 @@ function majCompteur(id,n,alerte){
 
 /* ══════════ BUSINESS PLAN ══════════
    Tout est calculé à partir des données de l'ERP (factures émises, devis,
-   réparations, packs, clients, demandes du site). Seuls les objectifs, les
-   charges fixes et les estimations du comptable sont saisis (réglages bp_*).
+   réparations, packs, clients, demandes du site). Seuls les objectifs sont
+   saisis (réglages bp_*). Impôts, cotisations et TVA : Accountable et le comptable.
    Chiffre d'affaires = factures numérotées, hors brouillons et annulées ;
    les notes de crédit (montant négatif) viennent en déduction.
    ══════════════════════════════════════════ */
@@ -1707,28 +1687,13 @@ async function loadBusinessPlan(){
   for(const r of [rF,rR,rP,rD,rV])if(r.error)throw r.error
   _bp={factures:rF.data||[],reps:rR.data||[],packs:rP.data||[],demandes:rD.data||[],devis:rV.data||[],
        stock:rS.error?[]:(rS.data||[]),avisDemandes:rA.error?[]:(rA.data||[]),clients:rCli.error?[]:(rCli.data||[])}
-  bpChargesRendu()
   renderBP()
 }
 
-/* ── Charges fixes : petite liste, enregistrée en JSON dans bp_charges ── */
-function bpCharges(){try{const v=JSON.parse(document.getElementById('s-bp-charges').value||'[]');return Array.isArray(v)?v:[]}catch(e){return []}}
-function bpChargesEcrire(l){const el=document.getElementById('s-bp-charges');el.value=JSON.stringify(l);markDirty();renderBP()}
-function bpChargesRendu(){
-  const box=document.getElementById('bp-charges');if(!box)return
-  const l=bpCharges()
-  box.innerHTML=l.length?l.map((c,i)=>`<div class="bp-ch"><input type="text" value="${escHtml(c.nom||'')}" placeholder="ex : Assurance RC pro" oninput="bpMajCharge(${i},'nom',this.value)"/>
-    <input type="number" min="0" step="1" value="${Number(c.montant)||''}" placeholder="€ / mois" oninput="bpMajCharge(${i},'montant',this.value)"/>
-    <button type="button" title="Retirer" onclick="bpRetirerCharge(${i})">×</button></div>`).join('')
-    :'<div style="font-size:12.5px;color:var(--t3);">Aucune charge saisie.</div>'
-}
-window.bpAjouterCharge=function(){const l=bpCharges();l.push({nom:'',montant:''});bpChargesEcrire(l);bpChargesRendu()}
-window.bpRetirerCharge=function(i){const l=bpCharges();l.splice(i,1);bpChargesEcrire(l);bpChargesRendu()}
-window.bpMajCharge=function(i,k,v){const l=bpCharges();if(!l[i])return;l[i][k]=k==='montant'?(Number(v)||0):v;bpChargesEcrire(l)}
 
 function renderBP(){
   const root=document.getElementById('bp-root');if(!root||!_bp)return
-  const auj=new Date(),ymd=auj.toISOString().slice(0,10),moisCour=ymd.slice(0,7),annee=ymd.slice(0,4)
+  const auj=new Date(),ymd=auj.toISOString().slice(0,10),moisCour=ymd.slice(0,7)
   // 12 derniers mois, du plus ancien au mois en cours
   const mois=[];for(let k=11;k>=0;k--){const d=new Date(auj.getFullYear(),auj.getMonth()-k,1);mois.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}
   const debut12=mois[0]+'-01'
@@ -1785,19 +1750,6 @@ function renderBP(){
   const nPayees=v12.filter(f=>f.statut==='payee').length
   const diagOfferts=valides.filter(f=>f.date_emission>=debut12&&(f.lignes||[]).some(l=>/diagnostic offert/i.test(l.description||''))).length
 
-  // Seuil
-  const charges=bpCharges().reduce((t,c)=>t+(Number(c.montant)||0),0)
-  const revenu=bpNum('s-bp-revenu'),cotis=bpNum('s-bp-cotis'),impots=bpNum('s-bp-impots')
-  const tauxM=marge>0?marge:1
-  const pointMort=charges/tauxM
-  const besoin=(revenu+cotis+impots+charges)/tauxM
-  const mois6=mois.slice(5,11) // 6 derniers mois complets
-  const moy6=mois6.reduce((t,m)=>t+caMois[m],0)/6
-
-  // TVA
-  const plafond=bpNum('s-bp-tva')||25000
-  const caAnnee=valides.filter(f=>String(f.date_emission||'').startsWith(annee)).reduce((t,f)=>t+(Number(f.total)||0),0)
-  const rTva=caAnnee/plafond
 
   // ── Graphique 12 mois ──
   const W=720,H=210,pg=34,pb=26,pt=12,max=Math.max(oCa,...mois.map(m=>caMois[m]),1)*1.1
@@ -1818,8 +1770,6 @@ function renderBP(){
   const etapes=[['Demandes reçues par le site',nDem],['Devis créés',nDev],['Devis acceptés',nAcc],['Dossiers de réparation',nRepTot],['Factures payées',nPayees]]
   const maxEt=Math.max(1,...etapes.map(e=>e[1]))
 
-  const seuilPret=revenu>0
-  const rSeuil=seuilPret&&besoin>0?moy6/besoin:0
 
   root.innerHTML=`
   <div class="bp-grid">
@@ -1863,32 +1813,13 @@ function renderBP(){
     </div>
   </div>
 
-  <div class="bp-2">
-    <div class="bp-card"><h3>De la demande à la facture</h3><div class="sd">12 derniers mois. Montre à quelle étape des clients se perdent.</div>
+  <div class="bp-card"><h3>De la demande à la facture</h3><div class="sd">12 derniers mois. Montre à quelle étape des clients se perdent.</div>
       <div class="bp-funnel">${etapes.map(([n,v])=>ligneR(n,v,v/maxEt,String(v))).join('')}</div>
       <div class="bp-ech">Non réparables : <b>${nNonRep}</b> sur ${nRepTot} dossiers (${bpPct(nRepTot?nNonRep/nRepTot:0)}) · diagnostics offerts : <b>${diagOfferts}</b></div>
-    </div>
-    <div class="bp-card"><h3>TVA : plafond de la franchise</h3><div class="sd">Chiffre d'affaires de ${annee}. Au-delà du plafond, tu devras facturer la TVA.</div>
-      <div class="bp-rows">${ligneR(`${bpEur0(caAnnee)} / ${bpEur0(plafond)}`,caAnnee,rTva,bpPct(rTva),rTva>=1?'d':rTva>=0.8?'w':'')}</div>
-      ${rTva>=0.8?`<div class="bp-alerte ${rTva>=1?'d':'w'}"><b>${rTva>=1?'Plafond dépassé.':'Tu approches du plafond.'}</b> Parles-en à ton comptable avant de continuer à facturer sans TVA.</div>`
-        :`<div class="bp-ech">Il te reste ${bpEur0(plafond-caAnnee)} avant le plafond cette année.</div>`}
-    </div>
-  </div>
-
-  <div class="bp-card"><h3>Mon seuil pour passer à titre principal</h3>
-    <div class="sd">Combien tu dois facturer chaque mois pour vivre d'IT Soluce. Calcul : (revenu visé + cotisations + impôts + charges fixes) ÷ marge sur les pièces (${bpPct(tauxM)}).</div>
-    ${seuilPret?`<div class="bp-grid" style="margin-bottom:6px;">
-        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">Point mort</div><div class="v">${bpEur0(pointMort)}</div><div class="s">par mois, pour couvrir tes ${bpEur0(charges)} de charges fixes</div></div>
-        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">CA nécessaire</div><div class="v">${bpEur0(besoin)}</div><div class="s">par mois, pour te verser ${bpEur0(revenu)} net</div></div>
-        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">Ta moyenne actuelle</div><div class="v">${bpEur0(moy6)}</div><div class="s">par mois, sur les 6 derniers mois complets</div></div>
-        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">Chemin parcouru</div><div class="v">${bpPct(rSeuil)}</div>${bpBarre(rSeuil)}</div>
-      </div>
-      ${!cotis||!impots?'<div class="bp-alerte w"><b>Estimation incomplète :</b> les cotisations sociales ou les impôts ne sont pas renseignés. Demande ces montants à ton comptable ITAA ou à ta caisse : sans eux, le CA nécessaire est sous-estimé.</div>':''}`
-      :'<div class="bp-ech">Renseigne ton revenu net visé, tes charges fixes et les estimations de ton comptable dans « Mes réglages » ci-dessous.</div>'}
   </div>`
 }
 document.getElementById('bp-reglages')?.closest('.sec')?.addEventListener('input',e=>{if(e.target.matches('[data-cle^="bp_"]'))renderBP()})
-window.renderBP=()=>{bpChargesRendu();renderBP()}
+window.renderBP=()=>renderBP()
 // Retour sur l'onglet : chiffres remis à jour si la rubrique est affichée.
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'&&document.getElementById('sec-businessplan')?.classList.contains('visible'))loadBusinessPlan().catch(()=>{})
