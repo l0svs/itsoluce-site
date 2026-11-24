@@ -3167,6 +3167,10 @@ a.irow:hover .irow__ic { background: #0052CC; border-color: #0052CC; color: #fff
               <label class="fl" for="f-desc">La panne</label>
               <textarea class="fi fi-ta ct-ta" id="f-desc" name="description" placeholder="Marque, modèle et ce qui ne va pas" rows="5" required></textarea>
             </div>
+            <div class="fg">
+              <label class="fl" for="f-origine">Comment m'avez-vous connu ? (facultatif)</label>
+              <select class="fi" id="f-origine" name="origine"><option value="">Choisir…</option><option value="Recherche Google">Recherche Google</option><option value="Google Maps">Google Maps</option><option value="Facebook">Facebook</option><option value="Instagram">Instagram</option><option value="TikTok">TikTok</option><option value="Bouche-à-oreille, un proche">Bouche-à-oreille, un proche</option><option value="Déjà client">Déjà client</option><option value="Flyer, affiche, vitrine">Flyer, affiche, vitrine</option><option value="Autre">Autre</option></select>
+            </div>
             <button class="btn-send" type="submit" id="submitBtn">
               <span class="btn-send__label">Envoyer ma demande</span>
               <span class="btn-send__spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 0 1 10 10"/></svg></span>
@@ -3718,6 +3722,7 @@ function submitForm(e){
   const modeIntervention = data.get('mode_intervention') || '';
   const adresse = data.get('adresse') || '';
   const description = data.get('description') || '';
+  const origine = data.get('origine') || '';
 
   async function saveToSupabase() {
     try {
@@ -3736,7 +3741,8 @@ function submitForm(e){
           p_appareil: appareil || null,
           p_mode_intervention: modeIntervention || null,
           p_adresse: adresse || null,
-          p_description: description || null
+          p_description: description || null,
+          p_origine: origine || null
         })
       });
       if (!res.ok) {

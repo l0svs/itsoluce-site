@@ -239,6 +239,46 @@ body{font-size:14px;}
    s'ouvre dans un panneau à droite plutôt qu'en plein écran, pour
    passer d'une fiche à l'autre sans fermer ni rouvrir. */
 .sec.large{max-width:1060px;}
+/* ── Business plan ── */
+.bp-vide{font-size:13px;color:var(--t3);padding:20px 2px;}
+.bp-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px;}
+.bp-tile{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.045);min-width:0;}
+.bp-tile .l{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);}
+.bp-tile .v{font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--t1);margin-top:6px;white-space:nowrap;}
+.bp-tile .s{font-size:12px;color:var(--t2);margin-top:4px;line-height:1.4;}
+.bp-bar{height:7px;border-radius:5px;background:var(--bg4,var(--ln));overflow:hidden;margin-top:9px;}
+.bp-bar i{display:block;height:100%;border-radius:5px;background:var(--a);}
+.bp-bar i.ok{background:var(--ok);} .bp-bar i.w{background:var(--w);} .bp-bar i.d{background:var(--d);}
+.bp-card{background:var(--bg2);border-radius:var(--radius);padding:16px 20px 18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.045);}
+.bp-card h3{font-size:15px;font-weight:600;color:var(--t1);margin:0 0 3px;}
+.bp-card .sd{font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:12px;}
+.bp-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.bp-chart{width:100%;height:auto;display:block;}
+.bp-chart text{font-size:11px;fill:var(--t3);font-family:inherit;}
+.bp-chart .bar{fill:var(--a);} .bp-chart .bar.cur{fill:var(--a);opacity:.55;}
+.bp-chart .obj{stroke:var(--w);stroke-width:1.5;stroke-dasharray:5 4;}
+.bp-chart .ax{stroke:var(--ln);}
+.bp-rows{display:flex;flex-direction:column;gap:9px;}
+.bp-r{display:grid;grid-template-columns:175px 1fr 90px;gap:10px;align-items:center;font-size:13px;color:var(--t1);}
+.bp-r .n{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bp-r .m{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.bp-r .bp-bar{margin-top:0;}
+.bp-stack{display:flex;height:12px;border-radius:7px;overflow:hidden;margin:6px 0 10px;background:var(--ln);}
+.bp-stack i{display:block;height:100%;}
+.bp-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--t2);}
+.bp-leg b{color:var(--t1);font-weight:600;}
+.bp-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:0;}
+.bp-funnel{display:flex;flex-direction:column;gap:7px;}
+.bp-alerte{font-size:12.5px;line-height:1.5;border-radius:10px;padding:9px 12px;margin-top:10px;background:var(--ad);color:var(--t2);}
+.bp-alerte.w{background:rgba(251,191,36,.14);} .bp-alerte.d{background:rgba(248,113,113,.14);}
+.bp-alerte b{color:var(--t1);}
+.bp-ech{font-size:13px;color:var(--t2);margin-top:8px;line-height:1.6;}
+.bp-ch{display:grid;grid-template-columns:1fr 110px 32px;gap:8px;margin-bottom:6px;}
+.bp-ch input{width:100%;}
+.bp-ch button{background:none;border:none;color:var(--t3);cursor:pointer;font-size:18px;line-height:1;}
+.bp-ch button:hover{color:var(--d);}
+@media(max-width:900px){.bp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.bp-2{grid-template-columns:1fr;}}
+@media(max-width:640px){.bp-tile .v{font-size:20px;}.bp-r{grid-template-columns:120px 1fr 78px;font-size:12.5px;}.bp-r .n{white-space:normal;line-height:1.3;}.bp-card{padding:14px 14px 16px;}}
 .sec-bar{display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
 .sec-bar .srch-wrap{position:relative; flex:1; min-width:180px; max-width:320px;}
 .sec-bar .srch-wrap svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; stroke:var(--t3); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none;}
@@ -683,6 +723,9 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
     <div class="settings-wrap" id="settingsWrap" style="display:none;">
 
       <nav class="settings-nav">
+        <div class="sn-group">Pilotage</div>
+        <button class="sn-item" data-sec="businessplan" onclick="showSec(this)"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Business plan</button>
+
         <div class="sn-group">Activité</div>
         <button class="sn-item active" data-sec="prestations" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Prestations<span class="cnt" id="cnt-prestations"></span></button>
         <button class="sn-item" data-sec="fournisseurs" onclick="showSec(this)"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Fournisseurs<span class="cnt" id="cnt-fournisseurs"></span></button>
@@ -710,6 +753,37 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 
       <div class="settings-body">
         <div class="settings-content">
+
+          <!-- ── BUSINESS PLAN ── -->
+          <section class="sec large" id="sec-businessplan">
+            <h1 class="sec-title">Business plan</h1>
+            <p class="sec-desc">Ton activité en chiffres, calculée à partir de tes factures, devis, réparations et packs.<br>
+              Ce n'est pas de la comptabilité : Accountable reste ton outil comptable.</p>
+            <div id="bp-root"><div class="bp-vide">Chargement…</div></div>
+
+            <div class="card-lbl" style="padding:22px 2px 8px;">Mes réglages</div>
+            <div class="card" id="bp-reglages">
+              <div class="card-lbl">Mes objectifs</div>
+              <div class="row"><div class="row-l"><b>Chiffre d'affaires par mois</b><em>Ce que tu veux facturer chaque mois</em></div><div class="row-f"><input type="number" min="0" step="50" id="s-bp-ca" data-cle="bp_obj_ca_mois" placeholder="ex : 700"/></div></div>
+              <div class="row"><div class="row-l"><b>Factures par mois</b></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-fact" data-cle="bp_obj_factures_mois" placeholder="ex : 8"/></div></div>
+              <div class="row"><div class="row-l"><b>Packs actifs</b></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-packs" data-cle="bp_obj_packs" placeholder="ex : 5"/></div></div>
+              <div class="row"><div class="row-l"><b>Avis Google visés</b></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-avis-obj" data-cle="bp_obj_avis" placeholder="ex : 10"/></div></div>
+              <div class="row"><div class="row-l"><b>Avis Google actuels</b><em>À recopier depuis ta fiche Google</em></div><div class="row-f"><input type="number" min="0" step="1" id="s-bp-avis" data-cle="bp_avis_google" placeholder="ex : 4"/></div></div>
+            </div>
+            <div class="card">
+              <div class="card-lbl">Mon seuil pour passer à titre principal</div>
+              <div class="row"><div class="row-l"><b>Revenu net visé</b><em>Ce que tu veux gagner par mois, pour vivre</em></div><div class="row-f"><input type="number" min="0" step="50" id="s-bp-revenu" data-cle="bp_revenu_net" placeholder="ex : 2200"/></div></div>
+              <div class="row"><div class="row-l"><b>Cotisations sociales</b><em>Par mois, estimation de ton comptable ou de ta caisse</em></div><div class="row-f"><input type="number" min="0" step="10" id="s-bp-cotis" data-cle="bp_cotisations_mois" placeholder="à demander"/></div></div>
+              <div class="row"><div class="row-l"><b>Impôts</b><em>Par mois, estimation de ton comptable</em></div><div class="row-f"><input type="number" min="0" step="10" id="s-bp-impots" data-cle="bp_impots_mois" placeholder="à demander"/></div></div>
+              <div class="row" style="align-items:flex-start;"><div class="row-l"><b>Charges fixes</b><em>Ce que tu paies chaque mois, même sans client</em></div>
+                <div class="row-f"><div id="bp-charges"></div><button type="button" class="btn btn-secondary" style="margin-top:8px;" onclick="bpAjouterCharge()">Ajouter une charge</button>
+                  <input type="hidden" id="s-bp-charges" data-cle="bp_charges"/></div></div>
+            </div>
+            <div class="card">
+              <div class="card-lbl">TVA</div>
+              <div class="row"><div class="row-l"><b>Plafond de la franchise</b><em>Chiffre d'affaires annuel, à faire confirmer par ton comptable</em></div><div class="row-f"><input type="number" min="0" step="500" id="s-bp-tva" data-cle="bp_tva_plafond" placeholder="25000"/></div></div>
+            </div>
+          </section>
 
           <!-- ── PRESTATIONS ── -->
           <section class="sec large visible" id="sec-prestations">
@@ -1182,6 +1256,7 @@ function cancelChanges(){
     if(el.id in _original)el.value=_original[el.id]
   })
   if(_originalGrille){setGrilleLocal(_originalGrille);renderGrille()}
+  if(window.renderBP)window.renderBP()
   if(window.renderModelesMail)renderModelesMail()
   const mode=_original['s-mode']||'auto'
   setMode(mode)
@@ -1601,8 +1676,228 @@ function majCompteur(id,n,alerte){
   el.classList.toggle('alerte',!!alerte)
 }
 
+/* ══════════ BUSINESS PLAN ══════════
+   Tout est calculé à partir des données de l'ERP (factures émises, devis,
+   réparations, packs, clients, demandes du site). Seuls les objectifs, les
+   charges fixes et les estimations du comptable sont saisis (réglages bp_*).
+   Chiffre d'affaires = factures numérotées, hors brouillons et annulées ;
+   les notes de crédit (montant négatif) viennent en déduction.
+   ══════════════════════════════════════════ */
+let _bp=null
+const BP_MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.']
+const BP_ORIGINES=['Recherche Google','Google Maps','Facebook','Instagram','TikTok','Bouche-à-oreille, un proche','Déjà client','Flyer, affiche, vitrine','Autre']
+const bpNum=id=>{const v=Number(String(document.getElementById(id)?.value||'').replace(',','.'));return Number.isFinite(v)&&v>0?v:0}
+const bpEur0=n=>Math.round(Number(n)||0).toLocaleString('fr-BE')+' €'
+const bpPct=n=>Math.round((Number(n)||0)*100)+' %'
+const bpMoisCle=d=>String(d||'').slice(0,7)
+function bpBarre(r,cls){const p=Math.max(0,Math.min(1,r||0));return `<div class="bp-bar"><i class="${cls||(p>=1?'ok':'')}" style="width:${(p*100).toFixed(1)}%"></i></div>`}
+
+async function loadBusinessPlan(){
+  const sel=(t,c)=>sb.from(t).select(c).limit(20000)
+  let rCli=await sb.from('clients').select('id,created_at,origine').is('supprime_le',null).limit(20000)
+  if(rCli.error)rCli=await sb.from('clients').select('id,created_at').is('supprime_le',null).limit(20000)
+  const [rF,rR,rP,rD,rV,rS,rA]=await Promise.all([
+    sel('factures','id,numero,date_emission,statut,total,type_document,client_id,reparation_id,lignes,supprime_le').not('numero','is',null).is('supprime_le',null),
+    sel('reparations','id,statut,pieces,created_at,supprime_le').is('supprime_le',null),
+    sel('packs','id,client_id,nom,statut,prix,date_debut,date_fin,facture_id'),
+    sel('demandes_formulaire','id,created_at,supprime_le').is('supprime_le',null),
+    sel('devis','id,statut,created_at,supprime_le').is('supprime_le',null),
+    sel('stock','id,prix_achat'),
+    sel('relances','id,type,fait_le').eq('type','avis')])
+  for(const r of [rF,rR,rP,rD,rV])if(r.error)throw r.error
+  _bp={factures:rF.data||[],reps:rR.data||[],packs:rP.data||[],demandes:rD.data||[],devis:rV.data||[],
+       stock:rS.error?[]:(rS.data||[]),avisDemandes:rA.error?[]:(rA.data||[]),clients:rCli.error?[]:(rCli.data||[])}
+  bpChargesRendu()
+  renderBP()
+}
+
+/* ── Charges fixes : petite liste, enregistrée en JSON dans bp_charges ── */
+function bpCharges(){try{const v=JSON.parse(document.getElementById('s-bp-charges').value||'[]');return Array.isArray(v)?v:[]}catch(e){return []}}
+function bpChargesEcrire(l){const el=document.getElementById('s-bp-charges');el.value=JSON.stringify(l);markDirty();renderBP()}
+function bpChargesRendu(){
+  const box=document.getElementById('bp-charges');if(!box)return
+  const l=bpCharges()
+  box.innerHTML=l.length?l.map((c,i)=>`<div class="bp-ch"><input type="text" value="${escHtml(c.nom||'')}" placeholder="ex : Assurance RC pro" oninput="bpMajCharge(${i},'nom',this.value)"/>
+    <input type="number" min="0" step="1" value="${Number(c.montant)||''}" placeholder="€ / mois" oninput="bpMajCharge(${i},'montant',this.value)"/>
+    <button type="button" title="Retirer" onclick="bpRetirerCharge(${i})">×</button></div>`).join('')
+    :'<div style="font-size:12.5px;color:var(--t3);">Aucune charge saisie.</div>'
+}
+window.bpAjouterCharge=function(){const l=bpCharges();l.push({nom:'',montant:''});bpChargesEcrire(l);bpChargesRendu()}
+window.bpRetirerCharge=function(i){const l=bpCharges();l.splice(i,1);bpChargesEcrire(l);bpChargesRendu()}
+window.bpMajCharge=function(i,k,v){const l=bpCharges();if(!l[i])return;l[i][k]=k==='montant'?(Number(v)||0):v;bpChargesEcrire(l)}
+
+function renderBP(){
+  const root=document.getElementById('bp-root');if(!root||!_bp)return
+  const auj=new Date(),ymd=auj.toISOString().slice(0,10),moisCour=ymd.slice(0,7),annee=ymd.slice(0,4)
+  // 12 derniers mois, du plus ancien au mois en cours
+  const mois=[];for(let k=11;k>=0;k--){const d=new Date(auj.getFullYear(),auj.getMonth()-k,1);mois.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}
+  const debut12=mois[0]+'-01'
+
+  const valides=_bp.factures.filter(f=>!['annulee','brouillon'].includes(f.statut))
+  const estNC=f=>f.type_document==='note_credit'
+  const ventes=valides.filter(f=>!estNC(f)&&Number(f.total)>0)
+  const packParFacture=new Map(_bp.packs.filter(p=>p.facture_id).map(p=>[p.facture_id,p]))
+  const repParId=new Map(_bp.reps.map(r=>[r.id,r]))
+  const achatStock=new Map(_bp.stock.map(s=>[s.id,Number(s.prix_achat)||0]))
+  // Coût des pièces d'une facture : pièces du dossier lié (hors prestations),
+  // sinon articles du stock liés aux lignes.
+  const coutPieces=f=>{
+    const r=f.reparation_id&&repParId.get(f.reparation_id)
+    if(r&&Array.isArray(r.pieces)&&r.pieces.length)return r.pieces.filter(p=>!p.service_id).reduce((t,p)=>t+(Number(p.cout)||0)*(Number(p.qte)||1),0)
+    return (Array.isArray(f.lignes)?f.lignes:[]).reduce((t,l)=>t+(l.stock_id&&achatStock.has(Number(l.stock_id))?achatStock.get(Number(l.stock_id))*(Number(l.quantite)||1):0),0)
+  }
+  const typeVente=f=>packParFacture.has(f.id)?'pack':coutPieces(f)>0?'rep':'svc'
+
+  const caMois={},nbMois={};mois.forEach(m=>{caMois[m]=0;nbMois[m]=0})
+  valides.forEach(f=>{const m=bpMoisCle(f.date_emission);if(m in caMois)caMois[m]+=Number(f.total)||0})
+  ventes.forEach(f=>{const m=bpMoisCle(f.date_emission);if(m in nbMois)nbMois[m]++})
+  const v12=ventes.filter(f=>f.date_emission>=debut12)
+  const ca12=mois.reduce((t,m)=>t+caMois[m],0)
+  const caVentes12=v12.reduce((t,f)=>t+(Number(f.total)||0),0)
+  const cout12=v12.reduce((t,f)=>t+coutPieces(f),0)
+  const marge=caVentes12>0?Math.max(0,(caVentes12-cout12)/caVentes12):0
+  const panier=v12.length?caVentes12/v12.length:0
+  const caCour=caMois[moisCour]||0,nbCour=nbMois[moisCour]||0
+  const oCa=bpNum('s-bp-ca'),oFact=bpNum('s-bp-fact'),oPacks=bpNum('s-bp-packs'),oAvis=bpNum('s-bp-avis-obj'),avis=bpNum('s-bp-avis')
+  const jourMois=auj.getDate(),joursTot=new Date(auj.getFullYear(),auj.getMonth()+1,0).getDate()
+  const repart={rep:0,svc:0,pack:0},nbRep={rep:0,svc:0,pack:0}
+  v12.forEach(f=>{const t=typeVente(f);repart[t]+=Number(f.total)||0;nbRep[t]++})
+
+  // Clients
+  const ventesParClient={};ventes.forEach(f=>{if(f.client_id)(ventesParClient[f.client_id]=ventesParClient[f.client_id]||[]).push(f.date_emission)})
+  const cliFact=Object.keys(ventesParClient)
+  const fideles=cliFact.filter(c=>ventesParClient[c].length>1).length
+  const nouveauxMois=cliFact.filter(c=>bpMoisCle(ventesParClient[c].slice().sort()[0])===moisCour).length
+  const avecOrigine='origine' in (_bp.clients[0]||{})
+  const orig={};_bp.clients.forEach(c=>{const o=(c.origine||'').trim()||'Non renseigné';orig[o]=(orig[o]||0)+1})
+
+  // Packs
+  const actifs=_bp.packs.filter(p=>p.statut==='actif'&&p.date_fin>=ymd)
+  const recurrent=actifs.reduce((t,p)=>t+(Number(p.prix)||0),0)
+  const dans60=new Date(auj.getTime()+60*864e5).toISOString().slice(0,10)
+  const echeances=actifs.filter(p=>p.date_fin<=dans60).sort((a,b)=>a.date_fin.localeCompare(b.date_fin))
+
+  // Entonnoir sur 12 mois
+  const dans12=x=>String(x.created_at||'').slice(0,10)>=debut12
+  const nDem=_bp.demandes.filter(dans12).length
+  const dev12=_bp.devis.filter(dans12),nDev=dev12.length,nAcc=dev12.filter(d=>d.statut==='accepte').length
+  const rep12=_bp.reps.filter(dans12),nRepTot=rep12.length,nNonRep=rep12.filter(r=>r.statut==='non_reparable').length
+  const nPayees=v12.filter(f=>f.statut==='payee').length
+  const diagOfferts=valides.filter(f=>f.date_emission>=debut12&&(f.lignes||[]).some(l=>/diagnostic offert/i.test(l.description||''))).length
+
+  // Seuil
+  const charges=bpCharges().reduce((t,c)=>t+(Number(c.montant)||0),0)
+  const revenu=bpNum('s-bp-revenu'),cotis=bpNum('s-bp-cotis'),impots=bpNum('s-bp-impots')
+  const tauxM=marge>0?marge:1
+  const pointMort=charges/tauxM
+  const besoin=(revenu+cotis+impots+charges)/tauxM
+  const mois6=mois.slice(5,11) // 6 derniers mois complets
+  const moy6=mois6.reduce((t,m)=>t+caMois[m],0)/6
+
+  // TVA
+  const plafond=bpNum('s-bp-tva')||25000
+  const caAnnee=valides.filter(f=>String(f.date_emission||'').startsWith(annee)).reduce((t,f)=>t+(Number(f.total)||0),0)
+  const rTva=caAnnee/plafond
+
+  // ── Graphique 12 mois ──
+  const W=720,H=210,pg=34,pb=26,pt=12,max=Math.max(oCa,...mois.map(m=>caMois[m]),1)*1.1
+  const bw=(W-pg-8)/12,y=v=>pt+(H-pt-pb)*(1-Math.max(0,v)/max)
+  const pas=max>2000?500:max>800?200:max>300?100:50
+  let grad='';for(let v=0;v<=max;v+=pas)grad+=`<line class="ax" x1="${pg}" x2="${W-4}" y1="${y(v)}" y2="${y(v)}" opacity=".5"/><text x="${pg-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`
+  const barres=mois.map((m,i)=>{const v=caMois[m],x=pg+i*bw+bw*.18,h=Math.max(0,y(0)-y(v))
+    return `<rect class="bar${m===moisCour?' cur':''}" x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${(bw*.64).toFixed(1)}" height="${h.toFixed(1)}" rx="3"><title>${BP_MOIS[+m.slice(5)-1]} ${m.slice(0,4)} : ${eur(v)} · ${nbMois[m]} facture${nbMois[m]>1?'s':''}</title></rect>
+      <text x="${(pg+i*bw+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${BP_MOIS[+m.slice(5)-1]}</text>
+      ${v>0?`<text x="${(pg+i*bw+bw/2).toFixed(1)}" y="${(y(v)-4).toFixed(1)}" text-anchor="middle" style="fill:var(--t2)">${Math.round(v)}</text>`:''}`}).join('')
+  const ligneObj=oCa?`<line class="obj" x1="${pg}" x2="${W-4}" y1="${y(oCa)}" y2="${y(oCa)}"/><text x="${W-6}" y="${y(oCa)-5}" text-anchor="end" style="fill:var(--w)">objectif ${oCa}</text>`:''
+
+  const coul={rep:'var(--a)',svc:'#8b5cf6',pack:'var(--ok)'},lib={rep:'Réparations avec pièce',svc:'Services (nettoyage, conseils, diagnostic…)',pack:'Packs'}
+  const totRep=repart.rep+repart.svc+repart.pack||1
+  const ligneR=(n,val,ratio,txt,cls)=>`<div class="bp-r"><span class="n" title="${escHtml(n)}">${escHtml(n)}</span>${bpBarre(ratio,cls||'')}<span class="m">${txt}</span></div>`
+  const origTri=Object.entries(orig).sort((a,b)=>(a[0]==='Non renseigné')-(b[0]==='Non renseigné')||b[1]-a[1])
+  const maxOrig=Math.max(1,...origTri.map(o=>o[1]))
+  const etapes=[['Demandes reçues par le site',nDem],['Devis créés',nDev],['Devis acceptés',nAcc],['Dossiers de réparation',nRepTot],['Factures payées',nPayees]]
+  const maxEt=Math.max(1,...etapes.map(e=>e[1]))
+
+  const seuilPret=revenu>0
+  const rSeuil=seuilPret&&besoin>0?moy6/besoin:0
+
+  root.innerHTML=`
+  <div class="bp-grid">
+    <div class="bp-tile"><div class="l">CA de ${BP_MOIS[auj.getMonth()]}</div><div class="v">${bpEur0(caCour)}</div>
+      <div class="s">${oCa?`${bpPct(caCour/oCa)} de l'objectif (${bpEur0(oCa)}) · jour ${jourMois}/${joursTot}`:'Pas d\u2019objectif fixé'}</div>${oCa?bpBarre(caCour/oCa):''}</div>
+    <div class="bp-tile"><div class="l">Factures ce mois</div><div class="v">${nbCour}</div>
+      <div class="s">${oFact?`objectif ${oFact}`:'Pas d’objectif fixé'}</div>${oFact?bpBarre(nbCour/oFact):''}</div>
+    <div class="bp-tile"><div class="l">Panier moyen</div><div class="v">${bpEur0(panier)}</div><div class="s">sur 12 mois · ${v12.length} facture${v12.length>1?'s':''}</div></div>
+    <div class="bp-tile"><div class="l">Marge sur les pièces</div><div class="v">${bpPct(marge)}</div><div class="s">${bpEur0(caVentes12-cout12)} gardés sur ${bpEur0(caVentes12)} (12 mois)</div></div>
+  </div>
+
+  <div class="bp-card"><h3>Chiffre d'affaires des 12 derniers mois</h3>
+    <div class="sd">Total : <b>${eur(ca12)}</b> · moyenne ${bpEur0(ca12/12)} par mois. Le mois en cours est en plus clair.${oCa?' La ligne pointillée est ton objectif.':''}</div>
+    <svg class="bp-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chiffre d'affaires par mois">${grad}${barres}${ligneObj}</svg>
+  </div>
+
+  <div class="bp-2">
+    <div class="bp-card"><h3>D'où vient ton chiffre d'affaires</h3><div class="sd">12 derniers mois, par type de vente.</div>
+      <div class="bp-stack">${['rep','svc','pack'].map(k=>`<i style="width:${(repart[k]/totRep*100).toFixed(1)}%;background:${coul[k]}"></i>`).join('')}</div>
+      <div class="bp-leg" style="flex-direction:column;gap:6px;">${['rep','svc','pack'].map(k=>`<span><span class="bp-dot" style="background:${coul[k]}"></span>${lib[k]} : <b>${bpEur0(repart[k])}</b> · ${nbRep[k]} vente${nbRep[k]>1?'s':''} · ${bpPct(repart[k]/totRep)}</span>`).join('')}</div>
+    </div>
+    <div class="bp-card"><h3>Packs Sérénité</h3><div class="sd">Le revenu récurrent : ce qui rentre sans chercher de nouveaux clients.</div>
+      <div class="bp-rows">${ligneR('Packs actifs',actifs.length,oPacks?actifs.length/oPacks:0,`${actifs.length}${oPacks?' / '+oPacks:''}`)}</div>
+      <div class="bp-ech">Revenu récurrent annuel : <b>${eur(recurrent)}</b> (${bpEur0(recurrent/12)} par mois)<br>
+      ${echeances.length?'À renouveler dans les 60 jours : '+echeances.map(p=>`<b>${escHtml(p.nom||'Pack')}</b> le ${new Date(p.date_fin).toLocaleDateString('fr-BE')}`).join(', '):'Aucun pack à renouveler dans les 60 jours.'}</div>
+    </div>
+  </div>
+
+  <div class="bp-2">
+    <div class="bp-card"><h3>Clients</h3><div class="sd">Un client qui revient coûte moins cher à trouver qu'un nouveau.</div>
+      <div class="bp-rows">
+        ${ligneR('Clients facturés',cliFact.length,1,String(cliFact.length))}
+        ${ligneR('Nouveaux ce mois',nouveauxMois,cliFact.length?nouveauxMois/cliFact.length:0,String(nouveauxMois))}
+        ${ligneR('Clients revenus (2 fois ou +)',fideles,cliFact.length?fideles/cliFact.length:0,`${fideles} · ${bpPct(cliFact.length?fideles/cliFact.length:0)}`,fideles/(cliFact.length||1)<0.2?'w':'ok')}
+        ${ligneR('Avis Google',avis,oAvis?avis/oAvis:0,`${avis||0}${oAvis?' / '+oAvis:''}`)}
+      </div>
+      <div class="bp-ech">${_bp.avisDemandes.length} demande${_bp.avisDemandes.length>1?'s':''} d'avis envoyée${_bp.avisDemandes.length>1?'s':''} depuis l'ERP.${avis?'':' Indique ton nombre d’avis actuels dans les réglages.'}</div>
+    </div>
+    <div class="bp-card"><h3>Comment ils t'ont connu</h3><div class="sd">Réponse au formulaire du site ou saisie dans la fiche client.</div>
+      ${avecOrigine?`<div class="bp-rows">${origTri.map(([o,n])=>ligneR(o,n,n/maxOrig,String(n),o==='Non renseigné'?'w':'')).join('')}</div>`:'<div class="bp-ech">Disponible dès que la question est ajoutée au site et à la fiche client.</div>'}
+    </div>
+  </div>
+
+  <div class="bp-2">
+    <div class="bp-card"><h3>De la demande à la facture</h3><div class="sd">12 derniers mois. Montre à quelle étape des clients se perdent.</div>
+      <div class="bp-funnel">${etapes.map(([n,v])=>ligneR(n,v,v/maxEt,String(v))).join('')}</div>
+      <div class="bp-ech">Non réparables : <b>${nNonRep}</b> sur ${nRepTot} dossiers (${bpPct(nRepTot?nNonRep/nRepTot:0)}) · diagnostics offerts : <b>${diagOfferts}</b></div>
+    </div>
+    <div class="bp-card"><h3>TVA : plafond de la franchise</h3><div class="sd">Chiffre d'affaires de ${annee}. Au-delà du plafond, tu devras facturer la TVA.</div>
+      <div class="bp-rows">${ligneR(`${bpEur0(caAnnee)} / ${bpEur0(plafond)}`,caAnnee,rTva,bpPct(rTva),rTva>=1?'d':rTva>=0.8?'w':'')}</div>
+      ${rTva>=0.8?`<div class="bp-alerte ${rTva>=1?'d':'w'}"><b>${rTva>=1?'Plafond dépassé.':'Tu approches du plafond.'}</b> Parles-en à ton comptable avant de continuer à facturer sans TVA.</div>`
+        :`<div class="bp-ech">Il te reste ${bpEur0(plafond-caAnnee)} avant le plafond cette année.</div>`}
+    </div>
+  </div>
+
+  <div class="bp-card"><h3>Mon seuil pour passer à titre principal</h3>
+    <div class="sd">Combien tu dois facturer chaque mois pour vivre d'IT Soluce. Calcul : (revenu visé + cotisations + impôts + charges fixes) ÷ marge sur les pièces (${bpPct(tauxM)}).</div>
+    ${seuilPret?`<div class="bp-grid" style="margin-bottom:6px;">
+        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">Point mort</div><div class="v">${bpEur0(pointMort)}</div><div class="s">par mois, pour couvrir tes ${bpEur0(charges)} de charges fixes</div></div>
+        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">CA nécessaire</div><div class="v">${bpEur0(besoin)}</div><div class="s">par mois, pour te verser ${bpEur0(revenu)} net</div></div>
+        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">Ta moyenne actuelle</div><div class="v">${bpEur0(moy6)}</div><div class="s">par mois, sur les 6 derniers mois complets</div></div>
+        <div class="bp-tile" style="box-shadow:none;background:var(--bg3)"><div class="l">Chemin parcouru</div><div class="v">${bpPct(rSeuil)}</div>${bpBarre(rSeuil)}</div>
+      </div>
+      ${!cotis||!impots?'<div class="bp-alerte w"><b>Estimation incomplète :</b> les cotisations sociales ou les impôts ne sont pas renseignés. Demande ces montants à ton comptable ITAA ou à ta caisse : sans eux, le CA nécessaire est sous-estimé.</div>':''}`
+      :'<div class="bp-ech">Renseigne ton revenu net visé, tes charges fixes et les estimations de ton comptable dans « Mes réglages » ci-dessous.</div>'}
+  </div>`
+}
+document.getElementById('bp-reglages')?.closest('.sec')?.addEventListener('input',e=>{if(e.target.matches('[data-cle^="bp_"]'))renderBP()})
+window.renderBP=()=>{bpChargesRendu();renderBP()}
+// Retour sur l'onglet : chiffres remis à jour si la rubrique est affichée.
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&document.getElementById('sec-businessplan')?.classList.contains('visible'))loadBusinessPlan().catch(()=>{})
+})
+
 /** Appelée par showSec() à chaque changement de section. */
 window.chargerSection=async function(id){
+  // Business plan : rechargé à chaque ouverture, pour refléter les dernières factures.
+  if(id==='businessplan'){try{await loadBusinessPlan()}catch(err){showToast('Erreur de chargement : '+(err.message||err),'err')}return}
   if(_charge[id])return
   _charge[id]=true
   try{

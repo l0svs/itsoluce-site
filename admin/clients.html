@@ -717,6 +717,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-ico" style="background:rgba(26,138,82,.14);color:var(--ok);"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><span>Informations complémentaires</span></div>
+        <div class="fg"><label for="f-origine">Comment m'a-t-il connu ?</label><select id="f-origine"><option value="">Non renseigné</option><option value="Recherche Google">Recherche Google</option><option value="Google Maps">Google Maps</option><option value="Facebook">Facebook</option><option value="Instagram">Instagram</option><option value="TikTok">TikTok</option><option value="Bouche-à-oreille, un proche">Bouche-à-oreille, un proche</option><option value="Déjà client">Déjà client</option><option value="Flyer, affiche, vitrine">Flyer, affiche, vitrine</option><option value="Autre">Autre</option></select></div>
         <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Observations sur ce client…"></textarea></div>
       </div>
 
@@ -789,6 +790,7 @@ function openPanel(c=null){
   document.getElementById('f-societe').value=c?.societe||''
   document.getElementById('f-tva').value=c?.tva||''
   document.getElementById('f-notes').value=c?.notes||''
+  {const o=document.getElementById('f-origine'),v=c?.origine||'';if(v&&![...o.options].some(x=>x.value===v))o.add(new Option(v,v));o.value=v}
   onTypeClientChange()
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
@@ -1303,6 +1305,7 @@ window.saveClient=async function(){
     societe:pro?(document.getElementById('f-societe').value.trim()||null):null,
     tva:pro?(document.getElementById('f-tva').value.trim()||null):null,
     notes:document.getElementById('f-notes').value.trim()||null,
+    origine:document.getElementById('f-origine').value||null,
     updated_at:new Date().toISOString()
   }
   const btn=document.getElementById('saveBtn')
