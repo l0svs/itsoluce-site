@@ -231,6 +231,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .cat-client select:focus{border-color:var(--a);}
 .cat-client-etat{font-size:12px;color:var(--t2);}
 .cat-client-etat b{color:var(--a);font-weight:600;}
+.cat-sim-tg{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--t2);cursor:pointer;user-select:none;}
+.cat-sim-tg input{width:16px;height:16px;accent-color:var(--a);}
+.cat-sim{background:var(--ad);border-radius:10px;padding:8px 10px 9px;margin:0 0 10px;}
+.cs-row{display:grid;grid-template-columns:1fr auto 64px;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;color:var(--t2);}
+.cs-row b{color:var(--t1);font-weight:600;font-variant-numeric:tabular-nums;}
+.cs-row i{font-style:normal;color:var(--ok);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;}
+.cs-row em{font-style:normal;color:var(--t3);font-size:11px;white-space:nowrap;}
+.cs-row.top b{color:var(--a);}
+.cs-note{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.4;}
 .cat-opt-price-big .barre{font-size:13px;color:var(--t3);text-decoration:line-through;margin-left:6px;font-weight:500;}
 .cat-hint{font-size:12px;color:var(--t3);margin-top:10px;}
 .cat-filters{margin-top:12px;position:relative;display:inline-block;}
@@ -655,6 +664,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
         </div>
         <div class="cat-client">
           <select id="catClient" onchange="choisirClientCat()" aria-label="Client avec un pack"><option value="">Client avec un pack (facultatif)</option></select>
+          <label class="cat-sim-tg"><input type="checkbox" id="catSimuler" onchange="majSimulation()"/> Comparer les prix avec les packs</label>
           <span class="cat-client-etat" id="catClientEtat"></span>
         </div>
         <div class="cat-hint"><span class="cat-sync-info" id="sync-info"></span> · <span id="cat-total">—</span> pièces dans le catalogue</div>
@@ -807,16 +817,19 @@ try{
 }catch(e){console.warn('Frais de livraison Foneday :',e)}
 // ── Clients et packs : prix d'une réparation pour un client donné ──
 let CLIENTS_CAT=[],PACKS_CAT=[],PACK_INTERS=[],CLIENT_CAT=null
+let FORMULES_CAT={}
 const ANCIENNES_FORMULES=['3m','6m','12m']
 const r2=v=>Math.round(v*100)/100
 try{
-  const [rc,rp,ri]=await Promise.all([
+  const [rc,rp,ri,rf]=await Promise.all([
     sb.from('clients').select('id,numero,nom,email,telephone,adresse,societe,tva').is('supprime_le',null).order('nom').limit(5000),
     sb.from('packs').select('id,client_id,nom,formule,par_mois,statut,date_debut,date_fin,interventions_total').eq('statut','actif').limit(5000),
-    sb.from('pack_interventions').select('pack_id,decompte,date_inter').limit(20000)])
+    sb.from('pack_interventions').select('pack_id,decompte,date_inter').limit(20000),
+    sb.from('pack_formules').select('code,nom,prix').eq('actif',true)])
   CLIENTS_CAT=rc.error?[]:(rc.data||[])
   PACKS_CAT=rp.error?[]:(rp.data||[])
   PACK_INTERS=ri.error?[]:(ri.data||[])
+  ;(rf&&!rf.error?rf.data||[]:[]).forEach(f=>{FORMULES_CAT[f.code]=f})
   // Seuls les clients avec un pack actif sont proposés.
   CLIENTS_CAT=CLIENTS_CAT.filter(c=>packDuClient(c.id))
   CLIENTS_CAT.sort((a,b)=>String(a.nom||'').localeCompare(String(b.nom||''),'fr'))
@@ -1093,17 +1106,34 @@ function droitPack(p){
   if(p.par_mois)return !moisPackUtilise(p)&&packRestantes(p)>0?'inclus':'remise'
   return p.formule==='mobile'?'remise':null
 }
-function prixPourClient(achat){
+function prixSelonPack(achat,cas){
   const vente=calcPrixVente(achat)
-  const pack=CLIENT_CAT?packDuClient(CLIENT_CAT.id):null
-  const cas=droitPack(pack)
-  if(!cas||!(vente>0))return {vente,prix:vente,cas:null,pack}
+  if(!cas||!(vente>0))return {vente,prix:vente,cas:null}
   const cout=achat+fraisLivraison(),t=getPalier(cout)
   const piece=Math.min(vente,r2(Math.max(cout*(Number(t.coef)||1),cout*1.2)))
   const mo=Math.max(0,r2(vente-piece))
-  if(cas==='inclus')return {vente,prix:piece,cas,pack,piece,mo,remise:mo}
+  if(cas==='inclus')return {vente,prix:piece,cas,piece,mo,remise:mo}
   const remise=r2(mo*0.20)
-  return {vente,prix:r2(vente-remise),cas,pack,piece,mo,remise}
+  return {vente,prix:r2(vente-remise),cas,piece,mo,remise}
+}
+function prixPourClient(achat){
+  const pack=CLIENT_CAT?packDuClient(CLIENT_CAT.id):null
+  return {...prixSelonPack(achat,droitPack(pack)),pack}
+}
+// Prospect au téléphone : le prix de la réparation avec chaque formule.
+window.majSimulation=function(){if(_resultatsActuels&&_resultatsActuels.length)renderResults()}
+function blocSimulation(achat){
+  if(CLIENT_CAT||!document.getElementById('catSimuler')?.checked)return ''
+  const sans=prixSelonPack(achat,null),mob=prixSelonPack(achat,'remise'),inc=prixSelonPack(achat,'inclus')
+  if(!(sans.vente>0))return ''
+  const pf=c=>FORMULES_CAT[c]?` <em>${Math.round(FORMULES_CAT[c].prix)} €</em>`:''
+  const eco=p=>p.vente-p.prix>0?`<i>−${(p.vente-p.prix).toFixed(2)} €</i>`:'<i></i>'
+  return `<div class="cat-sim">
+    <div class="cs-row"><span>Sans pack</span><b>${sans.vente.toFixed(2)} €</b><i></i></div>
+    <div class="cs-row"><span>Sérénité Mobile${pf('mobile')}</span><b>${mob.prix.toFixed(2)} €</b>${eco(mob)}</div>
+    <div class="cs-row top"><span>Famille ou Pro${FORMULES_CAT.famille&&FORMULES_CAT.pro?` <em>${Math.round(FORMULES_CAT.famille.prix)} / ${Math.round(FORMULES_CAT.pro.prix)} €</em>`:''}</span><b>${inc.prix.toFixed(2)} €</b>${eco(inc)}</div>
+    <div class="cs-note">Prix des packs par an.<br>Famille ou Pro : la pièce seule avec l'intervention du mois ; au-delà, ${mob.prix.toFixed(2)} €.</div>
+  </div>`
 }
 window.choisirClientCat=function(){
   const v=document.getElementById('catClient').value
@@ -1179,6 +1209,7 @@ function renderResults(){
           <div class="cat-opt-qual">Qualité : ${escapeHtml(p.quality||'—')} · Réf. ${escapeHtml(p.sku||'')}</div>
           <div class="cat-opt-price-big"><span><span class="prix">${prixAff.toFixed(2)} €</span>${pc&&pc.cas?`<span class="barre">${vente.toFixed(2)} €</span>`:''}</span><span class="marge">${marge>=0?'+':''}${marge.toFixed(2)} €</span></div>
           <div class="cat-opt-price-sub">${pc?`prix pour ${escapeHtml(CLIENT_CAT.nom||'ce client')}`:'prix de la réparation avec cette pièce'} · ta marge</div>
+          ${blocSimulation(achat)}
           <div class="cat-opt-detail">
             <div class="cat-price-row"><span class="lbl">Prix d'achat</span><span class="val">${achat.toFixed(2)} €</span></div>
             <div class="cat-price-row"><span class="lbl">+ Livraison</span><span class="val">${LIV_FONEDAY==null?'0.00 € · à renseigner dans Gestion › Fournisseurs':fraisLivraison().toFixed(2)+' €'}</span></div>
