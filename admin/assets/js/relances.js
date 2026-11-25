@@ -27,7 +27,8 @@
   'use strict';
   var SB_URL = 'https://esltsiutcjcwdbhkkvms.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo';
-  var AVIS_DEFAUT = 'https://maps.app.goo.gl/txUcSmNZTpqiAyDN9';
+  // Lien de la fiche Google Business Profile qui ouvre directement le formulaire d'avis.
+  var AVIS_DEFAUT = 'https://g.page/r/CVDH1OvyR70xEBM/review';
   var sbPromise = null;
   function client() {
     if (!sbPromise) {
