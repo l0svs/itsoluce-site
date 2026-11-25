@@ -51,6 +51,18 @@ window.MAIL_MODELES_DEFAUT = [
  * Garder ces textes identiques aux valeurs par défaut de
  * supabase/functions/pack/index.ts.
  */
+/**
+ * Rappel de rendez-vous envoyé automatiquement 24 h avant (fonction serveur
+ * « rappel-rdv »). Modifiable dans Gestion › Mails (clé mail_modele_rappel_rdv).
+ *   {prenom} {date_rdv} {heure_rdv} {lieu_rdv} {objet_rdv}
+ * Sans lieu, la ligne qui contient {lieu_rdv} disparaît.
+ * Garder ce texte identique à supabase/functions/rappel-rdv/index.ts.
+ */
+window.MAIL_MODELE_RAPPEL_RDV_DEFAUT = {
+  objet: 'Rappel : votre rendez-vous du {date_rdv}',
+  corps: 'Bonjour {prenom},\n\nPetit rappel : nous avons rendez-vous le {date_rdv} à {heure_rdv}.\nLieu : {lieu_rdv}\n\nEn cas d\'empêchement, merci de me prévenir en répondant à ce mail ou par téléphone.'
+};
+
 window.MAIL_MODELES_PACK_DEFAUT = {
   pack_achat: { nom: 'Pack payé : facture et accès à l\'espace client',
     objet: 'Votre {pack} est actif — facture {facture}',
