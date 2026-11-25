@@ -232,6 +232,7 @@ body{font-size:14px;}
 .ev-s{font-size:12.5px; color:var(--t2); margin-top:2px; word-break:break-word;}
 .ev-r{display:flex; align-items:center; gap:9px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end;}
 .tick{font-size:11.5px; color:var(--ok); white-space:nowrap;}
+.tick.prevu{color:var(--t3);}
 
 /* ── Pastilles de type ── */
 .pill{font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:980px; white-space:nowrap;}
@@ -328,6 +329,15 @@ body{font-size:14px;}
 .fg > label{width:150px; flex-shrink:0; font-size:13.5px; font-weight:500; color:var(--t1);}
 .fg > label em{display:block; font-style:normal; font-size:12px; font-weight:400; color:var(--t3); margin-top:1px;}
 .fg-f{flex:1; min-width:0; display:flex; gap:10px;}
+.rappel-info{font-size:12.5px; line-height:1.5; color:var(--t2);}
+.rappel-info.ok>span{color:var(--t1);} .rappel-info.w>span{color:var(--w);}
+.rappel-apercu{margin-top:6px;}
+.rappel-apercu summary{cursor:pointer; color:var(--a); font-weight:500; font-size:12.5px;}
+.rappel-apercu .ra-objet{margin-top:8px; font-size:12.5px; color:var(--t1); font-weight:600;}
+.rappel-apercu .ra-corps{margin-top:6px; background:var(--bg3); border-radius:10px; padding:10px 12px; font-size:13px; color:var(--t1);}
+.rappel-apercu .ra-corps p{margin:0 0 8px;}
+.rappel-apercu .ra-sig{color:var(--t3); margin:4px 0 0 !important; font-size:12px;}
+.rappel-apercu .ra-pied{margin-top:5px; font-size:11.5px; color:var(--t3);}
 .panel input[type=text],.panel input[type=date],.panel input[type=time],.panel select,.panel textarea{
   width:100%; background:var(--bg3); border:1px solid transparent; border-radius:10px;
   padding:9px 13px; font-family:inherit; font-size:13.5px; color:var(--t1); outline:none; transition:.14s;
@@ -793,6 +803,11 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
       <div class="fg"><label for="f-rep">Réparation</label><div class="fg-f"><select id="f-rep"><option value="">— Aucune —</option></select></div></div>
       <div class="fg"><label for="f-lieu">Lieu</label><div class="fg-f"><input type="text" id="f-lieu" placeholder="Adresse de l'intervention"/></div></div>
 
+      <div class="fg"><label for="f-rappel">Rappel par mail<em>Envoyé tout seul au client</em></label><div class="fg-f" style="flex-direction:column;align-items:stretch;gap:6px;">
+        <select id="f-rappel" onchange="majRappelInfo()"><option value="true">Automatique, 24 h avant</option><option value="false">Pas de rappel</option></select>
+        <div class="rappel-info" id="rappel-info"></div>
+      </div></div>
+
       <div class="form-lbl">Compléments</div>
       <div class="fg"><label for="f-notes">Notes</label><div class="fg-f"><textarea id="f-notes" placeholder="Détails, matériel à prévoir…"></textarea></div></div>
       <div class="fg">
@@ -1032,6 +1047,7 @@ async function load(){
     if(r.cle==='entreprise_email')ENTREPRISE.email=v
     if(r.cle==='entreprise_telephone')ENTREPRISE.tel=v
     if(r.cle==='entreprise_site')ENTREPRISE.site=v.replace(/^https?:\/\//,'').replace(/\/$/,'')
+    if(r.cle==='mail_modele_rappel_rdv'){try{const m=JSON.parse(v);if(m&&m.objet&&m.corps)MODELE_RAPPEL=m}catch(e){}}
   })
   // Adresse et BCE : pour la signature complète, la même que sur les devis.
   Object.assign(ENTREPRISE,entrepriseDepuisReglages(rSet&&rSet.data||[]),{logo:ENTREPRISE.logo})
@@ -1104,7 +1120,7 @@ function ligne(r){
   return `<div class="ev ${r.termine?'done':''}" onclick="editRdv(${Number(r.id)})">
     <div class="ev-h">${hm(d)}${dur?`<em>${escHtml(dur)}</em>`:''}</div>
     <div class="ev-b"><div class="ev-t">${escHtml(r.titre)}</div>${st?`<div class="ev-s">${escHtml(st)}</div>`:''}</div>
-    <div class="ev-r">${r.rappel_envoye_le?'<span class="tick">✓ rappel</span>':''}<span class="pill p-${escHtml(type)}">${escHtml(TYPE_LABEL[type]||'Autre')}</span></div>
+    <div class="ev-r">${r.rappel_envoye_le?'<span class="tick">✓ rappel</span>':rappelPrevu(r)?'<span class="tick prevu">rappel prévu</span>':''}<span class="pill p-${escHtml(type)}">${escHtml(TYPE_LABEL[type]||'Autre')}</span></div>
   </div>`
 }
 
@@ -1275,11 +1291,13 @@ function resetForm(){
   document.getElementById('f-client').value=''
   document.getElementById('f-rep').value=''
   document.getElementById('f-termine').value='false'
+  document.getElementById('f-rappel').value='true'
   document.getElementById('tog').classList.remove('on')
   document.getElementById('delBtn').style.display='none'
   document.getElementById('rappelBtn').style.display='none'
 }
 function ouvrir(){
+  if(window.majRappelInfo)majRappelInfo()
   document.getElementById('overlay').classList.add('open')
   document.getElementById('panel').classList.add('open')
   // Le focus immédiat ouvre le clavier pendant la transition sur mobile.
@@ -1312,7 +1330,60 @@ window.onClientPick=function(){
   const opt=sel.options[sel.selectedIndex]
   const lieu=document.getElementById('f-lieu')
   if(sel.value&&opt.dataset.adr&&!lieu.value)lieu.value=opt.dataset.adr
+  majRappelInfo()
 }
+
+/* ─── Rappel automatique 24 h avant ───
+   Envoyé par le serveur (fonction rappel-rdv, toutes les 15 minutes) avec le
+   texte de Gestion › Mails. Ici : quand il partira, à qui, et à quoi il ressemble. */
+let MODELE_RAPPEL=null
+// Rappel qui partira tout seul : activé, client avec e-mail, rendez-vous à venir.
+function rappelPrevu(r){if(r.rappel_auto===false||r.termine||!r.client_id||new Date(r.date_debut)<=new Date())return false
+  const c=allClients.find(x=>Number(x.id)===Number(r.client_id));return !!(c&&c.email)}
+function modeleRappel(){return MODELE_RAPPEL||window.MAIL_MODELE_RAPPEL_RDV_DEFAUT||{objet:'',corps:''}}
+function texteRappel(v){
+  let corps=modeleRappel().corps
+  if(!v.lieu_rdv)corps=corps.split('\n').filter(l=>!l.includes('{lieu_rdv}')).join('\n')
+  if(!v.prenom)corps=corps.replace(/Bonjour \{prenom\},/g,'Bonjour,')
+  const r=t=>t.replace(/\{(\w+)\}/g,(x,k)=>k in v?v[k]:x)
+  return {objet:r(modeleRappel().objet),corps:r(corps)}
+}
+window.majRappelInfo=function(){
+  const box=document.getElementById('rappel-info');if(!box)return
+  const auto=document.getElementById('f-rappel').value!=='false'
+  const id=document.getElementById('f-id').value
+  const r=id?allRdv.find(x=>Number(x.id)===Number(id)):null
+  const cid=document.getElementById('f-client').value
+  const client=cid?allClients.find(c=>Number(c.id)===Number(cid)):null
+  const date=document.getElementById('f-date').value,heure=document.getElementById('f-heure').value||'00:00'
+  const debut=date?new Date(`${date}T${heure}`):null
+  const dateInchangee=r&&debut&&new Date(r.date_debut).getTime()===debut.getTime()
+  const jl=d=>d.toLocaleDateString('fr-BE',{weekday:'short',day:'numeric',month:'short'})
+  let msg='',cls=''
+  if(!auto)msg='Aucun rappel ne sera envoyé. Tu peux toujours l\'envoyer à la main.'
+  else if(!client)msg='Choisis un client pour que le rappel puisse partir.',cls='w'
+  else if(!client.email)msg=`${escHtml(client.nom||'Ce client')} n'a pas d'adresse e-mail : pas de rappel possible.`,cls='w'
+  else if(r&&r.rappel_envoye_le&&dateInchangee)msg=`Rappel déjà envoyé le ${jl(new Date(r.rappel_envoye_le))} à ${escHtml(client.email)}.`,cls='ok'
+  else if(!debut||isNaN(debut))msg=`Partira 24 h avant le rendez-vous, à ${escHtml(client.email)}.`
+  else if(debut<=new Date())msg='Rendez-vous passé : pas de rappel.'
+  else{
+    const envoi=new Date(debut.getTime()-24*3600*1000)
+    msg=envoi<=new Date()
+      ?`Rendez-vous dans moins de 24 h : le rappel partira dans le quart d'heure à ${escHtml(client.email)}.`
+      :`Partira le <b>${jl(envoi)} vers ${hm(envoi)}</b> à ${escHtml(client.email)}.`
+    cls='ok'
+  }
+  let apercu=''
+  if(auto&&client&&client.email&&debut&&!isNaN(debut)){
+    const t=texteRappel({prenom:(client.nom||'').trim().split(/\s+/)[0]||'',
+      date_rdv:debut.toLocaleDateString('fr-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),
+      heure_rdv:hm(debut),lieu_rdv:document.getElementById('f-lieu').value.trim(),objet_rdv:document.getElementById('f-titre').value.trim()})
+    apercu=`<details class="rappel-apercu"><summary>Voir le mail</summary><div class="ra-objet">Objet : ${escHtml(t.objet)}</div><div class="ra-corps">${texteEnHtml(t.corps)}<p class="ra-sig">Bien à vous,<br>+ ta signature habituelle</p></div><div class="ra-pied">Texte modifiable dans Gestion › Mails.</div></details>`
+  }
+  box.className='rappel-info '+cls
+  box.innerHTML=`<span>${msg}</span>${apercu}`
+}
+;['f-date','f-heure','f-lieu','f-titre'].forEach(i=>document.getElementById(i)?.addEventListener('input',()=>window.majRappelInfo&&majRappelInfo()))
 
 window.editRdv=function(id){
   const r=allRdv.find(x=>Number(x.id)===Number(id))
@@ -1364,6 +1435,7 @@ window.editRdv=function(id){
 
   document.getElementById('f-lieu').value=r.lieu||''
   document.getElementById('f-notes').value=r.notes||''
+  document.getElementById('f-rappel').value=r.rappel_auto===false?'false':'true'
   document.getElementById('f-termine').value=String(!!r.termine)
   document.getElementById('tog').classList.toggle('on',!!r.termine)
 
@@ -1406,6 +1478,7 @@ window.saveRdv=async function(){
     lieu:document.getElementById('f-lieu').value.trim()||null,
     notes:document.getElementById('f-notes').value.trim()||null,
     termine:document.getElementById('f-termine').value==='true',
+    rappel_auto:document.getElementById('f-rappel').value!=='false',
     updated_at:new Date().toISOString()
   }
   const btn=document.getElementById('saveBtn')
@@ -1648,6 +1721,7 @@ document.addEventListener('click',function(e){
 </script>
 <script src="/admin/assets/js/envoi-mail.js?v=20261116"></script>
 <script src="/admin/assets/js/signature-mail.js?v=20261117"></script>
+<script src="/admin/assets/js/mail-modeles.js?v=20261125"></script>
 <script src="/admin/assets/js/admin-palette.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
 </body>
