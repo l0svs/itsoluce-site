@@ -27,6 +27,11 @@
     if (!vide(doc.client_societe) && vide(doc.client_tva)) p.push('Numéro de TVA de l\u2019entreprise manquant.');
     // Particulier : adresse facultative (16/11/2026, demande d'IT Soluce).
     if (!vide(doc.client_tva) && !tvaValide(doc.client_tva)) p.push('Numéro de TVA du client invalide (' + String(doc.client_tva).trim() + ').');
+    // Facture à une entreprise belge : code postal obligatoire (facture Peppol valable),
+    // même règle que la base (controle_emission).
+    if (opts && opts.facture && !vide(doc.client_adresse) && /^BE/i.test(String(doc.client_tva || '').replace(/[^0-9A-Za-z]/g, '')) &&
+        !/(^|[^0-9])[1-9][0-9]{3} +[^0-9 ,]/.test(String(doc.client_adresse)))
+      p.push('Adresse de l\u2019entreprise incomplète : indique « rue et numéro, code postal et commune » (ex. : Rue de la Station 12, 1480 Tubize).');
     if (doc.type_document === 'note_credit') return p;
     var lignes = Array.isArray(doc.lignes) ? doc.lignes : [];
     if (!lignes.length) p.push('Aucune ligne.');
