@@ -274,6 +274,19 @@ body{font-size:14px;}
 .prev-acts{display:flex; gap:7px; margin-top:10px; flex-wrap:wrap;}
 .prev-acts .btn{flex:1; min-width:0; padding:9px 8px; font-size:12.5px;}
 .prev-note{font-size:12px; color:var(--t3); line-height:1.5; padding:0 2px;}
+/* Peppol : envoi de la facture électronique aux clients professionnels */
+.peppol{margin-top:12px; padding:11px 12px; border-radius:10px; background:var(--bg3); border-left:3px solid var(--t3);}
+.peppol.pp-pret{border-left-color:var(--a);}
+.peppol.pp-ok{border-left-color:var(--ok);}
+.peppol.pp-attente{border-left-color:var(--w);}
+.peppol.pp-erreur{border-left-color:var(--d);}
+.pp-tete{display:flex; align-items:center; gap:8px;}
+.pp-nom{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--t2);}
+.pp-etat{margin-left:auto; font-size:11.5px; font-weight:600; color:var(--t2);}
+.pp-pret .pp-etat{color:var(--a);} .pp-ok .pp-etat{color:var(--ok);} .pp-attente .pp-etat{color:var(--w);} .pp-erreur .pp-etat{color:var(--d);}
+.pp-txt{font-size:12.5px; color:var(--t2); line-height:1.5; margin-top:6px;}
+.pp-id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:var(--t3);}
+.peppol .prev-acts{margin-top:9px;}
 .prev-ouvrir,.prev-fermer{display:none;}
 
 /* ── Fenêtres PDF et email ── */
@@ -613,6 +626,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
 <link rel="stylesheet" href="/admin/assets/css/mobile.css?v=20261124">
 <script src="/admin/assets/js/mobile.js?v=20261117m" defer></script>
 <script src="/admin/assets/js/liste-doc.js?v=20261124"></script>
+<script src="/admin/assets/js/peppol.js?v=20261128"></script>
 <script src="/assets/js/nom-propre.js?v=20261122"></script>
 </head>
 <body>
@@ -822,6 +836,7 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
               <button class="btn btn-secondary" onclick="telechargerPdf()" id="sidePdfBtn">PDF</button>
               <button class="btn btn-secondary" onclick="preparerEmail()" id="sideSendBtn">Envoyer</button>
             </div>
+            <div class="peppol" id="peppolBloc" hidden></div>
             <div class="prev-acts" id="rowRelance" style="display:none;">
               <button class="btn btn-secondary" onclick="relancerClient()" id="sideRelBtn">Relancer le client</button>
             </div>
@@ -995,6 +1010,7 @@ const SB='https://esltsiutcjcwdbhkkvms.supabase.co'
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbHRzaXV0Y2pjd2RiaGtrdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjM2OTEsImV4cCI6MjA5NzMzOTY5MX0.Sl2cdnqEr7VSBeq1wwMBpfQW9yBB0IG9RkOiZi9GXvo'
 const sb=createClient(SB,SK)
 
+
 const ENTREPRISE={
   nom:'IT Soluce',
   adresse:'Chaussée d\'Hondzocht 164',
@@ -1136,6 +1152,26 @@ let sale=false
 let instantane=''
 let _repLien=null
 
+/* ─── Peppol (clients professionnels) : voir assets/js/peppol.js ─── */
+const PEPPOL_O={
+  courante:()=>courante, estNC:f=>estNC(f),
+  toast:(m,t)=>showToast(m,t), majEtape:()=>majEtapeFacture(), rafraichir:()=>majPeppol(),
+  // Colonnes peppol_* renvoyées par le serveur après un envoi ou une actualisation.
+  apres:maj=>{
+    if(!maj||!maj.id)return
+    const i=allFactures.findIndex(x=>x.id===maj.id)
+    if(i>=0)Object.assign(allFactures[i],maj)
+    if(courante&&courante.id===maj.id){Object.assign(courante,maj);if(sale)majPeppol();else chargerDansFormulaire(courante)}
+    majResume();renderRail()
+  }
+}
+function majPeppol(){if(window.Peppol)Peppol.bloc(document.getElementById('peppolBloc'),courante,PEPPOL_O)}
+if(window.Peppol){
+  Peppol.config({SB,jeton:async()=>(await sb.auth.getSession()).data.session.access_token})
+  Peppol.brancher(document.getElementById('peppolBloc'),PEPPOL_O)
+}
+window.envoyerViaPeppol=()=>Peppol.envoyerCourante(PEPPOL_O).catch(e=>showToast('Peppol : '+(e.message||e),'err'))
+
 /* ─── Coordonnées de l'entreprise : la page Gestion fait foi ─── */
 try{
   const {data:_set}=await sb.from('settings').select('cle,valeur')
@@ -1269,7 +1305,7 @@ window.renderRail=function renderRail(){
       return `<button type="button" class="rail-item s-${escHtml(e.cle)}${courante&&courante.id===f.id?' on':''}" onclick="ouvrirFacture(${f.id})">
         <span class="ref">${escHtml(refDoc(f))}</span>
         <b>${escHtml(f.client_societe||f.client_nom||'Sans client')}</b>
-        <em>${eur(f.total)} · ${escHtml(e.label.toLowerCase())}</em>
+        <em>${eur(f.total)} · ${escHtml(e.label.toLowerCase())}${({livree:' · via Peppol',en_cours:' · Peppol en cours',envoi:' · Peppol en cours',echec:' · Peppol non envoyée',incertain:' · Peppol à vérifier'})[f.peppol_statut]||''}</em>
       </button>`
     }).join('')
   })
@@ -1689,6 +1725,7 @@ function chargerDansFormulaire(f){
   if(window.DossierFil){if(f)DossierFil.afficher(fil,{facture:estNC(f)?f.facture_origine_id:f.id},estNC(f)?null:'facture');else DossierFil.vider(fil)}
   verrouillerFormulaire(f)
   majEtapeFacture()
+  majPeppol()
 }
 
 /* ─── Document émis : formulaire verrouillé ───
@@ -1759,6 +1796,12 @@ function majEtapeFacture(){
   const f=courante
   if(f&&estNC(f)&&f.statut==='a_rembourser'){
     el.innerHTML=`<button class="btn btn-primary" onclick="ouvrirEncaissement()">Rembourser ${eur(resteAPayer(f))}</button>`
+    return
+  }
+  // Client professionnel inscrit sur Peppol : une fois encaissée (note de crédit :
+  // une fois réglée), la facture part via Peppol, une seule fois.
+  if(f&&window.Peppol&&Peppol.aEnvoyer(f,estNC(f))){
+    el.innerHTML=`<button class="btn btn-primary pp-envoyer" onclick="envoyerViaPeppol()">Envoyer via Peppol</button>`
     return
   }
   if(!f||estNC(f)||!['brouillon','envoyee'].includes(f.statut)){el.innerHTML='';return}

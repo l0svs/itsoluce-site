@@ -8,6 +8,9 @@
 //   - lien            (visiteur)  envoie un lien de connexion à l'espace
 //   - acces           (ERP)       envoie l'accès espace à un client
 //   - rembourser      (ERP)       rembourse une rétractation via Mollie
+//   - tva             (visiteur)  formulaire Entreprise : n° de TVA valide ? inscrit sur Peppol ?
+//   Entreprise belge inscrite sur Peppol : après le paiement, la facture lui est
+//   transmise via Peppol (fonction peppol, une seule fois) et le mail ne joint pas le PDF.
 //   - webhook Mollie  (form « id=tr_… ») : le paiement n'est JAMAIS cru
 //     sur parole, il est relu chez Mollie avec la clé secrète.
 //
@@ -166,12 +169,59 @@ async function resumePack(pack: any): Promise<string> {
   const n = Number(pack?.interventions_total) || 0;
   return `${n} intervention${n > 1 ? "s" : ""} incluse${n > 1 ? "s" : ""}, à domicile, sur votre lieu de travail ou en dépôt à Tubize`;
 }
+// ── Peppol (fonction peppol, appel interne) ─────────────
+// deno-lint-ignore no-explicit-any
+async function peppol(corps: Record<string, unknown>): Promise<any> {
+  const r = await fetch(`${SUPABASE_URL}/functions/v1/peppol`, {
+    method: "POST", headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(corps),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || `peppol ${r.status}`);
+  return j;
+}
+/** N° d'entreprise belge valide (modulo 97) → 10 chiffres, sinon "". */
+function numeroBE(tva: unknown): string {
+  let n = String(tva ?? "").toUpperCase().replace(/[^0-9A-Z]/g, "");
+  if (n.startsWith("BE")) n = n.slice(2);
+  if (/^\d{9}$/.test(n)) n = "0" + n;
+  if (!/^[01]\d{9}$/.test(n)) return "";
+  return 97 - (Number(n.slice(0, 8)) % 97) === Number(n.slice(8)) ? n : "";
+}
+const STATUT_PEPPOL: Record<string, string> = { livree: "transmise", en_cours: "envoyée, livraison en cours", echec: "non envoyée", incertain: "à vérifier", envoi: "en cours d'envoi" };
+/**
+ * Facture payée d'une entreprise belge : envoi via Peppol (une seule fois, garanti par la
+ * fonction peppol). Renvoie vrai si la facture est partie (ou est en cours) via Peppol ;
+ * dans ce cas, le mail au client ne joint pas le PDF.
+ */
+// deno-lint-ignore no-explicit-any
+async function viaPeppol(f: any): Promise<{ ok: boolean; info: string }> {
+  if (f.statut !== "payee" || !numeroBE(f.client_tva)) return { ok: false, info: "" };
+  try {
+    // Sans attendre la confirmation de livraison : le suivi automatique (toutes les 15 min) la récupère.
+    const r = await peppol({ action: "envoyer", facture_id: f.id, attendre: false });
+    const st = r?.facture?.peppol_statut;
+    const info = `Peppol : ${STATUT_PEPPOL[st] || st || "?"}${r?.facture?.peppol_erreur ? " — " + r.facture.peppol_erreur : ""}`;
+    return { ok: ["livree", "en_cours", "incertain", "envoi"].includes(st), info };
+  } catch (e) {
+    // Client pas sur Peppol, ou Recommand indisponible : la facture part en PDF par mail.
+    return { ok: false, info: `Peppol : ${e instanceof Error ? e.message : String(e)} (facture envoyée en PDF par mail)` };
+  }
+}
+
 // deno-lint-ignore no-explicit-any
 async function mailFacture(f: any, octets: Uint8Array, prenom: string, pack: any, lien: string, test = false) {
   await mailClient(f.statut === "payee" ? "pack_achat" : "pack_facture", f.client_email, {
     prenom, pack: pack.nom, date_fin: dateFr(pack.date_fin), interventions: await resumePack(pack),
     facture: f.numero, montant: eur(f.total),
   }, lien, [{ nom: `Facture_${f.numero}.pdf`, octets }], test);
+}
+
+// deno-lint-ignore no-explicit-any
+async function mailPackPeppol(f: any, prenom: string, pack: any, lien: string) {
+  await mailClient("pack_achat_peppol", f.client_email, {
+    prenom, pack: pack.nom, date_fin: dateFr(pack.date_fin), interventions: await resumePack(pack),
+    facture: f.numero, montant: eur(f.total),
+  }, lien, []);
 }
 
 // ── Signature et modèles (mêmes que l'ERP : Gestion › Entreprise et › Mails) ──
@@ -199,6 +249,8 @@ const MODELES: Record<string, { objet: string; corps: string }> = {
     corps: "Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu'au {date_fin} : {interventions}.\n\nVous trouverez votre facture {facture} ({montant}, payée) en pièce jointe.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail." },
   pack_facture: { objet: "Votre {pack} — facture {facture}",
     corps: "Bonjour {prenom},\n\nVous trouverez en pièce jointe la facture {facture} de votre {pack} : {montant} à régler par virement sur le compte {iban} (communication : {facture}).\n\nVotre pack s'active dès réception du paiement." },
+  pack_achat_peppol: { objet: "Votre {pack} est actif — facture {facture}",
+    corps: "Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu'au {date_fin} : {interventions}.\n\nVotre facture {facture} ({montant}, payée) vous a été transmise via Peppol.\nVous la retrouvez aussi dans votre espace client.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail." },
   pack_lien: { objet: "Votre lien de connexion — IT Soluce",
     corps: "Bonjour,\n\nVoici votre lien pour ouvrir votre espace client IT Soluce :\n\n{lien_espace}\n\nSi vous n'avez rien demandé, ignorez simplement ce message." },
   pack_acces: { objet: "Votre espace client IT Soluce",
@@ -228,7 +280,7 @@ async function mailClient(cle: string, a: string, v: Record<string, string>, lie
 
 /** Notification interne (contact@itsoluce.be) : récapitulatif d'un pack payé en ligne. */
 // deno-lint-ignore no-explicit-any
-async function mailNotification(o: { cmd: any; pack: any; packId: number | null; facture: string; envoiOk: boolean; paiement: string; test?: boolean }) {
+async function mailNotification(o: { cmd: any; pack: any; packId: number | null; facture: string; envoiOk: boolean; paiement: string; test?: boolean; peppol?: string }) {
   const ent = await entreprise();
   const td = "padding:7px 0;border-bottom:1px solid #e3e8ee;font-size:14px;vertical-align:top;";
   const ligne = (k: string, v: string) => v ? `<tr><td style="${td}color:#5a6b7b;width:150px;">${esc(k)}</td><td style="${td}">${v}</td></tr>` : "";
@@ -245,6 +297,7 @@ async function mailNotification(o: { cmd: any; pack: any; packId: number | null;
     ligne("Formule", `<b>${esc(o.pack?.nom || "")}</b>`) +
     ligne("Montant payé", `<b>${eur(o.pack?.prix)}</b> · paiement en ligne (Mollie ${esc(o.paiement)})`) +
     ligne("Facture", esc(o.facture || "")) +
+    ligne("Peppol", esc(o.peppol || "")) +
     ligne("Valable jusqu'au", esc(dateFr(o.pack?.date_fin))) +
     `</table>` +
     (o.test ? "" : o.envoiOk
@@ -307,7 +360,11 @@ async function commander(c: Record<string, unknown>) {
   const tva = txt(c.tva, 20).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
   const d = {
     prenom: txt(c.prenom, 60), nom: txt(c.nom, 60), email: txt(c.email, 160).toLowerCase(),
-    telephone: txt(c.telephone, 30), adresse: txt(c.adresse, 200),
+    telephone: txt(c.telephone, 30),
+    // Entreprise : rue, code postal et commune séparés → « Rue et numéro, 1480 Tubize ».
+    adresse: pro && (c.rue || c.cp || c.ville)
+      ? `${txt(c.rue, 120)}, ${txt(c.cp, 4)} ${txt(c.ville, 60)}`.trim()
+      : txt(c.adresse, 200),
     societe: pro ? (txt(c.societe, 120) || null) : null,
     tva: pro ? ((/^[01]\d{9}$/.test(tva) ? "BE" + tva : tva) || null) : null,
   };
@@ -317,6 +374,15 @@ async function commander(c: Record<string, unknown>) {
       throw new ErreurClient("Indiquez un numéro de TVA valide (ex. : BE0123.456.789).");
     }
     if (d.adresse.length < 8) throw new ErreurClient("Indiquez l'adresse complète de l'entreprise (rue, numéro, code postal, commune).");
+    if (d.tva.startsWith("BE")) {
+      if (!numeroBE(d.tva)) throw new ErreurClient("Ce numéro de TVA n'existe pas : vérifiez-le (ex. : BE0123.456.789).");
+      // Trois champs (nouveau formulaire) ou adresse en une ligne contenant le code postal.
+      const separe = !!(c.rue || c.cp || c.ville);
+      if (separe ? (txt(c.rue, 120).length < 3 || !/^[1-9]\d{3}$/.test(txt(c.cp, 4)) || txt(c.ville, 60).length < 2)
+        : !/(^|[^0-9])[1-9]\d{3} +[^0-9 ,]/.test(d.adresse)) {
+        throw new ErreurClient("Indiquez l'adresse complète de l'entreprise : rue et numéro, code postal (4 chiffres) et commune.");
+      }
+    }
   } else if (!d.prenom || !d.nom) throw new ErreurClient("Indiquez votre prénom et votre nom.");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) throw new ErreurClient("Adresse e-mail invalide.");
   if (d.telephone.replace(/\D/g, "").length < 8) throw new ErreurClient("Numéro de téléphone invalide.");
@@ -324,6 +390,22 @@ async function commander(c: Record<string, unknown>) {
   if (c.consentement !== true) throw new ErreurClient("Veuillez confirmer que le service peut commencer tout de suite.");
   const f = (await rest(`pack_formules?code=eq.${encodeURIComponent(formule)}&actif=eq.true&select=code,nom,prix`))[0];
   if (!f) throw new ErreurClient("Formule inconnue.");
+  // Entreprise belge inscrite sur Peppol : on fait valider dès maintenant, à blanc, la
+  // facture qui lui sera envoyée après le paiement (rien n'est envoyé ici).
+  if (pro && d.tva?.startsWith("BE")) {
+    let ctl: { valide?: boolean; inscrit?: boolean; ok?: boolean; erreur?: string } | null = null;
+    try {
+      ctl = await peppol({ action: "controle", tva: d.tva, facture: {
+        numero: "CONTROLE", date_emission: new Date().toISOString().slice(0, 10), statut: "payee", mode_paiement: "en_ligne",
+        client_nom: d.societe, client_societe: d.societe, client_tva: d.tva, client_adresse: d.adresse, client_email: d.email,
+        lignes: [{ description: f.nom, quantite: 1, prix_unitaire: Number(f.prix), total: Number(f.prix) }], total: Number(f.prix), remise: 0,
+      } });
+    } catch (e) { console.error("contrôle Peppol", e); }   // Recommand indisponible : on n'empêche pas l'achat (facture par mail si besoin)
+    if (ctl && ctl.valide === false) throw new ErreurClient(ctl.erreur || "Numéro de TVA invalide.");
+    if (ctl && ctl.inscrit && ctl.ok === false) {
+      throw new ErreurClient("Votre entreprise reçoit ses factures via Peppol, mais ces informations ne permettent pas d'en établir une valable. Vérifiez le nom de l'entreprise, l'adresse et le n° de TVA, ou appelez-moi au +32 474 05 66 59.");
+    }
+  }
   if (!(await quota(d.email, "pack-commande", 5))) throw new ErreurClient("Trop de tentatives. Réessayez dans une heure ou appelez-moi.", 429);
 
   const cmd = (await rest("pack_commandes", {
@@ -383,14 +465,18 @@ async function webhook(paymentId: string) {
   const fac = (await rest(`factures?id=eq.${r.facture_id}&select=*`))[0];
   let lien = `${SITE}/espace.html`;
   try { lien = await lienEspace(cmd.email, r.client_id); } catch (e) { console.error("lien espace", e); }
-  let envoiOk = false;
+  let envoiOk = false, infoPeppol = "";
   try {
     const octets = await pdfDe(fac);
     try { await archiver(fac, octets); } catch (e) { console.error("archive", e); }
-    await mailFacture(fac, octets, cmd.prenom, pack, lien);
+    // Entreprise belge inscrite sur Peppol : la facture part via Peppol (une seule fois).
+    const pp = await viaPeppol((await rest(`factures?id=eq.${fac.id}&select=*`))[0] || fac);
+    infoPeppol = pp.info;
+    if (pp.ok) await mailPackPeppol(fac, cmd.prenom, pack, lien);
+    else await mailFacture(fac, octets, cmd.prenom, pack, lien);
     envoiOk = true;
   } catch (e) { console.error("mail facture", e); }
-  await mailNotification({ cmd, pack, packId: r.pack_id, facture: r.numero, envoiOk, paiement: p.id })
+  await mailNotification({ cmd, pack, packId: r.pack_id, facture: r.numero, envoiOk, paiement: p.id, peppol: infoPeppol })
     .catch((e) => console.error("mail notification", e));
 }
 
@@ -432,9 +518,11 @@ async function envoyerFacturePack(req: Request, c: Record<string, unknown>) {
   if (!fac.client_email) return { ok: true, archive: true, envoye: false };
   let lien = "";
   if (pk.statut === "actif") { try { lien = await lienEspace(fac.client_email, pk.client_id); } catch (e) { console.error("lien espace", e); } }
-  await mailFacture(fac, octets, prenomDe(fac.client_nom, fac.client_societe), pk, lien);
+  const pp = await viaPeppol((await rest(`factures?id=eq.${fac.id}&select=*`))[0] || fac);
+  if (pp.ok) await mailPackPeppol(fac, prenomDe(fac.client_nom, fac.client_societe), pk, lien);
+  else await mailFacture(fac, octets, prenomDe(fac.client_nom, fac.client_societe), pk, lien);
   await rest(`factures?id=eq.${fac.id}`, { method: "PATCH", body: JSON.stringify({ email_envoye: true, date_envoi: new Date().toISOString() }) }).catch(() => {});
-  return { ok: true, archive: true, envoye: true };
+  return { ok: true, archive: true, envoye: true, peppol: pp.info };
 }
 
 async function rembourser(req: Request, c: Record<string, unknown>) {
@@ -483,6 +571,16 @@ Deno.serve(async (req) => {
     switch (String(c.action || "")) {
       case "commander": return json(await commander(c));
       case "lien": return json(await lien(c));
+      case "tva": {
+        const brut = txt(c.tva, 20).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+        const t = /^[01]\d{9}$/.test(brut) ? "BE" + brut : brut;
+        if (!t.startsWith("BE")) return json({ valide: /^[A-Z]{2}[0-9A-Z]{8,12}$/.test(t), belge: false, inscrit: false });
+        if (!numeroBE(t)) return json({ valide: false, belge: true, inscrit: false });
+        try {
+          const ctl = await peppol({ action: "controle", tva: t });
+          return json({ valide: true, belge: true, inscrit: !!ctl.inscrit });
+        } catch { return json({ valide: true, belge: true, inscrit: null }); }
+      }
       case "acces": return json(await acces(req, c));
       case "rembourser": return json(await rembourser(req, c));
       case "envoyer_facture": return json(await envoyerFacturePack(req, c));

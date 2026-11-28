@@ -70,6 +70,11 @@ window.MAIL_MODELES_PACK_DEFAUT = {
   pack_facture: { nom: 'Pack vendu sur place, paiement à venir',
     objet: 'Votre {pack} — facture {facture}',
     corps: 'Bonjour {prenom},\n\nVous trouverez en pièce jointe la facture {facture} de votre {pack} : {montant} à régler par virement sur le compte {iban} (communication : {facture}).\n\nVotre pack s\'active dès réception du paiement.' },
+  // Entreprise inscrite sur Peppol : la facture part via Peppol, pas en pièce jointe
+  // (un PDF en plus pourrait être comptabilisé deux fois chez le client).
+  pack_achat_peppol: { nom: 'Pack payé par une entreprise inscrite sur Peppol',
+    objet: 'Votre {pack} est actif — facture {facture}',
+    corps: 'Bonjour {prenom},\n\nMerci pour votre confiance.\nVotre {pack} est actif jusqu\'au {date_fin} : {interventions}.\n\nVotre facture {facture} ({montant}, payée) vous a été transmise via Peppol.\nVous la retrouvez aussi dans votre espace client.\n\n{lien_espace}\n\nPour votre première intervention, appelez-moi ou répondez simplement à ce mail.' },
   pack_lien: { nom: 'Lien de connexion à l\'espace client',
     objet: 'Votre lien de connexion — IT Soluce',
     corps: 'Bonjour,\n\nVoici votre lien pour ouvrir votre espace client IT Soluce :\n\n{lien_espace}\n\nSi vous n\'avez rien demandé, ignorez simplement ce message.' },
