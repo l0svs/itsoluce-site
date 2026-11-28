@@ -63,6 +63,13 @@ window.MAIL_MODELE_RAPPEL_RDV_DEFAUT = {
   corps: 'Bonjour {prenom},\n\nPetit rappel : nous avons rendez-vous le {date_rdv} à {heure_rdv}.\nLieu : {lieu_rdv}\n\nEn cas d\'empêchement, merci de me prévenir en répondant à ce mail ou par téléphone.'
 };
 
+// Mail automatique après la livraison Peppol d'une facture envoyée depuis l'ERP
+// (texte identique à MAIL_DEFAUT de supabase/functions/peppol/index.ts).
+window.MAIL_MODELE_PEPPOL_DEFAUT = {
+  objet: 'Votre {document} {numero} vous a été transmise via Peppol',
+  corps: 'Bonjour {prenom},\n\nVotre {document} {numero} du {date} ({montant}) vous a été transmise via Peppol.\n\nMerci pour votre confiance.'
+};
+
 window.MAIL_MODELES_PACK_DEFAUT = {
   pack_achat: { nom: 'Pack payé : facture et accès à l\'espace client',
     objet: 'Votre {pack} est actif — facture {facture}',

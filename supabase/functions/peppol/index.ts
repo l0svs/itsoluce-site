@@ -12,6 +12,11 @@
 //                                 fait valider une facture à blanc (rien n'est envoyé)
 //   - apercu      (interne)       facture réelle → document Peppol validé à blanc
 //
+//  Dès que la livraison est confirmée, le client reçoit un mail « votre facture vous a
+//  été transmise via Peppol » (une seule fois, colonne peppol_mail_le ; texte modifiable :
+//  réglage mail_modele_peppol, Gestion › Mails). Les Packs du site envoient leur propre
+//  mail : la fonction pack appelle « envoyer » avec attendre:false, et aucun mail ne part ici.
+//
 //  Une facture ne part qu'une seule fois : peppol_reserver() (base) n'accorde
 //  l'envoi qu'à un seul appel ; un résultat incertain n'est jamais renvoyé
 //  automatiquement (on cherche d'abord le document chez Recommand) ; une facture
@@ -260,14 +265,110 @@ function etatDocument(d: any): { statut: string; erreur: string | null } {
   }
   return { statut: "en_cours", erreur: null };
 }
-const COLS = "id,numero,statut,type_document,peppol_statut,peppol_document_id,peppol_envoye_le,peppol_livree_le,peppol_destinataire,peppol_erreur";
+const COLS = "id,numero,statut,type_document,peppol_statut,peppol_document_id,peppol_envoye_le,peppol_livree_le,peppol_destinataire,peppol_erreur,peppol_mail_le";
 async function maj(id: number, champs: Record<string, unknown>): Promise<Facture> {
   return (await rest(`factures?id=eq.${id}&select=${COLS}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(champs) }))[0];
 }
 const lire = async (id: number) => (await rest(`factures?id=eq.${id}&select=*`))?.[0] as Facture | undefined;
 
+// ── Mail au client après la livraison Peppol (une seule fois) ──
+const EXPEDITEUR = "contact@itsoluce.be";
+// Texte par défaut : identique à MAIL_MODELE_PEPPOL_DEFAUT (admin/assets/js/mail-modeles.js).
+const MAIL_DEFAUT = {
+  objet: "Votre {document} {numero} vous a été transmise via Peppol",
+  corps: "Bonjour {prenom},\n\nVotre {document} {numero} du {date} ({montant}) vous a été transmise via Peppol.\n\nMerci pour votre confiance.",
+};
+const escH = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+const EUR = new Intl.NumberFormat("fr-BE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const dateLongue = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("fr-BE", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Brussels" });
+async function reglagesMail(): Promise<Record<string, string>> {
+  const l = await rest("settings?select=cle,valeur&cle=in.(entreprise_nom,entreprise_adresse,entreprise_bce,entreprise_email,entreprise_telephone,entreprise_site,mail_modele_peppol)");
+  return Object.fromEntries((l || []).map((r: { cle: string; valeur: string }) => [r.cle, String(r.valeur ?? "").trim()]));
+}
+// Signature : la même que les autres mails automatiques (copie de signatureMailHTML de l'ERP).
+function signatureHTML(ent: Record<string, string>): string {
+  const nom = ent.entreprise_nom || "IT Soluce", tel = ent.entreprise_telephone || "+32 474 05 66 59";
+  const email = ent.entreprise_email || "contact@itsoluce.be";
+  const site = (ent.entreprise_site || "itsoluce.be").replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const adr = ent.entreprise_adresse || "Chaussée d'Hondzocht 164, 1480 Tubize", bce = ent.entreprise_bce || "BE 1027.026.003";
+  const L = (href: string, t: string, c: string) => `<a href="${href}" style="color:${c};text-decoration:none;">${escH(t)}</a>`;
+  const pied = [escH(adr), bce ? "BCE " + escH(bce) : ""].filter(Boolean).join(" &middot; ");
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;margin:18px 0 14px;">Bien &agrave; vous,</div>` +
+    `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">` +
+    `<tr><td style="padding:0 0 10px;"><img src="https://itsoluce.be/img/logo-full.png" width="78" height="32" alt="${escH(nom)}" style="display:block;border:0;"></td></tr>` +
+    `<tr><td style="border-top:2px solid #0052CC;padding:9px 0 0;font-size:13px;font-weight:bold;color:#12212e;">R&eacute;paration informatique</td></tr>` +
+    `<tr><td style="padding:8px 0 0;font-size:12.5px;line-height:1.9;color:#5a6b7b;">` +
+    `<span style="color:#0052CC;font-weight:bold;">T</span>&nbsp;&nbsp;${L("tel:" + tel.replace(/[^0-9+]/g, ""), tel, "#5a6b7b")}<br>` +
+    `<span style="color:#0052CC;font-weight:bold;">E</span>&nbsp;&nbsp;${L("mailto:" + email, email, "#5a6b7b")}<br>` +
+    `<span style="color:#0052CC;font-weight:bold;">W</span>&nbsp;&nbsp;${L("https://" + site + "/", site, "#0052CC")}</td></tr>` +
+    `<tr><td style="padding:9px 0 0;font-size:11.5px;line-height:1.6;color:#8a97a3;">${pied}</td></tr></table>`;
+}
+/** Objet et corps HTML du mail « transmise via Peppol » (une ligne vide sépare les paragraphes). */
+function mailPeppol(f: Facture, modele: { objet: string; corps: string }, ent: Record<string, string>) {
+  const nc = f.type_document === "note_credit";
+  const nom = String(f.client_nom || "").trim(), soc = String(f.client_societe || "").trim();
+  const v: Record<string, string> = {
+    prenom: !nom || (soc && nom === soc) ? "" : nom.split(/\s+/)[0],
+    document: nc ? "note de crédit" : "facture", numero: String(f.numero || ""),
+    date: f.date_emission ? dateLongue(f.date_emission) : "", montant: EUR.format(Math.abs(Number(f.total) || 0)) + " €",
+    societe: soc || nom,
+  };
+  // Entreprise sans personne de contact : « Bonjour, ».
+  const corps = v.prenom ? modele.corps : modele.corps.replace(/Bonjour \{prenom\},/g, "Bonjour,");
+  const remplir = (t: string, html: boolean) => t.replace(/\{(\w+)\}/g, (x, k) => (k in v ? (html ? escH(v[k]) : v[k]) : x));
+  const o = remplir(modele.objet, false).replace(/[\r\n]+/g, " ").trim();
+  const objet = o.charAt(0).toUpperCase() + o.slice(1);
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#12212e;max-width:560px">` +
+    corps.split(/\n{2,}/).map((p) => `<p style="margin:0 0 12px;">${remplir(escH(p.trim()), true).replace(/\n/g, "<br>")}</p>`).join("") +
+    signatureHTML(ent) + `</div>`;
+  return { objet, html };
+}
+async function envoyerMail(a: string, objet: string, html: string) {
+  const k = Deno.env.get("RESEND_API_KEY");
+  if (!k) throw new Error("RESEND_API_KEY absente");
+  const r = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${k}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: `IT Soluce <${EXPEDITEUR}>`, reply_to: EXPEDITEUR, to: [a], subject: objet, html }),
+  });
+  if (!r.ok) throw new Error(`Resend ${r.status} : ${(await r.text()).slice(0, 200)}`);
+  // Copie dans « Envoyés » de contact@itsoluce.be ; un échec n'annule pas l'envoi.
+  try {
+    const c = await fetch(`${SUPABASE_URL}/functions/v1/mail-copie`, {
+      method: "POST", headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ a, objet, html, pieces: [] }),
+    });
+    if (!c.ok) console.error("copie Envoyés", c.status);
+  } catch (e) { console.error("copie Envoyés", e); }
+}
+/** Livraison confirmée : prévient le client par mail, une seule fois (réservation sur peppol_mail_le). */
+async function prevenir(id: number): Promise<void> {
+  const f = await lire(id);
+  if (!f || f.peppol_statut !== "livree" || f.peppol_mail_le) return;
+  const email = String(f.client_email || "").trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return;
+  const pris = await rest(`factures?id=eq.${id}&peppol_mail_le=is.null&select=id`, {
+    method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ peppol_mail_le: new Date().toISOString() }),
+  });
+  if (!pris?.length) return;
+  try {
+    const ent = await reglagesMail();
+    let modele = MAIL_DEFAUT;
+    try {
+      const p = JSON.parse(ent.mail_modele_peppol || "null");
+      if (p && String(p.objet || "").trim() && String(p.corps || "").trim()) modele = { objet: p.objet, corps: p.corps };
+    } catch { /* texte par défaut */ }
+    const { objet, html } = mailPeppol(f, modele, ent);
+    await envoyerMail(email, objet, html);
+  } catch (e) {
+    // Échec : on libère, le suivi automatique réessaiera.
+    console.error("mail Peppol", id, e);
+    await rest(`factures?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ peppol_mail_le: null }) }).catch(() => {});
+  }
+}
+
 // ── Envoi (une seule fois) ───────────────────────────────
-async function envoyer(id: number, attendre = true): Promise<Facture> {
+async function envoyer(id: number, attendre = true, prevenirClient = true): Promise<Facture> {
   const f = await lire(id);
   if (!f || f.supprime_le) throw new ErreurClient("Facture introuvable.", 404);
   if (["livree", "en_cours", "envoi", "incertain"].includes(f.peppol_statut)) return pick(f);   // déjà parti ou en cours : on ne renvoie pas
@@ -285,6 +386,8 @@ async function envoyer(id: number, attendre = true): Promise<Facture> {
 
   // Réservation atomique : un seul appel passe, les autres repartent avec l'état actuel.
   if ((await rpc("peppol_reserver", { p_id: id })) !== true) return pick((await lire(id))!);
+  // Pack du site : le client est prévenu par le mail du Pack, pas par celui-ci.
+  if (!prevenirClient) await rest(`factures?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ peppol_mail_le: new Date().toISOString() }) });
 
   let res: { status: number; j: Record<string, unknown> | null };
   try {
@@ -299,6 +402,9 @@ async function envoyer(id: number, attendre = true): Promise<Facture> {
     if (e.statut === "en_cours" && attendre) {
       await new Promise((r) => setTimeout(r, 4000));
       fx = await rafraichir(fx);
+    } else if (e.statut === "livree") {
+      await prevenir(id);
+      fx = pick((await lire(id))!);
     }
     return fx;
   }
@@ -317,8 +423,13 @@ async function rafraichir(f: Facture): Promise<Facture> {
     const { status, j } = await rc("production", `/documents/${f.peppol_document_id}?excludeAttachments=true`);
     if (status !== 200 || !j?.document) return pick(f);
     const e = etatDocument(j.document);
-    if (e.statut === f.peppol_statut && e.erreur === (f.peppol_erreur ?? null)) return pick(f);
-    return await maj(f.id, { peppol_statut: e.statut, peppol_erreur: e.erreur, peppol_livree_le: e.statut === "livree" ? (f.peppol_livree_le || new Date().toISOString()) : null });
+    if (e.statut === f.peppol_statut && e.erreur === (f.peppol_erreur ?? null)) {
+      if (e.statut === "livree" && !f.peppol_mail_le) { await prevenir(f.id); return pick((await lire(f.id))!); }
+      return pick(f);
+    }
+    const fx = await maj(f.id, { peppol_statut: e.statut, peppol_erreur: e.erreur, peppol_livree_le: e.statut === "livree" ? (f.peppol_livree_le || new Date().toISOString()) : null });
+    if (fx.peppol_statut === "livree") { await prevenir(f.id); return pick((await lire(f.id))!); }
+    return fx;
   }
   if (!["incertain", "envoi"].includes(f.peppol_statut)) return pick(f);
   // Pas d'identifiant : on cherche le document chez Recommand par son numéro.
@@ -329,7 +440,9 @@ async function rafraichir(f: Facture): Promise<Facture> {
   const trouve = (j?.documents || j?.items || []).find((d: any) => [d?.parsed?.invoiceNumber, d?.parsed?.creditNoteNumber].includes(f.numero));
   if (trouve) {
     const e = etatDocument(trouve);
-    return await maj(f.id, { peppol_document_id: trouve.id, peppol_statut: e.statut, peppol_erreur: e.erreur, peppol_livree_le: e.statut === "livree" ? new Date().toISOString() : null });
+    const fx = await maj(f.id, { peppol_document_id: trouve.id, peppol_statut: e.statut, peppol_erreur: e.erreur, peppol_livree_le: e.statut === "livree" ? new Date().toISOString() : null });
+    if (fx.peppol_statut === "livree") { await prevenir(f.id); return pick((await lire(f.id))!); }
+    return fx;
   }
   // Rien chez Recommand, et l'envoi date de plus de 3 minutes : rien n'est parti.
   if (Date.now() - new Date(f.peppol_envoye_le || 0).getTime() > 180_000) {
@@ -376,7 +489,8 @@ Deno.serve(async (req) => {
       case "envoyer":
         if (!estInterne && !estPerso) return json({ error: "Non autorisé" }, 401);
         if (!id) throw new ErreurClient("Facture manquante.");
-        return json({ facture: await envoyer(id, c.attendre !== false) });
+        // attendre:false = appel de la fonction pack, qui prévient elle-même le client.
+        return json({ facture: await envoyer(id, c.attendre !== false, c.mail !== false && c.attendre !== false) });
       case "statut": {
         if (!estInterne && !estPerso) return json({ error: "Non autorisé" }, 401);
         const f = await lire(id);
@@ -395,6 +509,10 @@ Deno.serve(async (req) => {
           }
           try { out.push(await rafraichir(f)); } catch (e) { console.error("suivi", f.id, e); }
         }
+        // Mails de confirmation qui n'ont pas pu partir : nouvel essai (3 jours au plus).
+        const depuis = new Date(Date.now() - 3 * 864e5).toISOString();
+        const sansMail = await rest(`factures?select=id&peppol_statut=eq.livree&peppol_mail_le=is.null&client_email=not.is.null&peppol_livree_le=gt.${encodeURIComponent(depuis)}&limit=20`);
+        for (const f of sansMail || []) { try { await prevenir(f.id); } catch (e) { console.error("mail", f.id, e); } }
         return json({ ok: true, suivies: out.length });
       }
       case "controle":

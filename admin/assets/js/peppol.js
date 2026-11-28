@@ -100,9 +100,10 @@
 
     switch (f.peppol_statut) {
       case 'livree':
-        return rendre('ok', 'Transmise', `${Doc} transmise à ${client} le ${esc(quand(f.peppol_livree_le || f.peppol_envoye_le))}.${id_}`);
+        return rendre('ok', 'Transmise', `${Doc} transmise à ${client} le ${esc(quand(f.peppol_livree_le || f.peppol_envoye_le))}.` +
+          (f.peppol_mail_le ? `<br>Le client en a été informé par mail.` : (f.client_email ? `<br>Le mail d'information au client part dans quelques minutes.` : `<br>Pas d'adresse e-mail : le client n'est pas prévenu par mail.`)) + id_);
       case 'en_cours':
-        return rendre('attente', 'Livraison en cours', `Envoyée le ${esc(quand(f.peppol_envoye_le))}.<br>La confirmation de livraison arrive en général en quelques minutes ; elle se met à jour toute seule.${id_}`,
+        return rendre('attente', 'Livraison en cours', `Envoyée le ${esc(quand(f.peppol_envoye_le))}.<br>La confirmation de livraison arrive en général en quelques minutes ; elle se met à jour toute seule.${f.client_email ? '<br>Le client sera prévenu par mail dès la livraison.' : ''}${id_}`,
           `<button class="btn btn-secondary" data-pp="actualiser">Actualiser</button>`);
       case 'envoi':
         return rendre('attente', 'Envoi en cours', 'Envoi en cours de traitement, ne relance pas.',
