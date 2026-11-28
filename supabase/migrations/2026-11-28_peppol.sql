@@ -143,3 +143,22 @@ create table if not exists public.recommand_acces (
   maj_le timestamptz not null default now());
 alter table public.recommand_acces enable row level security;
 revoke all on public.recommand_acces from anon, authenticated;
+
+-- Mail de confirmation au client après la livraison Peppol (une seule fois) :
+-- rempli au moment de l'envoi du mail. Les Packs du site ont leur propre mail
+-- (« facture transmise via Peppol ») : la fonction le marque sans rien envoyer.
+alter table public.factures add column if not exists peppol_mail_le timestamptz;
+
+-- Le suivi tourne aussi pour un mail de confirmation à (re)tenter après une livraison.
+select cron.unschedule('peppol-suivi') where exists (select 1 from cron.job where jobname = 'peppol-suivi');
+select cron.schedule('peppol-suivi', '*/15 * * * *', $cron$
+  select net.http_post(
+    url := 'https://esltsiutcjcwdbhkkvms.supabase.co/functions/v1/peppol',
+    headers := jsonb_build_object('Content-Type', 'application/json',
+      'x-sync-jeton', (select jeton from public.sync_jeton where id = 1)),
+    body := '{"action":"suivre"}'::jsonb,
+    timeout_milliseconds := 60000
+  ) as request_id
+  where exists (select 1 from public.factures where peppol_statut in ('en_cours', 'envoi', 'incertain')
+     or (peppol_statut = 'livree' and peppol_mail_le is null and client_email is not null and peppol_livree_le > now() - interval '3 days'));
+$cron$);

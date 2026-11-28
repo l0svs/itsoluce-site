@@ -1078,6 +1078,19 @@ setTimeout(function(){var v=document.getElementById('voile-nav');if(v)v.remove()
             </div>
 
             <div class="card">
+              <div class="card-lbl">Facture transmise via Peppol (envoyé automatiquement au client)</div>
+              <div class="mm">
+                <input type="text" id="mp-objet" placeholder="Objet" oninput="majMailPeppol()"/>
+                <textarea id="mp-corps" oninput="majMailPeppol()"></textarea>
+              </div>
+              <input type="hidden" id="s-mail-peppol" data-cle="mail_modele_peppol"/>
+              <div class="grille-foot">
+                <span>Part dès que Recommand confirme la livraison d'une facture envoyée depuis l'ERP, une seule fois. Remplis automatiquement : <b>{prenom}</b> <b>{document}</b> (facture ou note de crédit) <b>{numero}</b> <b>{date}</b> <b>{montant}</b> <b>{societe}</b>. Les Packs du site ont leur propre mail, ci-dessous. La politesse et la signature sont ajoutées à l'envoi.</span>
+                <button type="button" class="btn btn-secondary" onclick="resetMailPeppol()">Réinitialiser</button>
+              </div>
+            </div>
+
+            <div class="card">
               <div class="card-lbl">Mails du Pack Sérénité (envoyés automatiquement)</div>
               <div id="mail-pack"></div>
               <input type="hidden" id="s-mail-pack" data-cle="mail_modeles_pack"/>
@@ -1560,6 +1573,13 @@ window.majMailRappel=function(){document.getElementById('s-mail-rappel').value=J
 window.resetMailRappel=function(){if(!confirm('Revenir au texte par défaut du rappel de rendez-vous ?'))return;const d=window.MAIL_MODELE_RAPPEL_RDV_DEFAUT;document.getElementById('s-mail-rappel').value=JSON.stringify(d);markDirty();renderMailRappel()}
 {const c=document.getElementById('s-mail-rappel');if(!c.value){c.value=JSON.stringify(window.MAIL_MODELE_RAPPEL_RDV_DEFAUT||{});_original[c.id]=c.value}}
 renderMailRappel()
+function lireMailPeppol(){let o=null;try{o=JSON.parse(document.getElementById('s-mail-peppol').value||'null')}catch(e){}
+  const d=window.MAIL_MODELE_PEPPOL_DEFAUT||{objet:'',corps:''};return {objet:(o&&o.objet)||d.objet,corps:(o&&o.corps)||d.corps}}
+window.renderMailPeppol=function(){const o=lireMailPeppol();document.getElementById('mp-objet').value=o.objet;document.getElementById('mp-corps').value=o.corps}
+window.majMailPeppol=function(){document.getElementById('s-mail-peppol').value=JSON.stringify({objet:document.getElementById('mp-objet').value,corps:document.getElementById('mp-corps').value});markDirty()}
+window.resetMailPeppol=function(){if(!confirm('Revenir au texte par défaut du mail « facture transmise via Peppol » ?'))return;const d=window.MAIL_MODELE_PEPPOL_DEFAUT;document.getElementById('s-mail-peppol').value=JSON.stringify(d);markDirty();renderMailPeppol()}
+{const c=document.getElementById('s-mail-peppol');if(!c.value){c.value=JSON.stringify(window.MAIL_MODELE_PEPPOL_DEFAUT||{});_original[c.id]=c.value}}
+renderMailPeppol()
 sb.from('mail_etat').select('derniere_synchro,ok,message').eq('id',1).maybeSingle().then(({data})=>{
   const el=document.getElementById('mail-synchro')
   if(!data||!data.derniere_synchro){el.textContent='Pas encore synchronisée';return}
@@ -2987,7 +3007,7 @@ document.addEventListener('click',function(e){
   }
 })
 </script>
-<script src="/admin/assets/js/mail-modeles.js?v=20261128"></script>
+<script src="/admin/assets/js/mail-modeles.js?v=20261128b"></script>
 <script src="/admin/assets/js/signature-mail.js?v=20261117"></script>
 <script src="/admin/assets/js/admin-palette.js?v=20261116"></script>
 <script src="/admin/assets/js/admin-nav-badges.js?v=20261116"></script>
